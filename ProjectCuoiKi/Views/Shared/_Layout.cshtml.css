@@ -1,0 +1,153 @@
+﻿
+                                            /*--CỐ ĐỊNH HEADER--*/
+#co_dinh_header{
+    z-index: 1000;
+}
+#co_dinh_header.sticky {
+    top: 0;
+    background-color: #041721;
+    opacity: 1;
+    animation-name: animation_co_dinh_header;
+    animation-duration: 0.3s;
+    height: 82px;
+    position: sticky;
+}
+
+#co_dinh_header.sticky #header_logo {
+    margin-top: -20px;
+    display: flex;
+    flex-direction: row !important;
+    justify-content: center;
+    align-items: center;
+}
+
+#co_dinh_header.sticky #header_logo p {
+    font-size: 12px;
+    line-height: 42px;
+    margin-left: -12px;
+}
+
+#co_dinh_header.sticky #bottom_header_right > ul.navbar-nav {
+    margin-top: -20px;
+}
+
+@keyframes animation_co_dinh_header {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+                                                    /*BACK TOP*/
+
+#backtop_container {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    bottom: 40px;
+    right: 40px;
+    background-color: #0ce682;
+}
+#backtop_container:hover{
+    transform: scale(1.12);
+    transition: all 0.5s ease;
+}
+#backtop {
+    top: 8px;
+    left: 8px;
+    width: 45px;
+    height: 45px;
+    color: #ffde3c;
+    background-color: #041721;
+    cursor: pointer;
+}
+#backtop:hover {
+    color: #041721;
+    background-color: #ffde3c;
+} 
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+
+                                                        /*FOOTER*/
+footer {
+    width: 100%;
+    white-space: nowrap;
+    line-height: 70px;
+    background-color: #041721;
+}
+
+footer p {
+    color: white;
+}
+
+#logo_footer p {
+    font-weight: 900;
+}
+
+#social_media ul li a {
+    margin-left: 20px;
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    font-size: 20px;
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    background-color: #041721;
+    display: block;
+    border-radius: 8px;
+}
+
+#social_media ul li a.fb {
+    background-color: #3b5999;
+}
+
+#social_media ul li a.yt {
+    background-color: #cd201f;
+}
+
+#social_media ul li a.x {
+    background-color: #14171a;
+}
+
+#social_media ul li a.ins {
+    background-color: #e4405f;
+}
+
+#social_media ul li a.github {
+    background-color: #171515;
+}
+
+                                                    

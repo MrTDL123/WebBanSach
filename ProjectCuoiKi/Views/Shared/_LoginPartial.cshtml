@@ -1,0 +1,21 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<nav id="authentication">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <a id="manage" class="montserrat-regular" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@UserManager.GetUserName(User)</a>
+        <p style="color: #0ce682;"> | </p>
+        <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button id="logout" type="submit" class="montserrat-regular">Đăng xuất</button>
+        </form>
+    }
+    else
+    {
+        <a id="register" class="montserrat-regular" asp-area="Identity" asp-page="/Account/Register" style="margin-right:5px;"><i class="bi bi-pencil-fill"></i> Đăng kí </a>
+        <p style="color: #0ce682;"> | </p>
+        <a id="login" class="montserrat-regular" asp-area="Identity" asp-page="/Account/Login"><i class="bi bi-person-fill" style="margin-left:5px;"></i> Đăng nhập </a>
+    }
+</nav>
