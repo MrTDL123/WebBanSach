@@ -1,5 +1,9 @@
 ﻿
                                             /*--CỐ ĐỊNH HEADER--*/
+* {
+    color: #0ce682;
+}
+
 #co_dinh_header{
     z-index: 1000;
 }

@@ -1,0 +1,296 @@
+﻿@model IndexVM
+
+@section PageStyles{
+    <style>
+        header{
+            background-image: url(../img/web_img/header_background.png);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+}
+
+@section SliderMenu {
+    <div id="slide_container" class="">
+        <section id="slide1" class="">
+            <div id="content_slide1">
+                <div id="slogan_slide1_1">
+                    <p id="line1_slide1" class="montserrat-bold">Khuyến mãi to,</p>
+                    <p id="line2_slide1" class="montserrat-bold">Mua ngay</p>
+                </div>
+
+                <p> Test github</p>
+
+                <div id="slogan_slide1_2" class="montserrat-regular">
+                    <p id="descript1">Bạn có thể khám phá những cuốn sách bổ ích, </p>
+                    <p id="descript2">hoặc sắm cho mình những sản phẩm bán chạy gần đây</p>
+                </div>
+
+                <div class="button montserrat-bold">
+                    <a asp-action="Shop">Hãy mua ngay</a>
+                </div>
+            </div>
+
+            <div id="background_book_slide1">
+                <img id="background_slide1" src="~/img/web_img/slider-1-3_bg.png" alt="Ảnh background" />
+                <img id="book_slide1" src="~/img/web_img/slider-1-3_books.jpg" alt="Ảnh book" />
+            </div>
+        </section>
+
+        <section id="slide2" class="hide">
+            <div id="calendar_graph" class="item_container">
+                <img id="graph" class="item" src="~/img/web_img/slider-1-2_icon-1.png" alt="graph" />
+                <img id="calendar" class="item" src="~/img/web_img/slider-1-2_icon-11.png" alt="calendar" />
+            </div>
+            <div id="lock_volume" class="item_container">
+                <img id="lock" class="item" src="~/img/web_img/slider-1-2_icon-10.png" alt="lock" />
+                <img id="volume" class="item" src="~/img/web_img/slider-1-2_icon-2.png" alt="volume" />
+            </div>
+            <div id="cart_phone" class="item_container">
+                <img id="cart" class="item" src="~/img/web_img/slider-1-2_icon-9.png" alt="cart" />
+                <img id="phone" class="item" src="~/img/web_img/slider-1-2_icon-3.png" alt="phone" />
+            </div>
+            <div id="cup_mail" class="item_container">
+                <img id="cup" class="item" src="~/img/web_img/slider-1-2_icon-8.png" alt="cup" />
+                <img id="mail" class="item" src="~/img/web_img/slider-1-2_icon-4.png" alt="mail" />
+            </div>
+            <div id="note_message" class="item_container">
+                <img id="note" class="item" src="~/img/web_img/slider-1-2_icon-7.png" alt="note" />
+                <img id="message" class="item" src="~/img/web_img/slider-1-2_icon-5.png" alt="message" />
+            </div>
+
+            <div id="slogan_computer">
+                <div id="slogan_slide2" class="montserrat-bold">
+                    <p id="line1_slide2">Learning Has Never Been Easier</p>
+                    <div id="slogan_background">
+                        <img src="~/img/web_img/slider-1-2_cloud-3.png">
+                        <img src="~/img/web_img/11.png"> 
+                        <img src="~/img/web_img/12.png">
+                    </div>
+                    <p id="line2_slide2">Learn New</p>
+                    <p id="line3_slide2">Skills To Change</p>
+                    <p id="line4_slide2">Your Life</p>
+                </div>
+
+                <div id="computer">
+                    <div id="quote" class="montserrat-bold">
+                        <p id="line5_slide2" >Start learning the</p>
+                        <p id="line6_slide2">skills you have always </p>
+                        <p id="line7_slide2">been dreaming of.</p>
+                    </div> 
+                    <img id="img_computer" src="~/img/web_img/slider-1-2_icon-6.png" alt="computer">
+                </div>
+            </div>
+
+        </section>
+
+       @*  <div id="slide3" class="hide">
+
+            <img id="book_icon" src="img/web_img/slider-1_logo.png" alt="book_icon">
+            <img id="big_cloud" src="img/web_img/5.png" alt="cloud_background">
+
+
+            <div id="letters_slide3">
+                <p id="B">B</p>
+                <p id="O_1">O</p>
+                <p id="O_2">O</p>
+                <p id="K">K</p>
+                <p id="S">S</p>
+            </div>
+
+            <img id="small_cloud1" src="img/web_img/21.png" alt="small_cloud1">
+            <img id="small_cloud2" src="img/web_img/17.png" alt="small_cloud2">
+            <img id="small_cloud3" src="img/web_img/3.png" alt="small_cloud2">
+
+            <div id="slogan_slide3">
+                <p id="line1_slide3">Những cuốn sách hay nhất 2024</p>
+                <p id="line2_slide3">Hoàn hảo cho một mùa hè cháy bỏng</p>
+            </div>
+
+            <div id="button" class="btn_slide3">
+                <a asp-action="Shop">
+                    Hãy mua ngay
+                </a>
+            </div>
+        </div> *@
+
+        <div id="btn_slide_container" class="">
+            <div id="btn_slideleft">
+                <i class="bi bi-caret-left-square-fill"></i>
+            </div>
+            <div id="btn_slideright">
+                <i class="bi bi-caret-right-square-fill"></i>
+            </div>
+        </div>
+    </div>
+
+}
+                                         @*BEST SELLER*@
+<div id="bestseller_container" class="d-flex justify-content-center align-items-center flex-column">
+    <p id="bestseller_title" class="text-dark">Books Bestsellers</p>
+
+    <div id="bestseller_category" class="d-flex justify-content-center align-items-center gap-5">
+        @foreach (var obj in Model.categoryList)
+        {
+            <p id="category">@obj.Name</p>
+        }
+        <ul class="navbar-nav flex-grow-1 float-end" id="product_order" style="margin-top: 16px;">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sắp xếp theo:
+                </a>
+                <ul class="dropdown-menu">
+                    <li class="nav-item">
+                        <a class="dropdown-item">A &rarr; Z </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="nav-item">
+                        <a class="dropdown-item">Giá tăng dần</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="nav-item">
+                        <a class="dropdown-item">Giá giảm dần</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="nav-item">
+                        <a class="dropdown-item">Sách mới nhất</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="nav-item">
+                        <a class="dropdown-item">Sách cũ nhất</a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="cacsanpham" style="width: 90%; flex-wrap: unset;">
+        @foreach (var product in Model.products.Take(5))
+        {
+            <div class="sach" count_book_quantity="1" sum_cost="50.000 VND">
+                <div class="sach_img" id="hover_for_img_product">
+                    <img src="@product.ImageUrl" alt="Ảnh sách" class="card-img-top rounded" style="max-width:220px; height:300px" />
+                    <div class="hover_img_product d-flex justify-content-center align-items-center">
+                        <ul class="d-flex justify-content-center align-items-center">
+                            <li>
+                                <a asp-action="Details" asp-route-id="@product.Id" class="icon_product eye d-flex justify-content-center align-items-center">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="icon_product icon_cart d-flex justify-content-center align-items-center">
+                                    <i class="bi bi-cart-fill"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sach_text">
+                    <p id="author_name">@product.Author</p>
+                    <p id="price">@product.ListPrice.ToString("c")</p>
+                    <p id="state">In stock</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+                                        @*--POPULAR AUTHOR--*@
+<div id="popular_author" class="d-flex flex-column justify-content-center align-items-center d-inline-block">
+    <h4>Popular Authors & Series</h4>
+    <p>We are online store selling books, our store stocks over 500 thousand great books and digital items. We are</p>
+    <p>a perfect place for those looking for the best books, audio books, textbooks and videos.</p>
+    <input type="submit" value="SEE MORE AUTHORS">
+</div>
+                                          @*--OUR SERVICE--*@
+<div id="ourservice" class="d-flex justify-content-center align-items-center flex-column">
+    <div id="title">
+        <p>Our Services</p>
+    </div>
+
+    <div class="describe d-flex justify-content-center align-items-center flex-column">
+        <p>We share thousands of books with others by reviewing them. Our goal is to get the books in the readers' hands all over the</p>
+        <p>world. Enjoy the possible book buying experience with our reliable book store.</p>
+    </div>
+
+    <div class="service d-flex gap-5">
+        <div id="service1">
+            <i id="service_icon" class="bi bi-gift-fill"></i>
+            <p id="service_name">FREE GIFT WRAP</p>
+        </div>
+        <div id="service1">
+            <i id="service_icon" class="bi bi-rocket-takeoff-fill"></i>
+            <p id="service_name">SHIPPING</p>
+        </div>
+        <div id="service1">
+            <i id="service_icon" class="bi bi-cart-fill"></i>
+            <p id="service_name">ONLINE ORDERING</p>
+        </div>
+        <div id="service1">
+            <i id="service_icon" class="bi bi-book"></i>
+            <p id="service_name">USED BOOK BUYING</p>
+        </div>
+        <div id="service1">
+            <i id="service_icon" class="bi bi-arrow-repeat"></i>
+            <p id="service_name">RETURN & EXCHANGES</p>
+        </div>
+    </div>
+</div>
+                                            @*--NẠP VIP--*@
+<div class="napvip d-flex justify-content-center align-items-center flex-column">
+    <p id="napvip_title">Gift & Prepaid Cards</p>
+    <div class="vip_level d-flex flex-row">
+        <div class="basic d-flex align-items-center flex-column">
+            <div class="vip_title">
+                <p>BASIC</p>
+            </div>
+            <div class="d-flex align-items-center flex-column">
+                <svg id="icon_basic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.744 16.683l.349-.199v1.717l-.349.195v-1.713zm-9.656-3.671l-.575-.33-.002.728.575.33c.5.286.493-.446.002-.728zm10.246 5.051l.343-.195v-1.717l-.343.195v1.717zm6.666-11.122v11.507l-9.75 5.552-12.25-6.978v-11.507l9.767-5.515 12.233 6.941zm-13.846-3.733l9.022 5.178 1.7-.917-9.113-5.17-1.609.909zm-4.469 8.558l-1.685-.962v2.585l.525.301v-1.068l1.002.573.001-.442-.999-.573.001-.597 1.153.661.002-.478zm2.353 3.937c-.195-.401.066-1.026-.445-1.473v-.007c.607.085.488-1.083-.317-1.545l-1.294-.738v2.584l.524.301.003-1.01.524.301c.553.316.335.792.479 1.286l.526.301zm2.17.765l-1.287-.737.002-.634 1.156.663.001-.442-1.156-.663v-.554l1.262.723.001-.478-1.791-1.023v2.584l1.812 1.039v-.478zm2.166 1.242l-1.287-.738.002-.633 1.156.663.001-.441-1.156-.663.001-.554 1.261.722.001-.478-1.792-1.023v2.585l1.812 1.038.001-.478zm3.647-7.631l-8.819-5.217-2.044 1.167 8.859 5.138 2.004-1.088zm5.979-.943l-2 1.078v2.786l-3 1.688v-2.856l-2 1.078v8.362l7-3.985v-8.151zm-3.846 8.46l.344-.196v-1.717l-.344.196v1.717zm2.346-3.053l-.342.195v1.717l.342-.195v-1.717zm-1.193 2.397l.35-.199v-1.717l-.35.199v1.717zm-.578.329l.343-.195v-1.717l-.343.195v1.717z" /></svg>
+
+                <div class="description_vip d-flex align-items-center flex-column">
+                    <p>FREE Two-Day Shipping</p>
+                    <p id="vip_descript">on millions of items</p>
+                </div>
+
+                <input type="submit" value="SIGN UP">
+
+            </div>
+        </div>
+
+        <div class="plus d-flex align-items-center flex-column">
+            <div class="vip_title">
+                <p>PLUS</p>
+            </div>
+            <div class="d-flex align-items-center flex-column">
+                <p id="gia_vip">99.000&#8363/month</p>
+                <div class="description_vip d-flex align-items-center flex-column">
+                    <p> Perfect for independent instructors,</p>
+                    <p id="vip_descript"> authors, and tutors </p>
+                </div>
+
+                <input type="submit" value="BUY THIS CARD">
+            </div>
+        </div>
+
+        <div class="special d-flex align-items-center flex-column">
+            <div class="vip_title">
+                <p>SPECIAL</p>
+            </div>
+            <div class="d-flex align-items-center flex-column">
+                <p id="gia_vip">2.000.000&#8363/month</p>
+                <div class="description_vip d-flex align-items-center flex-column">
+                    <p>Our gift cards are the perfect</p>
+                    <p id="vip_descript">present for any occasion</p>
+                </div>
+
+                <input type="submit" value="BUY THIS CARD">
+            </div>
+        </div>
+    </div>
+</div>
+
+             
