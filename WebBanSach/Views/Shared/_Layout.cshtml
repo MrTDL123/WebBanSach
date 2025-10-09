@@ -24,9 +24,6 @@
     <header>
         <div id="top_header">
             @*Top header left*@
-            <div id="contact">
-                <p class="montserrat-regular">Liên hệ chúng tôi tại <a asp-controller="#" asp-action="#">123-4567</a> Or <a asp-controller="#" asp-action="#">info@techbook.com</a></p>
-            </div>
 
             <!-- Form tìm kiếm -->
             <form action="/" method="post" id="search_box">
@@ -53,12 +50,6 @@
 
             <!-- Nav items -->
             <ul id="bottom_header_right">
-                <li>
-                    <a class="montserrat-bold" asp-area="Customer" asp-controller="Home" asp-action="Index">Trang chủ</a>
-                </li>
-                <li>
-                    <a class="montserrat-bold" asp-area="Customer" asp-controller="Home" asp-action="Shop">Shop</a>
-                </li>
                 @if (User.IsInRole(SD.Role_Admin))
                 {
                     <li>
@@ -173,4 +164,3 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
-
