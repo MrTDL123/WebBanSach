@@ -19,6 +19,10 @@
             padding-left: 0;
         }
 
+        li {
+            list-style: none;
+        }
+
         body {
             background: #e8e8e8;
             color: #333;
@@ -92,12 +96,16 @@
         .btn-primary {
             background: #C92127;
             color: white;
+            border: 2px solid #C92127;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
 
         .btn-primary:hover {
             background: white;
             color: #C92127; 
-            box-shadow: 0 4px 8px rgba(201, 33, 39, 0.3);
             border: 2px solid #C92127;
         }
 
@@ -353,9 +361,6 @@
         }
 
         /* Review Header */
-        .review-header {
-            margin-bottom: 24px;
-        }
 
         .review-title {
             font-size: 20px;
@@ -390,16 +395,8 @@
         }
 
         .stars-display {
-            margin: 8px 0;
-        }
-
-        .star {
             color: #ffa500;
             font-size: 20px;
-        }
-
-        .star.empty {
-            color: #ddd;
         }
 
         .rating-count {
@@ -503,13 +500,6 @@
             background: #C92127;
         }
 
-        /* Review List */
-        .review-list {
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
         .review-item {
             padding: 20px 0;
             border-bottom: 1px solid #f0f0f0;
@@ -522,14 +512,7 @@
         .reviewer-info {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
             margin-bottom: 12px;
-        }
-
-        .reviewer-left {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
         }
 
         .reviewer-name {
@@ -543,15 +526,6 @@
             color: #999;
         }
 
-        .review-stars {
-            display: flex;
-            gap: 2px;
-        }
-
-        .review-stars .star {
-            font-size: 16px;
-        }
-
         .review-content {
             font-size: 14px;
             line-height: 1.6;
@@ -562,20 +536,15 @@
         .review-actions {
             display: flex;
             gap: 16px;
-            align-items: center;
         }
 
         .action-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
             padding: 6px 12px;
             background: transparent;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
             font-size: 13px;
             color: #666;
-            cursor: pointer;
             transition: all 0.2s;
         }
 
@@ -584,14 +553,9 @@
             color: #C92127;
         }
 
-        .action-icon {
-            font-size: 14px;
-        }
-
         .show-more-link {
             color: #2489F4;
             font-size: 13px;
-            cursor: pointer;
             text-decoration: none;
         }
 
@@ -613,7 +577,6 @@
             border-radius: 6px;
             font-size: 14px;
             font-weight: 600;
-            cursor: pointer;
             transition: all 0.2s;
         }
 
@@ -808,16 +771,8 @@
 
                 <div class="review-summary">
                     <div class="rating-overview">
-                        <div class="rating-score">
-                            5<span class="rating-max">/5</span>
-                        </div>
-                        <div class="stars-display">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
+                        <label class="rating-score">5<label class="rating-max">/5</label></label>
+                        <label class="stars-display">★★★★★</label>
                         <label class="rating-count">(8 đánh giá)</label>
                     </div>
 
@@ -859,10 +814,7 @@
                         </div>
                     </div>
 
-                    <button class="write-review-btn">
-                        <span>✏️</span>
-                        Viết đánh giá
-                    </button>
+                    <button class="write-review-btn">✏️ Viết đánh giá</button>
                 </div>
             </div>
 
@@ -876,90 +828,54 @@
             <div class="review-list">
                 <div class="review-item">
                     <div class="reviewer-info">
-                        <div class="reviewer-left">
-                            <div class="reviewer-name">Trang Min</div>
-                            <div class="review-date">05/06/2020</div>
-                        </div>
-                        <div class="review-stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
+                        <ul class="reviewer-left">
+                            <li class="reviewer-name">Trang Min</li>
+                            <li class="review-date">05/06/2020</li>
+                        </ul>
+                        <label class="stars-display">★★★★★</label>
                     </div>
-                    <div class="review-content">
+                    <p class="review-content">
                         Tôi đã khi nghĩ rằng mình sẽ hiểu, sẽ cảm tốt hơn về tình yêu trong Đỉnh gió hú khi đã trải qua những cung bậc của tình yêu sau 15 năm đọc lại. Không, dù có yêu, có rung cảm cả trăm lần nữa, thì những chuyện tình của Đỉnh gió hú vẫn chỉ khiến tôi dạy dứt khổng người... Cuốn truyện là một bức tranh u tối, âm đạm khiến tôi vô cùng mệt mỏi nhưng lại không thể dừng lại cho đến những dòng chữ cuối cùng. Lối viết hoang sơ, gai góc và đầy đam mê đã tạo ra sức quyền rũ mạnh liệt cho tác phẩm Đỉnh gió hú, đủ để đưa Emily Jane Bronte vào hàng ngũ những cây bút xuất sắc, dù cá cuộc...
                         <a href="#" class="show-more-link">Xem thêm</a>
-                    </div>
+                    </p>
                     <div class="review-actions">
-                        <button class="action-btn">
-                            <span class="action-icon">👍</span>
-                            Thích (0)
-                        </button>
-                        <button class="action-btn">
-                            <span class="action-icon">🚩</span>
-                            Báo cáo
-                        </button>
+                        <button class="action-btn">👍 Thích (0)</button>
+                        <button class="action-btn">🚩 Báo cáo</button>
                     </div>
                 </div>
 
                 <div class="review-item">
                     <div class="reviewer-info">
-                        <div class="reviewer-left">
-                            <div class="reviewer-name">Tiểu Mai</div>
-                            <div class="review-date">14/05/2020</div>
-                        </div>
-                        <div class="review-stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
+                        <ul class="reviewer-left">
+                            <li class="reviewer-name">Tiểu Mai</li>
+                            <li  class="review-date">14/05/2020</li>
+                        </ul>
+                        <label class="stars-display">★★★★★</label>
                     </div>
-                    <div class="review-content">
+                    <p class="review-content">
                         Ngòi bút của tác giả thật tài tình khi kéo ta đi qua từng cung bậc lúc nào chẳng hay, và ta cũng chẳng thể nào nhận ra được, và dù có nhận ra, thì ta cũng không thoát nổi vòng xoáy ác liệt, bao loan, đủ đời của con lốc tình cảm này. Tình yêu liều có lỗi làm gì là một câu hỏi hay. Bố ba trong Đỉnh gió...
                         <a href="#" class="show-more-link">Xem thêm</a>
-                    </div>
+                    </p>
                     <div class="review-actions">
-                        <button class="action-btn">
-                            <span class="action-icon">👍</span>
-                            Thích (0)
-                        </button>
-                        <button class="action-btn">
-                            <span class="action-icon">🚩</span>
-                            Báo cáo
-                        </button>
+                        <button class="action-btn">👍 Thích (0)</button>
+                        <button class="action-btn">🚩 Báo cáo</button>
                     </div>
                 </div>
 
                 <div class="review-item">
                     <div class="reviewer-info">
-                        <div class="reviewer-left">
-                            <div class="reviewer-name">Minh Anh</div>
-                            <div class="review-date">20/04/2020</div>
-                        </div>
-                        <div class="review-stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                        </div>
+                        <ul class="reviewer-left">
+                            <li  class="reviewer-name">Minh Anh</li>
+                            <li class="review-date">20/04/2020</li>
+                        </ul>
+                        <label class="stars-display">★★★★★</label>
                     </div>
-                    <div class="review-content">
+                    <p class="review-content">
                         Một cuốn sách tuyệt vời! Nội dung sâu sắc, cách viết cuốn hút. Tôi đã không thể rời mắt khỏi từng trang sách. Rất đáng để đọc và suy ngẫm.
-                    </div>
+                    </p>
                     <div class="review-actions">
-                        <button class="action-btn">
-                            <span class="action-icon">👍</span>
-                            Thích (0)
-                        </button>
-                        <button class="action-btn">
-                            <span class="action-icon">🚩</span>
-                            Báo cáo
-                        </button>
+                        <button class="action-btn">👍 Thích (0)</button>
+                        <button class="action-btn">🚩 Báo cáo</button>
                     </div>
                 </div>
             </div>
