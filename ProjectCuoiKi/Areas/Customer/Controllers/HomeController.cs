@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Media.Models;
 using System.Diagnostics;
 using Media.DataAccess.Repository.IRepository;
@@ -19,33 +19,24 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            IndexVM category_productlist = new()
-            {
-                categoryList = _unit.Category.GetAll().ToList(),
-                products = _unit.Product.GetAll(includeProperties: "Category")
-            };
-            return View(category_productlist);
-        }
-        public IActionResult Shop()
-        {
-            IEnumerable<Product> productList = _unit.Product.GetAll(includeProperties: "Category");
-            return View(productList);
-        }
-        public IActionResult Details(int id)
-        {
-            Product product = _unit.Product.Get(u => u.Id == id ,includeProperties: "Category");
-            return View(product);
-        }
-
-        public IActionResult Privacy()
-        {
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult SachBanNhieu() //Phải chỉnh để lấy sách có số lượng bán nhiều
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            IndexVM category_productlist = new()
+            {
+                DanhSachChuDe = _unit.ChuDes.GetAll(),
+                DanhSachSanPham = _unit.Saches.GetAll(includeProperties: "TacGia")
+            };
+
+            return View(category_productlist);
+        }
+
+        public IActionResult Details(int id)
+        {
+            Sach? product = _unit.Saches.Get(u => u.Id == id ,includeProperties: "ChuDe");
+            return View(product);
         }
     }
 }

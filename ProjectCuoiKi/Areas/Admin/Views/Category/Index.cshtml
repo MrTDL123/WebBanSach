@@ -1,6 +1,6 @@
-﻿@model List<Category>
+﻿@model List<ChuDe>
 
-
+@* 
 
 <div class="container">
     <div class="row pt-4 pb-3">
@@ -10,13 +10,13 @@
             </h2>
         </div>
         <div class="col-6 text-end">
-            <a asp-controller="Category" asp-action="Upsert" class="btn" id="add_button"> 
+            <a asp-controller="ChuDe" asp-action="Upsert" class="btn" id="add_button"> 
                 <i class="bi bi-plus-circle"></i> Tạo mới
             </a>
         </div>
     </div>
 </div>
-<table id="categoryTable" class="table table-bordered table-striped">
+<table id="ChuDeTable" class="table table-bordered table-striped">
     <thead>
     <tr>
         <th>
@@ -36,10 +36,10 @@
                 <td class="w-50">@obj.DisplayOrder</td>
                 <td class="align-items-center text-center">
                     <div class="btn-group" role="group">
-                        <a asp-controller="Category" asp-action="Upsert" asp-route-id="@obj.Id" class=" btn btn-primary mx-2" style="border-radius: 15px;height: 45px;">
+                        <a asp-controller="ChuDe" asp-action="Upsert" asp-route-id="@obj.Id" class=" btn btn-primary mx-2" style="border-radius: 15px;height: 45px;">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <a id="delete_button" onClick="Delete('/admin/category/delete/@obj.Id')" class="btn btn-danger mx-2" style="border-radius: 15px;height: 45px;">
+                        <a id="delete_button" onClick="Delete('/admin/ChuDe/delete/@obj.Id')" class="btn btn-danger mx-2" style="border-radius: 15px;height: 45px;">
                             <i class="bi bi-trash-fill"></i>
                         </a>
                     </div>
@@ -50,5 +50,5 @@
     </tbody>
 </table>
 @section Scripts{
-    <script src="~/js/category.js"></script>
-}
+    <script src="~/js/ChuDe.js"></script>
+} *@

@@ -9,8 +9,9 @@ namespace Media.DataAccess.Repository.IRepository
     public interface IUnitOfWork
     {
         //Add Table
-        ICategoryRepository Category { get; }
-        IProductRepository Product { get; }
+        IChuDeRepository ChuDes { get; }
+        ISachRepository Saches { get; }
+
         void Save();
     }
 }

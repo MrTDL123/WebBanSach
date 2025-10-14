@@ -9,7 +9,7 @@ namespace Media.Models.ViewModels
 {
     public class IndexVM
     {
-        public List<Category> categoryList { get; set; }
-        public IEnumerable<Product> products { get; set; }
+        public IEnumerable<ChuDe>? DanhSachChuDe { get; set; }
+        public IEnumerable<Sach>? DanhSachSanPham { get; set; }
     }
 }

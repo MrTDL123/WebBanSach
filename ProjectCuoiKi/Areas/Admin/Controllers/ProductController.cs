@@ -22,20 +22,20 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<Product> ProductList = _unit.Product.GetAll(includeProperties:"Category").ToList();
+            //List<Sach> ProductList = _unit.Product.GetAll(includeProperties:"Category").ToList();
 
-            return View(ProductList);
+            return View();
         }
         public IActionResult Upsert(int? id)
         {
             ProductVM productVM = new()
             {
-                Product = new Product(),
-                CategoryList = _unit.Category.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.Id.ToString()
-                })
+                Product = new Sach(),
+                //CategoryList = _unit.Category.GetAll().Select(u => new SelectListItem
+                //{
+                //    Text = u.TenChuDe,
+                //    Value = u.Id.ToString()
+                //})
             };
             if(id == null || id ==0)
             {
@@ -45,7 +45,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             else
             {
                 //Update
-                productVM.Product = _unit.Product.Get(u => u.Id == id);
+                productVM.Product = _unit.Saches.Get(u => u.Id == id);
                 return View(productVM);
             }
         }
@@ -77,12 +77,12 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 if (obj.Product.Id == 0)
                 {
                     //Tạo
-                     _unit.Product.Add(obj.Product);
+                     _unit.Saches.Add(obj.Product);
                 }
                 else
                 {
                     //Cập nhập
-                    _unit.Product.Update(obj.Product);
+                    _unit.Saches.Update(obj.Product);
                 }
                 _unit.Save();
                 TempData["success"] = "Đã thêm sản phẩm mới";
@@ -90,11 +90,11 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
             else
             {
-                obj.CategoryList = _unit.Category.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.Id.ToString()
-                });
+                //obj.CategoryList = _unit.Category.GetAll().Select(u => new SelectListItem
+                //{
+                //    Text = u.TenChuDe,
+                //    Value = u.Id.ToString()
+                //});
                 TempData["error"] = "Hãy kiểm tra lại các thông tin đã điền";
                 return View(obj);
             }
@@ -104,26 +104,26 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
         #region API CALLS
         [HttpGet]
-        public IActionResult GetAll()
-        {
-            List<Product> ProductList = _unit.Product.GetAll(includeProperties: "Category").ToList();
-            return Json(new { data = ProductList });//lấy API endpoint là trang Json để có thể lấy được dữ liệu
-        }
+        //public IActionResult GetAll()
+        //{
+        //    List<Sach> SachesList = _unit.Saches.GetAll(includeProperties: "Category").ToList();
+        //    return Json(new { data = SachesList });//lấy API endpoint là trang Json để có thể lấy được dữ liệu
+        //}
 
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var productToBeDeleted = _unit.Product.Get(u => u.Id == id);
-            if(productToBeDeleted == null)
+            var SachesToBeDeleted = _unit.Saches.Get(u => u.Id == id);
+            if(SachesToBeDeleted == null)
             {
                 return Json(new {success = false, message = "Không thể xóa sản phẩm không tồn tại"});
             }
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, productToBeDeleted.ImageUrl.TrimStart('\\'));
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, SachesToBeDeleted.ImageUrl.TrimStart('\\'));
             if (System.IO.File.Exists(oldImagePath))
             {
                 System.IO.File.Delete(oldImagePath);
             }
-            _unit.Product.Remove(productToBeDeleted);
+            _unit.Saches.Remove(SachesToBeDeleted);
             _unit.Save();
             return Json(new { success = true, message = "Xóa thành công" });
         }

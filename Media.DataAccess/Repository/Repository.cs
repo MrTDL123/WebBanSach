@@ -18,7 +18,7 @@ namespace Media.DataAccess.Repository
         {
             _db = db;
             this.dbSet = _db.Set<T>();
-            _db.Products.Include(u => u.Category).Include(u => u.CategoryId);
+            _db.Saches.Include(u => u.ChuDe).Include(u => u.ChuDeId);
         }
         public void Add(T entity)
         {
@@ -43,7 +43,7 @@ namespace Media.DataAccess.Repository
         public IEnumerable<T>? GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-            if(!string.IsNullOrEmpty(includeProperties))
+            if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach (var includeProp in includeProperties
                     .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
