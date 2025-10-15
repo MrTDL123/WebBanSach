@@ -1,0 +1,147 @@
+﻿<style>
+    .address-popup {
+        background: white;
+        border-radius: 8px;
+        width: 100%;
+        padding: 20px;
+        overflow: visible !important;
+    }
+
+    .address-popup .popup-title {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .address-popup .radio-group {
+        margin-bottom: 20px;
+    }
+
+    .address-popup .radio-option {
+        display: flex;
+        align-items: center;
+        padding: 12px 0;
+        cursor: pointer;
+    }
+
+    .radio-option .address {
+        margin-left: 15px;
+    }
+
+    .address-popup input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        margin-right: 12px;
+        /* cursor: pointer; */
+        accent-color: #e02020;
+    }
+
+    .address-popup .form-group {
+        margin-bottom: 18px;
+    }
+
+    .address-popup label {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .address-popup select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .address-popup option {
+        font-size: 15px;
+        padding: 6px;
+        font-weight: 500;
+    }
+
+    .address-popup .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .address-popup .btn {
+        padding: 12px 20px;
+        border-radius: 4px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .address-popup .btn-cancel {
+        background-color: #f5f5f5;
+        color: #666;
+    }
+
+    .address-popup .btn-cancel:hover {
+        background-color: #e0e0e0;
+    }
+
+    .address-popup .btn-confirm:not(.disabledbtn) {
+        background-color: #e02020;
+        color: white;
+    }
+
+    .address-popup .disabledbtn {
+        opacity: 0.6;
+        cursor: not-allowed;
+        color: #b3b3b3;
+        background-color: gray;
+    }
+
+    .address-popup .btn-confirm:hover:not(.disabledbtn) {
+        background-color: #c01818;
+    }
+</style>
+
+<div class="address-popup">
+    <h2 class="popup-title">Chọn địa chỉ giao hàng của bạn</h2>
+
+    <div class="radio-group">
+        <div class="radio-option">
+            <input type="radio" id="pickup" name="shipping" value="pickup" checked onchange="toggleDeliveryFields()">
+            <label for="pickup">Giao hàng đến <span class="address" id="addressDefaultText"> <strong>Phường Bến Nghé, Quận 1, Hồ Chí Minh</strong></span></label>
+        </div>
+        <div class="radio-option">
+            <input type="radio" id="delivery" name="shipping" value="delivery" onchange="toggleDeliveryFields()">
+            <label for="delivery">Giao hàng đến địa chỉ khác</label>
+        </div>
+    </div>
+
+    <div id="deliveryFields" style="display:none;">
+        <div class="form-group">
+            <label for="province">Tỉnh/Thành phố</label>
+            <select id="province" class="form-control">
+                <option value="">Chọn tỉnh/thành phố</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="district">Quận/Huyện</label>
+            <select id="district" class="form-control" disabled>
+                <option value="">Chọn quận/huyện</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="ward">Phường/Xã</label>
+            <select id="ward" class="form-control" disabled>
+                <option value="">Chọn phường/xã</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="btn btn-cancel" onclick="closeAddressPopup()">Hủy</button>
+        <button class="btn btn-confirm disabledbtn" id="confirmBtn" onclick="confirmAddress()">Xác nhận</button>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Media.Models;
 using System.Diagnostics;
 using Media.DataAccess.Repository.IRepository;
@@ -42,6 +42,16 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult ChangeAddressPartial()
+        {
+            return PartialView("_PopupThayDoiDiaChiGiaoHang");
+        }
+
+        public IActionResult ShopingCart()
+        {
+            return View();
         }
     }
 }

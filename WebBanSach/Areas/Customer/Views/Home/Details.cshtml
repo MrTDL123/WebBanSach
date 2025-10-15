@@ -302,6 +302,7 @@
         .promo-link {
             margin-left: 20px;
             color: #2489F4;
+            cursor: pointer;
         }
 
         .section-title {
@@ -584,11 +585,108 @@
             background: #C92127;
             color: white;
         }
+
+        /* Popup Overlay */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 5;
+            overflow: visible !important;
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Popup Modal */
+        .popup-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            border-radius: 8px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 85vh;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 5;
+            overflow: visible !important;
+        }
+
+        .popup-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        #popupTitle {
+            flex: 1; /* chiếm phần giữa */
+            text-align: center; /* căn giữa nội dung */
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .popup-spacer {
+            width: 40px; /* tạo khoảng trống = kích thước nút close */
+        }
+
+        .popup-close {
+            border: none;
+            background: none;
+            font-size: 36px;
+            cursor: pointer;
+            color: #999;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup-close:hover {
+            color: #333;
+            background: #f5f5f5;
+            border-radius: 50%;
+        }
+
+        /* Popup Body - SCROLL SÁT VIỀN PHẢI */
+        .popup-body {
+            padding: 25px; /* Padding đều 4 cạnh */
+            max-height: calc(85vh - 80px);
+            overflow-y: auto;
+        }
+
+        /* Scrollbar sát viền phải - QUAN TRỌNG */
+        .popup-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .popup-body::-webkit-scrollbar-track {
+            background: transparent; /* Trong suốt để sát viền */
+            margin: 0; /* Bỏ margin */
+        }
+
+        .popup-body::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border-radius: 4px;
+        }
+
+        .popup-body::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        .popup-hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="montserrat-regular">
-    @* <div class="container">
-    </div> *@
     <div class="product-wrapper">
         <!-- CỘT TRÁI - STICKY -->
         <div class="left-column">
@@ -608,17 +706,17 @@
             </div>
 
             <div class="policy-section">
-                <label class="policy-title">CHÍNH SÁCH ƯU ĐÃI</label>  @* nên sài thẻ p*@
-                <label class="policy-item">
-                    <span class="policy-text">🚚 <strong>Thời gian giao hàng: </strong>Giao nhanh và uy tín</span>
+                <h3 class="policy-title">CHÍNH SÁCH ƯU ĐÃI</h3>  @* nên sài thẻ p*@
+                <label class="policy-item" onclick="openPopup('shipping')">
+                    <span class="policy-text">🚚 <span id="policy-popup-shipping"><strong>Thời gian giao hàng</strong></span>: Giao nhanh và uy tín</span>
                     <span class="montserrat-bold"> ></span>
                 </label>
-                <label class="policy-item">
-                    <span class="policy-text">🔄 <strong>Chính sách đổi trả: </strong>Đổi trả miễn phí trong 7 ngày</span>
+                <label class="policy-item" onclick="openPopup('return')">
+                    <span class="policy-text">🔄 <span id="policy-popup-return"><strong>Chính sách đổi trả</strong></span>: Đổi trả miễn phí trong 7 ngày</span>
                     <span class="montserrat-bold"> ></span>
                 </label>
-                <label class="policy-item">
-                    <span class="policy-text">🎁 <strong>Chính sách khách sỉ: </strong>Ưu đãi khi mua số lượng lớn</span>
+                <label class="policy-item" onclick="openPopup('wholesale')">
+                    <span class="policy-text">🎁 <span id="policy-popup-wholesale"><strong>Chính sách khách sỉ</strong></span>: Ưu đãi khi mua số lượng lớn</span>
                     <span class="montserrat-bold"> ></span>
                 </label>
             </div>
@@ -638,34 +736,30 @@
                 </ul>
 
                 <div class="rating-section">
-                    @*Chỉ cần sử dụng 1 thẻ a không cần phải chia làm div và span*@
                     <a href="#" class="rating-link">★★★★★ (127 đánh giá)</a>
                     <span class="sold-count">| Đã bán 444</span>
                 </div>
 
                 <div class="price-section">
-                    @*Thay thẻ div thành thẻ p*@
                     <label class="price-main">129.000 đ</label>
                     <label class="price-original">200.000 đ</label>
                     <label class="discount-badge">-35%</label>
                 </div>
 
-                @*Thay thẻ div thành thẻ p*@
-                <label class="stock-status">✓ Còn hàng</label>
+                <p class="stock-status">✓ Còn hàng</p>
             </div>
 
             <!-- Ô THÔNG TIN VẬN CHUYỂN -->
             <div class="info-card">
-                @*Thay section-title thành thẻ h2 hoặc h3 gì đó*@
-                <label class="section-title">Thông tin vận chuyển</label>
+                <h3 class="section-title">Thông tin vận chuyển</h3>
                 <div class="delivery-info">
-                    <div class="delivery-item">
-                        <label class="delivery-label">📍Giao hàng đến <span class="delivery-value" style="font-weight:bold;">Phường Bến Nghé, Quận 1, Hồ Chí Minh</span></label>
-                        <a href="#" class="promo-link">Thay đổi</a>
+                    <div class="delivery-item address">
+                        <label class="delivery-label">📍Giao hàng đến <span class="delivery-value" id="currentAddressText" style="font-weight:bold;">Phường Bến Nghé, Quận 1, Hồ Chí Minh</span></label>
+                        <label id="openPopupChangeAddress" class="promo-link" onclick="openAddressPopup()">Thay đổi</label>
                     </div>
                     <div class="delivery-item standard">
                         <label class="delivery-label" style="font-weight:bold;">🚚 Giao hàng tiêu chuẩn </label>
-                        <span class="delivery-value" style="padding-left:25px;">Dự kiến giao Thứ hai - 06/10</span>
+                        <span class="delivery-value" id="deliveryEstimateText" style="padding-left:25px;">Dự kiến giao Thứ hai - 06/10</span>
                     </div>
                 </div>
 
@@ -700,7 +794,7 @@
 
             <!-- Ô THÔNG TIN CHI TIẾT -->
             <div class="info-card">
-                <label class="section-title">📋 Thông tin chi tiết</label>
+                <h3 class="section-title">📋 Thông tin chi tiết</h3>
                 <table class="info-table" style="width:100%;">
                     <tr>
                         <td>Mã hàng</td>
@@ -743,7 +837,7 @@
 
             <!-- Ô MÔ TẢ SẢN PHẨM -->
             <div class="info-card">
-                <label class="section-title">📖 Mô tả sản phẩm</label>
+                <h3 class="section-title">📖 Mô tả sản phẩm</h3>
                 <p class="description-content">
                     Cuốn sách "Những lá thư thời chiến Việt Nam" tập hợp nhiều bức thư xúc động
                     của những người lính, những người con xa quê trong thời kỳ kháng chiến.
@@ -887,7 +981,271 @@
         </div>
     </section>
 
+    <!-- Popup chính sách ưu đãi -->
+    <div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
+    <div id="popupModal" class="popup-modal">
+        <div class="popup-header">
+            <div class="popup-spacer"></div>
+            <span id="popupTitle">Thời gian giao hàng</span>
+            <button class="popup-close" onclick="closePopup()">×</button>
+        </div>
+        <div class="popup-body" id="popupContent"></div>
+    </div>
+
+    <!-- 🔹 Popup thay đổi địa chỉ giao hàng -->
+    <div id="addressPopupOverlay" class="popup-overlay" style="display:none;"></div>
+    <div id="addressPopupModal" class="popup-modal" style="display:none;">
+        <div class="popup-body" id="addressPopupContent">
+            <!-- Nội dung partial sẽ được load vào đây -->
+        </div>
+    </div>
+
+    <!-- Nội dung ẩn (PartialView load sẵn) -->
+    <div id="policy-shipping" class="popup-hidden">
+        @Html.Partial("_PopupThoiGianGiaoHang")
+    </div>
+    <div id="policy-return" class="popup-hidden">
+        @Html.Partial("_PopupChinhSachDoiTra")
+    </div>
+    <div id="policy-wholesale" class="popup-hidden">
+        @Html.Partial("_PopupChinhSachKhachSi")
+    </div>
     <script>
+        var API_BASE = 'https://provinces.open-api.vn/api';
+        var SHOP_PROVINCE_CODE = 79;
+
+        // Hàm mở popup (gọi partial, chèn HTML rồi init)
+        function openAddressPopup() {
+            var url = '@Url.Action("ChangeAddressPartial", "Home", new { area = "Customer" })';
+            $.get(url, function (data) {
+                $('#addressPopupContent').html(data);
+
+                // KHỞI TẠO sau khi partial đã chèn xong
+                initAddressPopup();
+
+                $('#addressPopupOverlay, #addressPopupModal').fadeIn(200);
+            });
+        }
+
+        function initAddressPopup() {
+            // lấy lại các phần tử (phải lấy sau khi partial được chèn)
+            const provinceSelect = document.getElementById('province');
+            const districtSelect = document.getElementById('district');
+            const wardSelect = document.getElementById('ward');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const pickupRadio = document.getElementById('pickup');
+            const deliveryRadio = document.getElementById('delivery');
+            const deliveryFields = document.getElementById('deliveryFields');
+
+            if (!provinceSelect || !districtSelect || !wardSelect || !confirmBtn) {
+                console.error('initAddressPopup: thiếu element (kiểm tra id province/district/ward/confirmBtn)');
+                return;
+            }
+
+            // reset selects mỗi lần init (tránh giữ giá trị cũ)
+            provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành</option>';
+            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+            districtSelect.disabled = true;
+            wardSelect.disabled = true;
+
+            // gán sự kiện (ghi đè handler cũ để không nhân đôi)
+            provinceSelect.onchange = onProvinceChange;
+            districtSelect.onchange = onDistrictChange;
+            wardSelect.onchange = checkValidInputs;
+            pickupRadio.onchange = deliveryRadio.onchange = onShippingToggle;
+            confirmBtn.onclick = onConfirmClick;
+
+            // luôn load provinces mỗi lần popup mở (ổn định)
+            loadProvinces();
+
+            // disable confirm ban đầu (nếu muốn pickup chọn được ngay)
+            if (pickupRadio && pickupRadio.checked) enableConfirm();
+            else disableConfirm();
+
+            // ---- function definitions ----
+            function loadProvinces() {
+                fetch(`${API_BASE}/p/`)
+                    .then(r => {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        // fill provinces
+                        provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành</option>';
+                        data.forEach(p => {
+                            const opt = document.createElement('option');
+                            opt.value = p.code;
+                            opt.textContent = p.name;
+                            provinceSelect.appendChild(opt);
+                        });
+                        provinceSelect.disabled = false;
+                    })
+                    .catch(err => {
+                        // console.error('không thể tải danh sách tỉnh:', err);
+                        provinceselect.innerhtml = '<option value="">không thể tải tỉnh</option>';
+                    });
+            }
+
+            function onProvinceChange() {
+                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = true;
+
+                if (!this.value) {
+                    districtSelect.disabled = true;
+                    checkValidInputs();
+                    return;
+                }
+
+                districtSelect.disabled = true;
+                fetch(`${API_BASE}/p/${this.value}?depth=2`)
+                    .then(r => {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        (data.districts || []).forEach(d => {
+                            const opt = document.createElement('option');
+                            opt.value = d.code;
+                            opt.textContent = d.name;
+                            districtSelect.appendChild(opt);
+                        });
+                        districtSelect.disabled = false;
+                        checkValidInputs();
+                    })
+                    .catch(err => {
+                        console.error('Lỗi load quận/huyện:', err);
+                    });
+            }
+
+            function onDistrictChange() {
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                if (!this.value) {
+                    wardSelect.disabled = true;
+                    checkValidInputs();
+                    return;
+                }
+
+                wardSelect.disabled = true;
+                fetch(`${API_BASE}/d/${this.value}?depth=2`)
+                    .then(r => {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        (data.wards || []).forEach(w => {
+                            const opt = document.createElement('option');
+                            opt.value = w.code;
+                            opt.textContent = w.name;
+                            wardSelect.appendChild(opt);
+                        });
+                        wardSelect.disabled = false;
+                        checkValidInputs();
+                    })
+                    .catch(err => {
+                        console.error('Lỗi load phường/xã:', err);
+                    });
+            }
+
+            function onShippingToggle() {
+                const deliveryChecked = deliveryRadio.checked;
+                deliveryFields.style.display = deliveryChecked ? 'block' : 'none';
+                if (!deliveryChecked) {
+                    // reset selects khi quay lại pickup (tuỳ bạn)
+                    provinceSelect.value = "";
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    districtSelect.disabled = true;
+                    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                    wardSelect.disabled = true;
+                    enableConfirm();
+                } else {
+                    disableConfirm();
+                }
+            }
+
+            function onConfirmClick() {
+                if (confirmBtn.disabled) return;
+
+                const isDelivery = deliveryRadio.checked;
+                let finalAddressText = '';
+
+                if (!isDelivery) {
+                    finalAddressText = document.getElementById('addressDefaultText')?.innerText.trim() || '';
+                } else {
+                    const provName = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+                    const distName = districtSelect.options[districtSelect.selectedIndex]?.text || '';
+                    const wardName = wardSelect.options[wardSelect.selectedIndex]?.text || '';
+                    finalAddressText = `${wardName}, ${distName}, ${provName}`;
+                }
+
+                const addressElem = document.getElementById('currentAddressText');
+                const addressElemForPopup = document.getElementById('addressDefaultText');
+                if (addressElem) addressElem.innerHTML = finalAddressText;
+                if (addressElemForPopup) addressElemForPopup.innerHTML = finalAddressText;
+
+                const estimatedDays = (!isDelivery) ? 2 : (Number(provinceSelect.value) === SHOP_PROVINCE_CODE ? 2 : 4);
+                const estimateText = formatEstimatedDate(estimatedDays);
+                const elemEstimate = document.getElementById('deliveryEstimateText');
+                if (elemEstimate) elemEstimate.innerHTML = `Dự kiến giao <strong>${estimateText}</strong>`;
+
+                $('#addressPopupOverlay, #addressPopupModal').fadeOut(200);
+            }
+
+            function checkValidInputs() {
+                const deliveryChecked = document.getElementById('delivery').checked;
+                if (!deliveryChecked) { enableConfirm(); return; }
+                if (provinceSelect.value && districtSelect.value && wardSelect.value) enableConfirm();
+                else disableConfirm();
+            }
+
+            function enableConfirm() {
+                confirmBtn.classList.remove('disabledbtn');
+                confirmBtn.disabled = false;
+            }
+            function disableConfirm() {
+                confirmBtn.classList.add('disabledbtn');
+                confirmBtn.disabled = true;
+            }
+
+            function formatEstimatedDate(daysToAdd) {
+                const weekdayVN = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+                const now = new Date();
+                const est = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToAdd);
+                const weekday = weekdayVN[est.getDay()];
+                const dd = String(est.getDate()).padStart(2, '0');
+                const mm = String(est.getMonth() + 1).padStart(2, '0');
+                return `${weekday} - ${dd}/${mm}`;
+            }
+            // ---- end helper functions ----
+        }
+
+        // đóng popup khi click overlay
+        function closeAddressPopup() {
+            $('#addressPopupOverlay, #addressPopupModal').fadeOut(200);
+        }
+        $(document).on('click', '#addressPopupOverlay', function (e) {
+            if (e.target.id === 'addressPopupOverlay') closeAddressPopup();
+        });
+
+        function openPopup(key) {
+          const content = document.getElementById("policy-" + key);
+          if (!content) return;
+
+          const titleElement = document.getElementById("policy-popup-" + key);
+          if (titleElement) document.getElementById("popupTitle").innerHTML = titleElement.innerHTML;
+
+          
+          document.getElementById("popupContent").innerHTML = content.innerHTML;
+          document.getElementById("popupOverlay").style.display = "block";
+          document.getElementById("popupModal").style.display = "block";
+        }
+
+        function closePopup() {
+          document.getElementById("popupOverlay").style.display = "none";
+          document.getElementById("popupModal").style.display = "none";
+        }
+
         // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {

@@ -22,8 +22,9 @@
 <body>
 
     <header>
-        <div id="top_header">
-            @*Top header left*@
+        
+        <div id="top_header" style="z-index:1;">
+            <!-- Top header left -->
 
             <!-- Form tìm kiếm -->
             <form action="/" method="post" id="search_box">
@@ -38,8 +39,9 @@
             <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
         </div>
         <hr>
+       
 
-        <div id="bottom_header">
+        <div id="bottom_header" style="z-index:1;">
             <!-- Logo và tên -->
             <div id="bottom_header_left">
                 <a asp-area="Customer" asp-controller="Home" asp-action="Index">
