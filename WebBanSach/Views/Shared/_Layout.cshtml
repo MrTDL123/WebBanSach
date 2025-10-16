@@ -3,19 +3,23 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ProjectCuoiKi</title>
+    <title>@ViewData["Title"] - WebBanSach</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="~/ProjectCuoiKi.styles.css" /> 
-    <link rel="stylesheet" href="~/css/layout.css" />
     <link rel="shortcut icon" type="image/x-icon" href="~/img/web_img/logo.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
-    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css" />
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/main.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
+    </environment>
+
+    <link rel="stylesheet" href="~/WebBanSach.styles.css" asp-append-version="true" />
     @RenderSection("PageStyles", required: false)
 </head>
 
@@ -24,30 +28,28 @@
     <header>
         <div id="top_header">
             @*Top header left*@
+            <!-- Logo và tên -->
+            <a asp-area="Customer" asp-controller="Home" asp-action="Index">
+                <img id="logo" src="~/img/web_img/logo.png" alt="Logo">
+            </a>
+
 
             <!-- Form tìm kiếm -->
             <form action="/" method="post" id="search_box">
-                <button type="button" id="search_button"><i class="bi bi-search"></i></button>
+                <button type="button" id="search_button" style="color: #0ce682;"><i class="bi bi-search"></i></button>
                 <input type="text" id="search_bar" placeholder="Bạn muôn tìm gì?" />
             </form>
 
-            <!-- Đăng nhập -->
-            <partial name="_LoginPartial" />
+            <div id="top_header_right">
+                <!-- Đăng nhập -->
+                <partial name="_LoginPartial" />
 
-            <!-- Giỏ hàng -->
-            <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
+                <!-- Giỏ hàng -->
+                <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
+            </div>
         </div>
-        <hr>
 
         <div id="bottom_header">
-            <!-- Logo và tên -->
-            <div id="bottom_header_left">
-                <a asp-area="Customer" asp-controller="Home" asp-action="Index">
-                    <img id="logo" src="~/img/web_img/logo.png" alt="Logo">
-                </a>
-                <p class="montserrat-bold">Cửa hàng sách điện tử</p>
-            </div>
-
             <!-- Nav items -->
             <ul id="bottom_header_right">
                 @if (User.IsInRole(SD.Role_Admin))
@@ -120,7 +122,7 @@
             </ul>
         </div>
         <div>
-            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#">Trần Duy Long</a></p>
+            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#" style="color: #0ce682;">Trần Duy Long</a></p>
         </div>
     </footer>
 

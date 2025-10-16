@@ -1,0 +1,14 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+/*Components*/
+@import 'components/font.css';
+@import 'components/book.css';
+/*Layout*/
+@import 'layout/layout.css';
+/*Pages*/
+@import 'pages/detail.css';
+@import 'pages/index.css';

@@ -3,17 +3,16 @@ using Media.Models;
 using System.Diagnostics;
 using Media.DataAccess.Repository.IRepository;
 using Media.Models.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace ProjectCuoiKi.Areas.Customer.Controllers
 {
     [Area("Customer")]
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unit;
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unit)
+        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit)
         {
-            _logger = logger;
             _unit = unit;
         }
 
@@ -24,13 +23,14 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         public IActionResult SachBanNhieu() //Phải chỉnh để lấy sách có số lượng bán nhiều
         {
-            IndexVM category_productlist = new()
-            {
-                DanhSachChuDe = _unit.ChuDes.GetAll(),
-                DanhSachSanPham = _unit.Saches.GetAll(includeProperties: "TacGia")
-            };
+            //IndexVM category_productlist = new()
+            //{
+            //    DanhSachChuDe = _unit.ChuDes.GetAll(),
+            //    DanhSachSanPham = _unit.Saches.GetAll(includeProperties: "TacGia")
+            //};
 
-            return View(category_productlist);
+            //return View(category_productlist);
+            return View();
         }
 
         public IActionResult Details(int id)

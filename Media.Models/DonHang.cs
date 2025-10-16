@@ -45,11 +45,11 @@ namespace Media.Models
 
         //NAVIGATION PROPERTIES
         public int KhachHangId { get; set; }
-        public int ChiTietDonHangId { get; set; }
 
         [ForeignKey("KhachHangId")]
-        public TaiKhoan KhachHang { get; set; }
-        [ForeignKey("ChiTietDonHangId")]
-        public ChiTietDonHang ChiTietDonHang { get; set; }
+        public KhachHang KhachHang { get; set; }
+
+        public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+
     }
 }

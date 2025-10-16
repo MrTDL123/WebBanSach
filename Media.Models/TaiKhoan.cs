@@ -12,6 +12,6 @@ namespace Media.Models
     //Class này chỉ phục vụ thao tác đăng nhập, đăng ký
     public class TaiKhoan : IdentityUser //Vì IdentityUser thiếu các cột cần thiết nên ta sẽ implement nó qua KhachHang
     {
-        public virtual KhachHang KhachHang { get; set; } 
+        public KhachHang KhachHang { get; set; } 
     }
 }

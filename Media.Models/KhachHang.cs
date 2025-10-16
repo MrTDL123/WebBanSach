@@ -20,13 +20,10 @@ namespace Media.Models
 
 
         //NAVIGATION PROPERTIES
-        public int DonHangId { get; set; }
         public string TaiKhoanId { get; set; }
         [ForeignKey("TaiKhoanId")]
         public TaiKhoan TaiKhoan { get; set; }
 
-        [ForeignKey("DonHangId")]
-        public DonHang DonHang { get; set; }
-
+        public ICollection<DonHang> DonHangs { get; set; }
     }
 }

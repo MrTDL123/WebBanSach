@@ -18,7 +18,7 @@ namespace Media.Models
 
         //NAVIGATION PROPERTIES
         public int SachId { get; set; }
-        public int DonHangId { get; set; }
+        public int DonHangId { get; set; }  
 
         [ForeignKey("SachId")]
         public Sach Sach { get; set; }
