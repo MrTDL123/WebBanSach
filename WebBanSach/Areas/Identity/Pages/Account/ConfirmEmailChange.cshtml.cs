@@ -5,20 +5,21 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Media.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace ProjectCuoiKi.Areas.Identity.Pages.Account
+namespace WebBanSach.Areas.Identity.Pages.Account
 {
     public class ConfirmEmailChangeModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<TaiKhoan> _signInManager;
 
-        public ConfirmEmailChangeModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public ConfirmEmailChangeModel(UserManager<IdentityUser> userManager, SignInManager<TaiKhoan> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -61,7 +62,7 @@ namespace ProjectCuoiKi.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync((TaiKhoan)user);
             StatusMessage = "Thank you for confirming your email change.";
             return Page();
         }

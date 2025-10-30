@@ -8,14 +8,13 @@
             background-repeat: no-repeat;
             background-position: center;
             height: 100vh;
-            width: 100vw;
         }
     </style>
 }
 
 @section SliderMenu {
-    <div id="slide_container" class="">
-        <section id="slide1" class="hide">
+    <div id="slide_container">
+        <section class="slide" id="slide1">
             <div id="content_slide1">
                 <div id="slogan_slide1_1">
                     <p id="line1_slide1" class="montserrat-bold">Khuyến mãi to,</p>
@@ -38,7 +37,7 @@
             </div>
         </section>
 
-        <section id="slide2" class="hide">
+        <section class="slide" id="slide2">
             <div id="calendar_graph" class="item_container">
                 <img id="graph" class="item" src="~/img/web_img/slider-1-2_icon-1.png" alt="graph" />
                 <img id="calendar" class="item" src="~/img/web_img/slider-1-2_icon-11.png" alt="calendar" />
@@ -85,8 +84,8 @@
 
         </section>
 
-        <section id="slide3" class="">
-            <div id="clouds">
+        <section class="slide" id="slide3">
+             <div id="clouds">
                 <img id="big_cloud" src="img/web_img/5.png" alt="cloud_background">
 
                 <div id="small_clouds" class="">
@@ -121,97 +120,75 @@
             </div>
 
         </section>
-
-        <div id="btn_slide_container" class="">
-            <div id="btn_slideleft">
-                <i class="bi bi-caret-left-square-fill"></i>
-            </div>
-            <div id="btn_slideright">
-                <i class="bi bi-caret-right-square-fill"></i>
-            </div>
-        </div>
     </div>
 
+    <div id="btn_slide_container">
+        <div id="btn_slideleft">
+            <i class="bi bi-caret-left-square-fill" style="color: #ffffff;"></i>
+        </div>
+        <div id="btn_slideright">
+            <i class="bi bi-caret-right-square-fill" style="color: #ffffff;"></i>
+        </div>
+    </div>
 }
-@*BEST SELLER*@
+                                         @*BEST SELLER*@
 <div id="bestseller_container" class="d-flex justify-content-center align-items-center flex-column">
     <p id="bestseller_title" class="text-dark">Books Bestsellers</p>
 
-    <div id="bestseller_category" class="d-flex justify-content-center align-items-center gap-5">
-        @foreach (var obj in Model.categoryList)
-        {
-            <p id="category">@obj.Name</p>
-        }
-        <ul class="navbar-nav flex-grow-1 float-end" id="product_order" style="margin-top: 16px;">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Sắp xếp theo:
-                </a>
-                <ul class="dropdown-menu">
-                    <li class="nav-item">
-                        <a class="dropdown-item">A &rarr; Z </a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li class="nav-item">
-                        <a class="dropdown-item">Giá tăng dần</a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li class="nav-item">
-                        <a class="dropdown-item">Giá giảm dần</a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li class="nav-item">
-                        <a class="dropdown-item">Sách mới nhất</a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li class="nav-item">
-                        <a class="dropdown-item">Sách cũ nhất</a>
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                </ul>
-            </li>
-        </ul>
+<section id="sach_ban_nhieu_container">
+    <div id="flash_sell">
+        <img src="~/img/web_img/flash-sale.png" alt="Flash Sell Icon" />
+        <p class="montserrat-bold">Sự kiện sẽ kết thúc sau: </p>
+        <div id="countdown">
+            <div class="time-block">
+                <span id="days">0</span>
+            </div>
+            <div class="time-block">
+                <span id="hours">0</span>
+            </div>
+            <div class="time-block">
+                <span id="minutes">0</span>
+            </div>
+            <div class="time-block">
+                <span id="seconds">0</span>
+            </div>
+        </div>
     </div>
-
-    <div class="cacsanpham" style="width: 90%; flex-wrap: unset;">
-        @foreach (var product in Model.products.Take(5))
+    <div class="books">
+        @for (int i = 0; i < 5; i++)
         {
-            <div class="sach" count_book_quantity="1" sum_cost="50.000 VND">
-                <div class="sach_img" id="hover_for_img_product">
-                    <img src="@product.ImageUrl" alt="Ảnh sách" class="card-img-top rounded" style="max-width:220px; height:300px" />
-                    <div class="hover_img_product d-flex justify-content-center align-items-center">
-                        <ul class="d-flex justify-content-center align-items-center">
+            <div class="book">
+                <div class="book_img">
+                    <img src="~/img/product/con-nghi-di.jpg" alt="Ảnh sách" />
+                    <div class="book_img_hover">
+                        <ul class="book_icon_container">
                             <li>
-                                <a asp-action="Details" asp-route-id="@product.Id" class="icon_product eye d-flex justify-content-center align-items-center">
+                                <a href="" class="direct_detail_icon book_icon">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="icon_product icon_cart d-flex justify-content-center align-items-center">
+                                <a href="" class="direct_cart_icon book_icon">
                                     <i class="bi bi-cart-fill"></i>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </div>
-
-                <div class="sach_text">
-                    <p id="author_name">@product.Author</p>
-                    <p id="price">@product.ListPrice.ToString("c")</p>
-                    <p id="state">In stock</p>
-                </div>
+                <p class="ten_sach montserrat-regular">Trần Duy Long</p>
+                <p class="ten_tacgia montserrat-bold">Trần Duy Long</p>
             </div>
         }
     </div>
 </div>
-@*--POPULAR AUTHOR--*@
+                                        @*--POPULAR AUTHOR--*@
 <div id="popular_author" class="d-flex flex-column justify-content-center align-items-center d-inline-block">
     <h4>Popular Authors & Series</h4>
     <p>We are online store selling books, our store stocks over 500 thousand great books and digital items. We are</p>
     <p>a perfect place for those looking for the best books, audio books, textbooks and videos.</p>
     <input type="submit" value="SEE MORE AUTHORS">
 </div>
-@*--OUR SERVICE--*@
+                                          @*--OUR SERVICE--*@
 <div id="ourservice" class="d-flex justify-content-center align-items-center flex-column">
     <div id="title">
         <p>Our Services</p>
@@ -245,7 +222,7 @@
         </div>
     </div>
 </div>
-@*--NẠP VIP--*@
+                                            @*--NẠP VIP--*@
 <div class="napvip d-flex justify-content-center align-items-center flex-column">
     <p id="napvip_title">Gift & Prepaid Cards</p>
     <div class="vip_level d-flex flex-row">
@@ -297,3 +274,5 @@
         </div>
     </div>
 </div>
+
+             

@@ -6,47 +6,72 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using PagedList;
+using System.Text;
 
 namespace ProjectCuoiKi.Areas.Customer.Controllers
 {
     [Area("Customer")]
     public class HomeController : Controller
     {
-        private readonly LocationService _locationService;
-        private readonly ILogger<HomeController> _logger;
         private readonly IUnitOfWork _unit;
         public HomeController(ILogger<HomeController> logger, IUnitOfWork unit, LocationService locationService)
+        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit)
         {
-            _logger = logger;
             _unit = unit;
             _locationService = locationService;
         }
 
         public IActionResult Index()
         {
-            IndexVM category_productlist = new()
-            {
-                categoryList = _unit.Category.GetAll().ToList(),
-                products = _unit.Product.GetAll(includeProperties: "Category")
-            };
-            return View(category_productlist);
+            return View();
+        }
+
+        public IActionResult SachBanNhieu() //Phải chỉnh để lấy sách có số lượng bán nhiều
+        {
+            //IndexVM category_productlist = new()
+            //{
+            //    DanhSachChuDe = _unit.ChuDes.GetAll(),
+            //    DanhSachSanPham = _unit.Saches.GetAll(includeProperties: "TacGia")
+            //};
+
+            //return View(category_productlist);
+            return View();
         }
 
         public IActionResult Details(int id)
         {
-            Product product = _unit.Product.Get(u => u.Id == id ,includeProperties: "Category");
+            Sach? product = _unit.Saches.Get(u => u.MaSach == id ,includeProperties: "ChuDe");
             return View(product);
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> SachTheoChuDe(int id, int? page)
         {
-            return View();
-        }
+            int pageNumber = page ?? 1; 
+            List<Sach> list = await _unit.Saches.LaySachTheoChuDe(id);
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+            ViewBag.Url = LayURL(id, new List<string>());
+            return View(list.ToPagedList(pageNumber, 20));
+        }
+         
+        private string LayURL(int? maCD, List<string> url)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ChuDe selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == maCD);
+
+            if(selectedChuDe.ParentId is not null)
+            {
+                LayURL(selectedChuDe.ParentId, url);
+            }
+            else
+            {
+                url.Add("Trang chủ");
+            }
+
+            url.Add(" > "  + selectedChuDe.TenChuDe);
+
+            return String.Join("", url);
         }
 
         public async Task<IActionResult> ChangeAddressPartial()

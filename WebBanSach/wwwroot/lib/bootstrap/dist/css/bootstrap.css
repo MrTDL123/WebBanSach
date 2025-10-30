@@ -297,12 +297,12 @@ dl {
     margin-bottom: 1rem;
 }
 
-ol ol,
-ul ul,
-ol ul,
-ul ol {
-    margin-bottom: 0;
-}
+    ol ol,
+    ul ul,
+    ol ul,
+    ul ol {
+        margin-bottom: 0;
+    }
 
 dt {
     font-weight: 600;
@@ -378,11 +378,11 @@ pre {
     font-size: 0.875em;
 }
 
-pre code {
-    font-size: inherit;
-    color: inherit;
-    word-break: normal;
-}
+    pre code {
+        font-size: inherit;
+        color: inherit;
+        word-break: normal;
+    }
 
 code {
     font-size: 0.875em;
@@ -401,10 +401,10 @@ kbd {
     background-color: var(--bs-body-color);
 }
 
-kbd kbd {
-    padding: 0;
-    font-size: 1em;
-}
+    kbd kbd {
+        padding: 0;
+        font-size: 1em;
+    }
 
 figure {
     margin: 0 0 1rem;
@@ -451,9 +451,9 @@ button {
     border-radius: 0;
 }
 
-button:focus:not(:focus-visible) {
-    outline: 0;
-}
+    button:focus:not(:focus-visible) {
+        outline: 0;
+    }
 
 input,
 button,
@@ -479,9 +479,9 @@ select {
     word-wrap: normal;
 }
 
-select:disabled {
-    opacity: 1;
-}
+    select:disabled {
+        opacity: 1;
+    }
 
 [list]:not([type=date]):not([type=datetime-local]):not([type=month]):not([type=week]):not([type=time])::-webkit-calendar-picker-indicator {
     display: none !important;
@@ -719,7 +719,7 @@ progress {
 }
 
     .blockquote-footer::before {
-        content: "â€”Â ";
+        content: "— ";
     }
 
 .img-fluid {
@@ -4087,26 +4087,26 @@ textarea.form-control-lg {
     vertical-align: middle;
 }
 
-.btn-group > .btn,
-.btn-group-vertical > .btn {
-    position: relative;
-    flex: 1 1 auto;
-}
+    .btn-group > .btn,
+    .btn-group-vertical > .btn {
+        position: relative;
+        flex: 1 1 auto;
+    }
 
-.btn-group > .btn-check:checked + .btn,
-.btn-group > .btn-check:focus + .btn,
-.btn-group > .btn:hover,
-.btn-group > .btn:focus,
-.btn-group > .btn:active,
-.btn-group > .btn.active,
-.btn-group-vertical > .btn-check:checked + .btn,
-.btn-group-vertical > .btn-check:focus + .btn,
-.btn-group-vertical > .btn:hover,
-.btn-group-vertical > .btn:focus,
-.btn-group-vertical > .btn:active,
-.btn-group-vertical > .btn.active {
-    z-index: 1;
-}
+        .btn-group > .btn-check:checked + .btn,
+        .btn-group > .btn-check:focus + .btn,
+        .btn-group > .btn:hover,
+        .btn-group > .btn:focus,
+        .btn-group > .btn:active,
+        .btn-group > .btn.active,
+        .btn-group-vertical > .btn-check:checked + .btn,
+        .btn-group-vertical > .btn-check:focus + .btn,
+        .btn-group-vertical > .btn:hover,
+        .btn-group-vertical > .btn:focus,
+        .btn-group-vertical > .btn:active,
+        .btn-group-vertical > .btn.active {
+            z-index: 1;
+        }
 
 .btn-toolbar {
     display: flex;
@@ -4114,9 +4114,9 @@ textarea.form-control-lg {
     justify-content: flex-start;
 }
 
-.btn-toolbar .input-group {
-    width: auto;
-}
+    .btn-toolbar .input-group {
+        width: auto;
+    }
 
 .btn-group > :not(.btn-check:first-child) + .btn,
 .btn-group > .btn-group:not(:first-child) {
@@ -4152,15 +4152,15 @@ textarea.form-control-lg {
     justify-content: center;
 }
 
-.btn-group-vertical > .btn,
-.btn-group-vertical > .btn-group {
-    width: 100%;
-}
-
-    .btn-group-vertical > .btn:not(:first-child),
-    .btn-group-vertical > .btn-group:not(:first-child) {
-        margin-top: calc(0 * -1);
+    .btn-group-vertical > .btn,
+    .btn-group-vertical > .btn-group {
+        width: 100%;
     }
+
+        .btn-group-vertical > .btn:not(:first-child),
+        .btn-group-vertical > .btn-group:not(:first-child) {
+            margin-top: calc(0 * -1);
+        }
 
 .nav {
     --bs-nav-link-padding-x: 1rem;
@@ -4217,26 +4217,26 @@ textarea.form-control-lg {
     border-bottom: var(--bs-nav-tabs-border-width) solid var(--bs-nav-tabs-border-color);
 }
 
-.nav-tabs .nav-link {
-    margin-bottom: calc(-1 * var(--bs-nav-tabs-border-width));
-    border: var(--bs-nav-tabs-border-width) solid transparent;
-}
+    .nav-tabs .nav-link {
+        margin-bottom: calc(-1 * var(--bs-nav-tabs-border-width));
+        border: var(--bs-nav-tabs-border-width) solid transparent;
+    }
 
-.nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
-    isolation: isolate;
-    border-color: var(--bs-nav-tabs-link-hover-border-color);
-}
+        .nav-tabs .nav-link:hover, .nav-tabs .nav-link:focus {
+            isolation: isolate;
+            border-color: var(--bs-nav-tabs-link-hover-border-color);
+        }
 
-.nav-tabs .nav-link.active,
-.nav-tabs .nav-item.show .nav-link {
-    color: var(--bs-nav-tabs-link-active-color);
-    background-color: var(--bs-nav-tabs-link-active-bg);
-    border-color: var(--bs-nav-tabs-link-active-border-color);
-}
+        .nav-tabs .nav-link.active,
+        .nav-tabs .nav-item.show .nav-link {
+            color: var(--bs-nav-tabs-link-active-color);
+            background-color: var(--bs-nav-tabs-link-active-bg);
+            border-color: var(--bs-nav-tabs-link-active-border-color);
+        }
 
-.nav-tabs .dropdown-menu {
-    margin-top: calc(-1 * var(--bs-nav-tabs-border-width));
-}
+    .nav-tabs .dropdown-menu {
+        margin-top: calc(-1 * var(--bs-nav-tabs-border-width));
+    }
 
 .nav-pills {
     --bs-nav-pills-border-radius: var(--bs-border-radius);
@@ -4245,11 +4245,12 @@ textarea.form-control-lg {
 }
 
 
-.nav-pills .nav-link.active,
-.nav-pills .show > .nav-link {
-    color: var(--bs-nav-pills-link-active-color);
-    background-color: var(--bs-nav-pills-link-active-bg);
-}
+    .nav-pills .nav-link.active,
+    .nav-pills .show > .nav-link {
+        color: var(--bs-nav-pills-link-active-color);
+        background-color: var(--bs-nav-pills-link-active-bg);
+    }
+
 .nav-underline {
     --bs-nav-underline-gap: 1rem;
     --bs-nav-underline-border-width: 0.125rem;
@@ -4287,10 +4288,10 @@ textarea.form-control-lg {
     text-align: center;
 }
 
-.nav-fill .nav-item .nav-link,
-.nav-justified .nav-item .nav-link {
-    width: 100%;
-}
+    .nav-fill .nav-item .nav-link,
+    .nav-justified .nav-item .nav-link {
+        width: 100%;
+    }
 
 .tab-content > .tab-pane {
     display: none;
@@ -4370,7 +4371,7 @@ textarea.form-control-lg {
     list-style: none;
 }
 
-/*    .navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
+    /*    .navbar-nav .nav-link.active, .navbar-nav .nav-link.show {
         color: var(--bs-navbar-active-color);
     }*/
 

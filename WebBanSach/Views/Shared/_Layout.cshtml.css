@@ -1,9 +1,5 @@
 ﻿
-                                            /*--CỐ ĐỊNH HEADER--*/
-* {
-    color: #0ce682;
-}
-
+/*--CỐ ĐỊNH HEADER--*/
 #co_dinh_header{
     z-index: 1000;
 }
@@ -104,54 +100,4 @@ button.accept-policy {
 }
 
 
-                                                        /*FOOTER*/
-footer {
-    width: 100%;
-    white-space: nowrap;
-    line-height: 70px;
-    background-color: #041721;
-}
-
-footer p {
-    color: white;
-}
-
-#logo_footer p {
-    font-weight: 900;
-}
-
-#social_media ul li a {
-    margin-left: 20px;
-    color: white;
-    text-decoration: none;
-    text-align: center;
-    font-size: 20px;
-    height: 50px;
-    width: 50px;
-    line-height: 50px;
-    background-color: #041721;
-    display: block;
-    border-radius: 8px;
-}
-
-#social_media ul li a.fb {
-    background-color: #3b5999;
-}
-
-#social_media ul li a.yt {
-    background-color: #cd201f;
-}
-
-#social_media ul li a.x {
-    background-color: #14171a;
-}
-
-#social_media ul li a.ins {
-    background-color: #e4405f;
-}
-
-#social_media ul li a.github {
-    background-color: #171515;
-}
-
-                                                    
+                             

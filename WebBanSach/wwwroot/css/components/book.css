@@ -1,0 +1,96 @@
+﻿
+.books {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    z-index: 5;
+    gap: 1rem;
+}
+
+.book {
+    background-color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    width: 33%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.book_img {
+    display: grid;
+    width: 12rem;
+    height: 15rem;
+    overflow: hidden;
+}
+
+.book_icon {
+    padding: 0.3rem 0.5rem;
+    color: black;
+    font-size: 1.2rem;
+    border: 0.3rem solid white;
+}
+
+    .book_icon:hover {
+        background-color: #0ce682;
+    }
+
+.book_img img,
+.book_img_hover {
+    width: inherit;
+    height: inherit;
+    grid-row-start: 1;
+    grid-column-start: 1;
+}
+
+
+.book_img img {
+    height: 100%;
+    object-fit: fill;
+}
+    .book_img_hover {
+        background: rgba(255, 229, 33, 0.80);
+        font-size: 2vw;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+
+    .book_icon_container {
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+
+.book_img_hover:hover{
+    opacity: 1;
+}
+.book_img_hover:hover .book_icon_container {
+    animation: roll_up 0.6s ease forwards;
+    opacity: 1;
+}
+
+.ten_sach{
+    line-height: 2.5rem;
+}
+
+.ten_tacgia{
+    color: red;
+    line-height: 0rem;
+}
+
+
+@keyframes roll_up {
+    from {
+        opacity: 0;
+        transform: translateY(2rem);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

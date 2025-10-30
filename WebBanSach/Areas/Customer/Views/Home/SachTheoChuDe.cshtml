@@ -1,0 +1,53 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model PagedList.PagedList<Sach>
+
+@functions{
+    public string Truncate(string noidung, int length)
+    {
+        if (noidung.Length < length)
+        {
+            return noidung;
+        }
+        else
+        {
+            return $"{noidung.Substring(0, length)}...";
+        }
+    }
+}
+<div id="sachtheochude_container">
+    <p class="montserrat-medium">@ViewBag.Url</p>
+
+    <div id="sachtheochude">
+        <section id="sachtheochude_left">
+        </section>
+        <section id="sachtheochude_right">
+            @foreach (Sach sach in Model)
+            {
+                <div class="book">
+                    <div class="book_img">
+                        <img src="@sach.ImageUrl" alt="Ảnh sách" />
+                        <div class="book_img_hover">
+                            <ul class="book_icon_container">
+                                <li>
+                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="direct_cart_icon book_icon">
+                                        <i class="bi bi-cart-fill"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="ten_sach montserrat-regular">@Truncate(sach.TenSach, 15)</p>
+                    <p class="ten_tacgia montserrat-bold">@Truncate(@sach.TacGia.TenTG, 20)</p>
+                </div>
+            }
+        </section>
+    </div>
+
+
+</div>

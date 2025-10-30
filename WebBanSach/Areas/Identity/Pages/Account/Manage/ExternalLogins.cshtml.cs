@@ -7,22 +7,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Media.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ProjectCuoiKi.Areas.Identity.Pages.Account.Manage
+namespace WebBanSach.Areas.Identity.Pages.Account.Manage
 {
     public class ExternalLoginsModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<TaiKhoan> _signInManager;
         private readonly IUserStore<IdentityUser> _userStore;
 
         public ExternalLoginsModel(
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            SignInManager<TaiKhoan> signInManager,
             IUserStore<IdentityUser> userStore)
         {
             _userManager = userManager;
@@ -93,7 +94,7 @@ namespace ProjectCuoiKi.Areas.Identity.Pages.Account.Manage
                 return RedirectToPage();
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync((TaiKhoan)user);
             StatusMessage = "The external login was removed.";
             return RedirectToPage();
         }

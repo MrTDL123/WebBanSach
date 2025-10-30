@@ -11,17 +11,18 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Media.Models;
 
-namespace ProjectCuoiKi.Areas.Identity.Pages.Account
+namespace WebBanSach.Areas.Identity.Pages.Account
 {
     public class LoginWith2faModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<TaiKhoan> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<LoginWith2faModel> _logger;
 
         public LoginWith2faModel(
-            SignInManager<IdentityUser> signInManager,
+            SignInManager<TaiKhoan> signInManager,
             UserManager<IdentityUser> userManager,
             ILogger<LoginWith2faModel> logger)
         {

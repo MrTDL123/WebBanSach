@@ -3,45 +3,55 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ProjectCuoiKi</title>
-     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    @*     <link rel="stylesheet" href="~/ProjectCuoiKi.styles.css" asp-append-versison="true" /> *@ 
-    <link rel="stylesheet" href="~/css/layout.css" />
+    <title>@ViewData["Title"] - WebBanSach</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="shortcut icon" type="image/x-icon" href="~/img/web_img/logo.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
-    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css" />
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <environment include="Development">
+        <link rel="stylesheet" href="~/css/main.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
+    </environment>
+
+    <link rel="stylesheet" href="~/WebBanSach.styles.css" asp-append-version="true" />
     @RenderSection("PageStyles", required: false)
 </head>
 
 <body>
 
     <header>
-        
-        <div id="top_header" style="z-index:1;">
-            <!-- Top header left -->
+        <div id="top_header">
+            @*Top header left*@
+            <!-- Logo và tên -->
+            <a asp-area="Customer" asp-controller="Home" asp-action="Index">
+                <img id="logo" src="~/img/web_img/logo.png" alt="Logo">
+            </a>
+
 
             <!-- Form tìm kiếm -->
             <form action="/" method="post" id="search_box">
-                <button type="button" id="search_button"><i class="bi bi-search"></i></button>
+                @await Component.InvokeAsync("ChuDeMenu")
+
                 <input type="text" id="search_bar" placeholder="Bạn muôn tìm gì?" />
+                <button type="button" id="search_button" style="color: #0ce682;"><i class="bi bi-search"></i></button>
             </form>
 
-            <!-- Đăng nhập -->
-            <partial name="_LoginPartial" />
+            <div id="top_header_right">
+                <!-- Đăng nhập -->
+                <partial name="_LoginPartial" />
 
             <!-- Giỏ hàng -->
             <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
         </div>
         <hr>
-       
 
-        <div id="bottom_header" style="z-index:1;">
+        <div id="bottom_header">
             <!-- Logo và tên -->
             <div id="bottom_header_left">
                 <a asp-area="Customer" asp-controller="Home" asp-action="Index">
@@ -50,6 +60,7 @@
                 <p class="montserrat-bold">Cửa hàng sách điện tử</p>
             </div>
 
+        <div id="bottom_header">
             <!-- Nav items -->
             <ul id="bottom_header_right">
                 @if (User.IsInRole(SD.Role_Admin))
@@ -86,50 +97,49 @@
     </div>
 
 
-    <footer class="border-top footer text-muted d-flex flex-column align-items-center text-center py-4">
-        <div id="logo_footer" class="mb-2 pt-4">
+    <footer>
+        <div id="logo_footer">
             <img src="~/img/web_img/logo.png" alt="logo" />
-            <p>CỬA HÀNG SÁCH ĐIỆN TỬ</p>
+            <p class="montserrat-bold">CỬA HÀNG SÁCH ĐIỆN TỬ</p>
         </div>
 
-        <div id="social_media" class="mb-3">
-            <ul class="navbar-nav flex-row justify-content-between">
-                <li class="nav-item">
-                    <a href="https://www.facebook.com/long.tranduy.106" class="fb">
+        <div id="social_media">
+            <ul>
+                <li>
+                    <a href="https://www.facebook.com/long.tranduy.106" id="fb">
                         <i class="bi bi-facebook bi-3x"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="https://www.youtube.com/" class="yt">
+                <li >
+                    <a href="https://www.youtube.com/" id="yt">
                         <i class="bi bi-youtube"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="" class="x">
+                <li>
+                    <a href="" id="x">
                         <i class="bi bi-twitter-x"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="https://www.instagram.com/tranduylong2k5/" class="ins">
+                <li>
+                    <a href="https://www.instagram.com/tranduylong2k5/" id="ins">
                         <i class="bi bi-instagram"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="https://github.com/MrTDL123" class="github">
+                <li>
+                    <a href="https://github.com/MrTDL123" id="github">
                         <i class="bi bi-github"></i>
                     </a>
                 </li>
             </ul>
         </div>
         <div>
-            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#">Trần Duy Long</a></p>
+            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#" style="color: #0ce682;">Trần Duy Long</a></p>
         </div>
     </footer>
 
-
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/yfm2tzcw10n183a3sq1ddo8j7btx6a161wqkyashxwwo4l45/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>

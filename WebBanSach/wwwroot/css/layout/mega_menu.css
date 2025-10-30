@@ -1,0 +1,101 @@
+﻿/* Site.css hoặc tạo file MegaMenu.css */
+
+/* Mega Dropdown */
+.mega-dropdown {
+    position: static !important;
+    padding-right: 1rem;
+    z-index: 10000;
+}
+
+.mega-dropdown-menu {
+    
+    width: 90%;
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    background: #fff;
+    left: 5%;
+
+}
+
+/* Ẩn menu ban đầu */
+.mega-dropdown-menu {
+    display: none;
+}
+
+/* Hiện menu khi hover */
+.mega-dropdown:hover .mega-dropdown-menu {
+    display: block;
+}
+
+.chude_dropdown {
+    display: flex;
+    flex-direction: row;
+}
+
+.chude_dropdown_left {
+    border-right: 2px solid black;
+    padding: 2rem;
+    width: 30%;
+}
+
+.chude_dropdown_right {
+    padding: 2rem;
+    display: grid;
+    width: 100%;
+}
+
+    .chude_dropdown_right section {
+        grid-row-start: 1;
+        grid-column-start: 1;
+    }
+
+.chudechild_list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+
+
+/* List items */
+.mega-menu-list {
+    list-style: none;
+}
+
+    .mega-menu-list li {
+        padding: 2px 0;
+    }
+
+        .mega-menu-list li a {
+            color: black !important;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+
+            .mega-menu-list li a:hover {
+                color: #e74c3c;
+                background: #a5a5a5;
+                padding-left: 15px;
+            }
+
+.watch_all_chude {
+    display: block;
+    transition: all 0.3s ease;
+    color: blue;
+    padding: 5px 10px;
+}
+
+            .watch_all_chude:hover {
+                background: #a5a5a5;
+                padding-left: 15px;
+            }
+
+.active {
+    color: #e74c3c;
+    background: #a5a5a5;
+    padding-left: 15px;
+}

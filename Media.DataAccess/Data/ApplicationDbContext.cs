@@ -1,124 +1,81 @@
 ﻿
-using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
 using Media.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 namespace Meida.DataAccess.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<TaiKhoan>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)//pass connection string từ program.cs cho DbContext
         {
-            
-        }
-        //Create Table
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
-        //Add Data To Table
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //Khi sử dụng IdentityDbContext nó yêu cầu keys trong identity tables mà các table ta đều seed data vào đây nên cần pass hàm này vào identity
+
+            modelBuilder.Entity<ChiTietDonHang>().HasKey(c => new { c.MaChiTietDonHang, c.MaSach });
+            modelBuilder.Entity<PhieuNhapKhoChiTiet>().HasKey(p => new { p.MaPhieuNhapKho, p.MaSach });
 
 
-            modelBuilder.Entity<Category>().HasData(
-                new Category { Id = 1, Name="Action", DisplayOrder=1},
-                new Category { Id = 2, Name = "Scifi", DisplayOrder = 2 },
-                new Category { Id = 3, Name = "Drama", DisplayOrder = 3 },
-                new Category { Id = 4, Name="Business", DisplayOrder = 4 },
-                new Category { Id=5, Name = "Medical", DisplayOrder = 5 },
-                new Category { Id = 6, Name = "Horror", DisplayOrder = 6 }
-                );
+            // 1-1 DonDatHang - HoaDon (HoaDon.MaDonDatHang unique)
+            modelBuilder.Entity<HoaDon>()
+                        .HasOne(h => h.DonHang)
+                        .WithOne(d => d.HoaDon)
+                        .HasForeignKey<HoaDon>(h => h.MaDonHang);
 
-            modelBuilder.Entity<Product>().HasData(
-                new Product
-                {
-                    Id = 1,
-                    Title = "Đệ tử quy",
-                    Author = "Lý Dục Tú",
-                    Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                    ISBN = "SWD9999001",
-                    ListPrice = 99,
-                    Price = 90,
-                    Price50 = 85,
-                    Price100 = 80,
-                    CategoryId = 1,
-                    ImageUrl=""
+            // TPH configuration for NhanVien and derived types (QuanLy, KeToan, HauCan)
+            modelBuilder.Entity<NhanVien>()
+                        .HasDiscriminator<string>("LoaiNhanVien")
+                        .HasValue<NhanVien>("NhanVien")
+                        .HasValue<QuanLy>("QuanLy")
+                        .HasValue<KeToan>("KeToan")
+                        .HasValue<HauCan>("HauCan");
 
-                },
-                new Product
-                {
-                    Id = 2,
-                    Title = "Pro ASP.NET Core 7, Tenth Edition",
-                    Author = "Pro ASP.NET Core 7, Tenth Edition",
-                    Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                    ISBN = "CAW777777701",
-                    ListPrice = 40,
-                    Price = 30,
-                    Price50 = 25,
-                    Price100 = 20,
-                    CategoryId = 2,
-                    ImageUrl = ""
-                },
-                new Product
-                {
-                    Id = 3,
-                    Title = "Building Web APIs with ASP.NET Core",
-                    Author = "Valerio De Sanctis",
-                    Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                    ISBN = "RITO5555501",
-                    ListPrice = 55,
-                    Price = 50,
-                    Price50 = 40,
-                    Price100 = 35,
-                    CategoryId = 3,
-                    ImageUrl = ""
-                },
-                new Product
-                {
-                    Id = 4,
-                    Title = "Pro HTML with CSS, JavaScript, and Multimedia",
-                    Author = "Mark J.Colins",
-                    Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                    ISBN = "WS3333333301",
-                    ListPrice = 70,
-                    Price = 65,
-                    Price50 = 60,
-                    Price100 = 55,
-                    CategoryId = 4,
-                    ImageUrl = ""
-                },
-                new Product
-                {
-                    Id = 5,
-                    Title = "Búp sen xanh",
-                    Author = "Sơn Tùng",
-                    Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                    ISBN = "SOTJ1111111101",
-                    ListPrice = 30,
-                    Price = 27,
-                    Price50 = 25,
-                    Price100 = 20,
-                    CategoryId = 5,
-                    ImageUrl = ""
-                },
-                new Product
-                {
-                    Id = 6,
-                    Title = "Ngành IT có gì",
-                    Author = "Spiderum",
-                    Description = "Praesent vitae sodales libero. Praesent molestie orci augue, vitae euismod velit sollicitudin ac. Praesent vestibulum facilisis nibh ut ultricies.\r\n\r\nNunc malesuada viverra ipsum sit amet tincidunt. ",
-                    ISBN = "FOT000000001",
-                    ListPrice = 25,
-                    Price = 23,
-                    Price50 = 22,
-                    Price100 = 20,
-                    CategoryId = 6,
-                    ImageUrl = ""
-                });
+
+            modelBuilder.Entity<TaiKhoan>()
+                        .HasOne(tk => tk.KhachHang)
+                        .WithOne(kh => kh.TaiKhoan)
+                        .HasForeignKey<KhachHang>(kh => kh.MaTaiKhoan);
+
+
+            modelBuilder.Entity<TaiKhoan>()
+                        .HasOne(tk => tk.NhanVien)
+                        .WithOne(nv => nv.TaiKhoan)
+                        .HasForeignKey<NhanVien>(nv => nv.MaTaiKhoan);
+
+            modelBuilder.Entity<DonHang>()
+                        .HasOne(d => d.NhanVien)
+                        .WithMany(n => n.DonHangs)
+                        .HasForeignKey(d => d.MaNhanVien)
+                        .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<DonHang>()
+                        .HasOne(d => d.KhachHang)
+                        .WithMany(k => k.DonHangs)
+                        .HasForeignKey(d => d.MaKhachHang);
         }
+
+        //Create Table
+        public DbSet<KhachHang> KhachHangs { get; set; }
+        public DbSet<NhanVien> NhanViens { get; set; }
+        public DbSet<TaiKhoan> TaiKhoans { get; set; }
+        public DbSet<Sach> Saches { get; set; }
+        public DbSet<TacGia> TacGias { get; set; }
+        public DbSet<NhaXuatBan> NhaXuatBans { get; set; }
+        public DbSet<ChuDe> ChuDes { get; set; }
+        public DbSet<DonHang> DonHangs { get; set; }
+        public DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        public DbSet<HoaDon> HoaDons { get; set; }
+        public DbSet<PhieuNhapKho> PhieuNhapKhos { get; set; }
+        public DbSet<PhieuNhapKhoChiTiet> PhieuNhapKhoChiTiets { get; set; }
+        public DbSet<KiemKeSanPham> KiemKeSanPhams { get; set; }
+        public DbSet<PhanHoiKhachHang> PhanHoiTuKhachHangs { get; set; }
+        public DbSet<ChamSocKhachHang> ChamSocKhachHangs { get; set; }
     }
 }

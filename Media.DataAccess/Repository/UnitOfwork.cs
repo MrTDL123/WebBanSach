@@ -12,13 +12,13 @@ namespace Media.DataAccess.Repository
     {
         private readonly ApplicationDbContext _db;
         //Add Table
-        public ICategoryRepository Category { get; private set; }
-        public IProductRepository Product { get; private set; }
+        public IChuDeRepository ChuDes { get; private set; }
+        public ISachRepository Saches { get; private set; }
         public UnitOfwork(ApplicationDbContext db)
         {
             _db = db;
-            Category = new CategoryRepository(_db);
-            Product = new ProductRepository(_db);
+            ChuDes = new ChuDeRepository(_db);
+            Saches = new SachRepository(_db);
         }
         public void Save()
         {
