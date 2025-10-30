@@ -620,6 +620,7 @@
         .popup-header {
             display: flex;
             align-items: center;
+            flex-direction: row;
             padding: 20px;
             border-bottom: 1px solid #e0e0e0;
         }
@@ -908,76 +909,78 @@
                         </div>
                     </div>
 
-                    <button class="write-review-btn">✏️ Viết đánh giá</button>
+                    <button class="write-review-btn" id="btn-review" onclick="showPopupReview()">✏️ Viết đánh giá</button>
                 </div>
             </div>
 
-            <!-- Review Tabs -->
-            <div class="review-tabs">
-                <div class="tab active">Mới nhất</div>
-                <div class="tab">Yêu thích nhất</div>
-            </div>
+            <div id="reviewContent" style="display: none;">
+                <!-- Review Tabs -->
+                <div class="review-tabs">
+                    <div class="tab active">Mới nhất</div>
+                    <div class="tab">Yêu thích nhất</div>
+                </div>
 
-            <!-- Review List -->
-            <div class="review-list">
-                <div class="review-item">
-                    <div class="reviewer-info">
-                        <ul class="reviewer-left">
-                            <li class="reviewer-name">Trang Min</li>
-                            <li class="review-date">05/06/2020</li>
-                        </ul>
-                        <label class="stars-display">★★★★★</label>
+                <!-- Review List -->
+                <div class="review-list">
+                    <div class="review-item">
+                        <div class="reviewer-info">
+                            <ul class="reviewer-left">
+                                <li class="reviewer-name">Trang Min</li>
+                                <li class="review-date">05/06/2020</li>
+                            </ul>
+                            <label class="stars-display">★★★★★</label>
+                        </div>
+                        <p class="review-content">
+                            Tôi đã khi nghĩ rằng mình sẽ hiểu, sẽ cảm tốt hơn về tình yêu trong Đỉnh gió hú khi đã trải qua những cung bậc của tình yêu sau 15 năm đọc lại. Không, dù có yêu, có rung cảm cả trăm lần nữa, thì những chuyện tình của Đỉnh gió hú vẫn chỉ khiến tôi dạy dứt khổng người... Cuốn truyện là một bức tranh u tối, âm đạm khiến tôi vô cùng mệt mỏi nhưng lại không thể dừng lại cho đến những dòng chữ cuối cùng. Lối viết hoang sơ, gai góc và đầy đam mê đã tạo ra sức quyền rũ mạnh liệt cho tác phẩm Đỉnh gió hú, đủ để đưa Emily Jane Bronte vào hàng ngũ những cây bút xuất sắc, dù cá cuộc...
+                            <a href="#" class="show-more-link">Xem thêm</a>
+                        </p>
+                        <div class="review-actions">
+                            <button class="action-btn">👍 Thích (0)</button>
+                            <button class="action-btn">🚩 Báo cáo</button>
+                        </div>
                     </div>
-                    <p class="review-content">
-                        Tôi đã khi nghĩ rằng mình sẽ hiểu, sẽ cảm tốt hơn về tình yêu trong Đỉnh gió hú khi đã trải qua những cung bậc của tình yêu sau 15 năm đọc lại. Không, dù có yêu, có rung cảm cả trăm lần nữa, thì những chuyện tình của Đỉnh gió hú vẫn chỉ khiến tôi dạy dứt khổng người... Cuốn truyện là một bức tranh u tối, âm đạm khiến tôi vô cùng mệt mỏi nhưng lại không thể dừng lại cho đến những dòng chữ cuối cùng. Lối viết hoang sơ, gai góc và đầy đam mê đã tạo ra sức quyền rũ mạnh liệt cho tác phẩm Đỉnh gió hú, đủ để đưa Emily Jane Bronte vào hàng ngũ những cây bút xuất sắc, dù cá cuộc...
-                        <a href="#" class="show-more-link">Xem thêm</a>
-                    </p>
-                    <div class="review-actions">
-                        <button class="action-btn">👍 Thích (0)</button>
-                        <button class="action-btn">🚩 Báo cáo</button>
+
+                    <div class="review-item">
+                        <div class="reviewer-info">
+                            <ul class="reviewer-left">
+                                <li class="reviewer-name">Tiểu Mai</li>
+                                <li  class="review-date">14/05/2020</li>
+                            </ul>
+                            <label class="stars-display">★★★★★</label>
+                        </div>
+                        <p class="review-content">
+                            Ngòi bút của tác giả thật tài tình khi kéo ta đi qua từng cung bậc lúc nào chẳng hay, và ta cũng chẳng thể nào nhận ra được, và dù có nhận ra, thì ta cũng không thoát nổi vòng xoáy ác liệt, bao loan, đủ đời của con lốc tình cảm này. Tình yêu liều có lỗi làm gì là một câu hỏi hay. Bố ba trong Đỉnh gió...
+                            <a href="#" class="show-more-link">Xem thêm</a>
+                        </p>
+                        <div class="review-actions">
+                            <button class="action-btn">👍 Thích (0)</button>
+                            <button class="action-btn">🚩 Báo cáo</button>
+                        </div>
+                    </div>
+
+                    <div class="review-item">
+                        <div class="reviewer-info">
+                            <ul class="reviewer-left">
+                                <li  class="reviewer-name">Minh Anh</li>
+                                <li class="review-date">20/04/2020</li>
+                            </ul>
+                            <label class="stars-display">★★★★★</label>
+                        </div>
+                        <p class="review-content">
+                            Một cuốn sách tuyệt vời! Nội dung sâu sắc, cách viết cuốn hút. Tôi đã không thể rời mắt khỏi từng trang sách. Rất đáng để đọc và suy ngẫm.
+                        </p>
+                        <div class="review-actions">
+                            <button class="action-btn">👍 Thích (0)</button>
+                            <button class="action-btn">🚩 Báo cáo</button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="review-item">
-                    <div class="reviewer-info">
-                        <ul class="reviewer-left">
-                            <li class="reviewer-name">Tiểu Mai</li>
-                            <li  class="review-date">14/05/2020</li>
-                        </ul>
-                        <label class="stars-display">★★★★★</label>
-                    </div>
-                    <p class="review-content">
-                        Ngòi bút của tác giả thật tài tình khi kéo ta đi qua từng cung bậc lúc nào chẳng hay, và ta cũng chẳng thể nào nhận ra được, và dù có nhận ra, thì ta cũng không thoát nổi vòng xoáy ác liệt, bao loan, đủ đời của con lốc tình cảm này. Tình yêu liều có lỗi làm gì là một câu hỏi hay. Bố ba trong Đỉnh gió...
-                        <a href="#" class="show-more-link">Xem thêm</a>
-                    </p>
-                    <div class="review-actions">
-                        <button class="action-btn">👍 Thích (0)</button>
-                        <button class="action-btn">🚩 Báo cáo</button>
-                    </div>
+                <!-- View More Button -->
+                <div class="view-more-section">
+                    <button class="view-more-btn">Xem thêm đánh giá</button>
                 </div>
-
-                <div class="review-item">
-                    <div class="reviewer-info">
-                        <ul class="reviewer-left">
-                            <li  class="reviewer-name">Minh Anh</li>
-                            <li class="review-date">20/04/2020</li>
-                        </ul>
-                        <label class="stars-display">★★★★★</label>
-                    </div>
-                    <p class="review-content">
-                        Một cuốn sách tuyệt vời! Nội dung sâu sắc, cách viết cuốn hút. Tôi đã không thể rời mắt khỏi từng trang sách. Rất đáng để đọc và suy ngẫm.
-                    </p>
-                    <div class="review-actions">
-                        <button class="action-btn">👍 Thích (0)</button>
-                        <button class="action-btn">🚩 Báo cáo</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- View More Button -->
-            <div class="view-more-section">
-                <button class="view-more-btn">Xem thêm đánh giá</button>
-            </div>
+             </div>
         </div>
     </section>
 
@@ -1000,6 +1003,15 @@
         </div>
     </div>
 
+    <!-- 🔹 Popup  viết đánh giá sản phẩm -->
+    <div class="popup-overlay" id="reviewPopupOverlay" style="display:none;"></div>
+    <div class="popup-modal" id="reviewPopupModal" style="display:none;">
+        <div class="popup-body" id="reviewPopupContent" style="padding:unset;">
+
+        </div>
+    </div>
+    
+
     <!-- Nội dung ẩn (PartialView load sẵn) -->
     <div id="policy-shipping" class="popup-hidden">
         @Html.Partial("_PopupThoiGianGiaoHang")
@@ -1011,7 +1023,131 @@
         @Html.Partial("_PopupChinhSachKhachSi")
     </div>
     <script>
-        var API_BASE = 'https://provinces.open-api.vn/api';
+        document.addEventListener("DOMContentLoaded", function () {
+            // Biến lưu số lượng đánh giá (mặc định là 0)
+            var reviewCount = 0;
+
+            // Lấy phần nội dung đánh giá và nút viết đánh giá
+            var reviewContent = document.getElementById("reviewContent");
+            var writeBtn = document.getElementById("btn-review");
+
+            // Hàm cập nhật hiển thị dựa trên số lượng đánh giá
+            function updateReviewDisplay() {
+                if (reviewCount === 0) {
+                    reviewContent.style.display = "none";
+                } else {
+                    reviewContent.style.display = "block";
+                }
+            }
+
+            // Gọi hàm này ngay khi trang vừa tải
+            updateReviewDisplay();
+
+            // Xử lý khi bấm nút "Viết đánh giá"
+            writeBtn.addEventListener("click", function () {
+                reviewCount++;
+                console.log("Số lượng đánh giá hiện tại:", reviewCount);
+                updateReviewDisplay();
+                
+            });
+        });
+
+        function showPopupReview() {
+            var url = '@Url.Action("WriteReviewPartial", "Home", new { area = "Customer" })';
+            $.get(url, function (data) {
+                $('#reviewPopupContent').html(data);
+                $('#reviewPopupOverlay, #reviewPopupModal').fadeIn(200);
+            });
+        }
+
+        // let selectedRating = 5;
+        // let isAnonymous = false;
+
+        // // Initialize stars with all selected
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     updateStars(5);
+        // });
+
+        // // Star rating functionality
+        // const stars = document.querySelectorAll('.star');
+        // stars.forEach(star => {
+        //     star.addEventListener('click', function() {
+        //         selectedRating = parseInt(this.dataset.rating);
+        //         updateStars(selectedRating);
+        //     });
+
+        //     star.addEventListener('mouseenter', function() {
+        //         const rating = parseInt(this.dataset.rating);
+        //         updateStars(rating, true);
+        //     });
+        // });
+
+        // document.getElementById('starsContainer').addEventListener('mouseleave', function() {
+        //     updateStars(selectedRating);
+        // });
+
+        // function updateStars(rating, isHover = false) {
+        //     stars.forEach(star => {
+        //         const starRating = parseInt(star.dataset.rating);
+        //         if (starRating <= rating) {
+        //             star.classList.add('active');
+        //         } else {
+        //             star.classList.remove('active');
+        //         }
+        //     });
+        // }
+
+        // Anonymous toggle
+        function toggleAnonymous() {
+            isAnonymous = !isAnonymous;
+            const toggle = document.getElementById('anonymousToggle');
+            const nameInput = document.getElementById('nameInput');
+
+            if (isAnonymous) {
+                toggle.classList.add('active');
+                nameInput.disabled = true;
+                nameInput.style.backgroundColor = '#f5f5f5';
+            } else {
+                toggle.classList.remove('active');
+                nameInput.disabled = false;
+                nameInput.style.backgroundColor = 'white';
+            }
+        }
+
+        // Insert emoji
+        function insertEmoji(emoji) {
+            const textarea = document.getElementById('reviewInput');
+            const cursorPos = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPos);
+            const textAfter = textarea.value.substring(cursorPos);
+            textarea.value = textBefore + emoji + textAfter;
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = cursorPos + emoji.length;
+        }
+
+        // Close popup
+        function closePopupReview() {
+            $('#reviewPopupOverlay, #reviewPopupModal').fadeOut(200);
+        }
+
+        // Submit review
+        function submitReview() {
+            const name = document.getElementById('nameInput').value;
+            const review = document.getElementById('reviewInput').value;
+
+            if (!isAnonymous && !name.trim()) {
+                alert('Vui lòng nhập tên hiển thị!');
+                return;
+            }
+
+            if (!review.trim()) {
+                alert('Vui lòng nhập nhận xét của bạn!');
+                return;
+            }
+
+            alert(`Đánh giá đã được gửi!\n\nĐánh giá: ${selectedRating} sao\nTên: ${isAnonymous ? 'Ẩn danh' : name}\nNhận xét: ${review}`);
+        }
+
         var SHOP_PROVINCE_CODE = 79;
 
         // Hàm mở popup (gọi partial, chèn HTML rồi init)
@@ -1028,131 +1164,85 @@
         }
 
         function initAddressPopup() {
-            // lấy lại các phần tử (phải lấy sau khi partial được chèn)
-            const provinceSelect = document.getElementById('province');
-            const districtSelect = document.getElementById('district');
-            const wardSelect = document.getElementById('ward');
+            let provinceSelect = document.getElementById('provinceSelect');
+            let districtSelect = document.getElementById('districtSelect');
+            let wardSelect = document.getElementById('wardSelect');
             const confirmBtn = document.getElementById('confirmBtn');
             const pickupRadio = document.getElementById('pickup');
             const deliveryRadio = document.getElementById('delivery');
             const deliveryFields = document.getElementById('deliveryFields');
 
             if (!provinceSelect || !districtSelect || !wardSelect || !confirmBtn) {
-                console.error('initAddressPopup: thiếu element (kiểm tra id province/district/ward/confirmBtn)');
+                console.error('initAddressPopup: thiếu element trong partial');
                 return;
             }
 
-            // reset selects mỗi lần init (tránh giữ giá trị cũ)
-            provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành</option>';
-            districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
-            wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-            districtSelect.disabled = true;
-            wardSelect.disabled = true;
+            const urlGetProvinces = '@Url.Action("GetProvinces", "Home", new { area = "Customer" })';
+            const urlGetDistricts = '@Url.Action("GetDistricts", "Home", new { area = "Customer" })';
+            const urlGetWards = '@Url.Action("GetWards", "Home", new { area = "Customer" })';
 
-            // gán sự kiện (ghi đè handler cũ để không nhân đôi)
-            provinceSelect.onchange = onProvinceChange;
-            districtSelect.onchange = onDistrictChange;
-            wardSelect.onchange = checkValidInputs;
-            pickupRadio.onchange = deliveryRadio.onchange = onShippingToggle;
-            confirmBtn.onclick = onConfirmClick;
+            // --- Load tỉnh/thành ---
+            $.getJSON(urlGetProvinces, function (data) {
+                provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.value || item.Value;
+                    opt.textContent = item.text || item.Text;
+                    provinceSelect.appendChild(opt);
+                });
+                provinceSelect.disabled = false;
+            });
 
-            // luôn load provinces mỗi lần popup mở (ổn định)
-            loadProvinces();
-
-            // disable confirm ban đầu (nếu muốn pickup chọn được ngay)
-            if (pickupRadio && pickupRadio.checked) enableConfirm();
-            else disableConfirm();
-
-            // ---- function definitions ----
-            function loadProvinces() {
-                fetch(`${API_BASE}/p/`)
-                    .then(r => {
-                        if (!r.ok) throw new Error('HTTP ' + r.status);
-                        return r.json();
-                    })
-                    .then(data => {
-                        // fill provinces
-                        provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành</option>';
-                        data.forEach(p => {
-                            const opt = document.createElement('option');
-                            opt.value = p.code;
-                            opt.textContent = p.name;
-                            provinceSelect.appendChild(opt);
-                        });
-                        provinceSelect.disabled = false;
-                    })
-                    .catch(err => {
-                        // console.error('không thể tải danh sách tỉnh:', err);
-                        provinceselect.innerhtml = '<option value="">không thể tải tỉnh</option>';
-                    });
-            }
-
-            function onProvinceChange() {
+            // --- Khi chọn tỉnh ---
+            provinceSelect.onchange = function () {
+                const provinceCode = this.value;
                 districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
                 wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
                 wardSelect.disabled = true;
 
-                if (!this.value) {
+                if (!provinceCode) {
                     districtSelect.disabled = true;
-                    checkValidInputs();
                     return;
                 }
 
-                districtSelect.disabled = true;
-                fetch(`${API_BASE}/p/${this.value}?depth=2`)
-                    .then(r => {
-                        if (!r.ok) throw new Error('HTTP ' + r.status);
-                        return r.json();
-                    })
-                    .then(data => {
-                        (data.districts || []).forEach(d => {
-                            const opt = document.createElement('option');
-                            opt.value = d.code;
-                            opt.textContent = d.name;
-                            districtSelect.appendChild(opt);
-                        });
-                        districtSelect.disabled = false;
-                        checkValidInputs();
-                    })
-                    .catch(err => {
-                        console.error('Lỗi load quận/huyện:', err);
+                $.getJSON(urlGetDistricts, { provinceCode: provinceCode }, function (data) {
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        districtSelect.appendChild(opt);
                     });
-            }
+                    districtSelect.disabled = false;
+                });
+            };
 
-            function onDistrictChange() {
+            // --- Khi chọn huyện ---
+            districtSelect.onchange = function () {
+                const districtCode = this.value;
                 wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
-                if (!this.value) {
+                if (!districtCode) {
                     wardSelect.disabled = true;
-                    checkValidInputs();
                     return;
                 }
 
-                wardSelect.disabled = true;
-                fetch(`${API_BASE}/d/${this.value}?depth=2`)
-                    .then(r => {
-                        if (!r.ok) throw new Error('HTTP ' + r.status);
-                        return r.json();
-                    })
-                    .then(data => {
-                        (data.wards || []).forEach(w => {
-                            const opt = document.createElement('option');
-                            opt.value = w.code;
-                            opt.textContent = w.name;
-                            wardSelect.appendChild(opt);
-                        });
-                        wardSelect.disabled = false;
-                        checkValidInputs();
-                    })
-                    .catch(err => {
-                        console.error('Lỗi load phường/xã:', err);
+                $.getJSON(urlGetWards, { districtCode: districtCode }, function (data) {
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        wardSelect.appendChild(opt);
                     });
-            }
+                    wardSelect.disabled = false;
+                });
+            };
 
-            function onShippingToggle() {
+
+            // --- Toggle radio giao hàng ---
+            pickupRadio.onchange = deliveryRadio.onchange = function () {
                 const deliveryChecked = deliveryRadio.checked;
                 deliveryFields.style.display = deliveryChecked ? 'block' : 'none';
                 if (!deliveryChecked) {
-                    // reset selects khi quay lại pickup (tuỳ bạn)
+                    // reset nếu quay lại pickup
                     provinceSelect.value = "";
                     districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
                     districtSelect.disabled = true;
@@ -1162,7 +1252,17 @@
                 } else {
                     disableConfirm();
                 }
-            }
+            };
+
+            disableConfirm();
+
+            // --- Xác nhận địa chỉ ---
+            confirmBtn.onclick = onConfirmClick;
+
+            // --- Kiểm tra hợp lệ để bật nút xác nhận ---
+            wardSelect.onchange = checkValidInputs;
+            checkValidInputs();
+
 
             function onConfirmClick() {
                 if (confirmBtn.disabled) return;
@@ -1224,9 +1324,6 @@
         function closeAddressPopup() {
             $('#addressPopupOverlay, #addressPopupModal').fadeOut(200);
         }
-        $(document).on('click', '#addressPopupOverlay', function (e) {
-            if (e.target.id === 'addressPopupOverlay') closeAddressPopup();
-        });
 
         function openPopup(key) {
           const content = document.getElementById("policy-" + key);

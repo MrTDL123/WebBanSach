@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Media.Utility;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Media.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -22,6 +23,7 @@ builder.Services.ConfigureApplicationCookie(options =>  //Chỉnh lại điều 
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddHttpClient<LocationService>();
 
 var app = builder.Build();
 
