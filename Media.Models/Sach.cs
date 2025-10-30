@@ -13,7 +13,7 @@ namespace Media.Models
     public class Sach
     {
         [Key]
-        public int Id { get; set; }
+        public int MaSach { get; set; }
         [Required]
         [DisplayName("Tên sách")]
         public string TenSach { get; set; }
@@ -30,22 +30,29 @@ namespace Media.Models
         [Required]
         public int SoLuong {  get; set; }
 
+
+
         //NAVIGATION PROPERTIES
-        public int TacGiaId { get; set; }
-        public int NhaXuatBanId { get; set; }
-        public int ChuDeId { get; set; }
-        [ForeignKey("ChuDeId")]
+        public int MaTacGia { get; set; }
+        public int MaNhaXuatBan { get; set; }
+        public int MaChuDe { get; set; }
+
+        [ForeignKey("MaChuDe")]
         [ValidateNever]
         public ChuDe ChuDe { get; set; }
 
-        [ForeignKey("TacGiaId")]
+        [ForeignKey("MaTacGia")]
         [ValidateNever]
         public TacGia TacGia { get; set; }
 
-        [ForeignKey("NhaXuatBanId")]
+        [ForeignKey("MaNhaXuatBan")]
         [ValidateNever]
         public NhaXuatBan NhaXuatBan { get; set; }
 
+
+        public ICollection<PhieuNhapKhoChiTiet> PhieuNhapKhoChiTiets { get; set; }
+        public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        public ICollection<ChiTietKiemKe> ChiTietKiemKes { get; set; }
 
     }
 }

@@ -1,8 +1,4 @@
 ﻿
-
-
-
-
 /*SLIDE CONTAINER*/
 #slide_container {
     display: grid;
@@ -520,7 +516,7 @@
     opacity: 0.3;
     padding: 1rem 5%;
     top: 50%;
-    z-index: 1000;
+    z-index: 4;
 }
 
 #btn_slideleft,
@@ -555,7 +551,7 @@
     flex-direction: row;
     align-items: center;
     padding: 1rem;
-    background-color: white;
+    background-color: yellow;
     width: 100%;
     margin-bottom: 1rem;
     border-radius: 0.5rem;

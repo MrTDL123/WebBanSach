@@ -9,6 +9,7 @@ namespace Media.DataAccess.Repository.IRepository
 {
     public interface ISachRepository : IRepository<Sach>
     {
+        Task<List<Sach>>? LaySachTheoChuDe(int id); 
         void Update(Sach obj);
     }
 }

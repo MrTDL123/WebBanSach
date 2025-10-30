@@ -11,7 +11,7 @@ namespace Media.Models
     public class NhaXuatBan
     {
         [Key]
-        public int Id { get; set; }
+        public int MaNhanXuatBan { get; set; }
         [Required]
         [DisplayName("Tên nhà xuất bản")]
         public string TenNXB { get; set; }

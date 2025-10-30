@@ -1,0 +1,33 @@
+﻿#sachtheochude_container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+#sachtheochude {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding-bottom: 1.5rem;
+}
+
+#sachtheochude_left {
+    width: 25%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1.2rem;
+    border-radius: 0.5rem;
+}
+
+
+#sachtheochude_right {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+    #sachtheochude_right > div {
+        flex: 1 1 150px;
+    }

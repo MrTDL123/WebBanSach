@@ -4,6 +4,9 @@ using System.Diagnostics;
 using Media.DataAccess.Repository.IRepository;
 using Media.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using PagedList;
+using System.Text;
 
 namespace ProjectCuoiKi.Areas.Customer.Controllers
 {
@@ -35,8 +38,35 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         public IActionResult Details(int id)
         {
-            Sach? product = _unit.Saches.Get(u => u.Id == id ,includeProperties: "ChuDe");
+            Sach? product = _unit.Saches.Get(u => u.MaSach == id ,includeProperties: "ChuDe");
             return View(product);
+        }
+
+        public async Task<IActionResult> SachTheoChuDe(int id, int? page)
+        {
+            int pageNumber = page ?? 1; 
+            List<Sach> list = await _unit.Saches.LaySachTheoChuDe(id);
+
+            ViewBag.Url = LayURL(id, new List<string>());
+            return View(list.ToPagedList(pageNumber, 20));
+        }
+         
+        private string LayURL(int? maCD, List<string> url)
+        {
+            ChuDe selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == maCD);
+
+            if(selectedChuDe.ParentId is not null)
+            {
+                LayURL(selectedChuDe.ParentId, url);
+            }
+            else
+            {
+                url.Add("Trang chủ");
+            }
+
+            url.Add(" > "  + selectedChuDe.TenChuDe);
+
+            return String.Join("", url);
         }
     }
 }

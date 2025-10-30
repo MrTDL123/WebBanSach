@@ -36,8 +36,10 @@
 
             <!-- Form tìm kiếm -->
             <form action="/" method="post" id="search_box">
-                <button type="button" id="search_button" style="color: #0ce682;"><i class="bi bi-search"></i></button>
+                @await Component.InvokeAsync("ChuDeMenu")
+
                 <input type="text" id="search_bar" placeholder="Bạn muôn tìm gì?" />
+                <button type="button" id="search_button" style="color: #0ce682;"><i class="bi bi-search"></i></button>
             </form>
 
             <div id="top_header_right">

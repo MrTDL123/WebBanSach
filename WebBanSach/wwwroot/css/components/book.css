@@ -3,27 +3,29 @@
     display: flex;
     width: 100%;
     flex-direction: row;
-    justify-content: space-between;
     z-index: 5;
     gap: 1rem;
 }
 
 .book {
     background-color: white;
-    padding: 1.2rem;
+    padding: 0.5rem;
     border-radius: 0.5rem;
-    width: 20%;
+    width: 33%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.book_img{
+.book_img {
     display: grid;
+    width: 12rem;
+    height: 15rem;
+    overflow: hidden;
 }
 
-.book_icon{
+.book_icon {
     padding: 0.3rem 0.5rem;
     color: black;
     font-size: 1.2rem;
@@ -34,14 +36,19 @@
         background-color: #0ce682;
     }
 
-
 .book_img img,
-.book_img_hover{
-    width: 12rem;
+.book_img_hover {
+    width: inherit;
+    height: inherit;
     grid-row-start: 1;
     grid-column-start: 1;
 }
 
+
+.book_img img {
+    height: 100%;
+    object-fit: fill;
+}
     .book_img_hover {
         background: rgba(255, 229, 33, 0.80);
         font-size: 2vw;

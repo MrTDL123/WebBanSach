@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Media.Models
 {
@@ -7,10 +8,14 @@ namespace Media.Models
     {
         #nullable disable
         [Key]
-        public int Id { get; set; }
+        public int MaChuDe { get; set; }
         [Required]
-        [MaxLength(30)]
+        [MaxLength(255)]
         [DisplayName("Tên thể loại")]
         public string TenChuDe { get; set; }
+        public string DuongDanURL { get; set; }
+        public int? ParentId { get; set; }
+
+        public IEnumerable<ChuDe> Children { get; set; } = new List<ChuDe>();
     }
 }

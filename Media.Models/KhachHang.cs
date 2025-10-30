@@ -11,7 +11,7 @@ namespace Media.Models
     public class KhachHang
     {
         [Key]
-        public int Id { get; set; }
+        public int MaKhachHang { get; set; }
         [Required]
         [StringLength(30)]
         public string HoTen { get; set; }
@@ -20,10 +20,12 @@ namespace Media.Models
 
 
         //NAVIGATION PROPERTIES
-        public string TaiKhoanId { get; set; }
-        [ForeignKey("TaiKhoanId")]
+        public string MaTaiKhoan { get; set; }
+        [ForeignKey("MaTaiKhoan")]
         public TaiKhoan TaiKhoan { get; set; }
 
         public ICollection<DonHang> DonHangs { get; set; }
+        public ICollection<PhanHoiKhachHang> PhanHoiKhachHangs{ get; set; }
+
     }
 }

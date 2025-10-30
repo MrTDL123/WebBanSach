@@ -11,7 +11,7 @@ namespace Media.Models
     public class TacGia
     {
         [Key]
-        public int Id { get; set; }
+        public int MaTacGia { get; set; }
         [Required]
         [DisplayName("Tên tác giả")]
         public string TenTG { get; set; }

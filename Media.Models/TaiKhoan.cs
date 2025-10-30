@@ -13,5 +13,6 @@ namespace Media.Models
     public class TaiKhoan : IdentityUser //Vì IdentityUser thiếu các cột cần thiết nên ta sẽ implement nó qua KhachHang
     {
         public KhachHang KhachHang { get; set; } 
+        public NhanVien NhanVien { get; set; } 
     }
 }

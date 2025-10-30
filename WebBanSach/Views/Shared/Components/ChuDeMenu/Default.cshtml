@@ -1,0 +1,126 @@
+﻿@model IEnumerable<ChuDe>
+
+<!-- _MegaMenu.cshtml -->
+<li class="mega-dropdown">
+    <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bi bi-columns-gap"></i>
+    </a>
+
+    <!-- Mega Menu Dropdown -->
+    <div class="dropdown-menu mega-dropdown-menu">
+        <div class="chude_dropdown">
+            <section class="chude_dropdown_left">
+                <h4 class="dropdown_title montserrat-bold">
+                    Danh mục sản phẩm
+                </h4>
+                <ul class="mega-menu-list">
+                    @foreach (ChuDe level1ChuDe in Model)
+                    {
+                        <li data-target-id="chude-@level1ChuDe.MaChuDe" class="montserrat-regular">
+                            <a asp-area="Customer" 
+                               asp-action="SachTheoChuDe" 
+                               asp-controller="Home"
+                               asp-route-id="@level1ChuDe.MaChuDe">
+                                    @level1ChuDe.TenChuDe
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </section>
+
+            <section class="chude_dropdown_right">
+                @foreach (ChuDe level1ChuDe in Model)
+                {
+                    <section id="chude-@level1ChuDe.MaChuDe">
+                        <h4 class="dropdown_title montserrat-bold">
+                            @level1ChuDe.TenChuDe
+                        </h4>
+
+                        <div class="chudechild_list">
+                            @foreach (ChuDe level2ChuDe in level1ChuDe.Children)
+                            {
+                                <div class="chude">
+                                    <a asp-area="Customer" 
+                                       asp-action="SachTheoChuDe" 
+                                       asp-controller="Home"
+                                       asp-route-id="@level2ChuDe.MaChuDe" class="montserrat-bold">
+                                            @level2ChuDe.TenChuDe
+                                    </a>
+                                    <ul class="mega-menu-list">
+                                        @foreach (ChuDe level3ChuDe in level2ChuDe.Children)
+                                        {
+                                            <li class="montserrat-regular">
+                                                <a asp-area="Customer" 
+                                                   asp-action="SachTheoChuDe" 
+                                                   asp-controller="Home"
+                                                   asp-route-id="@level3ChuDe.MaChuDe">
+                                                        @level3ChuDe.TenChuDe
+                                                </a>
+                                            </li>
+                                        }
+                                        <a class="watch_all_chude" href="#">Xem tất cả</a>
+                                    </ul>
+
+                                </div>
+                            }
+                        </div>
+                    </section>
+                }
+            </section>
+
+        </div>
+    </div>
+</li>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lấy danh sách tất cả các mục bên trái và nội dung bên phải
+        const leftItems = document.querySelectorAll('.chude_dropdown_left li');
+        const rightSections = document.querySelectorAll('.chude_dropdown_right section');
+
+        // --- 1. Thiết lập trạng thái ban đầu ---
+
+        // Ẩn tất cả nội dung bên phải
+        rightSections.forEach(content => {
+            content.style.display = 'none';
+        });
+
+        // Mặc định kích hoạt mục đầu tiên (nếu tồn tại)
+        if (leftItems.length > 0) {
+            // Thêm class 'active' cho mục đầu tiên bên trái
+            leftItems[0].classList.add('active');
+
+            // Lấy target ID từ mục đầu tiên
+            const firstTargetId = leftItems[0].getAttribute('data-target-id');
+
+            // Hiển thị nội dung tương ứng
+            const firstSection = document.getElementById(firstTargetId);
+            if (firstSection) {
+                firstSection.style.display = 'block';
+            }
+        }
+
+        // --- 2. Thêm sự kiện hover (mouseenter) ---
+        leftItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                // Xóa class 'active' khỏi TẤT CẢ các mục bên trái
+                leftItems.forEach(li => li.classList.remove('active'));
+
+                // Thêm class 'active' cho mục đang được hover
+                this.classList.add('active');
+
+                // Ẩn TẤT CẢ nội dung bên phải
+                rightSections.forEach(content => {
+                    content.style.display = 'none';
+                });
+
+                // Hiện nội dung tương ứng
+                const targetId = this.getAttribute('data-target-id');
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+            });
+        });
+    });
+</script>

@@ -45,7 +45,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             else
             {
                 //Update
-                productVM.Product = _unit.Saches.Get(u => u.Id == id);
+                productVM.Product = _unit.Saches.Get(u => u.MaSach == id);
                 return View(productVM);
             }
         }
@@ -74,7 +74,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     }
                     obj.Product.ImageUrl = @"\img\product\" + fileName;
                 }
-                if (obj.Product.Id == 0)
+                if (obj.Product.MaSach == 0)
                 {
                     //Tạo
                      _unit.Saches.Add(obj.Product);
@@ -113,7 +113,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var SachesToBeDeleted = _unit.Saches.Get(u => u.Id == id);
+            var SachesToBeDeleted = _unit.Saches.Get(u => u.MaSach == id);
             if(SachesToBeDeleted == null)
             {
                 return Json(new {success = false, message = "Không thể xóa sản phẩm không tồn tại"});

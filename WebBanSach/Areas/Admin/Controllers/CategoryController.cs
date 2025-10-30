@@ -32,7 +32,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
             else
             {
-                ChuDe? objFromDb = _unit.ChuDes.Get(u => u.Id == id);
+                ChuDe? objFromDb = _unit.ChuDes.Get(u => u.MaChuDe == id);
                 return View(objFromDb); 
             }
             
@@ -42,7 +42,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(obj.Id == 0)
+                if(obj.MaChuDe == 0)
                 {
                     _unit.ChuDes.Add(obj);
                     _unit.Save();
@@ -62,7 +62,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
         public IActionResult Delete(int? id)
         {
-            ChuDe? ChuDeFromDb = _unit.ChuDes.Get(u => u.Id == id);
+            ChuDe? ChuDeFromDb = _unit.ChuDes.Get(u => u.MaChuDe == id);
             if (ChuDeFromDb == null)
             {
                 TempData["error"] = "Thể loại không tồn tại";

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Identity.Client;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -33,7 +34,7 @@ namespace Media.Models
     public class DonHang
     {
         [Key]
-        public int Id { get; set; }
+        public int MaDonHang { get; set; }
         [Required]
         public bool DaThanhToan { get; set; }
         [Required]
@@ -43,13 +44,23 @@ namespace Media.Models
         [Required]
         public DateTime NgayGiao { get; set; }
 
-        //NAVIGATION PROPERTIES
-        public int KhachHangId { get; set; }
+        //Thuộc tính chỉ dành cho Hậu Cần
+        public DateTime? NgayTaoDonVanChuyen { get; set; }
+        public DateTime? NgayGuiHangVanChuyen { get; set; }
 
-        [ForeignKey("KhachHangId")]
+
+
+        //NAVIGATION PROPERTIES
+        public int MaKhachHang { get; set; }
+
+        [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; }
+        public int MaNhanVien { get; set; }
+        [ForeignKey("MaNhanVien")]
+        public NhanVien NhanVien { get; set; }
 
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        public HoaDon HoaDon { get; set; }
 
     }
 }
