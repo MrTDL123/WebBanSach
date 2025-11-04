@@ -265,3 +265,5 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         }
     }
 }
+
+#endregion

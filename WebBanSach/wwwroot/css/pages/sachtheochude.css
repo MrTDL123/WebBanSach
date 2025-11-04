@@ -29,22 +29,21 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    .sachtheochude_left_title {
-        font-size: 0.9rem;
-    }
+.sachtheochude_left_title {
+    font-size: 0.9rem;
+}
 
 
 .sachtheochude_left_title {
     margin: 0 0 15px 0;
     padding-bottom: 10px;
     border-bottom: 1px solid #e0e0e0;
-
 }
 
 #same_category_books aside > a {
     display: block;
     text-decoration: none;
-    color: #c92127; 
+    color: #c92127;
     font-weight: 600;
     margin-bottom: 15px;
     font-size: 0.95rem;
@@ -83,7 +82,7 @@
     }
 
         .chude_item a:hover {
-            background-color: #f0f0f0; 
+            background-color: #f0f0f0;
             color: #000;
         }
 

@@ -43,8 +43,4 @@
     <Folder Include="wwwroot\img\product\" />
   </ItemGroup>
 
-  <ItemGroup>
-    </Content>
-  </ItemGroup>
-
 </Project>
