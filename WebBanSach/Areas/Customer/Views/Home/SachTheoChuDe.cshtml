@@ -1,6 +1,7 @@
-﻿@using PagedList;
-@using PagedList.Mvc;
-@model PagedList.PagedList<Sach>
+﻿@model SachTheoChuDeVM
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@addTagHelper *, X.PagedList.Mvc.Core
 
 @functions{
     public string Truncate(string noidung, int length)
@@ -14,15 +15,44 @@
             return $"{noidung.Substring(0, length)}...";
         }
     }
+
+    public string HienThiDongGia(double giaTien)
+    {
+        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
+    }
 }
 <div id="sachtheochude_container">
     <p class="montserrat-medium">@ViewBag.Url</p>
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
+            <section id="same_category_books">
+                <p class="sachtheochude_left_title montserrat-bold" id="">CHỦ ĐỀ TƯƠNG ỨNG</p>
+                <aside>
+                    <a asp-controller="Home" asp-action="LayTatCaSach">Tất cả chủ đề</a>
+
+                    <ul class="chude_item_root">
+                        @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeHienTai)
+                    </ul>
+
+                </aside>
+                        
+            </section>
+
+            <section id="price_filter">
+                <p class="sachtheochude_left_title montserrat-bold" id="">GIÁ</p>
+            </section>
+            
+            <section id="nhaxuatban_filter">
+                <p class="sachtheochude_left_title montserrat-bold" id="">NHÀ XUẤT BẢN</p>
+            </section>
+
+            <section id="tacgia_filter">
+                <p class="sachtheochude_left_title montserrat-bold" id="">TÁC GIẢ</p>
+            </section>
         </section>
         <section id="sachtheochude_right">
-            @foreach (Sach sach in Model)
+            @foreach (Sach sach in Model.DanhSachSach)
             {
                 <div class="book">
                     <div class="book_img">
@@ -43,7 +73,7 @@
                         </div>
                     </div>
                     <p class="ten_sach montserrat-regular">@Truncate(sach.TenSach, 15)</p>
-                    <p class="ten_tacgia montserrat-bold">@Truncate(@sach.TacGia.TenTG, 20)</p>
+                    <p class="ten_tacgia montserrat-bold">@HienThiDongGia(sach.GiaBan)</p>
                 </div>
             }
         </section>
@@ -51,3 +81,4 @@
 
 
 </div>
+
