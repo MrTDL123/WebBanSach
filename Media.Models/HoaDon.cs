@@ -10,25 +10,22 @@ namespace Media.Models
         [Key]
         [DisplayName("Mã hóa đơn")]
         public int MaHoaDon { get; set; }
-
-        [DataType(DataType.Date)]
-        [DisplayName("Ngày xuất")]
-        public DateTime? NgayXuat { get; set; }
-        [DisplayName("Tổng tiền")]
-        public decimal? TongTien { get; set; }
-
-
-
-        //NAVIGATION PROPERTIES
         [DisplayName("Mã đơn đặt hàng")]
         public int MaDonHang { get; set; }
 
+        [DataType(DataType.Date)]
+        [DisplayName("Ngày lập")]
+        public DateTime? NgayLap { get; set; }
+        [DisplayName("VAT")]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal VAT { get; set; }
+        [DisplayName("Tổng tiền")]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal? TongTien { get; set; }
+
+        //NAVIGATION PROPERTIES
+        
         [ForeignKey("MaDonHang")]
         public DonHang DonHang { get; set; }
-
-
-        public int? MaKeToan { get; set; }
-        [ForeignKey("MaKeToan")]
-        public NhanVien KeToan { get; set; }
     }
 }

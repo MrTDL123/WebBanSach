@@ -18,8 +18,8 @@ namespace Media.Models
         public string NoiDung { get; set; }
 
         [DataType(DataType.Date)]
-        [DisplayName("Ngày phản hồi")]
-        public DateTime? NgayPhanHoi { get; set; }
+        [DisplayName("Ngày tạo")]
+        public DateTime? NgayTao { get; set; }
 
         [StringLength(100)]
         [DisplayName("Loại phản hồi")]
@@ -29,6 +29,6 @@ namespace Media.Models
         //NAVIGATION PROPERTIES
         public int MaKhachHang { get; set; }
         [ForeignKey("MaKhachHang")]
-        public virtual KhachHang KhachHang { get; set; }
+        public KhachHang KhachHang { get; set; }
     }
 }

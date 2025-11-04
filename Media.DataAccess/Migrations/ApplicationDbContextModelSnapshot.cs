@@ -17,7 +17,7 @@ namespace Media.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -30,7 +30,10 @@ namespace Media.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaChamSoc"));
 
-                    b.Property<int?>("MaNhanVienChamSoc")
+                    b.Property<int>("MaKhachHang")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaNhanVien")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("NgayChamSoc")
@@ -42,61 +45,91 @@ namespace Media.DataAccess.Migrations
 
                     b.HasKey("MaChamSoc");
 
-                    b.HasIndex("MaNhanVienChamSoc");
+                    b.HasIndex("MaKhachHang");
 
-                    b.ToTable("ChamSocKhachHang");
+                    b.HasIndex("MaNhanVien");
+
+                    b.ToTable("ChamSocKhachHangs");
                 });
 
             modelBuilder.Entity("Media.Models.ChiTietDonHang", b =>
                 {
-                    b.Property<int>("MaChiTietDonHang")
-                        .HasColumnType("int");
+                    b.Property<int>("MaDonHang")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
 
                     b.Property<int>("MaSach")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
 
                     b.Property<decimal>("DonGia")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("MaDonHang")
-                        .HasColumnType("int");
-
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
-                    b.HasKey("MaChiTietDonHang", "MaSach");
+                    b.Property<decimal>("ThanhTien")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.HasIndex("MaDonHang");
+                    b.HasKey("MaDonHang", "MaSach");
 
                     b.HasIndex("MaSach");
 
                     b.ToTable("ChiTietDonHangs");
                 });
 
-            modelBuilder.Entity("Media.Models.ChiTietKiemKe", b =>
+            modelBuilder.Entity("Media.Models.ChiTietGioHang", b =>
                 {
-                    b.Property<int>("MaChiTietKiemKe")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaChiTietKiemKe"));
-
-                    b.Property<int>("MaKiemKeSanPham")
-                        .HasColumnType("int");
+                    b.Property<int>("MaGioHang")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
 
                     b.Property<int>("MaSach")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.Property<decimal>("DonGia")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("SoLuong")
                         .HasColumnType("int");
 
-                    b.Property<int>("SoLuongThucTe")
-                        .HasColumnType("int");
-
-                    b.HasKey("MaChiTietKiemKe");
-
-                    b.HasIndex("MaKiemKeSanPham");
+                    b.HasKey("MaGioHang", "MaSach");
 
                     b.HasIndex("MaSach");
 
-                    b.ToTable("ChiTietKiemKe");
+                    b.ToTable("ChiTietGioHangs");
+                });
+
+            modelBuilder.Entity("Media.Models.ChiTietTraHang", b =>
+                {
+                    b.Property<int>("MaPhieuTraHang")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("MaSach")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.Property<decimal>("DonGiaHoan")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("LyDoTraHang")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("SoLuongTra")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TongTienHoan")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("MaPhieuTraHang", "MaSach");
+
+                    b.HasIndex("MaSach");
+
+                    b.ToTable("ChiTietTraHangs");
                 });
 
             modelBuilder.Entity("Media.Models.ChuDe", b =>
@@ -128,6 +161,57 @@ namespace Media.DataAccess.Migrations
                     b.ToTable("ChuDes");
                 });
 
+            modelBuilder.Entity("Media.Models.DiaChiNhanHang", b =>
+                {
+                    b.Property<int>("MaDiaChi")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaDiaChi"));
+
+                    b.Property<string>("DiaChiChiTiet")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("LaMacDinh")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaKhachHang")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhuongXa")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("QuanHuyen")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SoDienThoai")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenNguoiNhan")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TinhThanh")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("MaDiaChi");
+
+                    b.HasIndex("MaKhachHang");
+
+                    b.ToTable("DiaChiNhanHang");
+                });
+
             modelBuilder.Entity("Media.Models.DonHang", b =>
                 {
                     b.Property<int>("MaDonHang")
@@ -139,34 +223,92 @@ namespace Media.DataAccess.Migrations
                     b.Property<bool>("DaThanhToan")
                         .HasColumnType("bit");
 
+                    b.Property<string>("DiaChiChiTiet")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("GhiChu")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("HinhThucThanhToan")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MaDiaChi")
+                        .IsRequired()
+                        .HasColumnType("int");
+
                     b.Property<int>("MaKhachHang")
                         .HasColumnType("int");
 
                     b.Property<int>("MaNhanVien")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("NgayDat")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("NgayGiao")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("NgayGuiHangVanChuyen")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("NgayTaoDonVanChuyen")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TinhTrangGiaoHang")
+                    b.Property<int>("MaVanChuyen")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PhuongXa")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("QuanHuyen")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("SoDienThoaiNhan")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TenNguoiNhan")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TinhThanh")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("MaDonHang");
+
+                    b.HasIndex("MaDiaChi");
 
                     b.HasIndex("MaKhachHang");
 
                     b.HasIndex("MaNhanVien");
 
+                    b.HasIndex("MaVanChuyen");
+
                     b.ToTable("DonHangs");
+                });
+
+            modelBuilder.Entity("Media.Models.GioHang", b =>
+                {
+                    b.Property<int>("MaKhachHang")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayTao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TongTien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("MaKhachHang");
+
+                    b.ToTable("GioHangs");
                 });
 
             modelBuilder.Entity("Media.Models.HoaDon", b =>
@@ -180,21 +322,19 @@ namespace Media.DataAccess.Migrations
                     b.Property<int>("MaDonHang")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MaKeToan")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("NgayXuat")
+                    b.Property<DateTime?>("NgayLap")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("TongTien")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("VAT")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("MaHoaDon");
 
                     b.HasIndex("MaDonHang")
                         .IsUnique();
-
-                    b.HasIndex("MaKeToan");
 
                     b.ToTable("HoaDons");
                 });
@@ -210,10 +350,20 @@ namespace Media.DataAccess.Migrations
                     b.Property<string>("DiaChi")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("DienThoai")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("HoTen")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("MaTaiKhoan")
                         .IsRequired()
@@ -228,31 +378,6 @@ namespace Media.DataAccess.Migrations
                         .IsUnique();
 
                     b.ToTable("KhachHangs");
-                });
-
-            modelBuilder.Entity("Media.Models.KiemKeSanPham", b =>
-                {
-                    b.Property<int>("MaKiemKe")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaKiemKe"));
-
-                    b.Property<string>("GhiChu")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MaNhanVienKiemKe")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("NgayKiemKe")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("MaKiemKe");
-
-                    b.HasIndex("MaNhanVienKiemKe");
-
-                    b.ToTable("KiemKeSanPhams");
                 });
 
             modelBuilder.Entity("Media.Models.NhaXuatBan", b =>
@@ -349,7 +474,7 @@ namespace Media.DataAccess.Migrations
                     b.Property<int>("MaKhachHang")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("NgayPhanHoi")
+                    b.Property<DateTime?>("NgayTao")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NoiDung")
@@ -360,55 +485,41 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaKhachHang");
 
-                    b.ToTable("PhanHoiTuKhachHangs");
+                    b.ToTable("PhanHoiKhachHang");
                 });
 
-            modelBuilder.Entity("Media.Models.PhieuNhapKho", b =>
+            modelBuilder.Entity("Media.Models.PhieuTraHang", b =>
                 {
-                    b.Property<int>("MaPhieuNhapKho")
+                    b.Property<int>("MaPhieuTraHang")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaPhieuNhapKho"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaPhieuTraHang"));
 
-                    b.Property<string>("GhiChu")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MaNhanVienNhapKho")
+                    b.Property<int>("MaDonHang")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("NgayTao")
+                    b.Property<int>("MaKhachHang")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaNhanVien")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("NgayTra")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("MaPhieuNhapKho");
-
-                    b.HasIndex("MaNhanVienNhapKho");
-
-                    b.ToTable("PhieuNhapKho");
-                });
-
-            modelBuilder.Entity("Media.Models.PhieuNhapKhoChiTiet", b =>
-                {
-                    b.Property<int>("MaPhieuNhapKho")
-                        .HasColumnType("int")
-                        .HasColumnOrder(0);
-
-                    b.Property<int>("MaSach")
-                        .HasColumnType("int")
-                        .HasColumnOrder(1);
-
-                    b.Property<decimal?>("DonGia")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("SoLuong")
+                    b.Property<int>("TrangThai")
                         .HasColumnType("int");
 
-                    b.HasKey("MaPhieuNhapKho", "MaSach");
+                    b.HasKey("MaPhieuTraHang");
 
-                    b.HasIndex("MaSach");
+                    b.HasIndex("MaDonHang");
 
-                    b.ToTable("PhieuNhapKhoChiTiets");
+                    b.HasIndex("MaKhachHang");
+
+                    b.HasIndex("MaNhanVien");
+
+                    b.ToTable("PhieuTraHangs");
                 });
 
             modelBuilder.Entity("Media.Models.Sach", b =>
@@ -437,8 +548,14 @@ namespace Media.DataAccess.Migrations
                     b.Property<string>("MoTa")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("NgayCapNhap")
+                    b.Property<DateTime?>("NgayCapNhat")
+                        .IsRequired()
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("NhaCungCap")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("SoLuong")
                         .HasColumnType("int");
@@ -538,6 +655,41 @@ namespace Media.DataAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Media.Models.VanChuyen", b =>
+                {
+                    b.Property<int>("MaVanChuyen")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaVanChuyen"));
+
+                    b.Property<string>("DonViVanChuyen")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MaVanDon")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("NgayDuKienGiao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NgayNhanHangThucTe")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PhiVanChuyen")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TrangThaiGiaoHang")
+                        .HasColumnType("int");
+
+                    b.HasKey("MaVanChuyen");
+
+                    b.ToTable("VanChuyens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -704,11 +856,21 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("Media.Models.ChamSocKhachHang", b =>
                 {
-                    b.HasOne("Media.Models.NhanVien", "NhanVienChamSoc")
+                    b.HasOne("Media.Models.KhachHang", "KhachHang")
                         .WithMany("ChamSocKhachHangs")
-                        .HasForeignKey("MaNhanVienChamSoc");
+                        .HasForeignKey("MaKhachHang")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("NhanVienChamSoc");
+                    b.HasOne("Media.Models.NhanVien", "NhanVien")
+                        .WithMany("ChamSocKhachHangs")
+                        .HasForeignKey("MaNhanVien")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("KhachHang");
+
+                    b.Navigation("NhanVien");
                 });
 
             modelBuilder.Entity("Media.Models.ChiTietDonHang", b =>
@@ -722,7 +884,7 @@ namespace Media.DataAccess.Migrations
                     b.HasOne("Media.Models.Sach", "Sach")
                         .WithMany("ChiTietDonHangs")
                         .HasForeignKey("MaSach")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("DonHang");
@@ -730,21 +892,40 @@ namespace Media.DataAccess.Migrations
                     b.Navigation("Sach");
                 });
 
-            modelBuilder.Entity("Media.Models.ChiTietKiemKe", b =>
+            modelBuilder.Entity("Media.Models.ChiTietGioHang", b =>
                 {
-                    b.HasOne("Media.Models.KiemKeSanPham", "KiemKeSanPham")
-                        .WithMany("ChiTietKiemKes")
-                        .HasForeignKey("MaKiemKeSanPham")
+                    b.HasOne("Media.Models.GioHang", "GioHang")
+                        .WithMany("ChiTietGioHangs")
+                        .HasForeignKey("MaGioHang")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Media.Models.Sach", "Sach")
-                        .WithMany("ChiTietKiemKes")
+                        .WithMany("ChiTietGioHangs")
+                        .HasForeignKey("MaSach")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GioHang");
+
+                    b.Navigation("Sach");
+                });
+
+            modelBuilder.Entity("Media.Models.ChiTietTraHang", b =>
+                {
+                    b.HasOne("Media.Models.PhieuTraHang", "PhieuTraHang")
+                        .WithMany("ChiTietTraHangs")
+                        .HasForeignKey("MaPhieuTraHang")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Media.Models.Sach", "Sach")
+                        .WithMany("ChiTietTraHangs")
                         .HasForeignKey("MaSach")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("KiemKeSanPham");
+                    b.Navigation("PhieuTraHang");
 
                     b.Navigation("Sach");
                 });
@@ -756,12 +937,29 @@ namespace Media.DataAccess.Migrations
                         .HasForeignKey("ChuDeMaChuDe");
                 });
 
+            modelBuilder.Entity("Media.Models.DiaChiNhanHang", b =>
+                {
+                    b.HasOne("Media.Models.KhachHang", "KhachHang")
+                        .WithMany("DiaChiNhanHangs")
+                        .HasForeignKey("MaKhachHang")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("KhachHang");
+                });
+
             modelBuilder.Entity("Media.Models.DonHang", b =>
                 {
+                    b.HasOne("Media.Models.DiaChiNhanHang", "DiaChiNhanHang")
+                        .WithMany("DonHangs")
+                        .HasForeignKey("MaDiaChi")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Media.Models.KhachHang", "KhachHang")
                         .WithMany("DonHangs")
                         .HasForeignKey("MaKhachHang")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Media.Models.NhanVien", "NhanVien")
@@ -770,9 +968,30 @@ namespace Media.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Media.Models.VanChuyen", "VanChuyen")
+                        .WithMany("DonHangs")
+                        .HasForeignKey("MaVanChuyen")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("DiaChiNhanHang");
+
                     b.Navigation("KhachHang");
 
                     b.Navigation("NhanVien");
+
+                    b.Navigation("VanChuyen");
+                });
+
+            modelBuilder.Entity("Media.Models.GioHang", b =>
+                {
+                    b.HasOne("Media.Models.KhachHang", "KhachHang")
+                        .WithOne("GioHang")
+                        .HasForeignKey("Media.Models.GioHang", "MaKhachHang")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("KhachHang");
                 });
 
             modelBuilder.Entity("Media.Models.HoaDon", b =>
@@ -783,13 +1002,7 @@ namespace Media.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Media.Models.NhanVien", "KeToan")
-                        .WithMany()
-                        .HasForeignKey("MaKeToan");
-
                     b.Navigation("DonHang");
-
-                    b.Navigation("KeToan");
                 });
 
             modelBuilder.Entity("Media.Models.KhachHang", b =>
@@ -801,15 +1014,6 @@ namespace Media.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("TaiKhoan");
-                });
-
-            modelBuilder.Entity("Media.Models.KiemKeSanPham", b =>
-                {
-                    b.HasOne("Media.Models.NhanVien", "NhanVienKiemKe")
-                        .WithMany("KiemKeSanPhams")
-                        .HasForeignKey("MaNhanVienKiemKe");
-
-                    b.Navigation("NhanVienKiemKe");
                 });
 
             modelBuilder.Entity("Media.Models.NhanVien", b =>
@@ -834,32 +1038,31 @@ namespace Media.DataAccess.Migrations
                     b.Navigation("KhachHang");
                 });
 
-            modelBuilder.Entity("Media.Models.PhieuNhapKho", b =>
+            modelBuilder.Entity("Media.Models.PhieuTraHang", b =>
                 {
-                    b.HasOne("Media.Models.NhanVien", "NhanVienNhapKho")
-                        .WithMany("PhieuNhapKhos")
-                        .HasForeignKey("MaNhanVienNhapKho");
-
-                    b.Navigation("NhanVienNhapKho");
-                });
-
-            modelBuilder.Entity("Media.Models.PhieuNhapKhoChiTiet", b =>
-                {
-                    b.HasOne("Media.Models.PhieuNhapKho", "PhieuNhapKho")
-                        .WithMany("PhieuNhapKhoChiTiets")
-                        .HasForeignKey("MaPhieuNhapKho")
+                    b.HasOne("Media.Models.DonHang", "DonHang")
+                        .WithMany("PhieuTraHangs")
+                        .HasForeignKey("MaDonHang")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Media.Models.Sach", "Sach")
-                        .WithMany("PhieuNhapKhoChiTiets")
-                        .HasForeignKey("MaSach")
+                    b.HasOne("Media.Models.KhachHang", "KhachHang")
+                        .WithMany()
+                        .HasForeignKey("MaKhachHang")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PhieuNhapKho");
+                    b.HasOne("Media.Models.NhanVien", "NhanVien")
+                        .WithMany("PhieuTraHangs")
+                        .HasForeignKey("MaNhanVien")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Sach");
+                    b.Navigation("DonHang");
+
+                    b.Navigation("KhachHang");
+
+                    b.Navigation("NhanVien");
                 });
 
             modelBuilder.Entity("Media.Models.Sach", b =>
@@ -945,24 +1148,38 @@ namespace Media.DataAccess.Migrations
                     b.Navigation("Children");
                 });
 
+            modelBuilder.Entity("Media.Models.DiaChiNhanHang", b =>
+                {
+                    b.Navigation("DonHangs");
+                });
+
             modelBuilder.Entity("Media.Models.DonHang", b =>
                 {
                     b.Navigation("ChiTietDonHangs");
 
                     b.Navigation("HoaDon")
                         .IsRequired();
+
+                    b.Navigation("PhieuTraHangs");
+                });
+
+            modelBuilder.Entity("Media.Models.GioHang", b =>
+                {
+                    b.Navigation("ChiTietGioHangs");
                 });
 
             modelBuilder.Entity("Media.Models.KhachHang", b =>
                 {
+                    b.Navigation("ChamSocKhachHangs");
+
+                    b.Navigation("DiaChiNhanHangs");
+
                     b.Navigation("DonHangs");
 
-                    b.Navigation("PhanHoiKhachHangs");
-                });
+                    b.Navigation("GioHang")
+                        .IsRequired();
 
-            modelBuilder.Entity("Media.Models.KiemKeSanPham", b =>
-                {
-                    b.Navigation("ChiTietKiemKes");
+                    b.Navigation("PhanHoiKhachHangs");
                 });
 
             modelBuilder.Entity("Media.Models.NhanVien", b =>
@@ -971,23 +1188,21 @@ namespace Media.DataAccess.Migrations
 
                     b.Navigation("DonHangs");
 
-                    b.Navigation("KiemKeSanPhams");
-
-                    b.Navigation("PhieuNhapKhos");
+                    b.Navigation("PhieuTraHangs");
                 });
 
-            modelBuilder.Entity("Media.Models.PhieuNhapKho", b =>
+            modelBuilder.Entity("Media.Models.PhieuTraHang", b =>
                 {
-                    b.Navigation("PhieuNhapKhoChiTiets");
+                    b.Navigation("ChiTietTraHangs");
                 });
 
             modelBuilder.Entity("Media.Models.Sach", b =>
                 {
                     b.Navigation("ChiTietDonHangs");
 
-                    b.Navigation("ChiTietKiemKes");
+                    b.Navigation("ChiTietGioHangs");
 
-                    b.Navigation("PhieuNhapKhoChiTiets");
+                    b.Navigation("ChiTietTraHangs");
                 });
 
             modelBuilder.Entity("Media.Models.TaiKhoan", b =>
@@ -997,6 +1212,11 @@ namespace Media.DataAccess.Migrations
 
                     b.Navigation("NhanVien")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Media.Models.VanChuyen", b =>
+                {
+                    b.Navigation("DonHangs");
                 });
 #pragma warning restore 612, 618
         }

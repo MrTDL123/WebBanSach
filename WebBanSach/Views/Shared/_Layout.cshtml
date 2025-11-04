@@ -8,6 +8,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="~/img/web_img/logo.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,11 +47,10 @@
                 <!-- Đăng nhập -->
                 <partial name="_LoginPartial" />
 
-                <!-- Giỏ hàng -->
-                <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
-            </div>
+            <!-- Giỏ hàng -->
+            <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
         </div>
-
+        <hr>
         <div id="bottom_header">
             <!-- Nav items -->
             <ul id="bottom_header_right">
@@ -127,13 +127,12 @@
             <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#" style="color: #0ce682;">Trần Duy Long</a></p>
         </div>
     </footer>
-
-    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/yfm2tzcw10n183a3sq1ddo8j7btx6a161wqkyashxwwo4l45/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
         $(document).ready(function () {
             $('#backtop_container').click(function () {

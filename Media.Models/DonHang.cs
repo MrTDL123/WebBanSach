@@ -10,57 +10,79 @@ using System.Threading.Tasks;
 
 namespace Media.Models
 {
-    public enum TinhTrangGiaoHang
+    public enum HinhThucThanhToan
     {
-        [Description("Chờ xác nhận")]
-        ChoXacNhan,
-        [Description("Đã xác nhận")]
-        DaXacNhan,
-        [Description("Chờ lấy hàng")]
-        ChoLayHang,
-        [Description("Đang giao")]
-        DangGiao,
-        [Description("Hàng hóa gặp sự cố")]
-        GapSuCo,
-        [Description("Đã giao thành công")]
-        ThanhCong,
-        [Description("Giao hàng thất bại")]
-        ThatBai,
-        [Description("Đã hủy")]
-        DaHuy,
-        [Description("Trả hàng")]
-        TraHang
+        [Description("Thanh toán tiền mặt khi nhận hàng")]
+        TienMatKhiNhanHang,
+        [Description("Chuyển khoản")]
+        ChuyenKhoan
     }
+
     public class DonHang
     {
         [Key]
         public int MaDonHang { get; set; }
         [Required]
+        public int MaKhachHang { get; set; }
+        [Required]
+        public int MaNhanVien { get; set; }
+        [Required]
+        public int MaVanChuyen { get; set; }
+        [Required]
+        public int? MaDiaChi { get; set; }
+        [Required, StringLength(100)]
+        [DisplayName("Tên người nhận")]
+        public string TenNguoiNhan { get; set; }
+
+        [Required, StringLength(20)]
+        [DisplayName("Số điện thoại người nhận")]
+        public string SoDienThoaiNhan { get; set; }
+        [Required, StringLength(50)]
+        [DisplayName("Phường/Xã")]
+        public string PhuongXa { get; set; }
+
+        [Required, StringLength(50)]
+        [DisplayName("Quận/Huyện")]
+        public string QuanHuyen { get; set; }
+
+        [Required, StringLength(50)]
+        [DisplayName("Tỉnh/Thành phố")]
+        public string TinhThanh { get; set; }
+
+        [Required, StringLength(200)]
+        [DisplayName("Địa chỉ giao hàng chi tiết")]
+        public string DiaChiChiTiet { get; set; }
+
+        [StringLength(200)]
+        [DisplayName("Ghi chú")]
+        public string? GhiChu { get; set; }
+
+        [Column(TypeName = "decimal(18,2)"), DisplayName("Tông tiền")]
+        public decimal Total { get; set; }
+        [Required, DisplayName("Ngày tạo"), DataType(DataType.Date)]
+        public DateTime NgayTao { get; set; } = DateTime.UtcNow;
+        [DataType(DataType.Date), DisplayName("Ngày cập nhật")]
+        public DateTime? NgayCapNhat { get; set; }
+        [Required]
         public bool DaThanhToan { get; set; }
         [Required]
-        public TinhTrangGiaoHang TinhTrangGiaoHang { get; set; } = TinhTrangGiaoHang.ChoXacNhan;
-        [Required]
-        public DateTime NgayDat {  get; set; } = DateTime.Now;
-        [Required]
-        public DateTime NgayGiao { get; set; }
-
-        //Thuộc tính chỉ dành cho Hậu Cần
-        public DateTime? NgayTaoDonVanChuyen { get; set; }
-        public DateTime? NgayGuiHangVanChuyen { get; set; }
-
+        [DisplayName("Hình thức thanh toán")]
+        public HinhThucThanhToan HinhThucThanhToan { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang;
 
 
         //NAVIGATION PROPERTIES
-        public int MaKhachHang { get; set; }
-
         [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; }
-        public int MaNhanVien { get; set; }
         [ForeignKey("MaNhanVien")]
         public NhanVien NhanVien { get; set; }
+        [ForeignKey(nameof(MaVanChuyen))]
+        public VanChuyen VanChuyen { get; set; }
+        [ForeignKey(nameof(MaDiaChi))]
+        public DiaChiNhanHang DiaChiNhanHang { get; set; }
+
 
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        public ICollection<PhieuTraHang> PhieuTraHangs { get; set; }
         public HoaDon HoaDon { get; set; }
-
     }
 }

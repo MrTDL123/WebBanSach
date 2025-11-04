@@ -58,7 +58,7 @@ namespace Media.DataAccess.Repository
                 objFromDb.TenSach = obj.TenSach;
                 objFromDb.MoTa = obj.MoTa;
                 objFromDb.GiaBan = obj.GiaBan;
-                objFromDb.NgayCapNhap = DateTime.Now;
+                objFromDb.NgayCapNhat = DateTime.Now;
                 objFromDb.SoLuong = obj.SoLuong;
                 objFromDb.MaChuDe = obj.MaChuDe;
                 objFromDb.MaTacGia = obj.MaTacGia;
