@@ -1,926 +1,339 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết sách</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        ul {
-            padding-left: 0;
-        }
-
-        li {
-            list-style: none;
-        }
-
-        body {
-            background: #e8e8e8;
-            color: #333;
-        }
-
-        .product-wrapper {
-            padding: 20px 70px;
-            display: grid;
-            grid-template-columns: 500px 1fr;
-            gap: 15px;
-            align-items: start;
-        }
-
-        .left-column {
-            position: sticky;
-            top: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .main-image {
-            width: 100%;
-            border-radius: 8px;
-            border: 1px solid #e5e5e5;
-            margin-bottom: 15px;
-        }
-
-        .thumbnail-list {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .thumbnail {
-            width: 70px;
-            height: 90px;
-            border: 2px solid #e5e5e5;
-            border-radius: 4px;
-            cursor: pointer;
-            object-fit: cover;
-            transition: all 0.2s;
-        }
-
-        .thumbnail.active,
-        .thumbnail:hover {
-            border-color: #C92127;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 0 20px;
-            border-radius: 8px;
-            text-transform: none;
-            font-size: 15px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            height: 44px;
-        }
-
-        .btn-primary {
-            background: #C92127;
-            color: white;
-            border: 2px solid #C92127;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-primary:hover {
-            background: white;
-            color: #C92127; 
-            border: 2px solid #C92127;
-        }
-
-        .btn-outline {
-            background: white;
-            color: #C92127;
-            border: 2px solid #C92127;
-        }
-
-        .btn-outline:hover {
-            background: #C92127;
-            color: white;
-            border: 2px solid #C92127;
-        }
-
-        .policy-title {
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #0d3b66;
-            font-size: 15px;
-        }
-
-        .policy-item {
-            font-size: 13px;
-            display: flex;
-            justify-content: space-between;
-            cursor: pointer;
-            padding: 5px 0;
-        }
-
-        .montserrat-bold {
-            font-size: 1.2em;
-        }
-
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .info-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .product {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #0d3b66;
-            margin-bottom: 15px;
-        }
-
-        .product-meta {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px 40px;
-            font-size: 14px;
-            list-style: none;
-        }
-
-        .meta-value {
-            color: #333;
-            font-weight: 500;
-        }
-
-        .meta-value:hover {
-            color: #2489F4;
-        }
-
-        .rating-link {
-            font-size: 14px;
-            color: #ffa500;
-        }
-
-        .sold-count {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .price-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .price-main {
-            font-size: 32px;
-            font-weight: 700;
-            color: #C92127;
-        }
-
-        .price-original {
-            font-size: 16px;
-            color: #999;
-            text-decoration: line-through;
-        }
-
-        .discount-badge {
-            display: inline-block;
-            background: #C92127;
-            color: white;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .stock-status {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 8px 15px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            margin-top: 10px;
-        }
-
-        @*coupon*@
-        .coupon-container {
-            padding: 20px 0;
-            display: flex;
-            gap: 8px;
-        }
-        
-        .coupon-item {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 4px 10px;
-            width: 100%;
-            height: 44px;
-            cursor: pointer;    
-            border-color: #ffd54f;
-        }
-
-        .coupon-item-img {
-            width: 25px;
-            height: 25px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 15px;
-            margin-right: 6px;
-            background-color: #ffd54f;
-        }
-
-        .quantity-section {
-            padding-top: 16px;
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-
-        .quantity-control {
-            display: flex;
-            height: 32px;
-            border: 1px solid #ececec;
-            border-radius: 4px;
-            margin-left: 20px;
-        }
-
-        .quantity-label {
-            width: 15%;
-            font-size: 16px;
-        }
-
-        .btn-qty {
-            width: 40px;
-            font-size: 1.2em;
-            cursor: pointer;
-            border: none;
-        }
-
-        #qty {
-            width: 50px;
-            text-align: center;
-            border: none;
-            font-weight: 700;
-        }
-
-        .promo-link {
-            margin-left: 20px;
-            color: #2489F4;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #0d3b66;
-            margin-bottom: 15px;
-        }
-
-        .delivery-info {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            font-size: 14px;
-        }
-
-        .standard {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-table tr {
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .info-table td {
-            padding: 12px 8px;
-            font-size: 14px;
-        }
-
-        .info-table td:first-child {
-            color: #666;
-            width: 35%;
-        }
-
-        .info-table td:last-child {
-            color: #333;
-            font-weight: 500;
-        }
-
-        .description-content {
-            line-height: 1.8;
-            color: #555;
-            font-size: 14px;
-        }
-
-        /* REVIEW SECTION - KHỐI ĐỘC LẬP */
-        .review-section {
-            padding: 0 70px;
-        }
-
-        .review-wrapper {
-            background: white;
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        /* Review Header */
-
-        .review-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 24px;
-        }
-
-        .review-summary {
-            display: flex;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .rating-overview {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 150px;
-        }
-
-        .rating-score {
-            font-size: 48px;
-            font-weight: 700;
-            color: #333;
-            line-height: 1;
-        }
-
-        .rating-max {
-            font-size: 24px;
-            color: #999;
-        }
-
-        .stars-display {
-            color: #ffa500;
-            font-size: 20px;
-        }
-
-        .rating-count {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .rating-bars {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .rating-bar-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .bar-label {
-            font-size: 13px;
-            color: #666;
-            min-width: 45px;
-        }
-
-        .bar-container {
-            flex: 1;
-            height: 8px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .bar-fill {
-            height: 100%;
-            background: #ffa500;
-            transition: width 0.3s ease;
-        }
-
-        .bar-percentage {
-            font-size: 13px;
-            color: #666;
-            min-width: 40px;
-            text-align: right;
-        }
-
-        .write-review-btn {
-            padding: 10px 24px;
-            background: white;
-            color: #C92127;
-            border: 2px solid #C92127;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .write-review-btn:hover {
-            background: #C92127;
-            color: white;
-        }
-
-        /* Review Tabs */
-        .review-tabs {
-            display: flex;
-            gap: 32px;
-            border-bottom: 2px solid #f0f0f0;
-            margin: 24px 0;
-        }
-
-        .tab {
-            padding: 12px 0;
-            font-size: 14px;
-            color: #666;
-            cursor: pointer;
-            position: relative;
-            transition: color 0.2s;
-        }
-
-        .tab:hover {
-            color: #C92127;
-        }
-
-        .tab.active {
-            color: #C92127;
-            font-weight: 600;
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #C92127;
-        }
-
-        .review-item {
-            padding: 20px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .review-item:last-child {
-            border-bottom: none;
-        }
-
-        .reviewer-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .reviewer-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .review-date {
-            font-size: 13px;
-            color: #999;
-        }
-
-        .review-content {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #333;
-            margin-bottom: 12px;
-        }
-
-        .review-actions {
-            display: flex;
-            gap: 16px;
-        }
-
-        .action-btn {
-            padding: 6px 12px;
-            background: transparent;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #666;
-            transition: all 0.2s;
-        }
-
-        .action-btn:hover {
-            border-color: #C92127;
-            color: #C92127;
-        }
-
-        .show-more-link {
-            color: #2489F4;
-            font-size: 13px;
-            text-decoration: none;
-        }
-
-        .show-more-link:hover {
-            text-decoration: underline;
-        }
-
-        /* View More Button */
-        .view-more-section {
-            text-align: center;
-            padding: 24px 0;
-        }
-
-        .view-more-btn {
-            padding: 12px 32px;
-            background: white;
-            color: #C92127;
-            border: 2px solid #C92127;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .view-more-btn:hover {
-            background: #C92127;
-            color: white;
-        }
-    </style>
-</head>
-<body class="montserrat-regular">
-    <div class="product-wrapper">
-        <!-- CỘT TRÁI - STICKY -->
-        <div class="left-column">
-            <div class="product-images">
-                <img src="https://via.placeholder.com/380x480/e8f5e9/2e7d32?text=Những+lá+thư+thời+chiến" alt="Những lá thư thời chiến Việt Nam" class="main-image" id="mainImage">
-                <div class="thumbnail-list">
-                    <img src="https://via.placeholder.com/70x90/e8f5e9/2e7d32?text=1" alt="thumb1" class="thumbnail active" onclick="changeImage(this)">
-                    <img src="https://via.placeholder.com/70x90/fce4ec/c2185b?text=2" alt="thumb2" class="thumbnail" onclick="changeImage(this)">
-                    <img src="https://via.placeholder.com/70x90/e3f2fd/1976d2?text=3" alt="thumb3" class="thumbnail" onclick="changeImage(this)">
-                    <img src="https://via.placeholder.com/70x90/fff3e0/f57c00?text=4" alt="thumb4" class="thumbnail" onclick="changeImage(this)">
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-outline">🛒 Thêm vào giỏ hàng</button>
-                <button class="btn btn-primary">Mua ngay</button>
-            </div>
-
-            <div class="policy-section">
-                <h3 class="policy-title">CHÍNH SÁCH ƯU ĐÃI</h3>  @* nên sài thẻ p*@
-                <label class="policy-item" onclick="openPopup('shipping')">
-                    <span class="policy-text">🚚 <span id="policy-popup-shipping"><strong>Thời gian giao hàng</strong></span>: Giao nhanh và uy tín</span>
-                    <span class="montserrat-bold"> ></span>
-                </label>
-                <label class="policy-item" onclick="openPopup('return')">
-                    <span class="policy-text">🔄 <span id="policy-popup-return"><strong>Chính sách đổi trả</strong></span>: Đổi trả miễn phí trong 7 ngày</span>
-                    <span class="montserrat-bold"> ></span>
-                </label>
-                <label class="policy-item" onclick="openPopup('wholesale')">
-                    <span class="policy-text">🎁 <span id="policy-popup-wholesale"><strong>Chính sách khách sỉ</strong></span>: Ưu đãi khi mua số lượng lớn</span>
-                    <span class="montserrat-bold"> ></span>
-                </label>
+﻿<div class="product-wrapper">
+    <!-- CỘT TRÁI - STICKY -->
+    <div class="left-column">
+        <div class="product-images">
+            <img src="https://via.placeholder.com/380x480/e8f5e9/2e7d32?text=Những+lá+thư+thời+chiến" alt="Những lá thư thời chiến Việt Nam" class="main-image" id="mainImage">
+            <div class="thumbnail-list">
+                <img src="https://via.placeholder.com/70x90/e8f5e9/2e7d32?text=1" alt="thumb1" class="thumbnail active" onclick="changeImage(this)">
+                <img src="https://via.placeholder.com/70x90/fce4ec/c2185b?text=2" alt="thumb2" class="thumbnail" onclick="changeImage(this)">
+                <img src="https://via.placeholder.com/70x90/e3f2fd/1976d2?text=3" alt="thumb3" class="thumbnail" onclick="changeImage(this)">
+                <img src="https://via.placeholder.com/70x90/fff3e0/f57c00?text=4" alt="thumb4" class="thumbnail" onclick="changeImage(this)">
             </div>
         </div>
 
-        <!-- CỘT PHẢI - SCROLLABLE -->
-        <div class="right-column">
-            <!-- Ô THÔNG TIN SÁCH -->
-            <div class="info-card product">
-                <h1 class="product-title">NHỮNG LÁ THƯ THỜI CHIẾN VIỆT NAM</h1>
+        <div class="action-buttons">
+            <button class="btn btn-outline">🛒 Thêm vào giỏ hàng</button>
+            <button class="btn btn-primary">Mua ngay</button>
+        </div>
 
-                <ul class="product-meta">
-                    <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">Công Ty Cổ Phần Waka</a></li>
-                    <li class="meta-label">Tác giả: <a href="#" class="meta-value">Đặng Vương Hưng</a></li>
-                    <li class="meta-label">NXB: <a href="#" class="meta-value">Chính Trị Quốc Gia Sự Thật</a></li>
-                    <li class="meta-label">Hình thức bìa: <a href="#" class="meta-value">Bìa Mềm</a></li>
-                </ul>
-
-                <div class="rating-section">
-                    <a href="#" class="rating-link">★★★★★ (127 đánh giá)</a>
-                    <span class="sold-count">| Đã bán 444</span>
-                </div>
-
-                <div class="price-section">
-                    <label class="price-main">129.000 đ</label>
-                    <label class="price-original">200.000 đ</label>
-                    <label class="discount-badge">-35%</label>
-                </div>
-
-                <p class="stock-status">✓ Còn hàng</p>
-            </div>
-
-            <!-- Ô THÔNG TIN VẬN CHUYỂN -->
-            <div class="info-card">
-                <h3 class="section-title">Thông tin vận chuyển</h3>
-                <div class="delivery-info">
-                    <div class="delivery-item address">
-                        <label class="delivery-label">📍Giao hàng đến <span class="delivery-value" id="currentAddressText" style="font-weight:bold;">Phường Bến Nghé, Quận 1, Hồ Chí Minh</span></label>
-                        <label id="openPopupChangeAddress" class="promo-link" onclick="openAddressPopup()">Thay đổi</label>
-                    </div>
-                    <div class="delivery-item standard">
-                        <label class="delivery-label" style="font-weight:bold;">🚚 Giao hàng tiêu chuẩn </label>
-                        <span class="delivery-value" id="deliveryEstimateText" style="padding-left:25px;">Dự kiến giao Thứ hai - 06/10</span>
-                    </div>
-                </div>
-
-                <div class="coupon-container">
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 10k</div>
-                    </div>
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 20k</div>
-                    </div>
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 10%</div>
-                    </div>
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 20%</div>
-                    </div>
-                </div>
-
-                <div class="quantity-section">
-                    <label class="quantity-label" style="font-size:16px;">Số lượng: </label>
-                    <div class="quantity-control">
-                        <button class="btn-qty" onclick="decreaseQty()">-</button>
-                        <input type="text" id="qty" value="1" maxvalue="999" readonly>
-                        <button class="btn-qty" onclick="increaseQty()">+</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ô THÔNG TIN CHI TIẾT -->
-            <div class="info-card">
-                <h3 class="section-title">📋 Thông tin chi tiết</h3>
-                <table class="info-table" style="width:100%;">
-                    <tr>
-                        <td>Mã hàng</td>
-                        <td>3300000055619</td>
-                    </tr>
-                    <tr>
-                        <td>Tác giả</td>
-                        <td>Đặng Vương Hưng</td>
-                    </tr>
-                    <tr>
-                        <td>NXB</td>
-                        <td>Chính Trị Quốc Gia Sự Thật</td>
-                    </tr>
-                    <tr>
-                        <td>Năm XB</td>
-                        <td>2025</td>
-                    </tr>
-                    <tr>
-                        <td>Ngôn ngữ</td>
-                        <td>Tiếng Việt</td>
-                    </tr>
-                    <tr>
-                        <td>Trọng lượng</td>
-                        <td>500 gr</td>
-                    </tr>
-                    <tr>
-                        <td>Kích thước</td>
-                        <td>24 x 16 x 5 cm</td>
-                    </tr>
-                    <tr>
-                        <td>Số trang</td>
-                        <td>368</td>
-                    </tr>
-                    <tr>
-                        <td>Hình thức bìa</td>
-                        <td>Bìa Mềm</td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- Ô MÔ TẢ SẢN PHẨM -->
-            <div class="info-card">
-                <h3 class="section-title">📖 Mô tả sản phẩm</h3>
-                <p class="description-content">
-                    Cuốn sách "Những lá thư thời chiến Việt Nam" tập hợp nhiều bức thư xúc động
-                    của những người lính, những người con xa quê trong thời kỳ kháng chiến.
-                    Đây là một phần lịch sử quý giá được lưu giữ qua từng trang giấy.
-
-                    Qua những lá thư này, độc giả sẽ cảm nhận được tình yêu thương gia đình,
-                    khát vọng hòa bình và lòng dũng cảm của những con người đã hy sinh vì
-                    độc lập tự do của Tổ quốc. Mỗi dòng chữ đều chứa đựng cảm xúc chân thật
-                    và sâu sắc, là minh chứng sống động cho một thời kỳ lịch sử đầy biến động.
-
-                    Cuốn sách không chỉ là tư liệu lịch sử mà còn là nguồn cảm hứng về lòng
-                    yêu nước, tinh thần đoàn kết và ý chí kiên cường của dân tộc Việt Nam
-                    trong những năm tháng khó khăn nhất.
-                </p>
-            </div>
+        <div class="policy-section">
+            <h3 class="policy-title">CHÍNH SÁCH ƯU ĐÃI</h3>  @* nên sài thẻ p*@
+            <label class="policy-item" onclick="openPopup('shipping')">
+                <span class="policy-text">🚚 <span class="policy-content" id="policy-popup-shipping">Thời gian giao hàng</span>: Giao nhanh và uy tín</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
+            <label class="policy-item" onclick="openPopup('return')">
+                <span class="policy-text">🔄 <span class="policy-content" id="policy-popup-return">Chính sách đổi trả</span>: Đổi trả miễn phí trong 7 ngày</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
+            <label class="policy-item" onclick="openPopup('wholesale')">
+                <span class="policy-text">🎁 <span class="policy-content" id="policy-popup-wholesale">Chính sách khách sỉ</span>: Ưu đãi khi mua số lượng lớn</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
         </div>
     </div>
 
-    <!-- PHẦN ĐÁNH GIÁ - KHỐI ĐỘC LẬP -->
-    <section class="review-section">
-        <div class="review-wrapper">
-            <!-- Review Header -->
-            <div class="review-header">
-                <h2 class="review-title">Đánh giá sản phẩm</h2>
+    <!-- CỘT PHẢI - SCROLLABLE -->
+    <div class="right-column">
+        <!-- Ô THÔNG TIN SÁCH -->
+        <div class="info-card product">
+            <h1 class="product-title">NHỮNG LÁ THƯ THỜI CHIẾN VIỆT NAM</h1>
 
-                <div class="review-summary">
-                    <div class="rating-overview">
-                        <label class="rating-score">5<label class="rating-max">/5</label></label>
+            <ul class="product-meta">
+                <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">Công Ty Cổ Phần Waka</a></li>
+                <li class="meta-label">Tác giả: <a href="#" class="meta-value">Đặng Vương Hưng</a></li>
+                <li class="meta-label">NXB: <a href="#" class="meta-value">Chính Trị Quốc Gia Sự Thật</a></li>
+                <li class="meta-label">Hình thức bìa: <a href="#" class="meta-value">Bìa Mềm</a></li>
+            </ul>
+
+            <div class="rating-section">
+                <a href="#" class="rating-link">★★★★★ (127 đánh giá)</a>
+                <span class="sold-count">| Đã bán 444</span>
+            </div>
+
+            <div class="price-section">
+                <label class="price-main">129.000 đ</label>
+                <label class="price-original">200.000 đ</label>
+                <label class="discount-badge">-35%</label>
+            </div>
+
+            <p class="stock-status">✓ Còn hàng</p>
+        </div>
+
+        <!-- Ô THÔNG TIN VẬN CHUYỂN -->
+        <div class="info-card">
+            <h3 class="section-title">Thông tin vận chuyển</h3>
+            <div class="delivery-info">
+                <div class="delivery-item address">
+                    <label class="delivery-label">📍Giao hàng đến <span class="delivery-value" id="currentAddressText" style="font-weight:bold;">Phường Bến Nghé, Quận 1, Hồ Chí Minh</span></label>
+                    <label id="openPopupChangeAddress" class="promo-link" onclick="openAddressPopup()">Thay đổi</label>
+                </div>
+                <div class="delivery-item standard">
+                    <label class="delivery-label" style="font-weight:bold;">🚚 Giao hàng tiêu chuẩn </label>
+                    <span class="delivery-value" id="deliveryEstimateText" style="padding-left:25px;">Dự kiến giao Thứ hai - 06/10</span>
+                </div>
+            </div>
+
+            <div class="coupon-container">
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 10k</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 20k</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 10%</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 20%</div>
+                </div>
+            </div>
+
+            <div class="quantity-section">
+                <label class="quantity-label" style="font-size:16px;">Số lượng: </label>
+                <div class="quantity-control">
+                    <button class="btn-qty" onclick="decreaseQty()">-</button>
+                    <input type="text" id="qty" value="1" maxvalue="999" readonly>
+                    <button class="btn-qty" onclick="increaseQty()">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ô THÔNG TIN CHI TIẾT -->
+        <div class="info-card">
+            <h3 class="section-title">📋 Thông tin chi tiết</h3>
+            <table class="info-table" style="width:100%;">
+                <tr>
+                    <td>Mã hàng</td>
+                    <td>3300000055619</td>
+                </tr>
+                <tr>
+                    <td>Tác giả</td>
+                    <td>Đặng Vương Hưng</td>
+                </tr>
+                <tr>
+                    <td>NXB</td>
+                    <td>Chính Trị Quốc Gia Sự Thật</td>
+                </tr>
+                <tr>
+                    <td>Năm XB</td>
+                    <td>2025</td>
+                </tr>
+                <tr>
+                    <td>Ngôn ngữ</td>
+                    <td>Tiếng Việt</td>
+                </tr>
+                <tr>
+                    <td>Trọng lượng</td>
+                    <td>500 gr</td>
+                </tr>
+                <tr>
+                    <td>Kích thước</td>
+                    <td>24 x 16 x 5 cm</td>
+                </tr>
+                <tr>
+                    <td>Số trang</td>
+                    <td>368</td>
+                </tr>
+                <tr>
+                    <td>Hình thức bìa</td>
+                    <td>Bìa Mềm</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Ô MÔ TẢ SẢN PHẨM -->
+        <div class="info-card">
+            <h3 class="section-title">📖 Mô tả sản phẩm</h3>
+            <p class="description-content">
+                Cuốn sách "Những lá thư thời chiến Việt Nam" tập hợp nhiều bức thư xúc động
+                của những người lính, những người con xa quê trong thời kỳ kháng chiến.
+                Đây là một phần lịch sử quý giá được lưu giữ qua từng trang giấy.
+
+                Qua những lá thư này, độc giả sẽ cảm nhận được tình yêu thương gia đình,
+                khát vọng hòa bình và lòng dũng cảm của những con người đã hy sinh vì
+                độc lập tự do của Tổ quốc. Mỗi dòng chữ đều chứa đựng cảm xúc chân thật
+                và sâu sắc, là minh chứng sống động cho một thời kỳ lịch sử đầy biến động.
+
+                Cuốn sách không chỉ là tư liệu lịch sử mà còn là nguồn cảm hứng về lòng
+                yêu nước, tinh thần đoàn kết và ý chí kiên cường của dân tộc Việt Nam
+                trong những năm tháng khó khăn nhất.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- PHẦN ĐÁNH GIÁ - KHỐI ĐỘC LẬP -->
+<section class="review-section">
+    <div class="review-wrapper">
+        <!-- Review Header -->
+        <div class="review-header">
+            <h2 class="review-title">Đánh giá sản phẩm</h2>
+
+            <div class="review-summary">
+                <div class="rating-overview">
+                    <label class="rating-score">5<label class="rating-max">/5</label></label>
+                    <label class="stars-display">★★★★★</label>
+                    <label class="rating-count">(8 đánh giá)</label>
+                </div>
+
+                <div class="rating-bars">
+                    <div class="rating-bar-item">
+                        <span class="bar-label">5 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 100%"></div>
+                        </div>
+                        <span class="bar-percentage">100%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">4 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">3 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">2 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">1 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                </div>
+
+                <button class="write-review-btn" id="btn-review" onclick="showPopupReview()">✏️ Viết đánh giá</button>
+            </div>
+        </div>
+
+        <div id="reviewContent" style="display: none;">
+            <!-- Review Tabs -->
+            <div class="review-tabs">
+                <div class="tab active">Mới nhất</div>
+                <div class="tab">Yêu thích nhất</div>
+            </div>
+
+            <!-- Review List -->
+            <div class="review-list">
+                <div class="review-item">
+                    <div class="reviewer-info">
+                        <ul class="reviewer-left">
+                            <li class="reviewer-name">Trang Min</li>
+                            <li class="review-date">05/06/2020</li>
+                        </ul>
                         <label class="stars-display">★★★★★</label>
-                        <label class="rating-count">(8 đánh giá)</label>
                     </div>
-
-                    <div class="rating-bars">
-                        <div class="rating-bar-item">
-                            <span class="bar-label">5 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 100%"></div>
-                            </div>
-                            <span class="bar-percentage">100%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">4 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">3 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">2 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">1 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
+                    <p class="review-content">
+                        Tôi đã khi nghĩ rằng mình sẽ hiểu, sẽ cảm tốt hơn về tình yêu trong Đỉnh gió hú khi đã trải qua những cung bậc của tình yêu sau 15 năm đọc lại. Không, dù có yêu, có rung cảm cả trăm lần nữa, thì những chuyện tình của Đỉnh gió hú vẫn chỉ khiến tôi dạy dứt khổng người... Cuốn truyện là một bức tranh u tối, âm đạm khiến tôi vô cùng mệt mỏi nhưng lại không thể dừng lại cho đến những dòng chữ cuối cùng. Lối viết hoang sơ, gai góc và đầy đam mê đã tạo ra sức quyền rũ mạnh liệt cho tác phẩm Đỉnh gió hú, đủ để đưa Emily Jane Bronte vào hàng ngũ những cây bút xuất sắc, dù cá cuộc...
+                        <a href="#" class="show-more-link">Xem thêm</a>
+                    </p>
+                    <div class="review-actions">
+                        <button class="action-btn">👍 Thích (0)</button>
+                        <button class="action-btn">🚩 Báo cáo</button>
                     </div>
+                </div>
 
-                    <button class="write-review-btn" id="btn-review" onclick="showPopupReview()">✏️ Viết đánh giá</button>
+                <div class="review-item">
+                    <div class="reviewer-info">
+                        <ul class="reviewer-left">
+                            <li class="reviewer-name">Tiểu Mai</li>
+                            <li  class="review-date">14/05/2020</li>
+                        </ul>
+                        <label class="stars-display">★★★★★</label>
+                    </div>
+                    <p class="review-content">
+                        Ngòi bút của tác giả thật tài tình khi kéo ta đi qua từng cung bậc lúc nào chẳng hay, và ta cũng chẳng thể nào nhận ra được, và dù có nhận ra, thì ta cũng không thoát nổi vòng xoáy ác liệt, bao loan, đủ đời của con lốc tình cảm này. Tình yêu liều có lỗi làm gì là một câu hỏi hay. Bố ba trong Đỉnh gió...
+                        <a href="#" class="show-more-link">Xem thêm</a>
+                    </p>
+                    <div class="review-actions">
+                        <button class="action-btn">👍 Thích (0)</button>
+                        <button class="action-btn">🚩 Báo cáo</button>
+                    </div>
+                </div>
+
+                <div class="review-item">
+                    <div class="reviewer-info">
+                        <ul class="reviewer-left">
+                            <li  class="reviewer-name">Minh Anh</li>
+                            <li class="review-date">20/04/2020</li>
+                        </ul>
+                        <label class="stars-display">★★★★★</label>
+                    </div>
+                    <p class="review-content">
+                        Một cuốn sách tuyệt vời! Nội dung sâu sắc, cách viết cuốn hút. Tôi đã không thể rời mắt khỏi từng trang sách. Rất đáng để đọc và suy ngẫm.
+                    </p>
+                    <div class="review-actions">
+                        <button class="action-btn">👍 Thích (0)</button>
+                        <button class="action-btn">🚩 Báo cáo</button>
+                    </div>
                 </div>
             </div>
 
-            <div id="reviewContent" style="display: none;">
-                <!-- Review Tabs -->
-                <div class="review-tabs">
-                    <div class="tab active">Mới nhất</div>
-                    <div class="tab">Yêu thích nhất</div>
-                </div>
-
-                <!-- Review List -->
-                <div class="review-list">
-                    <div class="review-item">
-                        <div class="reviewer-info">
-                            <ul class="reviewer-left">
-                                <li class="reviewer-name">Trang Min</li>
-                                <li class="review-date">05/06/2020</li>
-                            </ul>
-                            <label class="stars-display">★★★★★</label>
-                        </div>
-                        <p class="review-content">
-                            Tôi đã khi nghĩ rằng mình sẽ hiểu, sẽ cảm tốt hơn về tình yêu trong Đỉnh gió hú khi đã trải qua những cung bậc của tình yêu sau 15 năm đọc lại. Không, dù có yêu, có rung cảm cả trăm lần nữa, thì những chuyện tình của Đỉnh gió hú vẫn chỉ khiến tôi dạy dứt khổng người... Cuốn truyện là một bức tranh u tối, âm đạm khiến tôi vô cùng mệt mỏi nhưng lại không thể dừng lại cho đến những dòng chữ cuối cùng. Lối viết hoang sơ, gai góc và đầy đam mê đã tạo ra sức quyền rũ mạnh liệt cho tác phẩm Đỉnh gió hú, đủ để đưa Emily Jane Bronte vào hàng ngũ những cây bút xuất sắc, dù cá cuộc...
-                            <a href="#" class="show-more-link">Xem thêm</a>
-                        </p>
-                        <div class="review-actions">
-                            <button class="action-btn">👍 Thích (0)</button>
-                            <button class="action-btn">🚩 Báo cáo</button>
-                        </div>
-                    </div>
-
-                    <div class="review-item">
-                        <div class="reviewer-info">
-                            <ul class="reviewer-left">
-                                <li class="reviewer-name">Tiểu Mai</li>
-                                <li  class="review-date">14/05/2020</li>
-                            </ul>
-                            <label class="stars-display">★★★★★</label>
-                        </div>
-                        <p class="review-content">
-                            Ngòi bút của tác giả thật tài tình khi kéo ta đi qua từng cung bậc lúc nào chẳng hay, và ta cũng chẳng thể nào nhận ra được, và dù có nhận ra, thì ta cũng không thoát nổi vòng xoáy ác liệt, bao loan, đủ đời của con lốc tình cảm này. Tình yêu liều có lỗi làm gì là một câu hỏi hay. Bố ba trong Đỉnh gió...
-                            <a href="#" class="show-more-link">Xem thêm</a>
-                        </p>
-                        <div class="review-actions">
-                            <button class="action-btn">👍 Thích (0)</button>
-                            <button class="action-btn">🚩 Báo cáo</button>
-                        </div>
-                    </div>
-
-                    <div class="review-item">
-                        <div class="reviewer-info">
-                            <ul class="reviewer-left">
-                                <li  class="reviewer-name">Minh Anh</li>
-                                <li class="review-date">20/04/2020</li>
-                            </ul>
-                            <label class="stars-display">★★★★★</label>
-                        </div>
-                        <p class="review-content">
-                            Một cuốn sách tuyệt vời! Nội dung sâu sắc, cách viết cuốn hút. Tôi đã không thể rời mắt khỏi từng trang sách. Rất đáng để đọc và suy ngẫm.
-                        </p>
-                        <div class="review-actions">
-                            <button class="action-btn">👍 Thích (0)</button>
-                            <button class="action-btn">🚩 Báo cáo</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- View More Button -->
-                <div class="view-more-section">
-                    <button class="view-more-btn">Xem thêm đánh giá</button>
-                </div>
-             </div>
-        </div>
-    </section>
-
-    <!-- Popup chính sách ưu đãi -->
-    <div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
-    <div id="popupModal" class="popup-modal">
-        <div class="popup-header">
-            <div class="popup-spacer"></div>
-            <span id="popupTitle">Thời gian giao hàng</span>
-            <button class="popup-close" onclick="closePopup()">×</button>
-        </div>
-        <div class="popup-body" id="popupContent"></div>
+            <!-- View More Button -->
+            <div class="view-more-section">
+                <button class="view-more-btn">Xem thêm đánh giá</button>
+            </div>
+            </div>
     </div>
+</section>
 
-    <!-- 🔹 Popup thay đổi địa chỉ giao hàng -->
-    <div id="addressPopupOverlay" class="popup-overlay" style="display:none;"></div>
-    <div id="addressPopupModal" class="popup-modal" style="display:none;">
-        <div class="popup-body" id="addressPopupContent">
-            <!-- Nội dung partial sẽ được load vào đây -->
-        </div>
+<!-- Popup chính sách ưu đãi -->
+<div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
+<div id="popupModal" class="popup-modal">
+    <div class="popup-header">
+        <div class="popup-spacer"></div>
+        <span id="popupTitle">Thời gian giao hàng</span>
+        <button class="popup-close" onclick="closePopup()">×</button>
     </div>
+    <div class="popup-body" id="popupContent"></div>
+</div>
 
-    <!-- 🔹 Popup  viết đánh giá sản phẩm -->
-    <div class="popup-overlay" id="reviewPopupOverlay" style="display:none;"></div>
-    <div class="popup-modal" id="reviewPopupModal" style="display:none;">
-        <div class="popup-body" id="reviewPopupContent" style="padding:unset;">
-
-        </div>
+<!-- 🔹 Popup thay đổi địa chỉ giao hàng -->
+<div id="addressPopupOverlay" class="popup-overlay" style="display:none;"></div>
+<div id="addressPopupModal" class="popup-modal" style="display:none;">
+    <div class="popup-body" id="addressPopupContent">
+        <!-- Nội dung partial sẽ được load vào đây -->
     </div>
+</div>
+
+<!-- 🔹 Popup  viết đánh giá sản phẩm -->
+<div class="popup-overlay" id="reviewPopupOverlay" style="display:none;"></div>
+<div class="popup-modal" id="reviewPopupModal" style="display:none;">
+    <div class="popup-body" id="reviewPopupContent" style="padding:unset;">
+
+    </div>
+</div>
     
 
-    <!-- Nội dung ẩn (PartialView load sẵn) -->
-    <div id="policy-shipping" class="popup-hidden">
-        @Html.Partial("_PopupThoiGianGiaoHang")
-    </div>
-    <div id="policy-return" class="popup-hidden">
-        @Html.Partial("_PopupChinhSachDoiTra")
-    </div>
-    <div id="policy-wholesale" class="popup-hidden">
-        @Html.Partial("_PopupChinhSachKhachSi")
-    </div>
+<!-- Nội dung ẩn (PartialView load sẵn) -->
+<div id="policy-shipping" class="popup-hidden">
+    @Html.Partial("_PopupThoiGianGiaoHang")
+</div>
+<div id="policy-return" class="popup-hidden">
+    @Html.Partial("_PopupChinhSachDoiTra")
+</div>
+<div id="policy-wholesale" class="popup-hidden">
+    @Html.Partial("_PopupChinhSachKhachSi")
+</div>
+
+@section Scripts {
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Biến lưu số lượng đánh giá (mặc định là 0)
@@ -947,7 +360,7 @@
                 reviewCount++;
                 console.log("Số lượng đánh giá hiện tại:", reviewCount);
                 updateReviewDisplay();
-                
+
             });
         });
 
@@ -1149,11 +562,10 @@
                     wardSelect.disabled = true;
                     enableConfirm();
                 } else {
+                    confirmBtn.style.IDBCursor = 'not-allowed';
                     disableConfirm();
                 }
             };
-
-            disableConfirm();
 
             // --- Xác nhận địa chỉ ---
             confirmBtn.onclick = onConfirmClick;
@@ -1200,11 +612,11 @@
 
             function enableConfirm() {
                 confirmBtn.classList.remove('disabledbtn');
-                confirmBtn.disabled = false;
+                // confirmBtn.disabled = false;
             }
             function disableConfirm() {
                 confirmBtn.classList.add('disabledbtn');
-                confirmBtn.disabled = true;
+                // confirmBtn.disabled = true;
             }
 
             function formatEstimatedDate(daysToAdd) {
@@ -1231,7 +643,7 @@
           const titleElement = document.getElementById("policy-popup-" + key);
           if (titleElement) document.getElementById("popupTitle").innerHTML = titleElement.innerHTML;
 
-          
+
           document.getElementById("popupContent").innerHTML = content.innerHTML;
           document.getElementById("popupOverlay").style.display = "block";
           document.getElementById("popupModal").style.display = "block";
@@ -1305,5 +717,4 @@
             }
         }
     </script>
-</body>
-</html>
+}

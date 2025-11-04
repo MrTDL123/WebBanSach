@@ -5,25 +5,24 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Media.Models
 {
-    [Table("ChamSocKhachHang")]
     public class ChamSocKhachHang
     {
         [Key]
-        [DisplayName("Mã chăm sóc")]
         public int MaChamSoc { get; set; }
+        [Required]
+        public int MaNhanVien { get; set; }
+        [Required]
+        public int MaKhachHang { get; set; }
 
         [DisplayName("Nội dung")]
         public string NoiDung { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayName("Ngày chăm sóc")]
-        public DateTime? NgayChamSoc { get; set; }
-
-
-
-        //NAVIGATION PROPERTIES
-        public int? MaNhanVienChamSoc { get; set; }
-        [ForeignKey("MaNhanVienChamSoc")]
-        public NhanVien NhanVienChamSoc { get; set; }
+        public DateTime? NgayChamSoc { get; set; } = DateTime.UtcNow;
+        [ForeignKey(nameof(MaNhanVien))]
+        public NhanVien NhanVien { get; set; }
+        [ForeignKey(nameof(MaKhachHang))]
+        public KhachHang KhachHang { get; set; }
     }
 }

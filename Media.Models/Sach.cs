@@ -18,7 +18,7 @@ namespace Media.Models
         [DisplayName("Tên sách")]
         public string TenSach { get; set; }
 
-        [Display(Name = "Miêu tả sản phẩm")]
+        [Display(Name = "Mô tả sản phẩm")]
         public string? MoTa { get; set; }
         [Required]
         [Display(Name = "Giá sản phẩm")]
@@ -26,11 +26,12 @@ namespace Media.Models
         [ValidateNever]
         public string? ImageUrl { get; set; }
         [Required]
-        public DateTime? NgayCapNhap { get; set; }
+        [DisplayName("Ngày cập nhật")]
+        public DateTime? NgayCapNhat { get; set; }
         [Required]
         public int SoLuong {  get; set; }
-
-
+        [Required, MaxLength(100)]
+        public string NhaCungCap { get; set; }
 
         //NAVIGATION PROPERTIES
         public int MaTacGia { get; set; }
@@ -49,10 +50,8 @@ namespace Media.Models
         [ValidateNever]
         public NhaXuatBan NhaXuatBan { get; set; }
 
-
-        public ICollection<PhieuNhapKhoChiTiet> PhieuNhapKhoChiTiets { get; set; }
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
-        public ICollection<ChiTietKiemKe> ChiTietKiemKes { get; set; }
-
+        public ICollection<ChiTietTraHang> ChiTietTraHangs { get; set; }
+        public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
     }
 }

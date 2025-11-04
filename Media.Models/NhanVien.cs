@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -30,12 +31,14 @@ namespace Media.Models
         public string CCCD { get; set; }
 
         [DisplayName("Lương")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal? Luong { get; set; }
 
         [DisplayName("Bậc lương")]
         public int? BacLuong { get; set; }
 
         [DisplayName("Ngày vào làm")]
+        [DataType(DataType.Date)]
         public DateTime? NgayVaoLam { get; set; }
 
         [StringLength(200)]
@@ -49,8 +52,7 @@ namespace Media.Models
         public TaiKhoan TaiKhoan { get; set; }
 
         public ICollection<DonHang> DonHangs { get; set; }
-        public ICollection<PhieuNhapKho> PhieuNhapKhos { get; set; }
-        public ICollection<KiemKeSanPham> KiemKeSanPhams { get; set; }
+        public ICollection<PhieuTraHang> PhieuTraHangs { get; set; }
         public ICollection<ChamSocKhachHang> ChamSocKhachHangs { get; set; }
     }
 }

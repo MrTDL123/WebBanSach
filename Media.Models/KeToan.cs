@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Media.Models
 {
-    [NotMapped]
+    //[NotMapped]
     public class KeToan : NhanVien
     {
         [DisplayName("Bộ phận phụ trách")]

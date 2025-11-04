@@ -16,9 +16,9 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
     [Area("Customer")]
     public class HomeController : Controller
     {
+        private readonly LocationService _locationService;
         private readonly IUnitOfWork _unit;
-        public HomeController(ILogger<HomeController> logger, IUnitOfWork unit, LocationService locationService)
-        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit)
+        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit, LocationService locationService)
         {
             _unit = unit;
             _locationService = locationService;
@@ -78,25 +78,21 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         {
             var provinces = await _locationService.GetProvincesAsync();
 
-            var model = new Checkout
+            var model = new ThanhToan
             {
-                ProductName = "Bộ Manga - Summer Ghost - Bóng Ma Mùa Hạ - Tập 1 + Tập 2",
-                ProductImage = "/images/product.jpg",
-                Quantity = 1,
-                SubTotal = 76000,
-                ShippingFee = 20000,
-                Total = 96000,
+                TenSanPham = "Bộ Manga - Summer Ghost - Bóng Ma Mùa Hạ - Tập 1 + Tập 2",
+                HinhAnhSanPham = "/images/product.jpg",
+                SoLuong = 1,
+                TamTinh = 76000,
+                MienPhiVanChuyen = 20000,
+                TongTien = 96000,
 
-                Countries = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "VN", Text = "Việt Nam", Selected = true }
-                },
-                Provinces = provinces, // Lấy từ API thật
-                Districts = new List<SelectListItem>
+                list_TinhThanh = provinces, // Lấy từ API thật
+                list_QuanHuyen = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "", Text = "Chọn quận/huyện", Disabled = true, Selected = true }
                 },
-                Wards = new List<SelectListItem>
+                list_PhuongXa = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "", Text = "Chọn phường/xã", Disabled = true, Selected = true }
                 }
@@ -119,25 +115,21 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         {
             var provinces = await _locationService.GetProvincesAsync();
 
-            var model = new Checkout
+            var model = new ThanhToan
             {
-                ProductName = "Bộ Manga - Summer Ghost - Bóng Ma Mùa Hạ - Tập 1 + Tập 2",
-                ProductImage = "/images/product.jpg",
-                Quantity = 1,
-                SubTotal = 76000,
-                ShippingFee = 20000,
-                Total = 96000,
+                TenSanPham = "Bộ Manga - Summer Ghost - Bóng Ma Mùa Hạ - Tập 1 + Tập 2",
+                HinhAnhSanPham = "/images/product.jpg",
+                SoLuong = 1,
+                TamTinh = 76000,
+                MienPhiVanChuyen = 20000,
+                TongTien = 96000,
 
-                Countries = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "VN", Text = "Việt Nam", Selected = true }
-                },
-                Provinces = provinces, // Lấy từ API thật
-                Districts = new List<SelectListItem>
+                list_TinhThanh = provinces, // Lấy từ API thật
+                list_QuanHuyen = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "", Text = "Chọn quận/huyện", Disabled = true, Selected = true }
                 },
-                Wards = new List<SelectListItem>
+                list_PhuongXa = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "", Text = "Chọn phường/xã", Disabled = true, Selected = true }
                 }
@@ -148,14 +140,14 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ThanhToan(Checkout model)
+        public async Task<IActionResult> ThanhToan(ThanhToan model)
         {
             if (!ModelState.IsValid)
             {
                 // Nếu fail, load lại dữ liệu dropdown từ API
-                model.Provinces = await _locationService.GetProvincesAsync();
-                model.Districts = new List<SelectListItem>();
-                model.Wards = new List<SelectListItem>();
+                model.list_TinhThanh = await _locationService.GetProvincesAsync();
+                model.list_QuanHuyen = new List<SelectListItem>();
+                model.list_PhuongXa = new List<SelectListItem>();
                 return View(model);
             }
 
@@ -188,6 +180,34 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         public IActionResult OrderSuccess()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ThongTinCaNhan()
+        {
+            var provinces = await _locationService.GetProvincesAsync();
+
+            var model = new ThanhToan
+            {
+                //ProductName = "Bộ Manga - Summer Ghost - Bóng Ma Mùa Hạ - Tập 1 + Tập 2",
+                //ProductImage = "/images/product.jpg",
+                //Quantity = 1,
+                //SubTotal = 76000,
+                //ShippingFee = 20000,
+                //Total = 96000,
+
+                list_TinhThanh = provinces, // Lấy từ API thật
+                list_QuanHuyen = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Chọn quận/huyện", Disabled = true, Selected = true }
+                },
+                list_PhuongXa = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Chọn phường/xã", Disabled = true, Selected = true }
+                }
+            };
+
+            return View(model);
         }
     }
 }
