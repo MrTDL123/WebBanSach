@@ -11,23 +11,24 @@ namespace Media.Models
 {
     public class ChiTietDonHang
     {
-        [Key]
-        public int MaChiTietDonHang { get; set; }
+        [Key, Column(Order = 0)]
+        public int MaDonHang { get; set; }
+        [Key, Column(Order = 1)]
+        public int MaSach { get; set; }
         [Required]
-        [DisplayName("Số lượng")]
+        [DisplayName("Số lượng"), Range(1, int.MaxValue)]
         public int SoLuong { get; set; }
         [Required]
         [DisplayName("Đơn giá")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal DonGia { get; set; }
-
-
-        //NAVIGATION PROPERTIES
-        public int MaSach { get; set; }
-        public int MaDonHang { get; set; }  
-
-        [ForeignKey("MaSach")]
-        public Sach Sach { get; set; }
-        [ForeignKey("MaDonHang")]
+        [Required]
+        [DisplayName("Thành tiền")]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal ThanhTien { get; set; }
+        [ForeignKey(nameof(MaDonHang))]
         public DonHang DonHang { get; set; }
+        [ForeignKey(nameof(MaSach))]
+        public Sach Sach { get; set; }
     }
 }

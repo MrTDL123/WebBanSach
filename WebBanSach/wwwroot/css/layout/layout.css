@@ -3,20 +3,20 @@
     max-height: 100vh;
 }
 
-    header a:hover {
-        color: white;
-    }
+header a:hover {
+    color: white;
+}
 
 
-    header hr {
-        border: 0;
-        border-top: 1px dashed;
-        color: #0ce682;
-    }
+header hr {
+    border: 0;
+    border-top: 1px dashed;
+    color: #0ce682;
+}
 
 #top_header {
     position: relative;
-    z-index: 100;
+    z-index: 1;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
@@ -24,13 +24,13 @@
     padding: 1rem 5%;
 }
 
-    #top_header a {
-        color: #0ce682;
-    }
+#top_header a {
+    color: #0ce682;
+}
 
-        #top_header a:hover {
-            color: white;
-        }
+#top_header a:hover {
+    color: white;
+}
 
 #top_header_right {
     display: flex;
@@ -68,19 +68,19 @@
     padding-right: 1rem;
 }
 
-    #danh_muc_dropdown:hover{
-        cursor: pointer;
+#danh_muc_dropdown:hover{
+    cursor: pointer;
 
-    }
+}
 
-    #danh_muc_dropdown:nth-child(1) {
-        font-size: 1.2rem;
-    }
+#danh_muc_dropdown:nth-child(1) {
+    font-size: 1.2rem;
+}
 
-    .hide {
-        display: none;
-        opacity: 0;
-    }
+.hide {
+    display: none;
+    opacity: 0;
+}
 
 .show {
     display: flex !important;
@@ -103,10 +103,10 @@
     color: #0ce682;
 }
 
-    #logout:hover {
-        color: white;
-        cursor: pointer;
-    }
+#logout:hover {
+    color: white;
+    cursor: pointer;
+}
 
 
 /*BOTTOM HEADER*/
@@ -132,9 +132,9 @@
     text-transform: uppercase;
 }
 
-    #bottom_header_right li > a:hover {
-        color: aqua;
-    }
+#bottom_header_right li > a:hover {
+    color: aqua;
+}
 
 .dropbtn {
     cursor: pointer;
@@ -183,9 +183,9 @@ footer {
     padding: 2vw;
 }
 
-    footer p {
-        color: white;
-    }
+footer p {
+    color: white;
+}
 
 #logo_footer {
     display: flex;
@@ -198,25 +198,25 @@ footer {
     justify-content: center;
 }
 
-    #social_media ul {
-        padding-left: unset;
-        display: flex;
-        flex-direction: row;
-        list-style: none;
-        gap: 2vw;
-        height: 3.5vw;
-    }
+#social_media ul {
+    padding-left: unset;
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    gap: 2vw;
+    height: 3.5vw;
+}
 
 
-        #social_media ul li a {
-            padding: 1vw;
-            font-size: 1.3vw;
-            border-radius: 8px;
-        }
+#social_media ul li a {
+    padding: 1vw;
+    font-size: 1.3vw;
+    border-radius: 8px;
+}
 
-            #social_media ul li a i {
-                color: white;
-            }
+#social_media ul li a i {
+    color: white;
+}
 
 #fb {
     background-color: #3b5999;
@@ -236,6 +236,4 @@ footer {
 
 #github {
     background-color: #171515;
-}
-
-                       
+}              

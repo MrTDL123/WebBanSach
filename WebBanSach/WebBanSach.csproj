@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="compilerconfig.json" />
     <Content Remove="wwwroot\js\shop.js" />
   </ItemGroup>
 
@@ -28,11 +27,15 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 		<PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.9" />
+		<PackageReference Include="PagedList.Mvc" Version="4.5.0" />
+		<PackageReference Include="PagedList.Mvc" Version="4.5.0" />
+		<PackageReference Include="PagedList.Mvc" Version="4.5.0" />
 	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Media.DataAccess\Media.DataAccess.csproj" />
     <ProjectReference Include="..\Media.Models\Media.Models.csproj" />
+    <ProjectReference Include="..\Media.Service\Media.Service.csproj" />
     <ProjectReference Include="..\Media.Utility\Media.Utility.csproj" />
   </ItemGroup>
 
@@ -41,8 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="compilerconfig.json" />
-    <None Include="wwwroot\js\shop.js" />
+    </Content>
   </ItemGroup>
 
 </Project>

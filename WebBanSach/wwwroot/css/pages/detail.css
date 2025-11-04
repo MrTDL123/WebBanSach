@@ -1,4 +1,6 @@
 ﻿* {
+    font-family: Montserrat;
+    font-weight: 500;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -61,10 +63,10 @@ body {
     transition: all 0.2s;
 }
 
-    .thumbnail.active,
-    .thumbnail:hover {
-        border-color: #C92127;
-    }
+.thumbnail.active,
+.thumbnail:hover {
+    border-color: #C92127;
+}
 
 .action-buttons {
     display: flex;
@@ -72,7 +74,7 @@ body {
     margin: 20px 0;
 }
 
-.btn {
+.action-buttons .btn {
     width: 100%;
     padding: 0 20px;
     border-radius: 8px;
@@ -96,11 +98,11 @@ body {
     transition: all 0.2s;
 }
 
-    .btn-primary:hover {
-        background: white;
-        color: #C92127;
-        border: 2px solid #C92127;
-    }
+.btn-primary:hover {
+    background: white;
+    color: #C92127;
+    border: 2px solid #C92127;
+}
 
 .btn-outline {
     background: white;
@@ -108,11 +110,11 @@ body {
     border: 2px solid #C92127;
 }
 
-    .btn-outline:hover {
-        background: #C92127;
-        color: white;
-        border: 2px solid #C92127;
-    }
+.btn-outline:hover {
+    background: #C92127;
+    color: white;
+    border: 2px solid #C92127;
+}
 
 .policy-title {
     font-weight: 600;
@@ -129,8 +131,8 @@ body {
     padding: 5px 0;
 }
 
-.montserrat-bold {
-    font-size: 1.2em;
+.policy-item .policy-content {
+    font-weight: bold;
 }
 
 .right-column {
@@ -168,12 +170,11 @@ body {
 
 .meta-value {
     color: #333;
-    font-weight: 500;
 }
 
-    .meta-value:hover {
-        color: #2489F4;
-    }
+.meta-value:hover {
+    color: #2489F4;
+}
 
 .rating-link {
     font-size: 14px;
@@ -219,11 +220,11 @@ body {
     padding: 8px 15px;
     border-radius: 4px;
     font-size: 14px;
-    font-weight: 500;
     margin-top: 10px;
 }
 
-@*coupon*@ .coupon-container {
+/* coupon */
+.coupon-container {
     padding: 20px 0;
     display: flex;
     gap: 8px;
@@ -236,7 +237,6 @@ body {
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 13px;
-    font-weight: 500;
     padding: 4px 10px;
     width: 100%;
     height: 44px;
@@ -280,8 +280,12 @@ body {
 .btn-qty {
     width: 40px;
     font-size: 1.2em;
-    cursor: pointer;
     border: none;
+}
+
+.btn-qty:hover {
+    background: #b2b0b0;
+    border-radius: 4px;
 }
 
 #qty {
@@ -289,9 +293,11 @@ body {
     text-align: center;
     border: none;
     font-weight: 700;
+    cursor: unset;
 }
 
 .promo-link {
+    cursor: pointer;
     margin-left: 20px;
     color: #2489F4;
 }
@@ -324,15 +330,14 @@ body {
     font-size: 14px;
 }
 
-    .info-table td:first-child {
-        color: #666;
-        width: 35%;
-    }
+.info-table td:first-child {
+    color: #666;
+    width: 35%;
+}
 
-    .info-table td:last-child {
-        color: #333;
-        font-weight: 500;
-    }
+.info-table td:last-child {
+    color: #333;
+}
 
 .description-content {
     line-height: 1.8;
@@ -340,7 +345,7 @@ body {
     font-size: 14px;
 }
 
-/* REVIEW SECTION - KHỐI ĐỘC LẬP */
+/* REVIEW SECTION - KHỐI ĐỘC LẬP  */
 .review-section {
     padding: 0 70px;
 }
@@ -352,7 +357,7 @@ body {
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-/* Review Header */
+/* Review Header  */
 
 .review-title {
     font-size: 20px;
@@ -451,12 +456,12 @@ body {
     gap: 8px;
 }
 
-    .write-review-btn:hover {
-        background: #C92127;
-        color: white;
-    }
+.write-review-btn:hover {
+    background: #C92127;
+    color: white;
+}
 
-/* Review Tabs */
+/* Review Tabs  */
 .review-tabs {
     display: flex;
     gap: 32px;
@@ -473,33 +478,33 @@ body {
     transition: color 0.2s;
 }
 
-    .tab:hover {
-        color: #C92127;
-    }
+.tab:hover {
+    color: #C92127;
+}
 
-    .tab.active {
-        color: #C92127;
-        font-weight: 600;
-    }
+.tab.active {
+    color: #C92127;
+    font-weight: 600;
+}
 
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #C92127;
-        }
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #C92127;
+}
 
 .review-item {
     padding: 20px 0;
     border-bottom: 1px solid #f0f0f0;
 }
 
-    .review-item:last-child {
-        border-bottom: none;
-    }
+.review-item:last-child {
+    border-bottom: none;
+}
 
 .reviewer-info {
     display: flex;
@@ -540,10 +545,10 @@ body {
     transition: all 0.2s;
 }
 
-    .action-btn:hover {
-        border-color: #C92127;
-        color: #C92127;
-    }
+.action-btn:hover {
+    border-color: #C92127;
+    color: #C92127;
+}
 
 .show-more-link {
     color: #2489F4;
@@ -551,11 +556,11 @@ body {
     text-decoration: none;
 }
 
-    .show-more-link:hover {
-        text-decoration: underline;
-    }
+.show-more-link:hover {
+    text-decoration: underline;
+}
 
-/* View More Button */
+/* View More Button  */
 .view-more-section {
     text-align: center;
     padding: 24px 0;
@@ -572,7 +577,107 @@ body {
     transition: all 0.2s;
 }
 
-    .view-more-btn:hover {
-        background: #C92127;
-        color: white;
-    }
+.view-more-btn:hover {
+    background: #C92127;
+    color: white;
+}
+
+/* Popup Overlay  */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 5;
+    overflow: visible !important;
+}
+
+.active {
+    display: block;
+}
+
+/* Popup Modal  */
+.popup-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 8px;
+    max-width: 900px;
+    width: 90%;
+    max-height: 85vh;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: none;
+    z-index: 5;
+    overflow: visible !important;
+}
+
+.popup-modal .popup-header {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+#popupTitle {
+    flex: 1; /* chiếm phần giữa  */
+    text-align: center; /* căn giữa nội dung  */
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.popup-spacer {
+    width: 40px; /* tạo khoảng trống = kích thước nút close */
+}
+
+.popup-close {
+    border: none;
+    background: none;
+    font-size: 36px;
+    cursor: pointer;
+    color: #999;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-close:hover {
+    color: #333;
+    background: #f5f5f5;
+    border-radius: 50%;
+}
+
+/* Popup Body - SCROLL SÁT VIỀN PHẢI  */
+.popup-body {
+    padding: 25px; /* Padding đều 4 cạnh */
+    max-height: calc(85vh - 80px);
+    overflow-y: auto;
+}
+
+/* Scrollbar sát viền phải - QUAN TRỌNG  */
+.popup-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.popup-body::-webkit-scrollbar-track {
+    background: transparent; /* Trong suốt để sát viền */
+    margin: 0; /* Bỏ margin */
+}
+
+.popup-body::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border-radius: 4px;
+}
+
+.popup-body::-webkit-scrollbar-thumb:hover {
+    background: #a0a0a0;
+}
+
+.popup-hidden {
+    display: none;
+}

@@ -1,242 +1,229 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết sách</title>
-</head>
-<body class="montserrat-regular">
-    @* <div class="container">
-    </div> *@
-    <div class="product-wrapper">
-        <!-- CỘT TRÁI - STICKY -->
-        <div class="left-column">
-            <div class="product-images">
-                <img src="https://via.placeholder.com/380x480/e8f5e9/2e7d32?text=Những+lá+thư+thời+chiến" alt="Những lá thư thời chiến Việt Nam" class="main-image" id="mainImage">
-                <div class="thumbnail-list">
-                    <img src="https://via.placeholder.com/70x90/e8f5e9/2e7d32?text=1" alt="thumb1" class="thumbnail active" onclick="changeImage(this)">
-                    <img src="https://via.placeholder.com/70x90/fce4ec/c2185b?text=2" alt="thumb2" class="thumbnail" onclick="changeImage(this)">
-                    <img src="https://via.placeholder.com/70x90/e3f2fd/1976d2?text=3" alt="thumb3" class="thumbnail" onclick="changeImage(this)">
-                    <img src="https://via.placeholder.com/70x90/fff3e0/f57c00?text=4" alt="thumb4" class="thumbnail" onclick="changeImage(this)">
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-outline">🛒 Thêm vào giỏ hàng</button>
-                <button class="btn btn-primary">Mua ngay</button>
-            </div>
-
-            <div class="policy-section">
-                <label class="policy-title">CHÍNH SÁCH ƯU ĐÃI</label>  @* nên sài thẻ p*@
-                <label class="policy-item">
-                    <span class="policy-text">🚚 <strong>Thời gian giao hàng: </strong>Giao nhanh và uy tín</span>
-                    <span class="montserrat-bold"> ></span>
-                </label>
-                <label class="policy-item">
-                    <span class="policy-text">🔄 <strong>Chính sách đổi trả: </strong>Đổi trả miễn phí trong 7 ngày</span>
-                    <span class="montserrat-bold"> ></span>
-                </label>
-                <label class="policy-item">
-                    <span class="policy-text">🎁 <strong>Chính sách khách sỉ: </strong>Ưu đãi khi mua số lượng lớn</span>
-                    <span class="montserrat-bold"> ></span>
-                </label>
+﻿<div class="product-wrapper">
+    <!-- CỘT TRÁI - STICKY -->
+    <div class="left-column">
+        <div class="product-images">
+            <img src="https://via.placeholder.com/380x480/e8f5e9/2e7d32?text=Những+lá+thư+thời+chiến" alt="Những lá thư thời chiến Việt Nam" class="main-image" id="mainImage">
+            <div class="thumbnail-list">
+                <img src="https://via.placeholder.com/70x90/e8f5e9/2e7d32?text=1" alt="thumb1" class="thumbnail active" onclick="changeImage(this)">
+                <img src="https://via.placeholder.com/70x90/fce4ec/c2185b?text=2" alt="thumb2" class="thumbnail" onclick="changeImage(this)">
+                <img src="https://via.placeholder.com/70x90/e3f2fd/1976d2?text=3" alt="thumb3" class="thumbnail" onclick="changeImage(this)">
+                <img src="https://via.placeholder.com/70x90/fff3e0/f57c00?text=4" alt="thumb4" class="thumbnail" onclick="changeImage(this)">
             </div>
         </div>
 
-        <!-- CỘT PHẢI - SCROLLABLE -->
-        <div class="right-column">
-            <!-- Ô THÔNG TIN SÁCH -->
-            <div class="info-card product">
-                <h1 class="product-title">NHỮNG LÁ THƯ THỜI CHIẾN VIỆT NAM</h1>
+        <div class="action-buttons">
+            <button class="btn btn-outline">🛒 Thêm vào giỏ hàng</button>
+            <button class="btn btn-primary">Mua ngay</button>
+        </div>
 
-                <ul class="product-meta">
-                    <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">Công Ty Cổ Phần Waka</a></li>
-                    <li class="meta-label">Tác giả: <a href="#" class="meta-value">Đặng Vương Hưng</a></li>
-                    <li class="meta-label">NXB: <a href="#" class="meta-value">Chính Trị Quốc Gia Sự Thật</a></li>
-                    <li class="meta-label">Hình thức bìa: <a href="#" class="meta-value">Bìa Mềm</a></li>
-                </ul>
-
-                <div class="rating-section">
-                    @*Chỉ cần sử dụng 1 thẻ a không cần phải chia làm div và span*@
-                    <a href="#" class="rating-link">★★★★★ (127 đánh giá)</a>
-                    <span class="sold-count">| Đã bán 444</span>
-                </div>
-
-                <div class="price-section">
-                    @*Thay thẻ div thành thẻ p*@
-                    <label class="price-main">129.000 đ</label>
-                    <label class="price-original">200.000 đ</label>
-                    <label class="discount-badge">-35%</label>
-                </div>
-
-                @*Thay thẻ div thành thẻ p*@
-                <label class="stock-status">✓ Còn hàng</label>
-            </div>
-
-            <!-- Ô THÔNG TIN VẬN CHUYỂN -->
-            <div class="info-card">
-                @*Thay section-title thành thẻ h2 hoặc h3 gì đó*@
-                <label class="section-title">Thông tin vận chuyển</label>
-                <div class="delivery-info">
-                    <div class="delivery-item">
-                        <label class="delivery-label">📍Giao hàng đến <span class="delivery-value" style="font-weight:bold;">Phường Bến Nghé, Quận 1, Hồ Chí Minh</span></label>
-                        <a href="#" class="promo-link">Thay đổi</a>
-                    </div>
-                    <div class="delivery-item standard">
-                        <label class="delivery-label" style="font-weight:bold;">🚚 Giao hàng tiêu chuẩn </label>
-                        <span class="delivery-value" style="padding-left:25px;">Dự kiến giao Thứ hai - 06/10</span>
-                    </div>
-                </div>
-
-                <div class="coupon-container">
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 10k</div>
-                    </div>
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 20k</div>
-                    </div>
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 10%</div>
-                    </div>
-                    <div class="coupon-item">
-                        <div class="coupon-item-img">%</div>
-                        <div class="coupon-item-text">Mã giảm 20%</div>
-                    </div>
-                </div>
-
-                <div class="quantity-section">
-                    <label class="quantity-label" style="font-size:16px;">Số lượng: </label>
-                    <div class="quantity-control">
-                        <button class="btn-qty" onclick="decreaseQty()">-</button>
-                        <input type="text" id="qty" value="1" maxvalue="999" readonly>
-                        <button class="btn-qty" onclick="increaseQty()">+</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ô THÔNG TIN CHI TIẾT -->
-            <div class="info-card">
-                <label class="section-title">📋 Thông tin chi tiết</label>
-                <table class="info-table" style="width:100%;">
-                    <tr>
-                        <td>Mã hàng</td>
-                        <td>3300000055619</td>
-                    </tr>
-                    <tr>
-                        <td>Tác giả</td>
-                        <td>Đặng Vương Hưng</td>
-                    </tr>
-                    <tr>
-                        <td>NXB</td>
-                        <td>Chính Trị Quốc Gia Sự Thật</td>
-                    </tr>
-                    <tr>
-                        <td>Năm XB</td>
-                        <td>2025</td>
-                    </tr>
-                    <tr>
-                        <td>Ngôn ngữ</td>
-                        <td>Tiếng Việt</td>
-                    </tr>
-                    <tr>
-                        <td>Trọng lượng</td>
-                        <td>500 gr</td>
-                    </tr>
-                    <tr>
-                        <td>Kích thước</td>
-                        <td>24 x 16 x 5 cm</td>
-                    </tr>
-                    <tr>
-                        <td>Số trang</td>
-                        <td>368</td>
-                    </tr>
-                    <tr>
-                        <td>Hình thức bìa</td>
-                        <td>Bìa Mềm</td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- Ô MÔ TẢ SẢN PHẨM -->
-            <div class="info-card">
-                <label class="section-title">📖 Mô tả sản phẩm</label>
-                <p class="description-content">
-                    Cuốn sách "Những lá thư thời chiến Việt Nam" tập hợp nhiều bức thư xúc động
-                    của những người lính, những người con xa quê trong thời kỳ kháng chiến.
-                    Đây là một phần lịch sử quý giá được lưu giữ qua từng trang giấy.
-
-                    Qua những lá thư này, độc giả sẽ cảm nhận được tình yêu thương gia đình,
-                    khát vọng hòa bình và lòng dũng cảm của những con người đã hy sinh vì
-                    độc lập tự do của Tổ quốc. Mỗi dòng chữ đều chứa đựng cảm xúc chân thật
-                    và sâu sắc, là minh chứng sống động cho một thời kỳ lịch sử đầy biến động.
-
-                    Cuốn sách không chỉ là tư liệu lịch sử mà còn là nguồn cảm hứng về lòng
-                    yêu nước, tinh thần đoàn kết và ý chí kiên cường của dân tộc Việt Nam
-                    trong những năm tháng khó khăn nhất.
-                </p>
-            </div>
+        <div class="policy-section">
+            <h3 class="policy-title">CHÍNH SÁCH ƯU ĐÃI</h3>  @* nên sài thẻ p*@
+            <label class="policy-item" onclick="openPopup('shipping')">
+                <span class="policy-text">🚚 <span class="policy-content" id="policy-popup-shipping">Thời gian giao hàng</span>: Giao nhanh và uy tín</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
+            <label class="policy-item" onclick="openPopup('return')">
+                <span class="policy-text">🔄 <span class="policy-content" id="policy-popup-return">Chính sách đổi trả</span>: Đổi trả miễn phí trong 7 ngày</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
+            <label class="policy-item" onclick="openPopup('wholesale')">
+                <span class="policy-text">🎁 <span class="policy-content" id="policy-popup-wholesale">Chính sách khách sỉ</span>: Ưu đãi khi mua số lượng lớn</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
         </div>
     </div>
 
-    <!-- PHẦN ĐÁNH GIÁ - KHỐI ĐỘC LẬP -->
-    <section class="review-section">
-        <div class="review-wrapper">
-            <!-- Review Header -->
-            <div class="review-header">
-                <h2 class="review-title">Đánh giá sản phẩm</h2>
+    <!-- CỘT PHẢI - SCROLLABLE -->
+    <div class="right-column">
+        <!-- Ô THÔNG TIN SÁCH -->
+        <div class="info-card product">
+            <h1 class="product-title">NHỮNG LÁ THƯ THỜI CHIẾN VIỆT NAM</h1>
 
-                <div class="review-summary">
-                    <div class="rating-overview">
-                        <label class="rating-score">5<label class="rating-max">/5</label></label>
-                        <label class="stars-display">★★★★★</label>
-                        <label class="rating-count">(8 đánh giá)</label>
-                    </div>
+            <ul class="product-meta">
+                <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">Công Ty Cổ Phần Waka</a></li>
+                <li class="meta-label">Tác giả: <a href="#" class="meta-value">Đặng Vương Hưng</a></li>
+                <li class="meta-label">NXB: <a href="#" class="meta-value">Chính Trị Quốc Gia Sự Thật</a></li>
+                <li class="meta-label">Hình thức bìa: <a href="#" class="meta-value">Bìa Mềm</a></li>
+            </ul>
 
-                    <div class="rating-bars">
-                        <div class="rating-bar-item">
-                            <span class="bar-label">5 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 100%"></div>
-                            </div>
-                            <span class="bar-percentage">100%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">4 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">3 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">2 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
-                        <div class="rating-bar-item">
-                            <span class="bar-label">1 sao</span>
-                            <div class="bar-container">
-                                <div class="bar-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="bar-percentage">0%</span>
-                        </div>
-                    </div>
+            <div class="rating-section">
+                <a href="#" class="rating-link">★★★★★ (127 đánh giá)</a>
+                <span class="sold-count">| Đã bán 444</span>
+            </div>
 
-                    <button class="write-review-btn">✏️ Viết đánh giá</button>
+            <div class="price-section">
+                <label class="price-main">129.000 đ</label>
+                <label class="price-original">200.000 đ</label>
+                <label class="discount-badge">-35%</label>
+            </div>
+
+            <p class="stock-status">✓ Còn hàng</p>
+        </div>
+
+        <!-- Ô THÔNG TIN VẬN CHUYỂN -->
+        <div class="info-card">
+            <h3 class="section-title">Thông tin vận chuyển</h3>
+            <div class="delivery-info">
+                <div class="delivery-item address">
+                    <label class="delivery-label">📍Giao hàng đến <span class="delivery-value" id="currentAddressText" style="font-weight:bold;">Phường Bến Nghé, Quận 1, Hồ Chí Minh</span></label>
+                    <label id="openPopupChangeAddress" class="promo-link" onclick="openAddressPopup()">Thay đổi</label>
+                </div>
+                <div class="delivery-item standard">
+                    <label class="delivery-label" style="font-weight:bold;">🚚 Giao hàng tiêu chuẩn </label>
+                    <span class="delivery-value" id="deliveryEstimateText" style="padding-left:25px;">Dự kiến giao Thứ hai - 06/10</span>
                 </div>
             </div>
 
+            <div class="coupon-container">
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 10k</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 20k</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 10%</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 20%</div>
+                </div>
+            </div>
+
+            <div class="quantity-section">
+                <label class="quantity-label" style="font-size:16px;">Số lượng: </label>
+                <div class="quantity-control">
+                    <button class="btn-qty" onclick="decreaseQty()">-</button>
+                    <input type="text" id="qty" value="1" maxvalue="999" readonly>
+                    <button class="btn-qty" onclick="increaseQty()">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ô THÔNG TIN CHI TIẾT -->
+        <div class="info-card">
+            <h3 class="section-title">📋 Thông tin chi tiết</h3>
+            <table class="info-table" style="width:100%;">
+                <tr>
+                    <td>Mã hàng</td>
+                    <td>3300000055619</td>
+                </tr>
+                <tr>
+                    <td>Tác giả</td>
+                    <td>Đặng Vương Hưng</td>
+                </tr>
+                <tr>
+                    <td>NXB</td>
+                    <td>Chính Trị Quốc Gia Sự Thật</td>
+                </tr>
+                <tr>
+                    <td>Năm XB</td>
+                    <td>2025</td>
+                </tr>
+                <tr>
+                    <td>Ngôn ngữ</td>
+                    <td>Tiếng Việt</td>
+                </tr>
+                <tr>
+                    <td>Trọng lượng</td>
+                    <td>500 gr</td>
+                </tr>
+                <tr>
+                    <td>Kích thước</td>
+                    <td>24 x 16 x 5 cm</td>
+                </tr>
+                <tr>
+                    <td>Số trang</td>
+                    <td>368</td>
+                </tr>
+                <tr>
+                    <td>Hình thức bìa</td>
+                    <td>Bìa Mềm</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Ô MÔ TẢ SẢN PHẨM -->
+        <div class="info-card">
+            <h3 class="section-title">📖 Mô tả sản phẩm</h3>
+            <p class="description-content">
+                Cuốn sách "Những lá thư thời chiến Việt Nam" tập hợp nhiều bức thư xúc động
+                của những người lính, những người con xa quê trong thời kỳ kháng chiến.
+                Đây là một phần lịch sử quý giá được lưu giữ qua từng trang giấy.
+
+                Qua những lá thư này, độc giả sẽ cảm nhận được tình yêu thương gia đình,
+                khát vọng hòa bình và lòng dũng cảm của những con người đã hy sinh vì
+                độc lập tự do của Tổ quốc. Mỗi dòng chữ đều chứa đựng cảm xúc chân thật
+                và sâu sắc, là minh chứng sống động cho một thời kỳ lịch sử đầy biến động.
+
+                Cuốn sách không chỉ là tư liệu lịch sử mà còn là nguồn cảm hứng về lòng
+                yêu nước, tinh thần đoàn kết và ý chí kiên cường của dân tộc Việt Nam
+                trong những năm tháng khó khăn nhất.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- PHẦN ĐÁNH GIÁ - KHỐI ĐỘC LẬP -->
+<section class="review-section">
+    <div class="review-wrapper">
+        <!-- Review Header -->
+        <div class="review-header">
+            <h2 class="review-title">Đánh giá sản phẩm</h2>
+
+            <div class="review-summary">
+                <div class="rating-overview">
+                    <label class="rating-score">5<label class="rating-max">/5</label></label>
+                    <label class="stars-display">★★★★★</label>
+                    <label class="rating-count">(8 đánh giá)</label>
+                </div>
+
+                <div class="rating-bars">
+                    <div class="rating-bar-item">
+                        <span class="bar-label">5 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 100%"></div>
+                        </div>
+                        <span class="bar-percentage">100%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">4 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">3 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">2 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                    <div class="rating-bar-item">
+                        <span class="bar-label">1 sao</span>
+                        <div class="bar-container">
+                            <div class="bar-fill" style="width: 0%"></div>
+                        </div>
+                        <span class="bar-percentage">0%</span>
+                    </div>
+                </div>
+
+                <button class="write-review-btn" id="btn-review" onclick="showPopupReview()">✏️ Viết đánh giá</button>
+            </div>
+        </div>
+
+        <div id="reviewContent" style="display: none;">
             <!-- Review Tabs -->
             <div class="review-tabs">
                 <div class="tab active">Mới nhất</div>
@@ -303,10 +290,370 @@
             <div class="view-more-section">
                 <button class="view-more-btn">Xem thêm đánh giá</button>
             </div>
-        </div>
-    </section>
+            </div>
+    </div>
+</section>
 
+<!-- Popup chính sách ưu đãi -->
+<div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
+<div id="popupModal" class="popup-modal">
+    <div class="popup-header">
+        <div class="popup-spacer"></div>
+        <span id="popupTitle">Thời gian giao hàng</span>
+        <button class="popup-close" onclick="closePopup()">×</button>
+    </div>
+    <div class="popup-body" id="popupContent"></div>
+</div>
+
+<!-- 🔹 Popup thay đổi địa chỉ giao hàng -->
+<div id="addressPopupOverlay" class="popup-overlay" style="display:none;"></div>
+<div id="addressPopupModal" class="popup-modal" style="display:none;">
+    <div class="popup-body" id="addressPopupContent">
+        <!-- Nội dung partial sẽ được load vào đây -->
+    </div>
+</div>
+
+<!-- 🔹 Popup  viết đánh giá sản phẩm -->
+<div class="popup-overlay" id="reviewPopupOverlay" style="display:none;"></div>
+<div class="popup-modal" id="reviewPopupModal" style="display:none;">
+    <div class="popup-body" id="reviewPopupContent" style="padding:unset;">
+
+    </div>
+</div>
+    
+
+<!-- Nội dung ẩn (PartialView load sẵn) -->
+<div id="policy-shipping" class="popup-hidden">
+    @Html.Partial("_PopupThoiGianGiaoHang")
+</div>
+<div id="policy-return" class="popup-hidden">
+    @Html.Partial("_PopupChinhSachDoiTra")
+</div>
+<div id="policy-wholesale" class="popup-hidden">
+    @Html.Partial("_PopupChinhSachKhachSi")
+</div>
+
+@section Scripts {
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Biến lưu số lượng đánh giá (mặc định là 0)
+            var reviewCount = 0;
+
+            // Lấy phần nội dung đánh giá và nút viết đánh giá
+            var reviewContent = document.getElementById("reviewContent");
+            var writeBtn = document.getElementById("btn-review");
+
+            // Hàm cập nhật hiển thị dựa trên số lượng đánh giá
+            function updateReviewDisplay() {
+                if (reviewCount === 0) {
+                    reviewContent.style.display = "none";
+                } else {
+                    reviewContent.style.display = "block";
+                }
+            }
+
+            // Gọi hàm này ngay khi trang vừa tải
+            updateReviewDisplay();
+
+            // Xử lý khi bấm nút "Viết đánh giá"
+            writeBtn.addEventListener("click", function () {
+                reviewCount++;
+                console.log("Số lượng đánh giá hiện tại:", reviewCount);
+                updateReviewDisplay();
+
+            });
+        });
+
+        function showPopupReview() {
+            var url = '@Url.Action("WriteReviewPartial", "Home", new { area = "Customer" })';
+            $.get(url, function (data) {
+                $('#reviewPopupContent').html(data);
+                $('#reviewPopupOverlay, #reviewPopupModal').fadeIn(200);
+            });
+        }
+
+        // let selectedRating = 5;
+        // let isAnonymous = false;
+
+        // // Initialize stars with all selected
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     updateStars(5);
+        // });
+
+        // // Star rating functionality
+        // const stars = document.querySelectorAll('.star');
+        // stars.forEach(star => {
+        //     star.addEventListener('click', function() {
+        //         selectedRating = parseInt(this.dataset.rating);
+        //         updateStars(selectedRating);
+        //     });
+
+        //     star.addEventListener('mouseenter', function() {
+        //         const rating = parseInt(this.dataset.rating);
+        //         updateStars(rating, true);
+        //     });
+        // });
+
+        // document.getElementById('starsContainer').addEventListener('mouseleave', function() {
+        //     updateStars(selectedRating);
+        // });
+
+        // function updateStars(rating, isHover = false) {
+        //     stars.forEach(star => {
+        //         const starRating = parseInt(star.dataset.rating);
+        //         if (starRating <= rating) {
+        //             star.classList.add('active');
+        //         } else {
+        //             star.classList.remove('active');
+        //         }
+        //     });
+        // }
+
+        // Anonymous toggle
+        function toggleAnonymous() {
+            isAnonymous = !isAnonymous;
+            const toggle = document.getElementById('anonymousToggle');
+            const nameInput = document.getElementById('nameInput');
+
+            if (isAnonymous) {
+                toggle.classList.add('active');
+                nameInput.disabled = true;
+                nameInput.style.backgroundColor = '#f5f5f5';
+            } else {
+                toggle.classList.remove('active');
+                nameInput.disabled = false;
+                nameInput.style.backgroundColor = 'white';
+            }
+        }
+
+        // Insert emoji
+        function insertEmoji(emoji) {
+            const textarea = document.getElementById('reviewInput');
+            const cursorPos = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPos);
+            const textAfter = textarea.value.substring(cursorPos);
+            textarea.value = textBefore + emoji + textAfter;
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = cursorPos + emoji.length;
+        }
+
+        // Close popup
+        function closePopupReview() {
+            $('#reviewPopupOverlay, #reviewPopupModal').fadeOut(200);
+        }
+
+        // Submit review
+        function submitReview() {
+            const name = document.getElementById('nameInput').value;
+            const review = document.getElementById('reviewInput').value;
+
+            if (!isAnonymous && !name.trim()) {
+                alert('Vui lòng nhập tên hiển thị!');
+                return;
+            }
+
+            if (!review.trim()) {
+                alert('Vui lòng nhập nhận xét của bạn!');
+                return;
+            }
+
+            alert(`Đánh giá đã được gửi!\n\nĐánh giá: ${selectedRating} sao\nTên: ${isAnonymous ? 'Ẩn danh' : name}\nNhận xét: ${review}`);
+        }
+
+        var SHOP_PROVINCE_CODE = 79;
+
+        // Hàm mở popup (gọi partial, chèn HTML rồi init)
+        function openAddressPopup() {
+            var url = '@Url.Action("ChangeAddressPartial", "Home", new { area = "Customer" })';
+            $.get(url, function (data) {
+                $('#addressPopupContent').html(data);
+
+                // KHỞI TẠO sau khi partial đã chèn xong
+                initAddressPopup();
+
+                $('#addressPopupOverlay, #addressPopupModal').fadeIn(200);
+            });
+        }
+
+        function initAddressPopup() {
+            let provinceSelect = document.getElementById('provinceSelect');
+            let districtSelect = document.getElementById('districtSelect');
+            let wardSelect = document.getElementById('wardSelect');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const pickupRadio = document.getElementById('pickup');
+            const deliveryRadio = document.getElementById('delivery');
+            const deliveryFields = document.getElementById('deliveryFields');
+
+            if (!provinceSelect || !districtSelect || !wardSelect || !confirmBtn) {
+                console.error('initAddressPopup: thiếu element trong partial');
+                return;
+            }
+
+            const urlGetProvinces = '@Url.Action("GetProvinces", "Home", new { area = "Customer" })';
+            const urlGetDistricts = '@Url.Action("GetDistricts", "Home", new { area = "Customer" })';
+            const urlGetWards = '@Url.Action("GetWards", "Home", new { area = "Customer" })';
+
+            // --- Load tỉnh/thành ---
+            $.getJSON(urlGetProvinces, function (data) {
+                provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.value || item.Value;
+                    opt.textContent = item.text || item.Text;
+                    provinceSelect.appendChild(opt);
+                });
+                provinceSelect.disabled = false;
+            });
+
+            // --- Khi chọn tỉnh ---
+            provinceSelect.onchange = function () {
+                const provinceCode = this.value;
+                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = true;
+
+                if (!provinceCode) {
+                    districtSelect.disabled = true;
+                    return;
+                }
+
+                $.getJSON(urlGetDistricts, { provinceCode: provinceCode }, function (data) {
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        districtSelect.appendChild(opt);
+                    });
+                    districtSelect.disabled = false;
+                });
+            };
+
+            // --- Khi chọn huyện ---
+            districtSelect.onchange = function () {
+                const districtCode = this.value;
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                if (!districtCode) {
+                    wardSelect.disabled = true;
+                    return;
+                }
+
+                $.getJSON(urlGetWards, { districtCode: districtCode }, function (data) {
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        wardSelect.appendChild(opt);
+                    });
+                    wardSelect.disabled = false;
+                });
+            };
+
+
+            // --- Toggle radio giao hàng ---
+            pickupRadio.onchange = deliveryRadio.onchange = function () {
+                const deliveryChecked = deliveryRadio.checked;
+                deliveryFields.style.display = deliveryChecked ? 'block' : 'none';
+                if (!deliveryChecked) {
+                    // reset nếu quay lại pickup
+                    provinceSelect.value = "";
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    districtSelect.disabled = true;
+                    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                    wardSelect.disabled = true;
+                    enableConfirm();
+                } else {
+                    confirmBtn.style.IDBCursor = 'not-allowed';
+                    disableConfirm();
+                }
+            };
+
+            // --- Xác nhận địa chỉ ---
+            confirmBtn.onclick = onConfirmClick;
+
+            // --- Kiểm tra hợp lệ để bật nút xác nhận ---
+            wardSelect.onchange = checkValidInputs;
+            checkValidInputs();
+
+
+            function onConfirmClick() {
+                if (confirmBtn.disabled) return;
+
+                const isDelivery = deliveryRadio.checked;
+                let finalAddressText = '';
+
+                if (!isDelivery) {
+                    finalAddressText = document.getElementById('addressDefaultText')?.innerText.trim() || '';
+                } else {
+                    const provName = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+                    const distName = districtSelect.options[districtSelect.selectedIndex]?.text || '';
+                    const wardName = wardSelect.options[wardSelect.selectedIndex]?.text || '';
+                    finalAddressText = `${wardName}, ${distName}, ${provName}`;
+                }
+
+                const addressElem = document.getElementById('currentAddressText');
+                const addressElemForPopup = document.getElementById('addressDefaultText');
+                if (addressElem) addressElem.innerHTML = finalAddressText;
+                if (addressElemForPopup) addressElemForPopup.innerHTML = finalAddressText;
+
+                const estimatedDays = (!isDelivery) ? 2 : (Number(provinceSelect.value) === SHOP_PROVINCE_CODE ? 2 : 4);
+                const estimateText = formatEstimatedDate(estimatedDays);
+                const elemEstimate = document.getElementById('deliveryEstimateText');
+                if (elemEstimate) elemEstimate.innerHTML = `Dự kiến giao <strong>${estimateText}</strong>`;
+
+                $('#addressPopupOverlay, #addressPopupModal').fadeOut(200);
+            }
+
+            function checkValidInputs() {
+                const deliveryChecked = document.getElementById('delivery').checked;
+                if (!deliveryChecked) { enableConfirm(); return; }
+                if (provinceSelect.value && districtSelect.value && wardSelect.value) enableConfirm();
+                else disableConfirm();
+            }
+
+            function enableConfirm() {
+                confirmBtn.classList.remove('disabledbtn');
+                // confirmBtn.disabled = false;
+            }
+            function disableConfirm() {
+                confirmBtn.classList.add('disabledbtn');
+                // confirmBtn.disabled = true;
+            }
+
+            function formatEstimatedDate(daysToAdd) {
+                const weekdayVN = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+                const now = new Date();
+                const est = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToAdd);
+                const weekday = weekdayVN[est.getDay()];
+                const dd = String(est.getDate()).padStart(2, '0');
+                const mm = String(est.getMonth() + 1).padStart(2, '0');
+                return `${weekday} - ${dd}/${mm}`;
+            }
+            // ---- end helper functions ----
+        }
+
+        // đóng popup khi click overlay
+        function closeAddressPopup() {
+            $('#addressPopupOverlay, #addressPopupModal').fadeOut(200);
+        }
+
+        function openPopup(key) {
+          const content = document.getElementById("policy-" + key);
+          if (!content) return;
+
+          const titleElement = document.getElementById("policy-popup-" + key);
+          if (titleElement) document.getElementById("popupTitle").innerHTML = titleElement.innerHTML;
+
+
+          document.getElementById("popupContent").innerHTML = content.innerHTML;
+          document.getElementById("popupOverlay").style.display = "block";
+          document.getElementById("popupModal").style.display = "block";
+        }
+
+        function closePopup() {
+          document.getElementById("popupOverlay").style.display = "none";
+          document.getElementById("popupModal").style.display = "none";
+        }
+
         // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
@@ -370,5 +717,4 @@
             }
         }
     </script>
-</body>
-</html>
+}
