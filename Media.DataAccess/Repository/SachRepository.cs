@@ -36,6 +36,7 @@ namespace Media.DataAccess.Repository
                 .ToListAsync();
         }
 
+
         private async Task GetChildCategoryIds(int? parentId, List<int?> dsIdChuDe)
         {
             dsIdChuDe.Add(parentId);

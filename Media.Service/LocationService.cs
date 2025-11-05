@@ -9,7 +9,7 @@ namespace Media.Service
     public class LocationService
     {
         private readonly HttpClient _httpClient;
-        private const string API_BASE = "https://provinces.open-api.vn/api";
+        private const string API_BASE = "http://provinces.open-api.vn/api";
 
         public LocationService(HttpClient httpClient)
         {

@@ -19,40 +19,6 @@ namespace Media.DataAccess.Repository
             _db = db;
         }
 
-        public async Task<List<ChuDe>> GetAllReadOnlyAsync(string? includeProperties = null)
-        {
-            IQueryable<ChuDe> query = dbSet;
-
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                foreach (var includeProp in includeProperties
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(includeProp);
-                }
-            }
-
-            //AsNoTracking để báo EF rằng chỉ lấy danh sách để đọc
-            return await query.AsNoTracking().ToListAsync();
-        }
-
-        public async Task<List<ChuDe>> GetRangeReadOnly(Expression<Func<ChuDe, bool>> filter, string? includeProperties = null)
-        {
-            IQueryable<ChuDe> query = dbSet;
-            query = dbSet.Where(filter);
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                foreach (var includeProp in includeProperties
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(includeProp);
-                }
-            }
-
-
-            return await query.AsNoTracking().ToListAsync();
-        }
-
         public void Update(ChuDe obj)
         {
             _db.ChuDes.Update(obj);

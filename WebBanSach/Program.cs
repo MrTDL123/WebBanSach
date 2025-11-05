@@ -33,7 +33,19 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddScoped<IEmailSender, EmailSender>();
-builder.Services.AddHttpClient<LocationService>();
+builder.Services.AddHttpClient<LocationService>(client =>
+{
+    // Base URL cho API
+    client.BaseAddress = new Uri("https://provinces.open-api.vn/api/");
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    // Bỏ qua xác thực SSL (chỉ nên dùng cho môi trường phát triển)
+    return new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+    };
+});
 
 var app = builder.Build();
 

@@ -22,7 +22,7 @@ namespace Media.Models
         public string? MoTa { get; set; }
         [Required]
         [Display(Name = "Giá sản phẩm")]
-        public double GiaBan { get; set; }
+        public decimal GiaBan { get; set; }
         [ValidateNever]
         public string? ImageUrl { get; set; }
         [Required]
