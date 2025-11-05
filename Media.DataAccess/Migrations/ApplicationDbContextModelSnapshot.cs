@@ -49,7 +49,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaNhanVien");
 
-                    b.ToTable("ChamSocKhachHangs");
+                    b.ToTable("ChamSocKhachHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.ChiTietDonHang", b =>
@@ -381,17 +381,17 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("Media.Models.NhaXuatBan", b =>
                 {
-                    b.Property<int>("MaNhanXuatBan")
+                    b.Property<int>("MaNhaXuatBan")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaNhanXuatBan"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaNhaXuatBan"));
 
                     b.Property<string>("TenNXB")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MaNhanXuatBan");
+                    b.HasKey("MaNhaXuatBan");
 
                     b.ToTable("NhaXuatBans");
                 });
@@ -529,11 +529,23 @@ namespace Media.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaSach"));
 
+                    b.Property<string>("AnhBiaChinh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu4")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("GiaBan")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaChuDe")
                         .HasColumnType("int");
@@ -583,7 +595,8 @@ namespace Media.DataAccess.Migrations
 
                     b.Property<string>("TenTG")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("MaTacGia");
 

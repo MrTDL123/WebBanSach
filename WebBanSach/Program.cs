@@ -47,6 +47,7 @@ builder.Services.AddHttpClient<LocationService>(client =>
     };
 });
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

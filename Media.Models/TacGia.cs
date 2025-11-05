@@ -14,6 +14,7 @@ namespace Media.Models
         public int MaTacGia { get; set; }
         [Required]
         [DisplayName("Tên tác giả")]
+        [StringLength(50)]
         public string TenTG { get; set; }
     }
 }

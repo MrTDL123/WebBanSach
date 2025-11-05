@@ -67,9 +67,9 @@ namespace Media.DataAccess.Repository
                 objFromDb.MaTacGia = obj.MaTacGia;
                 objFromDb.MaNhaXuatBan = obj.MaNhaXuatBan;
 
-                if (obj.ImageUrl != null)
+                if (obj.AnhBiaChinh != null)
                 {
-                    objFromDb.ImageUrl = obj.ImageUrl;
+                    objFromDb.AnhBiaChinh = obj.AnhBiaChinh;
                 }
             }
         }

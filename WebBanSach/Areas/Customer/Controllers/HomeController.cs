@@ -2,11 +2,12 @@
 using Media.Models;
 using Media.Models.ViewModels;
 using Media.Service;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
@@ -27,25 +28,23 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            IndexVM viewModel = new IndexVM()
+            {
+                DanhSachSanPham = _unit.Saches
+                              .GetAll(includeProperties: "ChuDe,NhaXuatBan,TacGia")
+                              .OrderByDescending(s => s.GiaBan)
+                              .Take(5)
+                              .ToList(),
+                DanhSachChuDe = _unit.ChuDes.GetAll()
+            };
+            
+            return View(viewModel);
         }
 
-        public IActionResult SachBanNhieu() //Phải chỉnh để lấy sách có số lượng bán nhiều
+        public IActionResult Details(int MaSach)
         {
-            //IndexVM category_productlist = new()
-            //{
-            //    DanhSachChuDe = _unit.ChuDes.GetAll(),
-            //    DanhSachSanPham = _unit.Saches.GetAll(includeProperties: "TacGia")
-            //};
-
-            //return View(category_productlist);
-            return View();
-        }
-
-        public IActionResult Details(int id)
-        {
-            Sach? product = _unit.Saches.Get(u => u.MaSach == id ,includeProperties: "ChuDe");
-            return View(product);
+            Sach? sach = _unit.Saches.Get(u => u.MaSach == MaSach, includeProperties: "ChuDe,NhaXuatBan,TacGia");
+            return View(sach);
         }
 
         #region Sách Theo Chủ Đề

@@ -10,8 +10,9 @@ namespace Media.Models
     public class NhanVien
     {
         [Key]
-        [DisplayName("Mã nhân viên")]
         public int MaNhanVien { get; set; }
+        [Required]
+        public string MaTaiKhoan { get; set; }
 
         [Required]
         [StringLength(150)]
@@ -47,7 +48,7 @@ namespace Media.Models
 
 
         //NAVIGATION PROPERTIES
-        public string MaTaiKhoan { get; set; }
+
         [ForeignKey("MaTaiKhoan")]
         public TaiKhoan TaiKhoan { get; set; }
 
