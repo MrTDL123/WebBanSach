@@ -2,14 +2,16 @@
 using Media.Models;
 using Media.Models.ViewModels;
 using Media.Service;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ProjectCuoiKi.Areas.Customer.Controllers
 {
@@ -26,25 +28,23 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            IndexVM viewModel = new IndexVM()
+            {
+                DanhSachSanPham = _unit.Saches
+                              .GetAll(includeProperties: "ChuDe,NhaXuatBan,TacGia")
+                              .OrderByDescending(s => s.GiaBan)
+                              .Take(5)
+                              .ToList(),
+                DanhSachChuDe = _unit.ChuDes.GetAll()
+            };
+            
+            return View(viewModel);
         }
 
-        public IActionResult SachBanNhieu() //Phải chỉnh để lấy sách có số lượng bán nhiều
+        public IActionResult Details(int MaSach)
         {
-            //IndexVM category_productlist = new()
-            //{
-            //    DanhSachChuDe = _unit.ChuDes.GetAll(),
-            //    DanhSachSanPham = _unit.Saches.GetAll(includeProperties: "TacGia")
-            //};
-
-            //return View(category_productlist);
-            return View();
-        }
-
-        public IActionResult Details(int id)
-        {
-            Sach? product = _unit.Saches.Get(u => u.MaSach == id ,includeProperties: "ChuDe");
-            return View(product);
+            Sach? sach = _unit.Saches.Get(u => u.MaSach == MaSach, includeProperties: "ChuDe,NhaXuatBan,TacGia");
+            return View(sach);
         }
 
         #region Sách Theo Chủ Đề
@@ -57,7 +57,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             SachTheoChuDeVM viewModel = new SachTheoChuDeVM();
 
             ChuDe allParentChuDe = new ChuDe();
-            allParentChuDe.Children = await _unit.ChuDes.GetRangeReadOnly(cd => cd.ParentId == null);
+            allParentChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == null);
             viewModel.ChuDeHienTai = allParentChuDe;
             List<Sach> danhSachSach = _unit.Saches.GetAll().ToList();
             viewModel.DanhSachSach = danhSachSach.ToPagedList(pageNumber, 20);
@@ -68,42 +68,78 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         }
 
-        public async Task<IActionResult> SachTheoChuDe(int? id, int? page)
+        public async Task<IActionResult> SachTheoChuDe(int? id, int? page, List<string> priceRanges)
         {                
             SachTheoChuDeVM viewModel = new SachTheoChuDeVM();
             int pageNumber = page ?? 1;
             ViewBag.Url = LayURL(id, new List<string>());
 
-            
+            viewModel.PriceFilter = new PriceFilter()
+            {
+                PriceRanges = LoadPriceRanges(),
+                SelectedRanges = priceRanges ?? new List<string>()
+            };
+
             ChuDe selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == id);
-            if (selectedChuDe.ParentId == null)
-            {
-                ChuDe topLevelChuDe = new ChuDe();
-                topLevelChuDe.Children = await _unit.ChuDes.GetRangeReadOnly(cd => cd.ParentId == null);
-                viewModel.ChuDeHienTai = topLevelChuDe;
-            }
-            else
-            {
-                viewModel.ChuDeHienTai = await LayChuDeLevel1(selectedChuDe);
-            }
+
+            viewModel.ChuDeHienTai = await LayChuDeLevel1(selectedChuDe);
             List<Sach>? danhSachSach = await _unit.Saches.LaySachTheoChuDe(id);
+
+            if (!priceRanges.IsNullOrEmpty() && priceRanges.Count > 0)
+            {
+                danhSachSach = GetPriceFilteredSaches(priceRanges, danhSachSach);
+            }
+
+
+
             viewModel.DanhSachSach = danhSachSach.ToPagedList(pageNumber, 20);
             viewModel.DanhSachTenNhaXuatBan = danhSachSach.Select(s => s.NhaXuatBan.TenNXB).Distinct();
             viewModel.DanhSachTenTacGia = danhSachSach.Select(s => s.TacGia.TenTG).Distinct();
 
+
             return View(viewModel);
+        }
+
+        private List<PriceRange> LoadPriceRanges()
+        {
+            return new List<PriceRange>()
+            {
+                new PriceRange { Id = "range1", Label = "0đ - 150.000đ", MinPrice = 0, MaxPrice = 150000},
+                new PriceRange { Id = "range2", Label = "150,000đ - 300,000đ", MinPrice = 150000, MaxPrice = 300000 },
+                new PriceRange { Id = "range3", Label = "300,000đ - 500,000đ", MinPrice = 300000, MaxPrice = 500000 },
+                new PriceRange { Id = "range4", Label = "500,000đ - 700,000đ", MinPrice = 500000, MaxPrice = 700000 },
+                new PriceRange { Id = "range5", Label = "700,000đ - Trở Lên", MinPrice = 700000, MaxPrice = null }
+            };
+        }
+
+        private List<Sach> GetPriceFilteredSaches(List<string> priceRangesId, List<Sach> danhSach)
+        {
+
+            if(priceRangesId != null && priceRangesId.Any())
+            {
+                List<PriceRange> ranges = LoadPriceRanges()
+                                    .Where(r => priceRangesId.Contains(r.Id))
+                                    .ToList();
+
+                danhSach = danhSach.Where(s => ranges.Any(r =>
+                    s.GiaBan >= r.MinPrice &&
+                    (r.MaxPrice == null || s.GiaBan <= r.MaxPrice))).ToList();
+            }
+
+            return danhSach;
         }
 
         private async Task<ChuDe?> LayChuDeLevel1(ChuDe selectedChuDe)
         {
 
             ChuDe? parentChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == selectedChuDe.ParentId);
+
+            selectedChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == selectedChuDe.MaChuDe);
             if(parentChuDe is null)
             {
                 return selectedChuDe;
             }
 
-            selectedChuDe.Children = await _unit.ChuDes.GetRangeReadOnly(cd => cd.ParentId == selectedChuDe.MaChuDe);
             parentChuDe.Children = new List<ChuDe>() { selectedChuDe };
 
             return await LayChuDeLevel1(parentChuDe);

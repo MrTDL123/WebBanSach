@@ -16,7 +16,7 @@
         }
     }
 
-    public string HienThiDongGia(double giaTien)
+    public string HienThiDongGia(decimal giaTien)
     {
         return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
     }
@@ -41,6 +41,22 @@
 
             <section id="price_filter">
                 <p class="sachtheochude_left_title montserrat-bold" id="">GIÁ</p>
+                <form method="get" asp-action="SachTheoChuDe" asp-controller="Home" id="filterForm">
+                    @foreach (var range in Model.PriceFilter.PriceRanges)
+                    {
+                        <div class="form-check mb-2">
+                            <input class="form-check-input price-filter"
+                                   type="checkbox"
+                                   name="priceRanges"
+                                   value="@range.Id"
+                                   id="@range.Id"
+                                   @(Model.PriceFilter.SelectedRanges.Contains(range.Id) ? "checked" : "")>
+                            <label class="form-check-label" for="@range.Id">
+                                @range.Label
+                            </label>
+                        </div>
+                    }
+                </form>
             </section>
             
             <section id="nhaxuatban_filter">
@@ -51,34 +67,55 @@
                 <p class="sachtheochude_left_title montserrat-bold" id="">TÁC GIẢ</p>
             </section>
         </section>
+
+        
         <section id="sachtheochude_right">
-            @foreach (Sach sach in Model.DanhSachSach)
-            {
-                <div class="book">
-                    <div class="book_img">
-                        <img src="@sach.ImageUrl" alt="Ảnh sách" />
-                        <div class="book_img_hover">
-                            <ul class="book_icon_container">
-                                <li>
-                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="direct_cart_icon book_icon">
-                                        <i class="bi bi-cart-fill"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <p class="ten_sach montserrat-regular">@Truncate(sach.TenSach, 15)</p>
-                    <p class="ten_tacgia montserrat-bold">@HienThiDongGia(sach.GiaBan)</p>
-                </div>
-            }
+            
         </section>
     </div>
-
-
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.price-filter').on('change', function() {
+                $('#filterForm').submit();
+            });
+        });
+
+
+                // wwwroot/js/filter-with-url.js
+        $(document).ready(function() {
+
+            function loadProducts() {
+                var selectedPrices = [];
+                $('.price-filter:checked').each(function() {
+                    selectedPrices.push($(this).val());
+                });
+
+                var params = new URLSearchParams();
+                selectedPrices.forEach(p => params.append('priceRanges', p));
+
+                // Cập nhật URL mà không reload trang
+                history.pushState(null, '', '?' + params.toString());
+
+                $.ajax({
+                    url: '/Home/SachTheoChuDe?' + params.toString(),
+                    success: function(result) {
+                        $('#toolbar-section').html(result.toolbar);
+                        $('#product-list').html(result.productList);
+                        $('#pagination-section').html(result.pagination);
+                    }
+                });
+            }
+
+            $('.price-filter').on('change', loadProducts);
+
+            // Xử lý nút Back/Forward của browser
+            window.addEventListener('popstate', function() {
+                location.reload();
+            });
+        });
+    </script>
+}
 

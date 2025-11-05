@@ -1,12 +1,19 @@
-﻿.container {
+﻿.container-personinfo {
     max-width: 1230px;
     margin-top: 20px;
     margin-bottom: 20px;
     display: flex;
     gap: 20px;
+    --bs-gutter-x: 1.5rem;
+    --bs-gutter-y: 0;
+    width: 100%;
+    padding-right: calc(var(--bs-gutter-x) * 0.5);
+    padding-left: calc(var(--bs-gutter-x) * 0.5);
+    margin-right: auto;
+    margin-left: auto;
 }
 
-.sidebar {
+.container-personinfo .sidebar {
     width: 280px;
     background: white;
     border-radius: 8px;

@@ -1,13 +1,15 @@
-﻿<div class="product-wrapper">
+﻿@model Sach
+
+<div class="product-wrapper">
     <!-- CỘT TRÁI - STICKY -->
     <div class="left-column">
         <div class="product-images">
-            <img src="https://via.placeholder.com/380x480/e8f5e9/2e7d32?text=Những+lá+thư+thời+chiến" alt="Những lá thư thời chiến Việt Nam" class="main-image" id="mainImage">
+            <img src="~/img/product/@Model.AnhBiaChinh" alt="@Model.TenSach" class="main-image" id="mainImage">
             <div class="thumbnail-list">
-                <img src="https://via.placeholder.com/70x90/e8f5e9/2e7d32?text=1" alt="thumb1" class="thumbnail active" onclick="changeImage(this)">
-                <img src="https://via.placeholder.com/70x90/fce4ec/c2185b?text=2" alt="thumb2" class="thumbnail" onclick="changeImage(this)">
-                <img src="https://via.placeholder.com/70x90/e3f2fd/1976d2?text=3" alt="thumb3" class="thumbnail" onclick="changeImage(this)">
-                <img src="https://via.placeholder.com/70x90/fff3e0/f57c00?text=4" alt="thumb4" class="thumbnail" onclick="changeImage(this)">
+                <img src="~/img/product/@Model.AnhBiaPhu1" alt="thumb1 @Model.TenSach" class="thumbnail active" onclick="changeImage(this)">
+                <img src="~/img/product/@Model.AnhBiaPhu2" alt="thumb2 @Model.TenSach" class="thumbnail" onclick="changeImage(this)">
+                <img src="~/img/product/@Model.AnhBiaPhu3" alt="thumb3 @Model.TenSach" class="thumbnail" onclick="changeImage(this)">
+                <img src="~/img/product/@Model.AnhBiaPhu4" alt="thumb4 @Model.TenSach" class="thumbnail" onclick="changeImage(this)">
             </div>
         </div>
 
@@ -40,9 +42,9 @@
             <h1 class="product-title">NHỮNG LÁ THƯ THỜI CHIẾN VIỆT NAM</h1>
 
             <ul class="product-meta">
-                <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">Công Ty Cổ Phần Waka</a></li>
-                <li class="meta-label">Tác giả: <a href="#" class="meta-value">Đặng Vương Hưng</a></li>
-                <li class="meta-label">NXB: <a href="#" class="meta-value">Chính Trị Quốc Gia Sự Thật</a></li>
+                <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">@Model.NhaCungCap</a></li>
+                <li class="meta-label">Tác giả: <a href="#" class="meta-value">@Model.TacGia.TenTG</a></li>
+                <li class="meta-label">NXB: <a href="#" class="meta-value">@Model.ChuDe.TenChuDe</a></li>
                 <li class="meta-label">Hình thức bìa: <a href="#" class="meta-value">Bìa Mềm</a></li>
             </ul>
 
@@ -53,7 +55,7 @@
 
             <div class="price-section">
                 <label class="price-main">129.000 đ</label>
-                <label class="price-original">200.000 đ</label>
+                <label class="price-original">@Model.GiaBan.ToString("N0") đ</label>
                 <label class="discount-badge">-35%</label>
             </div>
 
@@ -150,7 +152,8 @@
         <div class="info-card">
             <h3 class="section-title">📖 Mô tả sản phẩm</h3>
             <p class="description-content">
-                Cuốn sách "Những lá thư thời chiến Việt Nam" tập hợp nhiều bức thư xúc động
+                @Model.MoTa
+                @* Cuốn sách "Những lá thư thời chiến Việt Nam" tập hợp nhiều bức thư xúc động
                 của những người lính, những người con xa quê trong thời kỳ kháng chiến.
                 Đây là một phần lịch sử quý giá được lưu giữ qua từng trang giấy.
 
@@ -161,7 +164,7 @@
 
                 Cuốn sách không chỉ là tư liệu lịch sử mà còn là nguồn cảm hứng về lòng
                 yêu nước, tinh thần đoàn kết và ý chí kiên cường của dân tộc Việt Nam
-                trong những năm tháng khó khăn nhất.
+                trong những năm tháng khó khăn nhất. *@
             </p>
         </div>
     </div>

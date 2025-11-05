@@ -9,9 +9,11 @@ namespace Media.DataAccess.Repository.IRepository
 {
     public interface IRepository<T> where T : class
     {
-        IEnumerable<T>? GetAll(string? includeProperties = null);
-        IEnumerable<T>? GetRange(Expression<Func<T, bool>> filter, string? includeProperties = null);
         T? Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        IEnumerable<T>? GetAll(string? includeProperties = null);
+        Task<List<T>> GetAllReadOnlyAsync(string? includeProperties = null);
+        IEnumerable<T>? GetRange(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        Task<List<T>> GetRangeReadOnlyAsync(Expression<Func<T, bool>> filter, string? includeProperties = null);
         void Add(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);

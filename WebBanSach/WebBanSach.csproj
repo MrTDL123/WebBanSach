@@ -27,9 +27,6 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
 		<PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.9" />
-		<PackageReference Include="PagedList.Mvc" Version="4.5.0" />
-		<PackageReference Include="PagedList.Mvc" Version="4.5.0" />
-		<PackageReference Include="PagedList.Mvc" Version="4.5.0" />
 	</ItemGroup>
 
   <ItemGroup>

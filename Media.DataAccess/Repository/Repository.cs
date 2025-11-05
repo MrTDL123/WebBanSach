@@ -1,4 +1,5 @@
 ﻿using Media.DataAccess.Repository.IRepository;
+using Media.Models;
 using Meida.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -69,6 +70,39 @@ namespace Media.DataAccess.Repository
                 }
             }
             return query.ToList();
+        }
+
+        public async Task<List<T>> GetAllReadOnlyAsync(string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
+            //AsNoTracking để báo EF rằng chỉ lấy danh sách để đọc
+            return await query.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<T>> GetRangeReadOnlyAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+            query = dbSet.Where(filter);
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
+            return await query.AsNoTracking().ToListAsync();
         }
 
         public void Remove(T entity)

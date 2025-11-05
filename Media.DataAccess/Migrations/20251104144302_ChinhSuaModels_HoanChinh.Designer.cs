@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Media.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251104065437_ChinhSuaModels_Lan2_Done")]
-    partial class ChinhSuaModels_Lan2_Done
+    [Migration("20251104144302_ChinhSuaModels_HoanChinh")]
+    partial class ChinhSuaModels_HoanChinh
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -238,8 +238,7 @@ namespace Media.DataAccess.Migrations
                     b.Property<int>("HinhThucThanhToan")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MaDiaChi")
-                        .IsRequired()
+                    b.Property<int>("MaDiaChi")
                         .HasColumnType("int");
 
                     b.Property<int>("MaKhachHang")
@@ -385,17 +384,17 @@ namespace Media.DataAccess.Migrations
 
             modelBuilder.Entity("Media.Models.NhaXuatBan", b =>
                 {
-                    b.Property<int>("MaNhanXuatBan")
+                    b.Property<int>("MaNhaXuatBan")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaNhanXuatBan"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaNhaXuatBan"));
 
                     b.Property<string>("TenNXB")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("MaNhanXuatBan");
+                    b.HasKey("MaNhaXuatBan");
 
                     b.ToTable("NhaXuatBans");
                 });
@@ -533,11 +532,23 @@ namespace Media.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaSach"));
 
+                    b.Property<string>("AnhBiaChinh")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AnhBiaPhu4")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("GiaBan")
                         .HasColumnType("float");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MaChuDe")
                         .HasColumnType("int");
@@ -551,8 +562,7 @@ namespace Media.DataAccess.Migrations
                     b.Property<string>("MoTa")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("NgayCapNhat")
-                        .IsRequired()
+                    b.Property<DateTime>("NgayCapNhat")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("NhaCungCap")
@@ -588,7 +598,8 @@ namespace Media.DataAccess.Migrations
 
                     b.Property<string>("TenTG")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("MaTacGia");
 

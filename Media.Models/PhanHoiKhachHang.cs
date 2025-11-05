@@ -12,8 +12,9 @@ namespace Media.Models
     public class PhanHoiKhachHang
     {
         [Key]
-        [DisplayName("Mã phản hồi")]
         public int MaPhanHoiKhachHang { get; set; }
+        [Required]
+        public int MaKhachHang { get; set; }
         [DisplayName("Nội dung")]
         public string NoiDung { get; set; }
 
@@ -27,7 +28,6 @@ namespace Media.Models
 
 
         //NAVIGATION PROPERTIES
-        public int MaKhachHang { get; set; }
         [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; }
     }

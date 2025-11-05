@@ -37,7 +37,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 //    Value = u.Id.ToString()
                 //})
             };
-            if(id == null || id ==0)
+            if(id == null || id == 0)
             {
                 //Create
                 return View(productVM);
@@ -59,10 +59,10 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);//Tên file
                     string productPath = Path.Combine(wwwRootPath, @"img\product");//Đường dẫn để lưu file
-                    if(!string.IsNullOrEmpty(obj.Product.ImageUrl))
+                    if(!string.IsNullOrEmpty(obj.Product.AnhBiaChinh))
                     {
                         //Xóa ảnh cũ
-                        var oldImagePath = Path.Combine(wwwRootPath, obj.Product.ImageUrl.TrimStart('\\'));
+                        var oldImagePath = Path.Combine(wwwRootPath, obj.Product.AnhBiaChinh.TrimStart('\\'));
                         if (System.IO.File.Exists(oldImagePath))
                         {
                             System.IO.File.Delete(oldImagePath);
@@ -72,7 +72,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    obj.Product.ImageUrl = @"\img\product\" + fileName;
+                    obj.Product.AnhBiaChinh = @"\img\product\" + fileName;
                 }
                 if (obj.Product.MaSach == 0)
                 {
@@ -118,7 +118,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             {
                 return Json(new {success = false, message = "Không thể xóa sản phẩm không tồn tại"});
             }
-            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, SachesToBeDeleted.ImageUrl.TrimStart('\\'));
+            var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, SachesToBeDeleted.AnhBiaChinh.TrimStart('\\'));
             if (System.IO.File.Exists(oldImagePath))
             {
                 System.IO.File.Delete(oldImagePath);

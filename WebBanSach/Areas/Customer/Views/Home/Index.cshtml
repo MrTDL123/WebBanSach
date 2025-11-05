@@ -152,28 +152,28 @@
         </div>
     </div>
     <div class="books">
-        @for (int i = 0; i < 5; i++)
+        @foreach (var sach in Model.DanhSachSanPham)
         {
             <div class="book">
                 <div class="book_img">
-                    <img src="~/img/product/con-nghi-di.jpg" alt="Ảnh sách" />
+                    <img src="~/img/product/@sach.AnhBiaChinh" alt="@sach.TenSach" />
                     <div class="book_img_hover">
                         <ul class="book_icon_container">
                             <li>
-                                <a href="" class="direct_detail_icon book_icon">
+                                <a href="@Url.Action("Details", "Home", new { MaSach = sach.MaSach })" class="direct_detail_icon book_icon">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="" class="direct_cart_icon book_icon">
+                                <a href="@Url.Action("ShoppingCart", "Home", new { MaSach = sach.MaSach })" class="direct_cart_icon book_icon">
                                     <i class="bi bi-cart-fill"></i>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <p class="ten_sach montserrat-regular">Trần Duy Long</p>
-                <p class="ten_tacgia montserrat-bold">Trần Duy Long</p>
+                <p class="ten_sach montserrat-regular">@sach.TenSach</p>
+                <p class="ten_tacgia montserrat-bold">@sach.GiaBan.ToString("N0") đ</p>
             </div>
         }
     </div>

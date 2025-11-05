@@ -36,6 +36,7 @@ namespace Media.DataAccess.Repository
                 .ToListAsync();
         }
 
+
         private async Task GetChildCategoryIds(int? parentId, List<int?> dsIdChuDe)
         {
             dsIdChuDe.Add(parentId);
@@ -66,9 +67,9 @@ namespace Media.DataAccess.Repository
                 objFromDb.MaTacGia = obj.MaTacGia;
                 objFromDb.MaNhaXuatBan = obj.MaNhaXuatBan;
 
-                if (obj.ImageUrl != null)
+                if (obj.AnhBiaChinh != null)
                 {
-                    objFromDb.ImageUrl = obj.ImageUrl;
+                    objFromDb.AnhBiaChinh = obj.AnhBiaChinh;
                 }
             }
         }
