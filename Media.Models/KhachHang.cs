@@ -14,6 +14,8 @@ namespace Media.Models
         [Key]
         public int MaKhachHang { get; set; }
         [Required]
+        public string MaTaiKhoan { get; set; }
+        [Required]
         [StringLength(50)]
         [DisplayName("Họ và tên")]
         public string HoTen { get; set; }
@@ -32,7 +34,6 @@ namespace Media.Models
 
 
         //NAVIGATION PROPERTIES
-        public string MaTaiKhoan { get; set; }
         [ForeignKey("MaTaiKhoan")]
         public TaiKhoan TaiKhoan { get; set; }
         public GioHang GioHang { get; set; }

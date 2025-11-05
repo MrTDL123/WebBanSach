@@ -25,7 +25,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         }
         public IActionResult Upsert(int? id)
         {
-            if(id == null || id == 0)
+            if(id == null)
             {
                 ChuDe obj = new ChuDe();
                 return View(obj);
@@ -42,7 +42,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(obj.MaChuDe == 0)
+                if(obj.MaChuDe == null)
                 {
                     _unit.ChuDes.Add(obj);
                     _unit.Save();

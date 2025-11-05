@@ -8,9 +8,7 @@ namespace Media.Models
     public class HoaDon
     {
         [Key]
-        [DisplayName("Mã hóa đơn")]
         public int MaHoaDon { get; set; }
-        [DisplayName("Mã đơn đặt hàng")]
         public int MaDonHang { get; set; }
 
         [DataType(DataType.Date)]
