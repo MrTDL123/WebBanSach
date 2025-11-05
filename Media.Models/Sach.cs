@@ -24,7 +24,15 @@ namespace Media.Models
         [Display(Name = "Giá sản phẩm")]
         public double GiaBan { get; set; }
         [ValidateNever]
-        public string? ImageUrl { get; set; }
+        public string? AnhBiaChinh { get; set; }
+        [ValidateNever]
+        public string? AnhBiaPhu1 { get; set; }
+        [ValidateNever]
+        public string? AnhBiaPhu2 { get; set; }
+        [ValidateNever]
+        public string? AnhBiaPhu3 { get; set; }
+        [ValidateNever]
+        public string? AnhBiaPhu4 { get; set; }
         [Required]
         [DisplayName("Ngày cập nhật")]
         public DateTime? NgayCapNhat { get; set; }

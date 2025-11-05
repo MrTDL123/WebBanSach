@@ -2,7 +2,7 @@
 
 
 <li class="chude_item">
-    @if (Model.MaChuDe != 0)
+    @if (Model.MaChuDe != null)
     {
         <a asp-controller="Home" asp-action="SachTheoChuDe" asp-route-id="@Model.MaChuDe">@Model.TenChuDe</a>
     }
