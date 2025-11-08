@@ -3,6 +3,11 @@
     padding: 0;
     box-sizing: border-box;
     text-decoration: none;
+    list-style: none;
+}
+
+body{
+    background: #F0F0F0;
 }
 /*Components*/
 @import 'components/font.css';
@@ -10,10 +15,3 @@
 /*Layout*/
 @import 'layout/layout.css';
 @import 'layout/mega_menu.css';
-/*Pages*/
-@import 'pages/detail.css';
-@import 'pages/index.css';
-@import 'pages/sachtheochude.css';
-@import 'pages/thanhtoan.css';
-@import 'pages/giohang.css';
-@import 'pages/thongtincanhan.css'

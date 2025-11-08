@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Media.DataAccess.Repository.IRepository
 {
-    public interface ISachRepository : IRepository<Sach>
+    public interface INhaXuatBanRepository : IRepository<NhaXuatBan>
     {
-        IQueryable<Sach> LaySachTheoChuDe(int? id);
-        void Update(Sach obj);
+        void Update(NhaXuatBan obj);
     }
 }

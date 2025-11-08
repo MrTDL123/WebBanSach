@@ -9,8 +9,8 @@ namespace Media.Models.ViewModels
     public class SachTheoChuDeVM
     {
         public ChuDe ChuDeHienTai { get; set; }
-        public IEnumerable<string>? DanhSachTenNhaXuatBan { get; set; }
-        public IEnumerable<string>? DanhSachTenTacGia { get; set; }
+        public IEnumerable<NhaXuatBan>? DanhSachNhaXuatBan { get; set; }
+        public IEnumerable<TacGia>? DanhSachTacGia { get; set; }
         public IPagedList<Sach>? DanhSachSach { get; set; }
         public PriceFilter PriceFilter { get; set; }
 

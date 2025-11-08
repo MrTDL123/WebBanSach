@@ -69,7 +69,7 @@ namespace Media.DataAccess.Repository
                     query = query.Include(includeProp);
                 }
             }
-            return query.ToList();
+            return query;
         }
 
         public async Task<List<T>> GetAllReadOnlyAsync(string? includeProperties = null)

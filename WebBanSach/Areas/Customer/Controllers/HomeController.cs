@@ -12,18 +12,22 @@ using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using Media.Service.IServices;
 
 namespace ProjectCuoiKi.Areas.Customer.Controllers
 {
     [Area("Customer")]
     public class HomeController : Controller
     {
+
         private readonly LocationService _locationService;
+        private readonly IViewRenderService _viewRenderService;
         private readonly IUnitOfWork _unit;
-        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit, LocationService locationService)
+        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit, LocationService locationService, IViewRenderService viewRenderService)
         {
             _unit = unit;
             _locationService = locationService;
+            _viewRenderService = viewRenderService;
         }
 
         public IActionResult Index()
@@ -41,9 +45,9 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             return View(viewModel);
         }
 
-        public IActionResult Details(int MaSach)
+        public IActionResult Details(int id)
         {
-            Sach? sach = _unit.Saches.Get(u => u.MaSach == MaSach, includeProperties: "ChuDe,NhaXuatBan,TacGia");
+            Sach? sach = _unit.Saches.Get(u => u.MaSach == id, includeProperties: "ChuDe,NhaXuatBan,TacGia");
             return View(sach);
         }
 
@@ -53,51 +57,134 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             int pageNumber = page ?? 1;
             ViewBag.Url = "Trang chủ > Tất cả chủ đề";
 
+            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, pageNumber, null, null, null, null);
 
-            SachTheoChuDeVM viewModel = new SachTheoChuDeVM();
-
-            ChuDe allParentChuDe = new ChuDe();
-            allParentChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == null);
-            viewModel.ChuDeHienTai = allParentChuDe;
-            List<Sach> danhSachSach = _unit.Saches.GetAll().ToList();
-            viewModel.DanhSachSach = danhSachSach.ToPagedList(pageNumber, 20);
-            viewModel.DanhSachTenNhaXuatBan = danhSachSach.Select(s => s.NhaXuatBan.TenNXB).Distinct();
-            viewModel.DanhSachTenTacGia = danhSachSach.Select(s => s.TacGia.TenTG).Distinct();
+            viewModel.DanhSachTacGia = await _unit.TacGias.GetAllReadOnlyAsync();
+            viewModel.DanhSachNhaXuatBan = await _unit.NhaXuatBans.GetAllReadOnlyAsync();
 
             return View("SachTheoChuDe", viewModel);
-
         }
 
-        public async Task<IActionResult> SachTheoChuDe(int? id, int? page, List<string> priceRanges)
-        {                
-            SachTheoChuDeVM viewModel = new SachTheoChuDeVM();
+        public async Task<IActionResult> SachTheoChuDe(
+            int id, int? page,
+            List<string> priceRanges, 
+            List<int> tacGiaIds,
+            List<int> nhaXuatBanIds,
+            string keyword)
+        {
             int pageNumber = page ?? 1;
             ViewBag.Url = LayURL(id, new List<string>());
 
+            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(id, pageNumber, priceRanges, tacGiaIds, nhaXuatBanIds, keyword);
+
+            bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+
+            if (isAjax)
+            {
+                string chuDeTuongUngHtml = await _viewRenderService.RenderToStringAsync("_ChuDeTuongUngPartial", viewModel.ChuDeHienTai);
+                string sachListHtml = await _viewRenderService.RenderToStringAsync("_SachListPartial", viewModel.DanhSachSach);
+                string danhSachTacGia = await _viewRenderService.RenderToStringAsync("_TacGiaFilterPartial", viewModel.DanhSachTacGia);
+                string danhSachNhaXuatBan = await _viewRenderService.RenderToStringAsync("_NhaXuatBanFilterPartial", viewModel.DanhSachNhaXuatBan);
+                return Json(new
+                {
+                    success = true,
+                    chuDeTuongUng = chuDeTuongUngHtml,
+                    sachList = sachListHtml,
+                    tacGiaList = danhSachTacGia,
+                    nhaXuatBanList = danhSachNhaXuatBan
+                });
+            }
+            return View(viewModel);
+        }
+
+        private async Task<SachTheoChuDeVM> LoadSachTheoChuDeVMAsync(
+            int chuDeId, int page,
+            List<string>? priceRanges,
+            List<int>? tacGiaIds,
+            List<int>? nhaXuatBanIds,
+            string? keyword)
+        {
+            IQueryable<Sach> query;
+
+            SachTheoChuDeVM viewModel = new SachTheoChuDeVM();
+
+            // ===== LỌC THEO CHỦ ĐỀ =====
+            if (chuDeId == 0) // Chủ đề là 0 thì tức là lấy tất cả chủ đề
+            {
+                ChuDe allParentChuDe = new ChuDe();
+                allParentChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == null);
+                viewModel.ChuDeHienTai = allParentChuDe;
+
+                query = _unit.Saches.GetAll().AsQueryable()
+                    .Include(s => s.TacGia)
+                    .Include(s => s.NhaXuatBan)
+                    .Include(s => s.ChuDe);
+            }
+            else
+            {
+                ChuDe? selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == chuDeId);
+                viewModel.ChuDeHienTai = await LayChuDeLevel1(selectedChuDe);
+
+                query = _unit.Saches.LaySachTheoChuDe(chuDeId);
+            }
+
+            // ===== LỌC THEO GIÁ =====
             viewModel.PriceFilter = new PriceFilter()
             {
                 PriceRanges = LoadPriceRanges(),
                 SelectedRanges = priceRanges ?? new List<string>()
             };
 
-            ChuDe selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == id);
-
-            viewModel.ChuDeHienTai = await LayChuDeLevel1(selectedChuDe);
-            List<Sach>? danhSachSach = await _unit.Saches.LaySachTheoChuDe(id);
-
-            if (!priceRanges.IsNullOrEmpty() && priceRanges.Count > 0)
+            if (!priceRanges.IsNullOrEmpty() && priceRanges.Any())
             {
-                danhSachSach = GetPriceFilteredSaches(priceRanges, danhSachSach);
+                query = query.Where(s =>
+                    (priceRanges.Contains("range1") && s.GiaBan >= 0 && s.GiaBan < 150000) ||
+                    (priceRanges.Contains("range2") && s.GiaBan >= 150000 && s.GiaBan < 300000) ||
+                    (priceRanges.Contains("range3") && s.GiaBan >= 300000 && s.GiaBan < 500000) ||
+                    (priceRanges.Contains("range4") && s.GiaBan >= 500000 && s.GiaBan < 700000) ||
+                    (priceRanges.Contains("range5") && s.GiaBan >= 700000)
+                );
+            }
+
+            // ===== LỌC THEO TÁC GIẢ =====
+            if(tacGiaIds is not null && tacGiaIds.Any())
+            {
+                query = query.Where(s => tacGiaIds.Contains(s.MaTacGia));
             }
 
 
+            // ===== LỌC THEO NHÀ XUẤT BẢN =====
+            if (nhaXuatBanIds is not null && nhaXuatBanIds.Any())
+            {
+                query = query.Where(s => nhaXuatBanIds.Contains(s.MaNhaXuatBan));
+            }
 
-            viewModel.DanhSachSach = danhSachSach.ToPagedList(pageNumber, 20);
-            viewModel.DanhSachTenNhaXuatBan = danhSachSach.Select(s => s.NhaXuatBan.TenNXB).Distinct();
-            viewModel.DanhSachTenTacGia = danhSachSach.Select(s => s.TacGia.TenTG).Distinct();
+
+            // ===== LỌC THEO TỪ KHÓA =====
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                query = query.Where(s => s.TenSach.Contains(keyword));
+            }
 
 
-            return View(viewModel);
+            List<Sach> sachList = await query.ToListAsync();
+
+            if(chuDeId != 0)
+            {
+                viewModel.DanhSachTacGia = sachList.Select(s => s.TacGia)
+                    .GroupBy(tg => tg.MaTacGia)
+                    .Select(g => g.First())
+                    .ToList();
+
+                viewModel.DanhSachNhaXuatBan = sachList.Select(s => s.NhaXuatBan)
+                                        .GroupBy(nxb => nxb.MaNhaXuatBan)
+                                        .Select(g => g.First())
+                                        .ToList();
+            }
+
+
+            viewModel.DanhSachSach = sachList.ToPagedList(page, 20);
+            return viewModel;
         }
 
         private List<PriceRange> LoadPriceRanges()
@@ -112,26 +199,8 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             };
         }
 
-        private List<Sach> GetPriceFilteredSaches(List<string> priceRangesId, List<Sach> danhSach)
-        {
-
-            if(priceRangesId != null && priceRangesId.Any())
-            {
-                List<PriceRange> ranges = LoadPriceRanges()
-                                    .Where(r => priceRangesId.Contains(r.Id))
-                                    .ToList();
-
-                danhSach = danhSach.Where(s => ranges.Any(r =>
-                    s.GiaBan >= r.MinPrice &&
-                    (r.MaxPrice == null || s.GiaBan <= r.MaxPrice))).ToList();
-            }
-
-            return danhSach;
-        }
-
         private async Task<ChuDe?> LayChuDeLevel1(ChuDe selectedChuDe)
         {
-
             ChuDe? parentChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == selectedChuDe.ParentId);
 
             selectedChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == selectedChuDe.MaChuDe);
@@ -149,6 +218,10 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         private string LayURL(int? maCD, List<string> url)
         {
             ChuDe? selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == maCD);
+            if(selectedChuDe is null)
+            {
+                return "Trang chủ > Tất cả chủ đề";
+            }
 
             if(selectedChuDe.ParentId is not null)
             {
@@ -163,7 +236,10 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
             return String.Join("", url);
         }
+        #endregion
 
+
+        #region Địa chỉ nhận hàng
         public async Task<IActionResult> ChangeAddressPartial()
         {
             var provinces = await _locationService.GetProvincesAsync();
@@ -266,6 +342,8 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             var wards = await _locationService.GetWardsAsync(districtCode);
             return Json(wards);
         }
+        #endregion
+
 
         public IActionResult OrderSuccess()
         {
@@ -299,7 +377,8 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
             return View(model);
         }
+
+
     }
 }
 
-#endregion

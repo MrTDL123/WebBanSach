@@ -21,34 +21,33 @@ namespace Media.DataAccess.Repository
             _db = db;
         }
 
-        public async Task<List<Sach>> LaySachTheoChuDe(int? id)
+        public IQueryable<Sach> LaySachTheoChuDe(int? id)
         {
             var dsIdChuDe = new List<int?>();
-            await GetChildCategoryIds(id, dsIdChuDe);
+            GetChildCategoryIds(id, dsIdChuDe);
 
-            return await _db.Saches
+            return _db.Saches
                 .Include(s => s.ChuDe)
                 .Include(s => s.TacGia)
                 .Include(s => s.NhaXuatBan)
                 .Where(s => dsIdChuDe.Contains(s.MaChuDe))
                 .OrderBy(s => s.TenSach)
-                .AsNoTracking()
-                .ToListAsync();
+                .AsNoTracking();
         }
 
 
-        private async Task GetChildCategoryIds(int? parentId, List<int?> dsIdChuDe)
+        private void GetChildCategoryIds(int? parentId, List<int?> dsIdChuDe)
         {
             dsIdChuDe.Add(parentId);
 
-            var childCategories = await _db.ChuDes
+            var childCategories = _db.ChuDes
                 .Where(cd => cd.ParentId == parentId)
                 .Select(cd => cd.MaChuDe)
-                .ToListAsync();
+                .ToList();
 
             foreach (var childId in childCategories)
             {
-                await GetChildCategoryIds(childId, dsIdChuDe);
+                GetChildCategoryIds(childId, dsIdChuDe);
             }
         }
 

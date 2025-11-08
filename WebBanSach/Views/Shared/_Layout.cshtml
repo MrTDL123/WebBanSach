@@ -21,7 +21,8 @@
     </environment>
 
     <link rel="stylesheet" href="~/WebBanSach.styles.css" asp-append-version="true" />
-    @RenderSection("PageStyles", required: false)
+
+    @await RenderSectionAsync("PageStyles", required: false)
 </head>
 
 <body>
@@ -125,7 +126,7 @@
             </ul>
         </div>
         <div>
-            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#" style="color: #0ce682;">Trần Duy Long</a></p>
+            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#">Trần Duy Long</a></p>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -133,7 +134,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/yfm2tzcw10n183a3sq1ddo8j7btx6a161wqkyashxwwo4l45/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @* <script src="~/js/site.js" asp-append-version="true"></script> *@
     <script>
         $(document).ready(function () {
             $('#backtop_container').click(function () {

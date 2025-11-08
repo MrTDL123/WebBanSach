@@ -11,6 +11,8 @@ namespace Media.DataAccess.Repository.IRepository
         //Add Table
         IChuDeRepository ChuDes { get; }
         ISachRepository Saches { get; }
+        ITacGiaRepository TacGias { get; }
+        INhaXuatBanRepository NhaXuatBans { get; }
 
         void Save();
     }

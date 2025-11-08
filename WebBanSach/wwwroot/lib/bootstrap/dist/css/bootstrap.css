@@ -286,11 +286,6 @@ address {
 }
 
 ol,
-ul {
-    padding-left: 2rem;
-}
-
-ol,
 ul,
 dl {
     margin-top: 0;
@@ -719,7 +714,7 @@ progress {
 }
 
     .blockquote-footer::before {
-        content: "— ";
+        content: "ï¿½ï¿½";
     }
 
 .img-fluid {

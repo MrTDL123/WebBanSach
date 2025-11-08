@@ -1,12 +1,14 @@
 using Media.DataAccess.Repository;
 using Media.DataAccess.Repository.IRepository;
-using Meida.DataAccess.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Media.Utility;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Media.Service;
 using Media.Models;
+using Media.Service;
+using Media.Service.IServices;
+using Media.Utility;
+using Meida.DataAccess.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -33,6 +35,9 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+builder.Services.AddHttpContextAccessor();
+//builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddHttpClient<LocationService>(client =>
 {
     // Base URL cho API

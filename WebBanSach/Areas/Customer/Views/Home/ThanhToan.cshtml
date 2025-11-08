@@ -1,5 +1,10 @@
 ﻿@model Media.Models.ThanhToan
 
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/thanhtoan.css" asp-append-version="true" />
+}
+
+
 <div class="checkout-container">
 
     @using (Html.BeginForm("ThanhToan", "Home", FormMethod.Post, new { @class = "checkout-form" }))

@@ -3,13 +3,15 @@
 @section PageStyles {
     <style>
         header {
-            background-image: url(../img/web_img/header_background.png);
+            background-image: url('/img/web_img/header_background.png');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             height: 100vh;
         }
+
     </style>
+    <link rel="stylesheet" href="~/css/pages/index.css" asp-append-version="true" />
 }
 
 @section SliderMenu {
@@ -178,3 +180,7 @@
         }
     </div>
 </section>
+
+@section Scripts {
+    <script src="~/js/index.js"></script>
+}

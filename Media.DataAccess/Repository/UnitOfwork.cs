@@ -14,11 +14,18 @@ namespace Media.DataAccess.Repository
         //Add Table
         public IChuDeRepository ChuDes { get; private set; }
         public ISachRepository Saches { get; private set; }
+
+        public ITacGiaRepository TacGias { get; private set; }
+
+        public INhaXuatBanRepository NhaXuatBans { get; private set; }
+
         public UnitOfwork(ApplicationDbContext db)
         {
             _db = db;
             ChuDes = new ChuDeRepository(_db);
             Saches = new SachRepository(_db);
+            TacGias = new TacGiaRepository(_db);
+            NhaXuatBans = new NhaXuatBanRepository(_db);
         }
         public void Save()
         {
