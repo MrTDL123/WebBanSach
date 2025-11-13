@@ -8,12 +8,21 @@ namespace Media.Models.ViewModels
 {
     public class SachTheoChuDeVM
     {
+        // Chủ đề được chọn
         public ChuDe ChuDeHienTai { get; set; }
+
+        // Các dữ liệu lọc
         public IEnumerable<NhaXuatBan>? DanhSachNhaXuatBan { get; set; }
         public IEnumerable<TacGia>? DanhSachTacGia { get; set; }
-        public IPagedList<Sach>? DanhSachSach { get; set; }
         public PriceFilter PriceFilter { get; set; }
 
+        // ToolBar
+        public string SortBy { get; set; }
+        public int PageSize { get; set; } = 20;
+        public string SearchKeyword { get; set; }
+
+
+        public IPagedList<Sach>? DanhSachSach { get; set; }
     }
 
     public class PriceFilter

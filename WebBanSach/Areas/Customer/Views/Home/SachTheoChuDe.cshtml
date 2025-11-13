@@ -1,19 +1,28 @@
 ﻿@model SachTheoChuDeVM
-@using X.PagedList
-@using X.PagedList.Mvc.Core
-@addTagHelper *, X.PagedList.Mvc.Core
 
 @section PageStyles {
     <link rel="stylesheet" href="~/css/pages/sachtheochude.css" asp-append-version="true" />
 }
 
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.SearchKeyword)
+        ? "Sách theo chủ đề"
+        : $"Kết quả tìm kiếm: {Model.SearchKeyword}";
+
+    // Truyền keyword ra Layout để hiển thị trong search box
+    ViewBag.SearchKeyword = Model.SearchKeyword;
+}
 
 <div id="sachtheochude_container">
     <p class="montserrat-medium">@ViewBag.Url</p>
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
-            <form id="filterForm" data-chude-id="@Model.ChuDeHienTai.MaChuDe">
+            <form id="filterForm"
+                data-chude-id="@Model.ChuDeHienTai.MaChuDe"
+                data-sort-by="@Model.SortBy"
+                data-page-size="@Model.PageSize">
+
                 <section id="same_category_books" class="filter-section">
                     <p class="sachtheochude_left_title montserrat-bold" id="">CHỦ ĐỀ TƯƠNG ỨNG</p>
                     <aside>
@@ -49,7 +58,6 @@
                 </section>
 
                 <section id="tacgia_filter" class="filter-section">
-                    
                     @await Html.PartialAsync("_TacGiaFilterPartial", Model.DanhSachTacGia)
                 </section>
             </form>
@@ -57,7 +65,23 @@
 
         
         <section id="sachtheochude_right">
-            @await Html.PartialAsync("_SachListPartial", Model.DanhSachSach)
+            <div id="toolbar-section">
+                @await Html.PartialAsync("_ToolbarPartial", Model)
+                @if(!string.IsNullOrEmpty(Model.SearchKeyword))
+                {
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-search"></i>
+                        Kết quả tìm kiếm cho: <strong>"@Model.SearchKeyword"</strong>
+                        <span class="ms-2">(@Model.DanhSachSach.TotalItemCount sản phẩm)</span>
+                    </div>
+                }
+            </div>
+            <div id="sach-list-section">
+                @await Html.PartialAsync("_SachListPartial", Model)
+            </div>
+            <div id="pagination-section">
+                @await Html.PartialAsync("_PaginationPartial", Model.DanhSachSach)
+            </div>
         </section>
     </div>
 </div>

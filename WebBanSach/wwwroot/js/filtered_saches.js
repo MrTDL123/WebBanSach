@@ -75,11 +75,26 @@ $(document).ready(function () {
             filters.keyword = keyword.trim();
         }
 
+        var sortBy = $('#sort-select').val();
+        if (sortBy) {
+            filters.sortBy = sortBy;
+            $('#filterForm').data('sort-by', sortBy);
+        }
+
+        var pageSize = $('#pagesize-select').val() || 12;
+        filters.pageSize = parseInt(pageSize);
+        $('#filterForm').data('page-size', pageSize);
+
         return filters;
     }
 
     function showLoading() {
-        $('#sachtheochude_right').html(`
+        $('#sach-list-section').html(`
+            <style>
+                #sach-list-section{
+                    display: unset;
+                }
+            </style>
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Đang tải...</span>
@@ -87,13 +102,27 @@ $(document).ready(function () {
                 <p class="mt-2 text-muted">Đang tải sách...</p>
             </div>
         `);
+
+        $('#pagination-section').html('');
     }
 
     function updateContent(response) {
-        $('#sachtheochude_right').html(response.sachList);
+        $('#toolbar-section').html(response.toolbar);
+        $('#sach-list-section').html(response.sachList);
         $('.chude_item_root').html(response.chuDeTuongUng);
         $('#nhaxuatban_filter').html(response.nhaXuatBanList);
         $('#tacgia_filter').html(response.tacGiaList);
+        $('#pagination-section').html(response.pagination);
+
+        highlightCurrentChuDe();
+    }
+
+    function highlightCurrentChuDe() {
+        var currentChuDeId = $('#filterForm').data('chude-id');
+        $('.chude-filter').removeClass('active fw-bold');
+        if (currentChuDeId) {
+            $(`.chude-filter[data-chude-id="${currentChuDeId}"]`).addClass('active fw-bold');
+        }
     }
 
     function updateURL(filters) {
@@ -157,15 +186,46 @@ $(document).ready(function () {
 
 
     //Lọc theo thanh search
-    $('#search_button').on('click', function () {
+    $(document).on('click', '#search_button', function () {
         console.log('🔍 Search clicked');
         loadSaches(1);
     });
 
-    $('#search_bar').on('keypress', function (e) {
-        if (e.which === 13) { // Enter key
+    $(document).on('keypress', '#search_bar', function (e) {
+        if (e.which === 13) {
             console.log('🔍 Search by Enter');
             loadSaches(1);
+        }
+    });
+
+    //Lọc theo sắp xếp
+    $(document).on('change', '#sort-select', function () {
+        console.log('🔀 Sort changed:', $(this).val());
+        loadSaches(1);
+    });
+
+    //Thay đổi dựa vào số lượng sách mỗi trang
+    $(document).on('change', '#pagesize-select', function () {
+        var pageSize = $(this).val();
+        console.log('📄 Page size changed:', pageSize);
+
+        $('#filterForm').data('page-size', pageSize);
+
+        loadSaches(1);
+    });
+
+    //Thay đổi dựa trên pagination
+    $(document).on('click', '.pagination .page-link', function (e) {
+        e.preventDefault();
+
+        if ($(this).parent().hasClass('disabled')) {
+            return;
+        }
+
+        var page = $(this).data('page');
+        if (page) {
+            console.log('📄 Page changed:', page);
+            loadSaches(page);
         }
     });
 
@@ -173,4 +233,6 @@ $(document).ready(function () {
     window.addEventListener('popstate', function (e) {
         location.reload();
     });
+
+    highlightCurrentChuDe();
 });

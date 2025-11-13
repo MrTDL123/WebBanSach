@@ -14,6 +14,25 @@
     <link rel="stylesheet" href="~/css/pages/index.css" asp-append-version="true" />
 }
 
+@functions {
+    public string Truncate(string noidung, int length)
+    {
+        if (noidung.Length < length)
+        {
+            return noidung;
+        }
+        else
+        {
+            return $"{noidung.Substring(0, length)}...";
+        }
+    }
+
+    public string HienThiDongGia(decimal giaTien)
+    {
+        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
+    }
+}
+
 @section SliderMenu {
     <div id="slide_container">
         <section class="slide" id="slide1">
@@ -153,29 +172,29 @@
             </div>
         </div>
     </div>
-    <div class="books">
-        @foreach (var sach in Model.DanhSachSanPham)
+    <div id="sach-list-section">
+        @foreach (var sach in Model.SachBanChay)
         {
             <div class="book">
                 <div class="book_img">
-                    <img src="~/img/product/@sach.AnhBiaChinh" alt="@sach.TenSach" />
+                    <img src="@sach.AnhBiaChinh" alt="Ảnh sách" />
                     <div class="book_img_hover">
                         <ul class="book_icon_container">
                             <li>
-                                <a href="@Url.Action("Details", "Home", new { MaSach = sach.MaSach })" class="direct_detail_icon book_icon">
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="@Url.Action("ShoppingCart", "Home", new { MaSach = sach.MaSach })" class="direct_cart_icon book_icon">
+                                <a href="#" class="direct_cart_icon book_icon">
                                     <i class="bi bi-cart-fill"></i>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <p class="ten_sach montserrat-regular">@sach.TenSach</p>
-                <p class="ten_tacgia montserrat-bold">@sach.GiaBan.ToString("N0") đ</p>
+                <p class="ten_sach montserrat-regular">@Truncate(sach.TenSach, 15)</p>
+                <p class="ten_tacgia montserrat-bold">@HienThiDongGia(sach.GiaBan)</p>
             </div>
         }
     </div>

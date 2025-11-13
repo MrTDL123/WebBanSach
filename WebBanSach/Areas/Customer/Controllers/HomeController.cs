@@ -30,20 +30,19 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             _viewRenderService = viewRenderService;
         }
 
-        public IActionResult Index()
+        #region Trang chủ
+        public async Task<IActionResult> Index()
         {
             IndexVM viewModel = new IndexVM()
             {
-                DanhSachSanPham = _unit.Saches
-                              .GetAll(includeProperties: "ChuDe,NhaXuatBan,TacGia")
-                              .OrderByDescending(s => s.GiaBan)
-                              .Take(5)
-                              .ToList(),
+                SachBanChay = await _unit.Saches.LaySachBanChay(days: 7, sachCount: 6),
                 DanhSachChuDe = _unit.ChuDes.GetAll()
             };
             
             return View(viewModel);
         }
+
+        #endregion
 
         public IActionResult Details(int id)
         {
@@ -51,13 +50,21 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             return View(sach);
         }
 
-        #region Sách Theo Chủ Đề
-        public async Task<IActionResult> LayTatCaSach(int? page)
+
+        public IActionResult TimKiem(string? keyword)
         {
-            int pageNumber = page ?? 1;
+            return RedirectToAction("SachTheoChuDe", new
+            {
+                keyword = keyword,
+            });
+        }
+
+        #region Sách Theo Chủ Đề
+        public async Task<IActionResult> LayTatCaSach(int? page, int? pageSize)
+        {
             ViewBag.Url = "Trang chủ > Tất cả chủ đề";
 
-            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, pageNumber, null, null, null, null);
+            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, page ?? 1, pageSize ?? 12,null, null, null, null, null);
 
             viewModel.DanhSachTacGia = await _unit.TacGias.GetAllReadOnlyAsync();
             viewModel.DanhSachNhaXuatBan = await _unit.NhaXuatBans.GetAllReadOnlyAsync();
@@ -66,42 +73,57 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         }
 
         public async Task<IActionResult> SachTheoChuDe(
-            int id, int? page,
+            int id, 
+            int? page,
+            int? pageSize,
             List<string> priceRanges, 
             List<int> tacGiaIds,
             List<int> nhaXuatBanIds,
-            string keyword)
+            string? sortBy,
+            string? keyword)
         {
-            int pageNumber = page ?? 1;
             ViewBag.Url = LayURL(id, new List<string>());
 
-            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(id, pageNumber, priceRanges, tacGiaIds, nhaXuatBanIds, keyword);
+            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(
+                id, page ?? 1, pageSize ?? 12, priceRanges, tacGiaIds, nhaXuatBanIds, sortBy, keyword);
+
+            ViewBag.SearchKeyword = keyword;
 
             bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
 
             if (isAjax)
             {
                 string chuDeTuongUngHtml = await _viewRenderService.RenderToStringAsync("_ChuDeTuongUngPartial", viewModel.ChuDeHienTai);
-                string sachListHtml = await _viewRenderService.RenderToStringAsync("_SachListPartial", viewModel.DanhSachSach);
+                string sachListHtml = await _viewRenderService.RenderToStringAsync("_SachListPartial", viewModel);
                 string danhSachTacGia = await _viewRenderService.RenderToStringAsync("_TacGiaFilterPartial", viewModel.DanhSachTacGia);
                 string danhSachNhaXuatBan = await _viewRenderService.RenderToStringAsync("_NhaXuatBanFilterPartial", viewModel.DanhSachNhaXuatBan);
+                string toolBarHtml = await _viewRenderService.RenderToStringAsync("_ToolbarPartial", viewModel);
+                string paginationHtml = await _viewRenderService.RenderToStringAsync("_PaginationPartial", viewModel.DanhSachSach);
                 return Json(new
                 {
                     success = true,
                     chuDeTuongUng = chuDeTuongUngHtml,
                     sachList = sachListHtml,
                     tacGiaList = danhSachTacGia,
-                    nhaXuatBanList = danhSachNhaXuatBan
+                    nhaXuatBanList = danhSachNhaXuatBan,
+                    toolbar = toolBarHtml,
+                    pagination = paginationHtml,
+                    totalSaches = viewModel.DanhSachSach.TotalItemCount,
+                    currentPage = viewModel.DanhSachSach.PageNumber,
+                    totalPages = viewModel.DanhSachSach.PageCount
                 });
             }
             return View(viewModel);
         }
 
         private async Task<SachTheoChuDeVM> LoadSachTheoChuDeVMAsync(
-            int chuDeId, int page,
+            int chuDeId, 
+            int page,
+            int pageSize,
             List<string>? priceRanges,
             List<int>? tacGiaIds,
             List<int>? nhaXuatBanIds,
+            string? sortBy,
             string? keyword)
         {
             IQueryable<Sach> query;
@@ -126,6 +148,17 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                 viewModel.ChuDeHienTai = await LayChuDeLevel1(selectedChuDe);
 
                 query = _unit.Saches.LaySachTheoChuDe(chuDeId);
+            }
+
+            // ===== LỌC THEO TỪ KHÓA =====
+            if (!string.IsNullOrWhiteSpace(keyword))
+            {
+                string searchTerm = keyword.ToLower().Trim();
+                query = query.Where(s =>
+                    s.TenSach.ToLower().Contains(searchTerm) ||
+                    s.TacGia.TenTG.ToLower().Contains(searchTerm));
+
+                viewModel.SearchKeyword = keyword;
             }
 
             // ===== LỌC THEO GIÁ =====
@@ -159,12 +192,18 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                 query = query.Where(s => nhaXuatBanIds.Contains(s.MaNhaXuatBan));
             }
 
-
-            // ===== LỌC THEO TỪ KHÓA =====
-            if (!string.IsNullOrWhiteSpace(keyword))
+            // ===== LỌC THEO SẮP XẾP =====
+            query = sortBy switch
             {
-                query = query.Where(s => s.TenSach.Contains(keyword));
-            }
+                "price-asc" => query.OrderBy(s => s.GiaBan),
+                "price-desc" => query.OrderByDescending(s => s.GiaBan),
+                "name-asc" => query.OrderBy(s => s.TenSach),
+                "name-desc" => query.OrderByDescending(s => s.TenSach),
+                "newest" => query.OrderByDescending(s => s.NgayCapNhat),
+                "oldest" => query.OrderBy(s => s.NgayCapNhat),
+                _ => query.OrderBy(s => s.TenSach)
+            };
+
 
 
             List<Sach> sachList = await query.ToListAsync();
@@ -183,7 +222,9 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             }
 
 
-            viewModel.DanhSachSach = sachList.ToPagedList(page, 20);
+            viewModel.DanhSachSach = sachList.ToPagedList(page, pageSize);
+            viewModel.SortBy = sortBy;
+            viewModel.PageSize = pageSize;
             return viewModel;
         }
 

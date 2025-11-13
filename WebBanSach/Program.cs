@@ -33,6 +33,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
+builder.Services.AddMemoryCache();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();

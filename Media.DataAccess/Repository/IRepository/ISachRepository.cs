@@ -10,6 +10,7 @@ namespace Media.DataAccess.Repository.IRepository
     public interface ISachRepository : IRepository<Sach>
     {
         IQueryable<Sach> LaySachTheoChuDe(int? id);
+        Task<IEnumerable<Sach>> LaySachBanChay(int? days, int? sachCount);
         void Update(Sach obj);
     }
 }

@@ -10,6 +10,6 @@ namespace Media.Models.ViewModels
     public class IndexVM
     {
         public IEnumerable<ChuDe>? DanhSachChuDe { get; set; }
-        public IEnumerable<Sach>? DanhSachSanPham { get; set; }
+        public IEnumerable<Sach>? SachBanChay { get; set; }
     }
 }

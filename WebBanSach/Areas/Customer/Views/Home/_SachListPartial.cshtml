@@ -1,4 +1,4 @@
-﻿@model IPagedList<Sach>
+﻿@model SachTheoChuDeVM
 
 @functions {
     public string Truncate(string noidung, int length)
@@ -66,9 +66,9 @@
             }
 </style>
 
-@if(Model.Count != 0)
+@if(Model.DanhSachSach.TotalItemCount != 0)
 {
-    @foreach (Sach sach in Model)
+    @foreach (Sach sach in Model.DanhSachSach)
     {
         <div class="book">
             <div class="book_img">
@@ -95,6 +95,11 @@
 }
 else
 {
+    <style>
+        #sach-list-section{
+            display: unset;
+        }
+    </style>
 
     <div class="empty-result-container">
         <div class="empty-icon">

@@ -1,0 +1,51 @@
+﻿@model SachTheoChuDeVM
+
+<div class="toolbar-container mb-4">
+    <div class="row g-3 align-items-center">
+
+        <p class="col-md-2" style="margin-bottom: unset !important">Sắp xếp theo: </p>
+        <!-- Cột 1: Sort -->
+        <div id="sort_filter" class="col-md-4" style="max-width: 23%;">
+            <select id="sort-select" class="form-select form-select-sm">
+                <option value="">Mặc định</option>
+                <option value="name-asc" selected="@(Model.SortBy == "name-asc")">
+                    Tên A → Z
+                </option>
+                <option value="name-desc" selected="@(Model.SortBy == "name-desc")">
+                    Tên Z → A
+                </option>
+                <option value="price-asc" selected="@(Model.SortBy == "price-asc")">
+                    Giá thấp → cao
+                </option>
+                <option value="price-desc" selected="@(Model.SortBy == "price-desc")">
+                    Giá cao → thấp
+                </option>
+                <option value="newest" selected="@(Model.SortBy == "newest")">
+                    Mới nhất
+                </option>
+                <option value="oldest" selected="@(Model.SortBy == "oldest")">
+                    Cũ nhất
+                </option>
+            </select>
+        </div>
+        
+        <!-- Cột 2: Items per page -->
+        <div id="so_luong_san_pham_filter" class="col-md-3 text-end" style="max-width: 20%; margin-right: 6rem;">
+                <!-- Items per page -->
+                <select id="pagesize-select" class="form-select form-select-sm">
+                    <option value="12" selected="@(Model.PageSize == 12)">12 sản phẩm</option>
+                    <option value="24" selected="@(Model.PageSize == 24)">24 sản phẩm</option>
+                    <option value="48" selected="@(Model.PageSize == 48)">48 sản phẩm</option>
+                    <option value="96" selected="@(Model.PageSize == 96)">96 sản phẩm</option>
+                </select>
+        </div>
+
+        <div class="col-md-3">
+            <div class="result-count">
+                Hiển thị <strong>@Model.DanhSachSach.Count</strong> /
+                <strong>@Model.DanhSachSach.TotalItemCount</strong> sản phẩm
+            </div>
+        </div>
+
+    </div>
+</div>
