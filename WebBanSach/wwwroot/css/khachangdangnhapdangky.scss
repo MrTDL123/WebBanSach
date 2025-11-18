@@ -1,0 +1,125 @@
+﻿body {
+    background-color: #f5f5f5;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    min-height: 40vh;
+    margin: 20px 0;
+}
+
+.auth-box {
+    width: 60%;
+    background: #fff;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.auth-header h2 {
+    color: #d70018;
+    margin-bottom: 5px;
+}
+
+.auth-header p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* ===== FORM CONTROL ===== */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.form-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.form-group input:focus {
+    border-color: #d70018;
+    outline: none;
+}
+
+/* ===== ERROR MESSAGE (ASP.NET Validation) ===== */
+.field-validation-error,
+.error {
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+/* Định dạng lỗi toàn cục (Validation Summary) */
+.validation-summary-errors {
+    border: 1px solid #ff4d4d;
+    background-color: #ffe6e6;
+    color: #b30000;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+/* ===== BUTTON ===== */
+.btn-auth {
+    width: 100%;
+    background-color: #d70018;
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-auth:hover {
+    background-color: #b90014;
+}
+
+/* ===== FOOTER ===== */
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.auth-footer a {
+    color: #F0717F;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    color: #d70018;
+}
+
+@import 'partialview/loginpartial.css';

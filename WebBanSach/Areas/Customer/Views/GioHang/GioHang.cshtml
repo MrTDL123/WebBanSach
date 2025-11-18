@@ -1,0 +1,268 @@
+﻿@model List<GioHangVM>
+
+@{
+    ViewData["Title"] = "Giỏ Hàng";
+}
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/giohang.css" asp-append-version="true" />
+}
+<div class="container-shoppingcart">
+    <h3 class="header">Giỏ hàng <span class="count-product-shoping-cart">(@Model.Count sản phẩm)</span></h3>
+
+    <div class="wrapper">
+        <!-- Cart Content -->
+        <div class="cart-content">
+            <div class="cart-table">
+                <!-- Table Header -->
+                <div class="table-header">
+                    <div class="col-checkbox">
+                        <input type="checkbox" />
+                    </div>
+                    <label class="col-product">Sản phẩm <span class="count-product-shoping-cart">(@Model.Count sản phẩm)</span></label>
+                    <label class="col-price">Giá</label>
+                    <label class="col-quantity">Số lượng</label>
+                    <label class="col-total">Thành tiền</label>
+                    <label class="col-delete"></label>
+                </div>
+
+                @foreach (var sanPham in Model)
+                {
+                    <div class="table-row" data-masash="@sanPham.MaSach">
+                        <div class="col-checkbox">
+                            <input type="checkbox" />
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="product-info">
+                            <div class="product-image">
+                                <img src="~/img/product/@sanPham.AnhBiaChinh" alt="@sanPham.TenSach" />
+                            </div>
+                            <label class="product-name">@sanPham.TenSach</label>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="price-column">
+                            @if (sanPham.GiaSauGiam < sanPham.GiaBan)
+                            {
+                                <label class="original-price">@sanPham.GiaBan.ToString("N0")<span class="currency-symbol">đ</span></label>
+                                <label class="discount-price">@sanPham.GiaSauGiam.ToString("N0")<span class="currency-symbol">đ</span></label>
+                            }
+                            else
+                            {
+                                <label class="discount-price">@sanPham.GiaBan.ToString("N0")<span class="currency-symbol">đ</span></label>
+                            }
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="quantity-section-shoppingcart">
+                            <div class="quantity-control-shoppingcart">
+                                <button class="btn-qty-shoppingcart decrease">-</button>
+                                <input type="text" class="qtyShoppingCart" value="@sanPham.SoLuong" maxvalue="999" readonly>
+                                <button class="btn-qty-shoppingcart increase">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Total -->
+                        <label class="total-price">@((sanPham.GiaSauGiam * sanPham.SoLuong).ToString("N0"))<span class="currency-symbol">đ</span></label>
+
+                        <!-- Delete -->
+                        <button class="delete-btn" data-masach="@sanPham.MaSach"><i class="fi fi-rs-trash"></i></button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @{
+            decimal thanhTien = Model.Sum(x => x.GiaSauGiam * x.SoLuong);
+            decimal tongTien = thanhTien;
+        }
+
+        <!-- Sidebar Payment -->
+        <div class="sidebar">
+            <div class="payment-box">
+                <div class="payment-title">THANH TOÁN</div>
+
+                <div class="payment-row">
+                    <span class="payment-label">Thành tiền</span>
+                    <span class="payment-value">@thanhTien.ToString("N0")<span class="currency-symbol">đ</span></span>
+                </div>
+
+                <div class="payment-divider"></div>
+
+                <div class="payment-total">
+                    <span class="payment-total-label">Tổng Số Tiền: </span>
+                    <span class="payment-total-value">@tongTien.ToString("N0")<span class="currency-symbol">đ</span></span>
+                </div>
+
+                <button class="checkout-btn disabledBtn">THANH TOÁN</button>
+                <span class="payment-note">(Giảm giá trên web chỉ áp dụng cho bán lẻ)</span>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        const checkoutBtn = document.querySelector('.checkout-btn');
+        const headerCheckbox = document.querySelector('.table-header .col-checkbox input[type="checkbox"]');
+        const productCheckboxes = document.querySelectorAll('.table-row .col-checkbox input[type="checkbox"]');
+        const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        // const DanhSachMaSach = Array.from(checkedBoxes).map(cb => cb.closest('.table-row').dataset.masach);
+        tinhTongTien();
+        // 🧮 Hàm tính tổng tiền chỉ của sản phẩm được tick chọn
+        function tinhTongTien() {
+            let tong = 0;
+            document.querySelectorAll('.table-row').forEach(row => {
+                const checkbox = row.querySelector('.col-checkbox input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    const priceText = row.querySelector('.total-price').textContent.replace(/[^\d]/g, '');
+                    tong += parseInt(priceText || 0);
+                }
+            });
+
+            document.querySelector('.payment-total-value').innerHTML = tong.toLocaleString() + " đ";
+            document.querySelector('.payment-value').innerHTML = tong.toLocaleString() + " đ";
+        }
+
+        // ✅ Khi tick/bỏ tick từng sản phẩm
+        document.addEventListener('change', e => {
+            if (e.target.matches('.table-row .col-checkbox input[type="checkbox"]')) {
+                updateCheckoutBtn();
+                tinhTongTien();
+            }
+        });
+
+        // ✅ Khi tick chọn tất cả
+        headerCheckbox.addEventListener('change', () => {
+            const isChecked = headerCheckbox.checked;
+            productCheckboxes.forEach(cb => cb.checked = isChecked);
+            updateCheckoutBtn();
+            tinhTongTien();
+        });
+
+        // ✅ Nút thanh toán chỉ bật khi có sản phẩm được chọn
+        function updateCheckoutBtn() {
+            const productCheckboxesNow = document.querySelectorAll('.table-row .col-checkbox input[type="checkbox"]');
+            const anyChecked = Array.from(productCheckboxesNow).some(cb => cb.checked);
+            checkoutBtn.classList.toggle('disabledBtn', !anyChecked);
+
+            // ✅ Cập nhật lại trạng thái của checkbox "chọn tất cả"
+            const allChecked = Array.from(productCheckboxesNow).length > 0 &&
+                               Array.from(productCheckboxesNow).every(cb => cb.checked);
+            headerCheckbox.checked = allChecked;
+        }
+
+        updateCheckoutBtn();
+
+        // ✅ Xử lý tăng/giảm số lượng
+        document.querySelectorAll('.btn-qty-shoppingcart').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const row = btn.closest('.table-row');
+                const input = row.querySelector('.qtyShoppingCart');
+                const maSach = row.dataset.masash || row.dataset.masach;
+                let soLuong = parseInt(input.value);
+                const bodyPayload = `maSach=${maSach}&soLuong=${soLuong}&__RequestVerificationToken=${antiForgeryToken}`;
+
+                if (btn.classList.contains('increase')) soLuong++;
+                else if (btn.classList.contains('decrease') && soLuong > 1) soLuong--;
+
+                input.value = soLuong;
+
+                // ⚙️ Gửi Ajax cập nhật server
+                const res = await fetch('/Customer/GioHang/CapNhatThanhTienTrongGioHang', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: bodyPayload
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // ✅ Cập nhật lại cột "Thành tiền" của dòng sản phẩm đó
+                    row.querySelector('.total-price').innerHTML = data.thanhTien + '<span class="currency-symbol">đ</span>';
+
+                    // ✅ Nếu sản phẩm đó đang được tick thì cập nhật lại tổng tiền ở sidebar
+                    const checkbox = row.querySelector('.col-checkbox input[type="checkbox"]');
+                    if (checkbox && checkbox.checked) {
+                        tinhTongTien();
+                    }
+                    // Nếu chưa tick thì không ảnh hưởng gì đến tổng tiền
+                }
+            });
+        });
+
+        // ✅ Xử lý xóa sản phẩm khỏi giỏ hàng
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const row = btn.closest('.table-row');
+                const maSach = btn.dataset.masach;
+                const bodyPayload = `maSach=${maSach}&__RequestVerificationToken=${antiForgeryToken}`;
+
+                // Gửi AJAX tới server
+                const res = await fetch('/Customer/GioHang/XoaKhoiGioHang', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: bodyPayload
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Xóa dòng sản phẩm khỏi giao diện
+                    row.remove();
+
+                    $('#cart-count').text(`(${data.count})`);
+
+                    // Cập nhật lại tổng tiền trong sidebar
+                    tinhTongTien();
+
+                    // 🧾 Cập nhật lại số lượng hiển thị
+                    const soLuongSP = document.querySelectorAll('.table-row').length;
+                    document.querySelectorAll('.count-product-shoping-cart')
+                        .forEach(el => el.textContent = `(${soLuongSP} sản phẩm)`);
+
+                    if (soLuongSP == 0) {
+                        document.querySelector('.checkout-btn').classList.add('disabledBtn');
+                        headerCheckbox.checked = false; // bỏ check “chọn tất cả”
+                    }
+                    else
+                    {
+                        // Cập nhật lại trạng thái checkbox “chọn tất cả”
+                        const allChecked = Array.from(document.querySelectorAll('.table-row .col-checkbox input[type="checkbox"]'))
+                            .every(cb => cb.checked);
+                        headerCheckbox.checked = allChecked;
+                    }
+
+                    // 🔁 Luôn gọi lại hàm cập nhật nút thanh toán
+                    updateCheckoutBtn();
+                }
+            });
+        });
+
+        document.querySelector('.checkout-btn').addEventListener('click', function () {
+            if (this.classList.contains('disabledBtn')) return;
+
+            const checkedBoxes = document.querySelectorAll('.table-row .col-checkbox input[type="checkbox"]:checked');
+            const DanhSachMaSach = Array.from(checkedBoxes).map(cb => cb.closest('.table-row').dataset.masash);
+
+            // ✅ Gửi danh sách mã sách sang controller
+            fetch('/Customer/ThanhToan/LayDanhSachSanPhamThanhToan', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': antiForgeryToken
+                },
+                body: JSON.stringify({ danhSachMaSach: DanhSachMaSach })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // ✅ Chuyển hướng đến trang ThanhToan
+                    window.location.href = `/Customer/ThanhToan/ThanhToan`;
+                } else {
+                    alert(data.message || "Có lỗi xảy ra khi xử lý thanh toán.");
+                }
+            })
+            .catch(() => alert("Không thể kết nối đến máy chủ."));
+        });
+    </script>
+}

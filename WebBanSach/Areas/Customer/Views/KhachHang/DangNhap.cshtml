@@ -1,0 +1,73 @@
+﻿@model Media.Models.ViewModels.DangNhapVM
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/dangnhap.css" asp-append-version="true" />
+}
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2>Đăng nhập</h2>
+            <p>Chào mừng bạn quay lại!</p>
+        </div>
+
+        <form asp-action="DangNhap" asp-controller="KhachHang" id="FormDangNhap" method="post">
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input asp-for="Email" id="Email" placeholder="Nhập email của bạn VD:(nguyenvana@gmail.com)" />
+                <span asp-validation-for="Email" class="error"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="MatKhau">Mật khẩu</label>
+                <input asp-for="MatKhau" type="password" id="MatKhau" placeholder="Nhập mật khẩu" />
+                <span asp-validation-for="MatKhau" class="error"></span>
+            </div>
+
+            <div class="form-remember">
+                <label>
+                    <input asp-for="GhiNhoDangNhap" id="GhiNhoDangNhap" type="checkbox" /> Ghi nhớ đăng nhập
+                </label>
+                <a asp-area="Customer" asp-controller="KhachHang" asp-action="QuenMatKhau" class="forgot">Quên mật khẩu?</a>
+            </div>
+
+            <button type="submit" class="btn-auth">Đăng nhập</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>
+                Chưa có tài khoản?
+                <a asp-area="Customer" asp-controller="KhachHang" asp-action="DangKy">Đăng ký ngay</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const emailInput = document.getElementById("Email");
+        const rememberCheckbox = document.getElementById("GhiNhoDangNhap");
+
+        // Khi load trang: tự động điền lại thông tin nếu có lưu trước đó
+        window.addEventListener("load", function() {
+            const savedEmail = localStorage.getItem("savedEmail");
+
+            if (savedEmail) {
+                emailInput.value = savedEmail;
+                rememberCheckbox.checked = true;
+            }
+        });
+
+        // Khi submit form: lưu thông tin nếu có tick Ghi nhớ đăng nhập
+        const form = document.getElementById("FormDangNhap");
+        form.addEventListener("submit", function() {
+            if (rememberCheckbox.checked) {
+                localStorage.setItem("savedEmail", emailInput.value);
+            } else {
+                localStorage.removeItem("savedEmail");
+            }
+        });
+    </script>
+}

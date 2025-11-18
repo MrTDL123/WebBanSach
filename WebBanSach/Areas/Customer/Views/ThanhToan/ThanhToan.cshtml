@@ -1,0 +1,787 @@
+﻿@model Media.Models.ThanhToan
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/thanhtoan.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/khachhang/thongtincanhan.css" asp-append-version="true" />
+}
+<div class="checkout-container">
+
+    @using (Html.BeginForm("ThanhToan", "ThanhToan", FormMethod.Post, new { @class = "checkout-form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="grid-2col">
+            <div class="section">
+                <div class="address-header-checkout">
+                    <h2 class="section-title-checkout">
+                        <i class="fi fi-rs-marker"></i> Địa Chỉ Nhận Hàng
+                    </h2>
+                </div>
+                <div class="address-container-checkout" id="address-container-checkout">
+                    @Html.Partial("_DiaChiNhanHangThanhToanPartial", Model.DiaChiMacDinh)
+                </div>
+                
+
+                <div style="display:none;">
+                    @Html.TextBoxFor(m => m.HoTen)
+                    @Html.TextBoxFor(m => m.SoDienThoai)
+                    @Html.TextBoxFor(m => m.MaDiaChiNhanHang)
+                    @Html.TextBoxFor(m => m.TinhThanh)
+                    @Html.TextBoxFor(m => m.QuanHuyen)
+                    @Html.TextBoxFor(m => m.PhuongXa)
+                    @Html.TextBoxFor(m => m.DiaChi)
+                </div>
+            </div>
+
+            <!-- Phương thức vận chuyển -->
+            <div class="section">
+                <h2 class="section-title-checkout">Phương Thức Vận Chuyển</h2>
+                <div class="shipping-method">
+                    <div class="shipping-method-container">
+                        <input type="radio" name="shippingMethod" value="standard" checked />
+                        <div class="method-info">
+                            <div><strong>Giao hàng tiêu chuẩn: @Model.PhiVanChuyen.ToString("N0") đ</strong></div>
+                            <div class="method-note" id="deliveryEstimateText">Dự kiến giao: --/--</div>
+                        </div>
+                    </div>
+                    <div class="note-method">
+                        @Html.LabelFor(m => m.GhiChu, new { @class = "note-label" })
+                        @Html.TextBoxFor(m => m.GhiChu, new { @class = "form-control note", placeholder = "Ghi chú cho nhà sách (tùy chọn). . ."})
+                        @Html.ValidationMessageFor(m => m.GhiChu, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title-checkout">Phương Thức Thanh Toán</h2>
+
+                <div class="shipping-method-container payment-option">
+                    @Html.RadioButtonFor(m => m.HinhThucThanhToanChon, HinhThucThanhToan.TienMatKhiNhanHang, new { id = "payment_cod" })
+
+                    <label for="payment_cod" class="method-info">
+                        <strong>Thanh toán tiền mặt khi nhận hàng (COD)</strong>
+                    </label>
+                </div>
+
+                <div class="shipping-method-container payment-option">
+                    @Html.RadioButtonFor(m => m.HinhThucThanhToanChon, HinhThucThanhToan.ChuyenKhoan, new { id = "payment_bank" })
+
+                    <label for="payment_bank" class="method-info">
+                        <strong>Chuyển khoản ngân hàng</strong>
+                    </label>
+                </div>
+
+                @Html.ValidationMessageFor(m => m.HinhThucThanhToanChon, "", new { @class = "text-danger" })
+            </div>
+
+            <!-- Kiểm tra lại đơn hàng -->
+            <div class="section">
+                <h2 class="section-title-checkout">Kiểm Tra Lại Đơn Hàng</h2>
+                @foreach (var sanPham in Model.DanhSachSanPham)
+                {
+                    <div class="product-item" data-masach="@sanPham.MaSach">
+                        <img src="~/img/product/@sanPham.AnhBiaChinh" alt="@sanPham.TenSach" class="product-image" />
+                        <div class="product-info-checkout">
+                            <span class="product-name-checkout">@sanPham.TenSach</span>
+                            <span class="product-price-checkout">@sanPham.GiaSauGiam.ToString("N0") đ</span>
+                            <div class="quantity-section-checkout">
+                                <div class="quantity-control-checkout">
+                                    <button type="button" class="btn-qty-checkout decrease">-</button>
+                                    <input type="text" class="qtyCheckout" value="@sanPham.SoLuong" maxvalue="999" readonly>
+                                    <button type="button" class="btn-qty-checkout increase">+</button>
+                                </div>
+                            </div>
+                            <span class="product-price-checkout total-price">@sanPham.ThanhTien.ToString("N0") đ</span>
+                            <button class="delete-btn"><i class="fi fi-rs-trash"></i></button>
+                        </div>
+                    </div>
+                }
+                
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Thành tiền</span>
+                        <span>@Model.TamTinh.ToString("N0") đ</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển (Giao hàng tiêu chuẩn)</span>
+                        <span>@Model.PhiVanChuyen.ToString("N0") đ</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng Số Tiền (gồm VAT)</span>
+                        <span>@Model.TongTien.ToString("N0") đ</span>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Xác nhận thanh toán</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<div id="chonDiaChiPopupOverlay" class="popup-overlay" style="display:none;" onclick="dongPopupChonDiaChi()"></div>
+<div id="chonDiaChiPopupModal" class="popup-modal" style="display:none;">
+    <div id="chonDiaChiPopupContent"></div>
+</div>
+
+<div id="themDiaChiPopupOverlay" class="popup-overlay" style="display:none; z-index: 1055;" onclick="dongPopupThemDiaChi()"></div>
+<div id="themDiaChiPopupModal" class="popup-modal" style="display:none; z-index: 1060;">
+    <div id="themDiaChiPopupContent"></div>
+</div>
+
+<div id="toastNotification" class="toast-notification"></div>
+
+@section Scripts {
+    <script>
+        const SHOP_PROVINCE_CODE = "79"; // ví dụ TP.HCM = 79 (bạn có thể chỉnh lại)
+        const elemEstimate = document.querySelector('.method-note');
+
+        $(document).ready(function () {
+            const provinceSelect = $('#provinceSelect');
+            const districtSelect = $('#districtSelect');
+            const wardSelect = $('#wardSelect');
+            
+            // Ban đầu: disable Quận/Huyện và Phường/Xã
+            districtSelect.prop('disabled', true);
+            wardSelect.prop('disabled', true);
+
+            const defaultProvinceCode = @(Model.DiaChiMacDinh?.MaTinhThanh ?? 0);
+
+            if (defaultProvinceCode > 0) {
+                // Gọi hàm cập nhật ngày giao hàng ngay khi tải trang
+                updateDeliveryEstimate(defaultProvinceCode);
+            }
+            provinceSelect.change(function () {
+                const provinceCode = $(this).val();
+                updateDeliveryEstimate(provinceCode); // cập nhật thời gian dự kiến
+
+                if (provinceCode) {
+                    districtSelect.prop('disabled', false);
+                    wardSelect.prop('disabled', true);
+
+                    $.getJSON('@Url.Action("GetDistricts", "Home")', { provinceCode: provinceCode }, function (data) {
+                        districtSelect.empty().append('<option value="">Chọn quận/huyện</option>');
+                        $.each(data, function (index, item) {
+                            districtSelect.append($('<option></option>').val(item.value).html(item.text));
+                        });
+                        wardSelect.empty().append('<option value="">Chọn phường/xã</option>');
+                    });
+                } else {
+                    districtSelect.prop('disabled', true).empty().append('<option value="">Chọn quận/huyện</option>');
+                    wardSelect.prop('disabled', true).empty().append('<option value="">Chọn phường/xã</option>');
+                }
+            });
+
+            // ---- Khi chọn Quận/Huyện ----
+            districtSelect.change(function () {
+                const districtCode = $(this).val();
+                if (districtCode) {
+                    wardSelect.prop('disabled', false);
+                    $.getJSON('@Url.Action("GetWards", "Home")', { districtCode: districtCode }, function (data) {
+                        wardSelect.empty().append('<option value="">Chọn phường/xã</option>');
+                        $.each(data, function (index, item) {
+                            wardSelect.append($('<option></option>').val(item.value).html(item.text));
+                        });
+                    });
+                } else {
+                    wardSelect.prop('disabled', true).empty().append('<option value="">Chọn phường/xã</option>');
+                }
+            });
+        });
+
+        // ---- Tăng/giảm số lượng sản phẩm ----
+        document.querySelectorAll('.btn-qty-checkout').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const productItem = btn.closest('.product-item');
+                const input = productItem.querySelector('.qtyCheckout');
+                const maSach = productItem.dataset.masach;
+                let soLuong = parseInt(input.value);
+
+                // Tăng/giảm số lượng
+                if (btn.classList.contains('increase')) soLuong++;
+                else if (btn.classList.contains('decrease') && soLuong > 1) soLuong--;
+
+                input.value = soLuong;
+
+                // ⚙️ Gọi action trên server để cập nhật lại thanh tiền
+                const res = await fetch('/Customer/ThanhToan/CapNhatThanhTienKhiThanhToan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `maSach=${maSach}&soLuong=${soLuong}`
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // ✅ Cập nhật lại giá dòng sản phẩm
+                    productItem.querySelector('.total-price').innerHTML = data.thanhTienFormatted + ' đ';
+
+                    // ✅ Cập nhật lại các tổng tiền bên dưới
+                    document.querySelector('.order-summary .summary-row:nth-child(1) span:last-child').innerHTML = data.tamTinhFormatted + ' đ';
+                    document.querySelector('.order-summary .summary-row.total span:last-child').innerHTML = data.tongTienFormatted + ' đ';
+                } else {
+                    alert('Không thể cập nhật sản phẩm này.');
+                }
+            });
+        });
+
+        // ✅ Xử lý xóa sản phẩm khỏi danh sách trong trang Thanh Toán
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const productItem = btn.closest('.product-item'); // Dòng sản phẩm trong Checkout
+                const maSach = productItem.dataset.masach;       // Lấy mã sách (cần có data-masach trong HTML)
+
+                // ⚙️ Gửi yêu cầu tới server
+                const res = await fetch('/Customer/ThanhToan/XoaKhoiThanhToan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `maSach=${maSach}`
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // ✅ Xóa sản phẩm khỏi giao diện
+                    productItem.remove();
+
+                    // ✅ Cập nhật lại các giá trị tổng (dữ liệu từ server)
+                    document.querySelector('.order-summary .summary-row:nth-child(1) span:last-child').innerHTML = data.tamTinhFormatted + ' đ';
+                    document.querySelector('.order-summary .summary-row.total span:last-child').innerHTML = data.tongTienFormatted + ' đ';
+
+                    // ✅ Cập nhật lại số lượng hiển thị
+                    const soLuongSP = document.querySelectorAll('.product-item').length;
+                    document.querySelector('.section-title-checkout').innerHTML = `Kiểm Tra Lại Đơn Hàng (${soLuongSP} sản phẩm)`;
+
+                    // Nếu không còn sản phẩm nào
+                    if (soLuongSP === 0) {
+                        window.location.replace('/Customer/Home/TrangChu');
+                    }
+
+                } else {
+                    alert("Có lỗi khi xóa sản phẩm. Vui lòng thử lại!");
+                }
+            });
+        });
+
+        function formatEstimatedDate(daysToAdd) {
+                const weekdayVN = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+                const now = new Date();
+                const est = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToAdd);
+                const weekday = weekdayVN[est.getDay()];
+                const dd = String(est.getDate()).padStart(2, '0');
+                const mm = String(est.getMonth() + 1).padStart(2, '0');
+                return `${weekday} - ${dd}/${mm}`;
+            }
+
+        // ---- Cập nhật thời gian giao hàng ----
+        function updateDeliveryEstimate(provinceCode) {
+            if (!elemEstimate) return;
+
+            if (provinceCode) {
+                const estimatedDays = (provinceCode === SHOP_PROVINCE_CODE) ? 2 : 4;
+                const estimateText = formatEstimatedDate(estimatedDays);
+                $(elemEstimate).fadeOut(150, function () {
+                    $(this).html(`Dự kiến giao: <strong>${estimateText}</strong>`).fadeIn(150);
+                });
+            } else {
+                $(elemEstimate).fadeOut(150, function () {
+                    $(this).html(`Dự kiến giao: <strong>--/--</strong>`).fadeIn(150);
+                });
+            }
+        }
+
+        function moPopupChonDiaChi() {
+            var url = '@Url.Action("ChonDiaChiThanhToan", "ThanhToan")';
+            $.get(url, function (data) {
+                $('#chonDiaChiPopupContent').html(data);
+                // ⭐ Tự động chọn địa chỉ mặc định khi mở popup
+                setTimeout(function() {
+                    const defaultCard = $('.address-card-popup input[type="radio"]:checked').closest('.address-card-popup');
+                    if (defaultCard.length > 0) {
+                        chonDiaChiTam(defaultCard[0]);
+                    }
+                }, 100);
+                $('#chonDiaChiPopupOverlay, #chonDiaChiPopupModal').fadeIn(200);
+            });
+        }
+        function dongPopupChonDiaChi() {
+            $('#chonDiaChiPopupOverlay, #chonDiaChiPopupModal').fadeOut(200, function() {
+                 $('#chonDiaChiPopupContent').html('');
+            });
+        }
+
+        // 2. Quản lý Popup THÊM/SỬA ĐỊA CHỈ (Popup 2)
+        function moPopupThemDiaChi() {
+            dongPopupChonDiaChi(); // Đóng popup 1
+            var url = '@Url.Action("ThemDiaChiPartial", "KhachHang")';
+            $.get(url, function (data) {
+                $('#themDiaChiPopupContent').html(data);
+                $('#themDiaChiPopupContent .popup-close').attr('onclick', 'dongPopupThemDiaChi()');
+                $('#themDiaChiPopupContent .btn-cancel').attr('onclick', 'quayLaiChonDiaChi()');
+                initAddressDropdownsPopup(null); // Khởi tạo form thêm mới
+                $('#themDiaChiPopupOverlay, #themDiaChiPopupModal').fadeIn(200);
+            });
+        }
+
+        let kiemTraThemDiaChiMoiKhachHangKhongCoDiaChiNhanHang = false;
+
+        function moPopupThemDiaChiKhongCoDiaChiNhanHang() {
+            kiemTraThemDiaChiMoiKhachHangKhongCoDiaChiNhanHang = true;
+            var url = '@Url.Action("ThemDiaChiPartial", "KhachHang")';
+            $.get(url, function (data) {
+                $('#themDiaChiPopupContent').html(data);
+                $('#themDiaChiPopupContent .popup-close').attr('onclick', 'dongPopupThemDiaChi()');
+                $('#themDiaChiPopupContent .btn-cancel').attr('onclick', 'dongPopupThemDiaChi()');
+                initAddressDropdownsPopup(null);
+                $('#themDiaChiPopupOverlay, #themDiaChiPopupModal').fadeIn(200);
+            });
+            console.log(kiemTraThemDiaChiMoiKhachHangKhongCoDiaChiNhanHang);
+        }
+
+        function moPopupSuaDiaChi(maDiaChi, event) {
+            // Ngăn sự kiện click lan ra div cha (tránh chạy selectAddress)
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+
+            // 1. Đóng popup CHỌN (Popup 1)
+            dongPopupChonDiaChi();
+
+            // 2. Mở popup SỬA (Popup 2)
+            var url = `@Url.Action("SuaDiaChiPartial", "KhachHang", new { area = "Customer" })?maDiaChi=${maDiaChi}`;
+
+            $.get(url, function (data) {
+                // 3. Tải data vào Popup 2
+                $('#themDiaChiPopupContent').html(data);
+
+                // 4. Lấy dữ liệu preselect từ data-* của form vừa tải
+                const form = $('#themDiaChiPopupContent').find('form');
+                const preselectData = {
+                    tinh: form.data('tinh-thanh'),
+                    huyen: form.data('quan-huyen'),
+                    xa: form.data('phuong-xa')
+                };
+                $('#themDiaChiPopupContent .popup-close').attr('onclick', 'dongPopupThemDiaChi()');
+                $('#themDiaChiPopupContent .btn-cancel').attr('onclick', 'quayLaiChonDiaChi()');
+
+                // 5. Khởi tạo Popup 2 với dữ liệu cũ
+                initAddressDropdownsPopup(preselectData);
+
+                // 6. Sửa tiêu đề và hiển thị Popup 2
+                $('#themDiaChiPopupContent').find('#popupTitle').text('Cập nhật địa chỉ');
+                $('#themDiaChiPopupOverlay, #themDiaChiPopupModal').fadeIn(200);
+            }).fail(function() {
+                showToast("Không thể tải thông tin địa chỉ.", true);
+            });
+        }
+
+        function dongPopupThemDiaChi() {
+            $('#themDiaChiPopupOverlay, #themDiaChiPopupModal').fadeOut(200, function() {
+                $('#themDiaChiPopupContent').html('');
+            });
+        }
+
+        function quayLaiChonDiaChi() {
+            // 1. Đóng Popup 2 (Thêm/Sửa)
+            dongPopupThemDiaChi();
+
+            // 2. Mở lại Popup 1 (Chọn địa chỉ)
+            // (Chúng ta tải lại danh sách phòng trường hợp người dùng vừa Sửa/Thêm)
+            taiLaiDanhSachDiaChiPopup();
+        }
+
+        // // 1. Hàm chọn địa chỉ TẠM THỜI (chưa áp dụng)
+        function chonDiaChiTam(element) {
+            const $card = $(element);
+
+            // Bỏ chọn tất cả các card khác
+            $('.address-card-popup').removeClass('selected');
+            $('.address-card-popup input[type="radio"]').prop('checked', false);
+
+            // Chọn card hiện tại
+            $card.addClass('selected');
+            $card.find('input[type="radio"]').prop('checked', true);
+        }
+
+        // // 3. Hàm ÁP DỤNG địa chỉ vào form thanh toán
+        function apDungDiaChi(data) {
+            // ✅ Cập nhật UI hiển thị (phần tóm tắt địa chỉ)
+            $('#summaryNamePhone').text(`${data.ten} | ${data.sdt}`);
+            $('#summaryAddress1').text(`${data.diaChiChiTiet}`);
+            $('#summaryAddress2').text(`${data.xa}, ${data.huyen}, ${data.tinh}`);
+
+            $('#address-container-checkout .summary-default-badge').remove();
+            if (data.laMacDinh === true || data.laMacDinh === 'true') {
+                const divSummary = $('#addressSummary');
+                $('<span class="summary-default-badge">Mặc định</span>').insertAfter(divSummary.find('#summaryAddress2'));
+            }
+
+            // ✅ Cập nhật các input ẨN trong form chính (để submit)
+            $('#HoTen').val(data.ten);
+            $('#SoDienThoai').val(data.sdt);
+            $('#DiaChi').val(data.diaChiChiTiet);
+            $('#MaDiaChiNhanHang').val(data.maDiaChi);
+            $('#TinhThanh').val(data.tinh);
+            $('#QuanHuyen').val(data.huyen);
+            $('#PhuongXa').val(data.xa);
+
+            updateDeliveryEstimate(data.maTinh);
+        }
+
+        // 4. HÀM CŨ selectAddress() - GIỮ LẠI ĐỂ TƯƠNG THÍCH NGƯỢC
+        // (Có thể dùng khi người dùng click trực tiếp vào địa chỉ để áp dụng ngay)
+        function selectAddress(element) {
+            const $btn = $(element);
+
+            const data = {
+                maDiaChi: $btn.data('ma-dia-chi'),
+                ten: $btn.data('ten-nguoi-nhan'),
+                sdt: $btn.data('sdt'),
+                diaChiChiTiet: $btn.data('dia-chi-chi-tiet'),
+                tinh: $btn.data('ten-tinh'),
+                huyen: $btn.data('ten-huyen'),
+                xa: $btn.data('ten-xa'),
+                laMacDinh: $btn.data('la-mac-dinh')
+            };
+
+            apDungDiaChi(data);
+
+            dongPopupChonDiaChi();
+            showToast('Đã cập nhật địa chỉ giao hàng!', false);
+        }
+
+        // 4. HÀM INIT POPUP 2 (Tái sử dụng 100% từ ThongTinCaNhan)
+        function initAddressDropdownsPopup(preselect) {
+            // ⭐ Tìm popup content container
+            const popupContent = document.getElementById('themDiaChiPopupContent');
+            if (!popupContent) {
+                console.error("Không tìm thấy popup content container!");
+                return;
+            }
+
+            // ⭐ Tìm các phần tử TRONG POPUP (không bị xung đột với form chính)
+            let provinceSelect = popupContent.querySelector('#provinceSelect');
+            let districtSelect = popupContent.querySelector('#districtSelect');
+            let wardSelect = popupContent.querySelector('#wardSelect');
+            let tenNguoiNhan = popupContent.querySelector('#tenNguoiNhan');
+            let soDienThoai = popupContent.querySelector('#soDienThoai');
+            let diaChiChiTiet = popupContent.querySelector('#diaChiChiTiet');
+            let saveButton = popupContent.querySelector('#btnLuuDiaChi');
+
+            // Lấy 6 span báo lỗi
+            let tenNguoiNhanError = popupContent.querySelector('#tenNguoiNhanError');
+            let soDienThoaiError = popupContent.querySelector('#soDienThoaiError');
+            let provinceError = popupContent.querySelector('#provinceError');
+            let districtError = popupContent.querySelector('#districtError');
+            let wardError = popupContent.querySelector('#wardError');
+            let diaChiError = popupContent.querySelector('#diaChiChiTietError');
+
+            if (!provinceSelect || !districtSelect || !wardSelect || !diaChiChiTiet || !saveButton || !tenNguoiNhan || !soDienThoai) {
+                console.error("Lỗi: Không tìm thấy đủ các thành phần DOM trong partial view.");
+                return;
+            }
+
+            const urlGetProvinces = '@Url.Action("GetProvinces", "Home", new { area = "Customer" })';
+            const urlGetDistricts = '@Url.Action("GetDistricts", "Home", new { area = "Customer" })';
+            const urlGetWards = '@Url.Action("GetWards", "Home", new { area = "Customer" })';
+
+            // --- Hàm Kiểm Tra Validation ---
+            function kiemTraHopLe() {
+                const tenHopLe = tenNguoiNhan.value.trim() !== "";
+                const sdtHopLe = soDienThoai.value.trim() !== "";
+                const tinhThanhHopLe = provinceSelect.value !== "";
+                const quanHuyenHopLe = districtSelect.value !== "";
+                const phuongXaHopLe = wardSelect.value !== "";
+                const diaChiHopLe = diaChiChiTiet.value.trim() !== "";
+
+                // Ẩn/hiện lỗi
+                if(tenNguoiNhanError) tenNguoiNhanError.style.display = tenHopLe ? 'none' : 'block';
+                if(soDienThoaiError) soDienThoaiError.style.display = sdtHopLe ? 'none' : 'block';
+                if(provinceError) provinceError.style.display = tinhThanhHopLe ? 'none' : 'block';
+                if(districtError) districtError.style.display = (tinhThanhHopLe && !quanHuyenHopLe) ? 'block' : 'none';
+                if(wardError) wardError.style.display = (tinhThanhHopLe && quanHuyenHopLe && !phuongXaHopLe) ? 'block' : 'none';
+                if(diaChiError) diaChiError.style.display = diaChiHopLe ? 'none' : 'block';
+
+                const tatCaHopLe = tenHopLe && sdtHopLe && tinhThanhHopLe && quanHuyenHopLe && phuongXaHopLe && diaChiHopLe;
+                saveButton.disabled = !tatCaHopLe;
+                if (tatCaHopLe) { saveButton.classList.remove('disabledBtn'); }
+                else { saveButton.classList.add('disabledBtn'); }
+            }
+
+            // --- Hàm Tải Huyện ---
+            function loadDistricts(provinceCode, callback) {
+                districtSelect.disabled = true;
+                districtSelect.innerHTML = '<option value="">Đang tải...</option>';
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = true;
+
+                $.getJSON(urlGetDistricts, { provinceCode: provinceCode }, function (data) {
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    let selectedDistrictCode = null;
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        districtSelect.appendChild(opt);
+
+                        if (preselect && opt.textContent === preselect.huyen) {
+                            opt.selected = true;
+                            selectedDistrictCode = opt.value;
+                        }
+                    });
+                    districtSelect.disabled = false;
+
+                    if (selectedDistrictCode && callback) {
+                        callback(selectedDistrictCode);
+                    } else {
+                        kiemTraHopLe();
+                    }
+                });
+            }
+
+            // --- Hàm Tải Xã ---
+            function loadWards(districtCode, callback) {
+                wardSelect.disabled = true;
+                wardSelect.innerHTML = '<option value="">Đang tải...</option>';
+
+                $.getJSON(urlGetWards, { districtCode: districtCode }, function (data) {
+                    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        wardSelect.appendChild(opt);
+
+                        if (preselect && opt.textContent === preselect.xa) {
+                            opt.selected = true;
+                        }
+                    });
+                    wardSelect.disabled = false;
+                    if(callback) callback();
+                });
+            }
+
+            // --- Khi chọn tỉnh ---
+            provinceSelect.onchange = function () {
+                const provinceCode = this.value;
+                const hiddenTinhThanh = popupContent.querySelector('#hiddenTinhThanh');
+                const hiddenMaTinhThanh = popupContent.querySelector('#hiddenMaTinhThanh');
+
+                if (hiddenTinhThanh) hiddenTinhThanh.value = $(this).find('option:selected').text();
+                if (hiddenMaTinhThanh) hiddenMaTinhThanh.value = provinceCode;
+
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = true;
+
+                if (!provinceCode) {
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    districtSelect.disabled = true;
+                    kiemTraHopLe();
+                    return;
+                }
+                loadDistricts(provinceCode, (districtCode) => {
+                    loadWards(districtCode, kiemTraHopLe);
+                });
+            };
+
+            // --- Khi chọn huyện ---
+            districtSelect.onchange = function () { 
+                const districtCode = this.value;
+                const hiddenQuanHuyen = popupContent.querySelector('#hiddenQuanHuyen');
+                const hiddenMaQuanHuyen = popupContent.querySelector('#hiddenMaQuanHuyen');
+
+                if (hiddenQuanHuyen) hiddenQuanHuyen.value = $(this).find('option:selected').text();
+                if (hiddenMaQuanHuyen) hiddenMaQuanHuyen.value = districtCode;
+
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                if (!districtCode) {
+                    wardSelect.disabled = true;
+                    kiemTraHopLe();
+                    return;
+                }
+                loadWards(districtCode, kiemTraHopLe);
+            };
+
+            // --- Khi chọn xã ---
+            wardSelect.onchange = function () {
+                const wardCode = this.value;
+                const hiddenPhuongXa = popupContent.querySelector('#hiddenPhuongXa');
+                const hiddenMaPhuongXa = popupContent.querySelector('#hiddenMaPhuongXa');
+
+                if (hiddenPhuongXa) hiddenPhuongXa.value = $(this).find('option:selected').text();
+                if (hiddenMaPhuongXa) hiddenMaPhuongXa.value = wardCode;
+
+                kiemTraHopLe();
+            };
+
+            tenNguoiNhan.oninput = kiemTraHopLe;
+            soDienThoai.oninput = kiemTraHopLe;
+            diaChiChiTiet.oninput = kiemTraHopLe;
+
+            // --- Load tỉnh/thành ---
+            $.getJSON(urlGetProvinces, function (data) {
+                provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+                let selectedProvinceCode = null;
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.value || item.Value;
+                    opt.textContent = item.text || item.Text;
+                    provinceSelect.appendChild(opt);
+
+                    if (preselect && opt.textContent === preselect.tinh) {
+                        opt.selected = true;
+                        selectedProvinceCode = opt.value;
+                    }
+                });
+                provinceSelect.disabled = false;
+
+                if (selectedProvinceCode) {
+                    loadDistricts(selectedProvinceCode, (districtCode) => {
+                        loadWards(districtCode, kiemTraHopLe);
+                    });
+                } else {
+                    kiemTraHopLe();
+                }
+            });
+
+            // --- Gắn sự kiện SUBMIT FORM ---
+            $(popupContent).find('form').off('submit').on('submit', function (e) {
+                e.preventDefault();
+                const form = this;
+
+                // ⭐ Lấy Token từ form checkout (trang thanh toán) hoặc từ #address (trang thông tin)
+                let token = $('.checkout-form input[name="__RequestVerificationToken"]').val();
+                if (!token) {
+                    token = $('#address input[name="__RequestVerificationToken"]').val();
+                }
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: { 'RequestVerificationToken': token },
+                    body: new FormData(form)
+                })
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    if (response.status === 400 || (contentType && contentType.includes('text/html'))) {
+                        return response.text().then(html => { throw new Error(html); });
+                    }
+                    if (response.ok && contentType && contentType.includes('application/json')) {
+                        return response.json();
+                    }
+                    return response.text().then(err => { throw new Error('Lỗi server: ' + err); });
+                })
+                .then(data => {
+                    if (data.success) {
+                        dongPopupThemDiaChi();
+                        showToast(data.message, false);
+
+                        const $form = $(form);
+                        const dataToApply = {
+                            maDiaChi: data.maDiaChiMoi, // Lấy từ Controller (Quan trọng)
+                            ten: $form.find('#tenNguoiNhan').val(),
+                            sdt: $form.find('#soDienThoai').val(),
+                            diaChiChiTiet: $form.find('#diaChiChiTiet').val(),
+                            tinh: $form.find('#hiddenTinhThanh').val(),
+                            huyen: $form.find('#hiddenQuanHuyen').val(),
+                            xa: $form.find('#hiddenPhuongXa').val(),
+                            maTinh: data.maTinhThanhMoi,
+                            laMacDinh: data.laMacDinh// Lấy từ Controller (Quan trọng)
+                        };
+
+                        apDungDiaChi(dataToApply);
+
+                        if (kiemTraThemDiaChiMoiKhachHangKhongCoDiaChiNhanHang) {
+                            // LUỒNG 1: Tải lại div chính
+                            var urlReload = '@Url.Action("ReLoadDiaChiNhanHangThanhToan", "ThanhToan")';
+                            $.get(urlReload, function(html) {
+                                $('#address-container-checkout').html(html);
+                            });
+                            dongPopupChonDiaChi();
+                        } else {
+                            // LUỒNG 2: Tải lại và mở Popup 1
+                            taiLaiDanhSachDiaChiPopup(true); // (true = mở lại popup 1)
+                        }
+
+                        // Tải lại danh sách địa chỉ
+                        if (typeof taiLaiDanhSachDiaChiPopup === 'function') {
+                            taiLaiDanhSachDiaChiPopup(); // Cho trang thanh toán
+                        } else if (typeof taiLaiDanhSachDiaChi === 'function') {
+                            taiLaiDanhSachDiaChi(); // Cho trang thông tin cá nhân
+                        }
+
+                        // Mở lại popup chọn (chỉ cho trang thanh toán)
+                        if (typeof moPopupChonDiaChi === 'function') {
+                            moPopupChonDiaChi();
+                        }
+                    } else {
+                        showToast(data.message, true);
+                    }
+                })
+                .catch(error => {
+                    if (error.message.startsWith('<form')) {
+                        $(popupContent).html(error.message);
+                        initAddressDropdownsPopup(preselect);
+                        showToast("Dữ liệu không hợp lệ.", true);
+                    } else {
+                        console.error("Lỗi submit form:", error);
+                        showToast("Đã xảy ra lỗi. Vui lòng thử lại.", true);
+                    }
+                });
+            });
+        }
+
+        function datMacDinh(maDiaChi, event) {
+            // Lỗi 3: Ngăn không cho sự kiện click lan ra div cha
+            // if (event) {
+            //     event.stopPropagation();
+            // }
+
+            // Lỗi 1: Lấy Token từ form checkout (form chính), không phải #address
+            const token = $('.checkout-form input[name="__RequestVerificationToken"]').val();
+
+            if (!token) {
+                showToast("Không tìm thấy token. Vui lòng tải lại trang.", true);
+                return;
+            }
+
+            // (Code $.post giữ nguyên)
+            $.post('@Url.Action("DatMacDinh", "KhachHang", new { area = "Customer" })', { maDiaChi: maDiaChi, __RequestVerificationToken: token })
+                .done(function (data) {
+                    if (data.success) {
+                        showToast(data.message, false);
+
+                        // Lỗi 2: Gọi đúng hàm tải lại của popup này
+                        taiLaiDanhSachDiaChiPopup();
+
+                        var urlReload = '@Url.Action("ReLoadDiaChiNhanHangThanhToan", "Home")';
+                        $.get(urlReload, function(html) {
+                            // Thay thế nội dung div tóm tắt bằng HTML mới
+                            $('#address-container-checkout').html(html);
+                        });
+                    } else {
+                        showToast(data.message, true);
+                    }
+                })
+                .fail(function() {
+                    // (Lỗi 400 Bad Request sẽ rơi vào đây)
+                    showToast("Đã xảy ra lỗi (Bad Request). Vui lòng thử lại.", true);
+                });
+        }
+
+        // 5. Hàm Toast (Chung)
+        function showToast(message, isError = false) {
+            const toast = $('#toastNotification');
+            toast.text(message);
+            if (isError) toast.addClass('error');
+            else toast.removeClass('error');
+            toast.fadeIn(400).delay(3000).fadeOut(400);
+        }
+
+        // 6. Hàm Tải Lại Danh Sách (cho popup chọn)
+        function taiLaiDanhSachDiaChiPopup() {
+             var url = '@Url.Action("ChonDiaChiThanhToan", "ThanhToan")';
+             $('#chonDiaChiPopupContent').html('<div class="popup-body"><div class="empty-address">Đang tải...</div></div>');
+             $.get(url, function(data) {
+                $('#chonDiaChiPopupContent').html(data);
+             });
+        }
+    </script>
+}

@@ -11,9 +11,17 @@ namespace Media.DataAccess.Repository.IRepository
     {
         IEnumerable<T>? GetAll(string? includeProperties = null);
         IEnumerable<T>? GetRange(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        Task<List<T>> GetRangeAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string? includeProperties = null);
         T? Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
+        Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null);
         void Add(T entity);
         void Remove(T entity);
-        void RemoveRange(IEnumerable<T> entity);
+        void RemoveRange(IEnumerable<T> entities);
+        void AddRange(IEnumerable<T> entities);
+        void Update(T entity);
+        int Count(Expression<Func<T, bool>> filter);
+        T? GetById(object id);
+        Task<T?> GetByIdAsync(object id);
+        Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
     }
 }

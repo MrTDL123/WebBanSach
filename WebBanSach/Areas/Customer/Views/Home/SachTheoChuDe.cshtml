@@ -2,6 +2,9 @@
 @using X.PagedList
 @using X.PagedList.Mvc.Core
 @addTagHelper *, X.PagedList.Mvc.Core
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/sachtheochude.css" asp-append-version="true" />
+}
 
 @functions{
     public string Truncate(string noidung, int length)
@@ -16,7 +19,7 @@
         }
     }
 
-    public string HienThiDongGia(double giaTien)
+    public string HienThiDongGia(decimal giaTien)
     {
         return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
     }
@@ -78,7 +81,4 @@
             }
         </section>
     </div>
-
-
 </div>
-

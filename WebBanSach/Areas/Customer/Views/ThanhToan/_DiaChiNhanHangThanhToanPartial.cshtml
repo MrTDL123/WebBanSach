@@ -1,0 +1,28 @@
+﻿@model Media.Models.DiaChiNhanHang
+
+@if (Model != null)
+{
+    <div class="address-summary" id="addressSummary">
+        <span class="summary-name-phone" id="summaryNamePhone">
+            @Model.TenNguoiNhan | @Model.SoDienThoai
+        </span>
+        <span class="summary-address" id="summaryAddress1">
+            @Model.DiaChiChiTiet
+        </span>
+        <span class="summary-address" id="summaryAddress2">
+            @Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh
+        </span>
+        @if (Model.LaMacDinh)
+        {
+            <span class="summary-default-badge">Mặc định</span>
+        }
+    </div>
+    <button type="button" class="action-link-checkout" onclick="moPopupChonDiaChi()">Thay đổi</button>
+}
+else
+{
+    <div class="address-summary" id="addressSummary">
+        <span class="summary-address">Bạn chưa có địa chỉ. Vui lòng thêm địa chỉ mới.</span>
+    </div>
+    <button type="button" class="action-link-checkout" onclick="moPopupThemDiaChiKhongCoDiaChiNhanHang()">Thêm địa chỉ nhận hàng</button>
+}

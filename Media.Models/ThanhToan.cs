@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Media.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,7 +44,7 @@ namespace Media.Models
         public string DiaChi { get; set; }
 
         [Display(Name = "Ghi chú")]
-        [StringLength(500, ErrorMessage = "Ghi chú không được vượt quá 500 ký tự")]
+        [StringLength(50, ErrorMessage = "Ghi chú không được vượt quá 500 ký tự")]
         public string GhiChu { get; set; }
 
         // Order summary
@@ -50,18 +54,33 @@ namespace Media.Models
 
         [Display(Name = "Phi van chuyen")]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal MienPhiVanChuyen { get; set; }
+        public decimal PhiVanChuyen { get; set; }
 
         [Display(Name = "Tong tien")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal TongTien { get; set; }
-        public string TenSanPham { get; set; }
-        public string HinhAnhSanPham { get; set; }
+        //[ValidateNever]
+        public string? TenSanPham { get; set; }
+        //[ValidateNever]
+        public string? HinhAnhSanPham { get; set; }
         public int SoLuong { get; set; }
+        public int MaDiaChiNhanHang { get; set; }
+
+        [Required(ErrorMessage = "Vui lòng chọn hình thức thanh toán")]
+        [Display(Name = "Hình thức thanh toán")]
+        public HinhThucThanhToan HinhThucThanhToanChon { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang; // Đặt COD làm mặc định
 
         // Dropdown lists
-        public List<SelectListItem> list_TinhThanh { get; set; }
-        public List<SelectListItem> list_PhuongXa { get; set; }
-        public List<SelectListItem> list_QuanHuyen { get; set; }
+        //[ValidateNever]
+        public List<SelectListItem>? DanhSachTinhThanh { get; set; }
+        //[ValidateNever]
+        public List<SelectListItem>? DanhSachPhuongXa { get; set; }
+        //[ValidateNever]
+        public List<SelectListItem>? DanhSachQuanHuyen { get; set; }
+        public List<GioHangVM>? DanhSachSanPham { get; set; }
+        //[ValidateNever]
+        public List<DiaChiNhanHang>? DanhSachDiaChi { get; set; }
+        //[ValidateNever]
+        public DiaChiNhanHang? DiaChiMacDinh { get; set; }
     }
 }
