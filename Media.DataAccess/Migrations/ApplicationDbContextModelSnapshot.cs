@@ -49,7 +49,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaNhanVien");
 
-                    b.ToTable("ChamSocKhachHangs");
+                    b.ToTable("ChamSocKhachHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.ChiTietDonHang", b =>
@@ -75,7 +75,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaSach");
 
-                    b.ToTable("ChiTietDonHangs");
+                    b.ToTable("ChiTietDonHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.ChiTietGioHang", b =>
@@ -98,7 +98,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaSach");
 
-                    b.ToTable("ChiTietGioHangs");
+                    b.ToTable("ChiTietGioHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.ChiTietTraHang", b =>
@@ -129,7 +129,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaSach");
 
-                    b.ToTable("ChiTietTraHangs");
+                    b.ToTable("ChiTietTraHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.ChuDe", b =>
@@ -161,7 +161,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("ChuDeMaChuDe");
 
-                    b.ToTable("ChuDes");
+                    b.ToTable("ChuDes", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.DiaChiNhanHang", b =>
@@ -212,7 +212,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaKhachHang");
 
-                    b.ToTable("DiaChiNhanHang");
+                    b.ToTable("DiaChiNhanHang", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.DonHang", b =>
@@ -294,7 +294,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaVanChuyen");
 
-                    b.ToTable("DonHangs");
+                    b.ToTable("DonHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.GioHang", b =>
@@ -310,7 +310,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasKey("MaKhachHang");
 
-                    b.ToTable("GioHangs");
+                    b.ToTable("GioHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.HoaDon", b =>
@@ -338,7 +338,7 @@ namespace Media.DataAccess.Migrations
                     b.HasIndex("MaDonHang")
                         .IsUnique();
 
-                    b.ToTable("HoaDons");
+                    b.ToTable("HoaDons", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.KhachHang", b =>
@@ -379,7 +379,7 @@ namespace Media.DataAccess.Migrations
                     b.HasIndex("MaTaiKhoan")
                         .IsUnique();
 
-                    b.ToTable("KhachHangs");
+                    b.ToTable("KhachHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.NhaXuatBan", b =>
@@ -396,7 +396,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasKey("MaNhaXuatBan");
 
-                    b.ToTable("NhaXuatBans");
+                    b.ToTable("NhaXuatBans", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.NhanVien", b =>
@@ -453,7 +453,7 @@ namespace Media.DataAccess.Migrations
                     b.HasIndex("MaTaiKhoan")
                         .IsUnique();
 
-                    b.ToTable("NhanViens");
+                    b.ToTable("NhanViens", (string)null);
 
                     b.HasDiscriminator<string>("LoaiNhanVien").HasValue("NhanVien");
 
@@ -487,7 +487,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaKhachHang");
 
-                    b.ToTable("PhanHoiKhachHang");
+                    b.ToTable("PhanHoiKhachHang", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.PhieuTraHang", b =>
@@ -521,7 +521,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaNhanVien");
 
-                    b.ToTable("PhieuTraHangs");
+                    b.ToTable("PhieuTraHangs", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.Sach", b =>
@@ -585,7 +585,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasIndex("MaTacGia");
 
-                    b.ToTable("Saches");
+                    b.ToTable("Saches", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.TacGia", b =>
@@ -603,7 +603,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasKey("MaTacGia");
 
-                    b.ToTable("TacGias");
+                    b.ToTable("TacGias", (string)null);
                 });
 
             modelBuilder.Entity("Media.Models.TaiKhoan", b =>
@@ -703,7 +703,7 @@ namespace Media.DataAccess.Migrations
 
                     b.HasKey("MaVanChuyen");
 
-                    b.ToTable("VanChuyens");
+                    b.ToTable("VanChuyens", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
