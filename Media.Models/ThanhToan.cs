@@ -67,6 +67,7 @@ namespace Media.Models
         [Required(ErrorMessage = "Vui lòng chọn hình thức thanh toán")]
         [Display(Name = "Hình thức thanh toán")]
         public HinhThucThanhToan HinhThucThanhToanChon { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang; // Đặt COD làm mặc định
+
         // Dropdown lists
         public List<SelectListItem>? DanhSachTinhThanh { get; set; }
         public List<SelectListItem>? DanhSachPhuongXa { get; set; }

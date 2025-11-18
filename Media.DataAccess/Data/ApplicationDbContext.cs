@@ -185,7 +185,7 @@ namespace Meida.DataAccess.Data
 
             // ========== SÁCH - ĐÁNH GIÁ (1-N) ==========
             modelBuilder.Entity<Sach>()
-                .HasMany(s => s.DanhSachGiaSanPhams)
+                .HasMany(s => s.DanhGiaSanPhams)
                 .WithOne(dg => dg.Sach)
                 .HasForeignKey(dg => dg.MaSach)
                 .OnDelete(DeleteBehavior.Restrict);

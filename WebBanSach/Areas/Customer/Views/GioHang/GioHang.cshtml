@@ -118,9 +118,11 @@
                     tong += parseInt(priceText || 0);
                 }
             });
+
             document.querySelector('.payment-total-value').innerHTML = tong.toLocaleString() + " đ";
             document.querySelector('.payment-value').innerHTML = tong.toLocaleString() + " đ";
         }
+
         // ✅ Khi tick/bỏ tick từng sản phẩm
         document.addEventListener('change', e => {
             if (e.target.matches('.table-row .col-checkbox input[type="checkbox"]')) {
@@ -128,6 +130,7 @@
                 tinhTongTien();
             }
         });
+
         // ✅ Khi tick chọn tất cả
         headerCheckbox.addEventListener('change', () => {
             const isChecked = headerCheckbox.checked;
@@ -135,17 +138,21 @@
             updateCheckoutBtn();
             tinhTongTien();
         });
+
         // ✅ Nút thanh toán chỉ bật khi có sản phẩm được chọn
         function updateCheckoutBtn() {
             const productCheckboxesNow = document.querySelectorAll('.table-row .col-checkbox input[type="checkbox"]');
             const anyChecked = Array.from(productCheckboxesNow).some(cb => cb.checked);
             checkoutBtn.classList.toggle('disabledBtn', !anyChecked);
+
             // ✅ Cập nhật lại trạng thái của checkbox "chọn tất cả"
             const allChecked = Array.from(productCheckboxesNow).length > 0 &&
                                Array.from(productCheckboxesNow).every(cb => cb.checked);
             headerCheckbox.checked = allChecked;
         }
+
         updateCheckoutBtn();
+
         // ✅ Xử lý tăng/giảm số lượng
         document.querySelectorAll('.btn-qty-shoppingcart').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -154,19 +161,25 @@
                 const maSach = row.dataset.masash || row.dataset.masach;
                 let soLuong = parseInt(input.value);
                 const bodyPayload = `maSach=${maSach}&soLuong=${soLuong}&__RequestVerificationToken=${antiForgeryToken}`;
+
                 if (btn.classList.contains('increase')) soLuong++;
                 else if (btn.classList.contains('decrease') && soLuong > 1) soLuong--;
+
                 input.value = soLuong;
+
                 // ⚙️ Gửi Ajax cập nhật server
                 const res = await fetch('/Customer/GioHang/CapNhatThanhTienTrongGioHang', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: bodyPayload
                 });
+
                 const data = await res.json();
+
                 if (data.success) {
                     // ✅ Cập nhật lại cột "Thành tiền" của dòng sản phẩm đó
                     row.querySelector('.total-price').innerHTML = data.thanhTien + '<span class="currency-symbol">đ</span>';
+
                     // ✅ Nếu sản phẩm đó đang được tick thì cập nhật lại tổng tiền ở sidebar
                     const checkbox = row.querySelector('.col-checkbox input[type="checkbox"]');
                     if (checkbox && checkbox.checked) {
@@ -176,29 +189,37 @@
                 }
             });
         });
+
         // ✅ Xử lý xóa sản phẩm khỏi giỏ hàng
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const row = btn.closest('.table-row');
                 const maSach = btn.dataset.masach;
                 const bodyPayload = `maSach=${maSach}&__RequestVerificationToken=${antiForgeryToken}`;
+
                 // Gửi AJAX tới server
                 const res = await fetch('/Customer/GioHang/XoaKhoiGioHang', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: bodyPayload
                 });
+
                 const data = await res.json();
+
                 if (data.success) {
                     // Xóa dòng sản phẩm khỏi giao diện
                     row.remove();
+
                     $('#cart-count').text(`(${data.count})`);
+
                     // Cập nhật lại tổng tiền trong sidebar
                     tinhTongTien();
+
                     // 🧾 Cập nhật lại số lượng hiển thị
                     const soLuongSP = document.querySelectorAll('.table-row').length;
                     document.querySelectorAll('.count-product-shoping-cart')
                         .forEach(el => el.textContent = `(${soLuongSP} sản phẩm)`);
+
                     if (soLuongSP == 0) {
                         document.querySelector('.checkout-btn').classList.add('disabledBtn');
                         headerCheckbox.checked = false; // bỏ check “chọn tất cả”
@@ -210,15 +231,19 @@
                             .every(cb => cb.checked);
                         headerCheckbox.checked = allChecked;
                     }
+
                     // 🔁 Luôn gọi lại hàm cập nhật nút thanh toán
                     updateCheckoutBtn();
                 }
             });
         });
+
         document.querySelector('.checkout-btn').addEventListener('click', function () {
             if (this.classList.contains('disabledBtn')) return;
+
             const checkedBoxes = document.querySelectorAll('.table-row .col-checkbox input[type="checkbox"]:checked');
             const DanhSachMaSach = Array.from(checkedBoxes).map(cb => cb.closest('.table-row').dataset.masash);
+
             // ✅ Gửi danh sách mã sách sang controller
             fetch('/Customer/ThanhToan/LayDanhSachSanPhamThanhToan', {
                 method: 'POST',

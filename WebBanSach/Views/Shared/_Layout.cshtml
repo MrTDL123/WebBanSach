@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="shortcut icon" type="image/x-icon" href="~/img/web_img/logo.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,9 +14,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <environment include="Development">
         <link rel="stylesheet" href="~/css/main.css" />
+        <link rel="stylesheet" href="~/css/khachangdangnhapdangky.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/khachangdangnhapdangky.min.css" asp-append-version="true" />
     </environment>
 
     <link rel="stylesheet" href="~/WebBanSach.styles.css" asp-append-version="true" />
@@ -31,7 +32,7 @@
         <div id="top_header">
             @*Top header left*@
             <!-- Logo và tên -->
-            <a asp-area="Customer" asp-controller="Home" asp-action="Index">
+            <a asp-area="Customer" asp-controller="Home" asp-action="TrangChu">
                 <img id="logo" src="~/img/web_img/logo.png" alt="Logo">
             </a>
 
@@ -49,9 +50,8 @@
                 <partial name="_LoginPartial" />
 
                 <!-- Giỏ hàng -->
-                <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
+                @await Component.InvokeAsync("GioHang")
             </div>
-
         </div>
         <div id="bottom_header">
             <!-- Nav items -->

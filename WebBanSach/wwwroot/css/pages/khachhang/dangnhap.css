@@ -1,0 +1,24 @@
+﻿/* ========== FILE: login.css ========== */
+
+/* Checkbox + Link trong trang Đăng nhập */
+.form-remember {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    align-items: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.form-remember label input[type=checkbox] {
+    cursor: pointer;
+    accent-color: #3091F8;
+}
+
+.forgot {
+    color: #F0717F;
+}
+
+.forgot:hover {
+    color: #d70018;
+}

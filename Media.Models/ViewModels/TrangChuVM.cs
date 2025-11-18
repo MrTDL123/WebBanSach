@@ -25,5 +25,7 @@ namespace Media.Models.ViewModels
         public string ChuDeFullPath { get; set; }
         public string TenChuDe { get; set; }
         public string DuongDanHinhAnh {  get; set; }
+        public int MaSach { get; set; }
+        public int SoLuong { get; set; }
     }
 }

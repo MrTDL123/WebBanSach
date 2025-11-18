@@ -15,7 +15,6 @@ namespace Media.Models
         public int MaGioHang { get; set; }
         [Required]
         public int MaKhachHang { get; set; }
-        
         [Required]
         [DisplayName("Tổng tiền")]
         [Column(TypeName = "decimal(18,2)")]

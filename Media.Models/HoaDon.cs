@@ -22,6 +22,7 @@ namespace Media.Models
         public decimal? TongTien { get; set; }
         [DisplayName("Trạng thái")]
         public TrangThaiHoaDon TrangThai { get; set; } = TrangThaiHoaDon.DaPhatHanh;
+
         //NAVIGATION PROPERTIES
 
         [ForeignKey("MaDonHang")]

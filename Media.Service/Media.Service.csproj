@@ -10,10 +10,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.TagHelpers" Version="2.3.0" />
   </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Media.DataAccess\Media.DataAccess.csproj" />
-		<ProjectReference Include="..\Media.Models\Media.Models.csproj" />
-		<ProjectReference Include="..\Media.Utility\Media.Utility.csproj" />
-	</ItemGroup>
-	
+  <ItemGroup>
+    <ProjectReference Include="..\Media.DataAccess\Media.DataAccess.csproj" />
+    <ProjectReference Include="..\Media.Models\Media.Models.csproj" />
+    <ProjectReference Include="..\Media.Utility\Media.Utility.csproj" />
+  </ItemGroup>
+
 </Project>
