@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Media.Models.ViewModels
 {
-    public class IndexVM
+    public class TrangChuVM
     {
-        public IndexVM()
+        public TrangChuVM()
         {
             DanhSachChuDe = new List<DanhSachChuDeTrangIndex>();
         }

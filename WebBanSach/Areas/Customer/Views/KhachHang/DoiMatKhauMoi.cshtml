@@ -1,0 +1,61 @@
+﻿@model Media.Models.ViewModels.DoiMatKhauVM
+@{
+    ViewData["Title"] = "Đổi mật khẩuVM mới";
+}
+
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2>Đặt lại mật khẩu</h2>
+            <p>Nhập mật khẩu mới cho tài khoản của bạn.</p>
+        </div>
+
+        <!-- Gửi form bình thường -->
+        <form asp-action="DoiMatKhauMoi" asp-controller="KhachHang" method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- Lấy userId từ TempData -->
+            <input type="hidden" name="UserId" value="@TempData["UserIdForReset"]" />
+
+            <!-- Mật khẩu mới -->
+            <div class="form-group">
+                <label for="MatKhauMoi" class="required">Mật khẩu mới</label>
+                <input type="password" id="MatKhauMoi" name="MatKhauMoi" placeholder="Nhập mật khẩu mới" required />
+                <span class="error text-danger" asp-validation-for="MatKhauMoi"></span>
+            </div>
+
+            <!-- Xác nhận mật khẩu -->
+            <div class="form-group">
+                <label for="XacNhanMatKhau" class="required">Xác nhận mật khẩu</label>
+                <input type="password" id="XacNhanMatKhau" name="XacNhanMatKhau" placeholder="Nhập lại mật khẩu" required />
+                <span class="error text-danger" asp-validation-for="XacNhanMatKhau"></span>
+            </div>
+
+            <button type="submit" class="btn-auth">Xác nhận đổi mật khẩu</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>
+                <a asp-area="Customer" asp-controller="KhachHang" asp-action="DangNhap">
+                    Quay lại đăng nhập
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const matKhauMoi = document.getElementById("MatKhauMoi");
+        const xacNhanMatKhau = document.getElementById("XacNhanMatKhau");
+
+        // Kiểm tra khớp mật khẩu trước khi gửi
+        document.querySelector("form").addEventListener("submit", function (e) {
+            if (matKhauMoi.value.trim() !== xacNhanMatKhau.value.trim()) {
+                e.preventDefault();
+                alert("Mật khẩu xác nhận không khớp!");
+            }
+        });
+    </script>
+}

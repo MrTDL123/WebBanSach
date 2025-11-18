@@ -2,18 +2,21 @@
 using Media.Models;
 using Media.Models.ViewModels;
 using Media.Service;
+using Media.Service.IServices;
+using Media.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using NuGet.Protocol;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using X.PagedList;
 using X.PagedList.Extensions;
-using Microsoft.IdentityModel.Tokens;
-using Media.Service.IServices;
-using NuGet.Protocol;
 
 namespace ProjectCuoiKi.Areas.Customer.Controllers
 {
@@ -25,25 +28,43 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         private ISlugService _slugService;
         private readonly IViewRenderService _viewRenderService;
         private readonly IUnitOfWork _unit;
-        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit, LocationService locationService, IViewRenderService viewRenderService, ISlugService slugService)
+        private readonly IGioHangService _gioHangService;
+        private readonly SignInManager<TaiKhoan> _signInManager;
+        public HomeController(IUnitOfWork unit, 
+                              LocationService locationService, 
+                              IViewRenderService viewRenderService, 
+                              ISlugService slugService,
+                              IGioHangService gioHangService,
+                              SignInManager<TaiKhoan> signInManager)
         {
             _unit = unit;
             _slugService = slugService;
             _locationService = locationService;
             _viewRenderService = viewRenderService;
+            _gioHangService = gioHangService;
+            _signInManager = signInManager;
         }
 
         #region Trang chủ
         [HttpGet("")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> TrangChu()
         {
-            IndexVM viewModel = await GetIndexVM();
+            var gioHang = HttpContext.Session.GetObjectFromJson<List<GioHangVM>>("GioHang") ?? new List<GioHangVM>();
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                gioHang = _gioHangService.TaiGioHangTuDb(userId);
+                HttpContext.Session.SetObjectAsJson("GioHang", gioHang);
+            }
+
+            TrangChuVM viewModel = await GetIndexVM();
             return View(viewModel);
         }
 
-        private async Task<IndexVM> GetIndexVM()
+        private async Task<TrangChuVM> GetIndexVM()
         {
-            IndexVM viewModel = new IndexVM();
+            TrangChuVM viewModel = new TrangChuVM();
 
             viewModel.SachBanChay = await _unit.Saches.LaySachBanChay(days: 7, sachCount: 6);
 
@@ -168,10 +189,202 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
             return View("SachTheoChuDe", viewModel);
         }
-        public IActionResult Details(int id)
+        [HttpGet]
+        public async Task<IActionResult> ChiTietSanPham(int maSach)
         {
-            Sach? sach = _unit.Saches.Get(u => u.MaSach == id, includeProperties: "ChuDe,NhaXuatBan,TacGia");
-            return View(sach);
+            if (!_signInManager.IsSignedIn(User))
+            {
+                TempData["ReturnUrl"] = Url.Action("ChiTietSanPham", "Home", new { maSach = maSach });
+            }
+            // ⭐ SỬA LỖI TẠI ĐÂY:
+            // Dùng GetAsync và thêm "includeProperties" để tải các bảng liên quan
+            var sach = await _unit.Saches.GetAsync(
+                s => s.MaSach == maSach,
+                includeProperties: "ChuDe,NhaXuatBan,TacGia"
+            );
+
+            if (sach == null) { return NotFound(); }
+
+            // (Code tải đánh giá để tính toán % sao)
+            var danhSachDanhGia = (await _unit.DanhGiaSanPhams.GetRangeAsync(
+                            d => d.MaSach == maSach
+                         )).ToList();
+
+            var vm = new ChiTietSanPhamVM
+            {
+                Sach = sach, // (Bây giờ đã chứa Tác Giả, NXB, Chủ Đề)
+                TongSoDanhGiaSanPham = danhSachDanhGia.Count
+            };
+
+            // Tính toán % sao và điểm trung bình
+            vm.PhanTramTheoSoSao = new Dictionary<int, int> { { 5, 0 }, { 4, 0 }, { 3, 0 }, { 2, 0 }, { 1, 0 } };
+
+            if (vm.TongSoDanhGiaSanPham > 0)
+            {
+                vm.DiemDanhGiaSanPhamTrungBinh = danhSachDanhGia.Average(d => d.SoSao);
+                for (int i = 5; i >= 1; i--)
+                {
+                    int count = danhSachDanhGia.Count(d => d.SoSao == i);
+                    vm.PhanTramTheoSoSao[i] = (int)Math.Round((double)count * 100 / vm.TongSoDanhGiaSanPham);
+                }
+            }
+            else
+            {
+                vm.DiemDanhGiaSanPhamTrungBinh = 5; // Mặc định
+            }
+
+            return View(vm);
+        }
+
+        // 2. [HttpGet] Tải Danh Sách Đánh Giá (Cho Tab)
+        // (Action này KHÔNG cần 'includeProperties' cho Sách)
+        [HttpGet]
+        public async Task<IActionResult> TaiDanhGiaPartial(int maSach, string kieuSapXep = "MoiNhat", int trang = 1)
+        {
+            const int KICH_THUOC_TRANG = 5;
+            int? maKhachHangHienTai = null;
+            if (_signInManager.IsSignedIn(User))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+                if (khachHang != null) maKhachHangHienTai = khachHang.MaKhachHang;
+            }
+
+            var danhSachDaThich = new HashSet<int>();
+            if (maKhachHangHienTai.HasValue)
+            {
+                danhSachDaThich = (await _unit.LuotThichDanhGiaSanPhams.GetRangeAsync(
+                    lt => lt.MaKhachHang == maKhachHangHienTai.Value
+                )).Select(lt => lt.MaDanhGia).ToHashSet();
+            }
+
+            Func<IQueryable<DanhGiaSanPham>, IOrderedQueryable<DanhGiaSanPham>> orderBy;
+            if (kieuSapXep == "YeuThichNhat")
+            {
+                orderBy = q => q.OrderByDescending(d => d.LuotThich).ThenByDescending(d => d.NgayDang);
+            }
+            else
+            {
+                orderBy = q => q.OrderByDescending(d => d.NgayDang);
+            }
+
+            var danhSachDanhGia = await _unit.DanhGiaSanPhams.GetRangeAsync(
+                d => d.MaSach == maSach,
+                orderBy: orderBy,
+                includeProperties: "KhachHang" // Chỉ cần include KhachHang để lấy tên
+            );
+
+            var danhGiaTheoTrang = danhSachDanhGia
+                .Skip((trang - 1) * KICH_THUOC_TRANG)
+                .Take(KICH_THUOC_TRANG)
+                .ToList();
+
+            ViewBag.DanhSachDaThich = danhSachDaThich;
+
+            return PartialView("_DanhSachDanhGiaPartial", danhGiaTheoTrang);
+        }
+
+        // 3. [HttpPost] Xử lý Thích/Bỏ Thích
+        // (Action này KHÔNG cần 'includeProperties' cho Sách)
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ThichDanhGia(int maDanhGia)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            if (khachHang == null) { return Unauthorized(); }
+
+            var maKhachHangHienTai = khachHang.MaKhachHang;
+
+            var danhGia = await _unit.DanhGiaSanPhams.GetByIdAsync(maDanhGia);
+            if (danhGia == null) { return NotFound(); }
+
+            var luotThichDaTonTai = await _unit.LuotThichDanhGiaSanPhams.GetAsync(
+                lt => lt.MaKhachHang == maKhachHangHienTai && lt.MaDanhGia == maDanhGia
+            );
+
+            bool daThich;
+            if (luotThichDaTonTai != null)
+            {
+                _unit.LuotThichDanhGiaSanPhams.Remove(luotThichDaTonTai);
+                danhGia.LuotThich = Math.Max(0, danhGia.LuotThich - 1);
+                daThich = false;
+            }
+            else
+            {
+                _unit.LuotThichDanhGiaSanPhams.Add(new LuotThichDanhGiaSanPham
+                {
+                    MaKhachHang = maKhachHangHienTai,
+                    MaDanhGia = maDanhGia
+                });
+                danhGia.LuotThich = danhGia.LuotThich + 1;
+                daThich = true;
+            }
+
+            _unit.DanhGiaSanPhams.Update(danhGia);
+            await _unit.SaveAsync();
+
+            return Json(new
+            {
+                success = true,
+                soLuotThichMoi = danhGia.LuotThich,
+                daThich = daThich
+            });
+        }
+
+        // 4. [HttpGet] Tải Popup Viết Đánh Giá
+        // (Action này KHÔNG cần 'includeProperties' cho Sách,
+        //  vì popup chỉ cần MaSach để submit)
+        [HttpGet]
+        public IActionResult VietDanhGiaPartial(int maSach)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+
+            var model = new DanhGiaSanPham
+            {
+                MaSach = maSach,
+                TenHienThi = khachHang?.HoTen ?? User.Identity.Name
+            };
+
+            return PartialView("_PopupVietDanhGiaSanPham", model);
+        }
+
+        // 5. [HttpPost] Gửi Đánh Giá Mới
+        // (Action này KHÔNG cần 'includeProperties' cho Sách)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GuiDanhGia(DanhGiaSanPham model)
+        {
+            if (!_signInManager.IsSignedIn(User)) { return Unauthorized(); }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_PopupVietDanhGiaSanPham", model);
+            }
+
+            model.MaKhachHang = khachHang.MaKhachHang;
+            model.NgayDang = DateTime.UtcNow;
+
+            _unit.DanhGiaSanPhams.Add(model);
+            await _unit.SaveAsync();
+
+            return Json(new { success = true, message = "Gửi đánh giá thành công!" });
+        }
+
+        [HttpGet]
+        public IActionResult KiemTraTonKho(int maSach, int soLuongMuonTang)
+        {
+            var sach = _unit.Saches.Get(s => s.MaSach == maSach, includeProperties: "ChuDe,NhaXuatBan,TacGia");
+            if (sach == null)
+                return Json(false);
+
+            bool isAvailable = soLuongMuonTang <= sach.SoLuong;
+            return Json(new { success = isAvailable });
         }
 
         public async Task<IActionResult> TimKiemAsync(string? keyword)
@@ -444,7 +657,6 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
 
 
-
         #region Địa chỉ nhận hàng
         public async Task<IActionResult> ChangeAddressPartial()
         {
@@ -456,15 +668,15 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                 HinhAnhSanPham = "/images/product.jpg",
                 SoLuong = 1,
                 TamTinh = 76000,
-                MienPhiVanChuyen = 20000,
+                PhiVanChuyen = 20000,
                 TongTien = 96000,
 
-                list_TinhThanh = provinces, // Lấy từ API thật
-                list_QuanHuyen = new List<SelectListItem>
+                DanhSachTinhThanh = provinces, // Lấy từ API thật
+                DanhSachQuanHuyen = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "", Text = "Chọn quận/huyện", Disabled = true, Selected = true }
                 },
-                list_PhuongXa = new List<SelectListItem>
+                DanhSachPhuongXa = new List<SelectListItem>
                 {
                     new SelectListItem { Value = "", Text = "Chọn phường/xã", Disabled = true, Selected = true }
                 }
@@ -472,61 +684,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             return PartialView("_PopupThayDoiDiaChiGiaoHang", model);
         }
 
-        public IActionResult WriteReviewPartial()
-        {
-            return PartialView("_PopupVietDanhGiaSanPham");
-        }
-
-        public IActionResult ShopingCart()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ThanhToan()
-        {
-            var provinces = await _locationService.GetProvincesAsync();
-
-            var model = new ThanhToan
-            {
-                TenSanPham = "Bộ Manga - Summer Ghost - Bóng Ma Mùa Hạ - Tập 1 + Tập 2",
-                HinhAnhSanPham = "/images/product.jpg",
-                SoLuong = 1,
-                TamTinh = 76000,
-                MienPhiVanChuyen = 20000,
-                TongTien = 96000,
-
-                list_TinhThanh = provinces, // Lấy từ API thật
-                list_QuanHuyen = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "", Text = "Chọn quận/huyện", Disabled = true, Selected = true }
-                },
-                list_PhuongXa = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "", Text = "Chọn phường/xã", Disabled = true, Selected = true }
-                }
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ThanhToan(ThanhToan model)
-        {
-            if (!ModelState.IsValid)
-            {
-                // Nếu fail, load lại dữ liệu dropdown từ API
-                model.list_TinhThanh = await _locationService.GetProvincesAsync();
-                model.list_QuanHuyen = new List<SelectListItem>();
-                model.list_PhuongXa = new List<SelectListItem>();
-                return View(model);
-            }
-
-            // Xử lý thanh toán...
-            return RedirectToAction("OrderSuccess");
-        }
-
+        
         [HttpGet]
         public async Task<JsonResult> GetProvinces()
         {
@@ -549,41 +707,6 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             return Json(wards);
         }
         #endregion
-
-
-        public IActionResult OrderSuccess()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ThongTinCaNhan()
-        {
-            var provinces = await _locationService.GetProvincesAsync();
-
-            var model = new ThanhToan
-            {
-                //ProductName = "Bộ Manga - Summer Ghost - Bóng Ma Mùa Hạ - Tập 1 + Tập 2",
-                //ProductImage = "/images/product.jpg",
-                //Quantity = 1,
-                //SubTotal = 76000,
-                //ShippingFee = 20000,
-                //Total = 96000,
-
-                list_TinhThanh = provinces, // Lấy từ API thật
-                list_QuanHuyen = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "", Text = "Chọn quận/huyện", Disabled = true, Selected = true }
-                },
-                list_PhuongXa = new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "", Text = "Chọn phường/xã", Disabled = true, Selected = true }
-                }
-            };
-
-            return View(model);
-        }
-
 
     }
 }

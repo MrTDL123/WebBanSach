@@ -12,10 +12,10 @@ namespace Media.Models
     public class GioHang
     {
         [Key]
+        public int MaGioHang { get; set; }
+        [Required]
         public int MaKhachHang { get; set; }
-        [DataType(DataType.Date)]
-        [DisplayName("Ngày tạo")]
-        public DateTime NgayTao { get; set; } = DateTime.UtcNow;
+        
         [Required]
         [DisplayName("Tổng tiền")]
         [Column(TypeName = "decimal(18,2)")]

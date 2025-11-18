@@ -1,0 +1,50 @@
+﻿@model List<Media.Models.DanhGiaSanPham>
+@functions {
+    public string GetReviewerName(DanhGiaSanPham review)
+    {
+        if (review.IsAnDanh) return "Khách hàng ẩn danh";
+        if (review.KhachHang != null) return review.KhachHang.HoTen;
+        return review.TenHienThi;
+    }
+}
+@{
+    var danhSachDaThich = ViewBag.DanhSachDaThich as HashSet<int> ?? new HashSet<int>();
+}
+
+@if (!Model.Any())
+{
+    <div class="empty-address">Chưa có đánh giá nào cho mục này.</div>
+}
+
+@foreach (var danhGia in Model)
+{
+    bool daThich = danhSachDaThich.Contains(danhGia.MaDanhGia);
+    <div class="review-item">
+        <div class="reviewer-info">
+            <ul class="reviewer-left">
+                <li class="reviewer-name">@GetReviewerName(danhGia)</li>
+                <li class="review-date">@danhGia.NgayDang.ToString("dd/MM/yyyy")</li>
+            </ul>
+        </div>
+        <div class="review-actions">
+            <label class="stars-display">
+                @for (int i = 0; i < danhGia.SoSao; i++)
+                {
+                    <text>★</text>
+                }
+                @for (int i = danhGia.SoSao; i < 5; i++)
+                {
+                    <text>☆</text>
+                }
+            </label>
+            
+            <p class="review-content">@danhGia.NoiDung</p>
+
+            <button class="action-btn @(daThich ? "liked" : "")" id="btn-thich-@danhGia.MaDanhGia"
+                    onclick="thichDanhGia(this, @danhGia.MaDanhGia)">
+                👍 Thích (<span id="count-thich-@danhGia.MaDanhGia">@danhGia.LuotThich</span>)
+            </button>
+
+        </div>
+    </div>
+}

@@ -1,0 +1,849 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<TaiKhoan> SignInManager
+@model Media.Models.ViewModels.ChiTietSanPhamVM
+
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/chitietsanpham.css" asp-append-version="true" />
+}
+
+@functions {
+    // Helper để hiển thị sao cho đúng
+    public string HienThiSao(int soSao)
+    {
+        var saoDay = new string('★', soSao);
+        var saoRong = new string('☆', 5 - soSao);
+        return saoDay + saoRong;
+    }
+}
+
+@Html.AntiForgeryToken()
+
+<div class="product-wrapper">
+    <!-- CỘT TRÁI - STICKY -->
+    <div class="left-column">
+        <div class="product-images">
+            <img src="~/img/product/@Model.Sach.AnhBiaChinh" alt="@Model.Sach.TenSach" class="main-image" id="mainImage">
+            <div class="thumbnail-list">
+                <img src="~/img/product/@Model.Sach.AnhBiaPhu1" alt="thumb1 @Model.Sach.TenSach" class="thumbnail active" onclick="changeImage(this)">
+                <img src="~/img/product/@Model.Sach.AnhBiaPhu2" alt="thumb2 @Model.Sach.TenSach" class="thumbnail" onclick="changeImage(this)">
+                <img src="~/img/product/@Model.Sach.AnhBiaPhu3" alt="thumb3 @Model.Sach.TenSach" class="thumbnail" onclick="changeImage(this)">
+                <img src="~/img/product/@Model.Sach.AnhBiaPhu4" alt="thumb4 @Model.Sach.TenSach" class="thumbnail" onclick="changeImage(this)">
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-outline" id="btnAddToCart">🛒 Thêm vào giỏ hàng</button>
+            <button class="btn btn-primary" id="btnBuyNow">Mua ngay</button>
+        </div>
+
+        <div class="policy-section">
+            <h3 class="policy-title">CHÍNH SÁCH ƯU ĐÃI</h3>  @* nên sài thẻ p*@
+            <label class="policy-item" onclick="openPopup('shipping')">
+                <span class="policy-text">🚚 <span class="policy-content" id="policy-popup-shipping">Thời gian giao hàng</span>: Giao nhanh và uy tín</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
+            <label class="policy-item" onclick="openPopup('return')">
+                <span class="policy-text">🔄 <span class="policy-content" id="policy-popup-return">Chính sách đổi trả</span>: Đổi trả miễn phí trong 7 ngày</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
+            <label class="policy-item" onclick="openPopup('wholesale')">
+                <span class="policy-text">🎁 <span class="policy-content" id="policy-popup-wholesale">Chính sách khách sỉ</span>: Ưu đãi khi mua số lượng lớn</span>
+                <span class="montserrat-bold"> ></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- CỘT PHẢI - SCROLLABLE -->
+    <div class="right-column">
+        <!-- Ô THÔNG TIN SÁCH -->
+        <div class="info-card product">
+            <h1 class="product-title">@Model.Sach.TenSach</h1>
+
+            <ul class="product-meta">
+                <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">@Model.Sach.NhaCungCap</a></li>
+                <li class="meta-label">Tác giả: <a href="#" class="meta-value">@Model.Sach.TacGia.TenTG</a></li>
+                <li class="meta-label">NXB: <a href="#" class="meta-value">@Model.Sach.ChuDe.TenChuDe</a></li>
+                <li class="meta-label">Hình thức bìa: <a href="#" class="meta-value">Bìa Mềm</a></li>
+            </ul>
+            <div class="rating-section">
+                <a href="#" class="rating-link">@HienThiSao((int)Math.Round(Model.DiemDanhGiaSanPhamTrungBinh)) (@Model.TongSoDanhGiaSanPham đánh giá)</a>
+                <span class="sold-count">| Đã bán 444</span>
+            </div>
+
+            <div class="price-section">
+                <label class="price-main">@Model.Sach.GiaSauGiam.ToString("N0") đ</label>
+                @if (Model.Sach.PhanTramGiamGia > 0)
+                {
+                    <label class="price-original">@Model.Sach.GiaBan.ToString("N0") đ</label>
+                    <label class="discount-badge">-@((Model.Sach.PhanTramGiamGia * 100).ToString("0"))%</label>
+                }
+            </div>
+
+            <p class="stock-status">✓ Còn hàng</p>
+        </div>
+
+        <!-- Ô THÔNG TIN VẬN CHUYỂN -->
+        <div class="info-card">
+            <h3 class="section-title">Thông tin vận chuyển</h3>
+            <div class="delivery-info">
+                <div class="delivery-item address">
+                    <label class="delivery-label">📍Giao hàng đến <span class="delivery-value" id="currentAddressText" style="font-weight:bold;">Phường Bến Nghé, Quận 1, Hồ Chí Minh</span></label>
+                    <label id="openPopupChangeAddress" class="promo-link" onclick="openAddressPopup()">Thay đổi</label>
+                </div>
+                <div class="delivery-item standard">
+                    <label class="delivery-label" style="font-weight:bold;">🚚 Giao hàng tiêu chuẩn </label>
+                    <span class="delivery-value" id="deliveryEstimateText" style="padding-left:25px;">Dự kiến giao Thứ hai - 06/10</span>
+                </div>
+            </div>
+
+            <div class="coupon-container">
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 10k</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 20k</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 10%</div>
+                </div>
+                <div class="coupon-item">
+                    <div class="coupon-item-img">%</div>
+                    <div class="coupon-item-text">Mã giảm 20%</div>
+                </div>
+            </div>
+
+            <div class="quantity-section">
+                <label class="quantity-label" style="font-size:16px;">Số lượng: </label>
+                <div class="quantity-control">
+                    <button class="btn-qty" onclick="decreaseQty()">-</button>
+                    <input type="text" id="qty" value="1" readonly data-id="@Model.Sach.MaSach" data-max="@Model.Sach.SoLuong">
+                    <button class="btn-qty" onclick="increaseQty()">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ô THÔNG TIN CHI TIẾT -->
+        <div class="info-card">
+            <h3 class="section-title">📋 Thông tin chi tiết</h3>
+            <table class="info-table" style="width:100%;">
+                <tr>
+                    <td>Mã hàng</td>
+                    <td>3300000055619</td>
+                </tr>
+                <tr>
+                    <td>Tác giả</td>
+                    <td>@Model.Sach.TacGia.TenTG</td>
+                </tr>
+                <tr>
+                    <td>NXB</td>
+                    <td>@Model.Sach.NhaXuatBan.TenNXB</td>
+                </tr>
+                <tr>
+                    <td>Năm XB</td>
+                    <td>2025</td>
+                </tr>
+                <tr>
+                    <td>Ngôn ngữ</td>
+                    <td>Tiếng Việt</td>
+                </tr>
+                <tr>
+                    <td>Trọng lượng</td>
+                    <td>500 gr</td>
+                </tr>
+                <tr>
+                    <td>Kích thước</td>
+                    <td>24 x 16 x 5 cm</td>
+                </tr>
+                <tr>
+                    <td>Số trang</td>
+                    <td>368</td>
+                </tr>
+                <tr>
+                    <td>Hình thức bìa</td>
+                    <td>Bìa Mềm</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Ô MÔ TẢ SẢN PHẨM -->
+        <div class="info-card">
+            <h3 class="section-title">📖 Mô tả sản phẩm</h3>
+            <p class="description-content">
+                @Model.Sach.MoTa
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- PHẦN ĐÁNH GIÁ - KHỐI ĐỘC LẬP -->
+<section class="review-section" id="review-section">
+    <div class="review-wrapper">
+        <div class="review-header">
+            <h2 class="review-title">Đánh giá sản phẩm</h2>
+            <div class="review-summary">
+
+                <div class="rating-overview">
+                    <label class="rating-score">@Model.DiemDanhGiaSanPhamTrungBinh.ToString("F1")<label class="rating-max">/5</label></label>
+                    <label class="stars-display">@HienThiSao((int)Math.Round(Model.DiemDanhGiaSanPhamTrungBinh))</label>
+                    <label class="rating-count">(@Model.TongSoDanhGiaSanPham đánh giá)</label>
+                </div>
+
+                <div class="rating-bars">
+                    @foreach (var bar in Model.PhanTramTheoSoSao.OrderByDescending(kv => kv.Key))
+                    {
+                        <div class="rating-bar-item">
+                            <span class="bar-label">@bar.Key sao</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: @bar.Value%"></div>
+                            </div>
+                            <span class="bar-percentage">@bar.Value%</span>
+                        </div>
+                    }
+                </div>
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <button class="write-review-btn" id="btn-review" onclick="showPopupReview()">✏️ Viết đánh giá</button>
+                }
+                else
+                {
+                    <p class="review-login-prompt">
+                        Chỉ có thành viên mới có thể viết nhận xét. Vui lòng
+                        <a asp-area="Customer" asp-controller="KhachHang" asp-action="DangNhap" asp-route-returnUrl="@Context.Request.Path">đăng nhập</a> hoặc
+                        <a asp-area="Customer" asp-controller="KhachHang" asp-action="DangKy">đăng ký</a>.
+                    </p>
+                }
+            </div>
+        </div>
+
+        @if (Model.TongSoDanhGiaSanPham > 0)
+        {
+            <div id="reviewContent">
+                <div class="review-tabs">
+                    <div id="tab-MoiNhat" class="tab active"
+                         onclick="chuyenTabDanhGia('MoiNhat', this)">
+                        Mới nhất
+                    </div>
+                    <div id="tab-YeuThichNhat" class="tab"
+                         onclick="chuyenTabDanhGia('YeuThichNhat', this)">
+                        Yêu thích nhất
+                    </div>
+                </div>
+
+                <div class="review-list" id="danh-sach-danh-gia-container">
+                    <div class="empty-address">Đang tải đánh giá...</div>
+                </div>
+                <div class="view-more-section" id="view-more-container" style="display: none;">
+                    <button class="view-more-btn" id="view-more-btn" onclick="xuLyXemThemAnBot()">
+                        Xem thêm đánh giá
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Popup chính sách ưu đãi -->
+<div id="popupOverlay" class="popup-overlay" onclick="closePopup()"></div>
+<div id="popupModal" class="popup-modal">
+    <div class="popup-header">
+        <div class="popup-spacer"></div>
+        <span id="popupTitle">Thời gian giao hàng</span>
+        <button class="popup-close" onclick="closePopup()">×</button>
+    </div>
+    <div class="popup-body" id="popupContent"></div>
+</div>
+
+<!-- 🔹 Popup thay đổi địa chỉ giao hàng -->
+<div id="addressPopupOverlay" class="popup-overlay" style="display:none;"></div>
+<div id="addressPopupModal" class="popup-modal" style="display:none;">
+    <div class="popup-body" id="addressPopupContent">
+        <!-- Nội dung partial sẽ được load vào đây -->
+    </div>
+</div>
+
+<!-- 🔹 Popup  viết đánh giá sản phẩm -->
+<div class="popup-overlay" id="reviewPopupOverlay" style="display:none;"></div>
+<div class="popup-modal" id="reviewPopupModal" style="display:none;">
+    <div class="popup-body" id="reviewPopupContent" style="padding:unset;">
+    </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container" class="toast-container"></div>
+
+<!-- Nội dung ẩn (PartialView load sẵn) -->
+<div id="policy-shipping" class="popup-hidden">
+    @Html.Partial("_PopupThoiGianGiaoHang")
+</div>
+<div id="policy-return" class="popup-hidden">
+    @Html.Partial("_PopupChinhSachDoiTra")
+</div>
+<div id="policy-wholesale" class="popup-hidden">
+    @Html.Partial("_PopupChinhSachKhachSi")
+</div>
+
+@section Scripts {
+    <script>
+        // === KHAI BÁO BIẾN TOÀN CỤC ===
+        const maSachHienTai = @Model.Sach.MaSach;
+        const antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
+        const KICH_THUOC_TRANG = 5;
+        let soSaoDaChon = 5; // Biến lưu sao đã chọn trong popup
+        let trangHienTai = 1;
+        let kieuSapXepHienTai = 'MoiNhat';
+        let dangTaiDuLieu = false;
+        let dangHienThiThem = false;
+
+        // === 1. TẢI ĐÁNH GIÁ KHI MỞ TRANG ===
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tải tab "Mới nhất" làm mặc định
+            if (@Model.TongSoDanhGiaSanPham > 0) {
+                taiDanhGia('MoiNhat');
+            }
+        });
+
+        // === 2. HÀM TẢI DANH SÁCH (THEO TAB) ===
+        function chuyenTabDanhGia(kieuSapXep, element) {
+            if (dangTaiDuLieu || kieuSapXep === kieuSapXepHienTai) return;
+
+            $('.review-tabs .tab').removeClass('active');
+            $(element).addClass('active');
+
+            trangHienTai = 1; // Reset về trang 1
+            kieuSapXepHienTai = kieuSapXep;
+            taiDanhGia(true); // Tải và GHI ĐÈ (true)
+        }
+
+        function xuLyXemThemAnBot() {
+            if (dangTaiDuLieu) return;
+
+            if (dangHienThiThem) {
+                // --- ĐANG LÀ NÚT "ẨN BỚT" ---
+                // (Khi bấm "Ẩn bớt", ta chỉ cần reset lại trang 1)
+                trangHienTai = 1;
+                taiDanhGia(true); // Tải và GHI ĐÈ
+            } else {
+                // --- ĐANG LÀ NÚT "XEM THÊM" ---
+                // (Tải trang tiếp theo)
+                trangHienTai++;
+                taiDanhGia(false); // Tải và NỐI TIẾP
+            }
+        }
+
+        // Hàm AJAX chính (trái tim của logic)
+        function taiDanhGia(ghiDe = false) {
+            if (dangTaiDuLieu) return;
+            dangTaiDuLieu = true;
+
+            const container = $('#danh-sach-danh-gia-container');
+            const btnXemThem = $('#view-more-btn');
+            const containerXemThem = $('#view-more-container');
+
+            // Hiển thị trạng thái tải
+            if (ghiDe) {
+                container.html('<div class="empty-address">Đang tải...</div>');
+            }
+            btnXemThem.text('Đang tải...').prop('disabled', true);
+            containerXemThem.show(); // Hiển thị nút
+
+            var url = `@Url.Action("TaiDanhGiaPartial", "Home")?maSach=${maSachHienTai}&kieuSapXep=${kieuSapXepHienTai}&trang=${trangHienTai}`;
+
+            $.get(url, function(data) {
+                const $data = $(data.trim());
+                                let soLuongMoi = $data.filter('.review-item').length;
+
+                if (ghiDe) {
+                    container.html($data);
+                    dangHienThiThem = false;
+                    btnXemThem.text('Xem thêm đánh giá');
+
+                    if (soLuongMoi === 0) {
+                        container.html('<div class="empty-address">Chưa có đánh giá nào.</div>');
+                        containerXemThem.hide();
+                    }
+                    else if (soLuongMoi < KICH_THUOC_TRANG) {
+                        containerXemThem.hide();
+                    } else {
+                        containerXemThem.show();
+                    }
+                } else {
+                    container.append($data);
+                    dangHienThiThem = true;
+                    btnXemThem.text('Ẩn bớt');
+                    containerXemThem.show();
+
+                    if (soLuongMoi < KICH_THUOC_TRANG) {
+                        btnXemThem.prop('disabled', true);
+                    }
+                }
+            })
+            .fail(function() {
+                container.html('<div class="empty-address">Lỗi khi tải đánh giá.</div>');
+            })
+            .always(function() {
+                dangTaiDuLieu = false;
+                btnXemThem.prop('disabled', false);
+            });
+        }
+
+        // === 3. HÀM XỬ LÝ BẤM "THÍCH" ===
+        function thichDanhGia(element, maDanhGia) {
+            if (!antiForgeryToken) {
+                 showToast("Lỗi: Không tìm thấy Token.", true);
+                 return;
+            }
+            // (Kiểm tra đăng nhập bằng Razor, an toàn)
+            @if (!SignInManager.IsSignedIn(User))
+            {
+                        <text>
+                        showToast("Vui lòng đăng nhập để thích đánh giá.", true);
+                        return;
+                        </text>
+            }
+            var btn = $(element);
+            btn.prop('disabled', true);
+            $.post('@Url.Action("ThichDanhGia", "Home")', {
+                maDanhGia: maDanhGia,
+                __RequestVerificationToken: antiForgeryToken
+             })
+            .done(function(data) {
+                if (data.success) {
+                    $('#count-thich-' + maDanhGia).text(data.soLuotThichMoi);
+                    btn.toggleClass('liked', data.daThich);
+                } else { showToast(data.message || "Lỗi.", true); }
+            })
+            .fail(function() { showToast("Lỗi kết nối.", true); })
+            .always(function() { btn.prop('disabled', false); });
+        }
+
+        // === 4. HÀM MỞ/ĐÓNG POPUP ĐÁNH GIÁ ===
+        function dongPopupReview() {
+            $('#reviewPopupOverlay, #reviewPopupModal').fadeOut(200, function() {
+                 $('#reviewPopupContent').html('');
+            });
+        }
+
+        function showPopupReview() {
+            var url = '@Url.Action("VietDanhGiaPartial", "Home")?maSach=' + maSachHienTai;
+            $.get(url, function (data) {
+                $('#reviewPopupContent').html(data);
+                $('#reviewPopupOverlay, #reviewPopupModal').fadeIn(200);
+
+                // Khởi tạo JS cho popup (sao, emoji...) SAU KHI tải
+                khoiTaoSaoDanhGia();
+            });
+        }
+
+        // === 5. HÀM KHỞI TẠO SAO (Code của bạn, đã sửa) ===
+        function khoiTaoSaoDanhGia() {
+            soSaoDaChon = 5; // Reset về 5 sao
+            const starsContainer = document.getElementById('starsContainer');
+            if (!starsContainer) return;
+
+            const stars = starsContainer.querySelectorAll('.star');
+            const inputSoSao = document.getElementById('SoSao_Input'); // ID từ form
+
+            function updateStars(rating) {
+                stars.forEach(star => {
+                    const starRating = parseInt(star.dataset.rating);
+                    star.classList.toggle('active', starRating <= rating);
+                });
+            }
+
+            updateStars(soSaoDaChon);
+            if(inputSoSao) inputSoSao.value = soSaoDaChon;
+
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    soSaoDaChon = parseInt(this.dataset.rating);
+                    updateStars(soSaoDaChon);
+                    if(inputSoSao) inputSoSao.value = soSaoDaChon;
+                });
+                star.addEventListener('mouseenter', function() {
+                    updateStars(parseInt(this.dataset.rating));
+                });
+            });
+
+            starsContainer.addEventListener('mouseleave', function() {
+                updateStars(soSaoDaChon);
+            });
+        }
+
+        // === 6. HÀM SUBMIT FORM POPUP ===
+        // (Được gọi bởi 'onsubmit' của form)
+        function submitReview(event) {
+            event.preventDefault();
+            const form = $('#reviewForm');
+            const btn = form.find('#submitReviewBtn');
+            btn.text('Đang gửi...').prop('disabled', true);
+
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    if (typeof response === 'object' && response.success) {
+                        dongPopupReview();
+                        showToast(response.message, false);
+                        location.reload(); // Tải lại toàn bộ trang
+                    } else {
+                        // Lỗi validation: Server trả về HTML của popup
+                        $('#reviewPopupContent').html(response);
+                        khoiTaoSaoDanhGia(); // Phải khởi tạo lại sao
+                        showToast('Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.', true);
+                    }
+                },
+                error: function() { showToast('Lỗi server.', true); },
+                complete: function() {
+                    $('#submitReviewBtn').text('Gửi nhận xét').prop('disabled', false);
+                }
+            });
+        }
+
+        // === 7. CÁC HÀM TIỆN ÍCH POPUP (Code của bạn) ===
+        function insertEmoji(emoji) {
+            const reviewInput = document.getElementById('reviewInput');
+            if (reviewInput) {
+                reviewInput.value += emoji;
+                reviewInput.focus();
+            }
+        }
+
+        function toggleAnonymous() {
+            const toggle = document.getElementById('anonymousToggle');
+            const input = document.getElementById('IsAnDanh_Input'); // ID từ form
+            toggle.classList.toggle('active');
+            input.value = toggle.classList.contains('active') ? "true" : "false";
+        }
+
+        var SHOP_PROVINCE_CODE = 79;
+
+        // Hàm mở popup (gọi partial, chèn HTML rồi init)
+        function openAddressPopup() {
+            var url = '@Url.Action("ChangeAddressPartial", "Home", new { area = "Customer" })';
+            $.get(url, function (data) {
+                $('#addressPopupContent').html(data);
+
+                // KHỞI TẠO sau khi partial đã chèn xong
+                initAddressPopup();
+
+                $('#addressPopupOverlay, #addressPopupModal').fadeIn(200);
+            });
+        }
+
+        function initAddressPopup() {
+            let provinceSelect = document.getElementById('provinceSelect');
+            let districtSelect = document.getElementById('districtSelect');
+            let wardSelect = document.getElementById('wardSelect');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const pickupRadio = document.getElementById('pickup');
+            const deliveryRadio = document.getElementById('delivery');
+            const deliveryFields = document.getElementById('deliveryFields');
+
+            if (!provinceSelect || !districtSelect || !wardSelect || !confirmBtn) {
+                console.error('initAddressPopup: thiếu element trong partial');
+                return;
+            }
+
+            const urlGetProvinces = '@Url.Action("GetProvinces", "Home", new { area = "Customer" })';
+            const urlGetDistricts = '@Url.Action("GetDistricts", "Home", new { area = "Customer" })';
+            const urlGetWards = '@Url.Action("GetWards", "Home", new { area = "Customer" })';
+
+            // --- Load tỉnh/thành ---
+            $.getJSON(urlGetProvinces, function (data) {
+                provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.value || item.Value;
+                    opt.textContent = item.text || item.Text;
+                    provinceSelect.appendChild(opt);
+                });
+                provinceSelect.disabled = false;
+            });
+
+            // --- Khi chọn tỉnh ---
+            provinceSelect.onchange = function () {
+                const provinceCode = this.value;
+                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = true;
+
+                if (!provinceCode) {
+                    districtSelect.disabled = true;
+                    return;
+                }
+
+                $.getJSON(urlGetDistricts, { provinceCode: provinceCode }, function (data) {
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        districtSelect.appendChild(opt);
+                    });
+                    districtSelect.disabled = false;
+                });
+            };
+
+            // --- Khi chọn huyện ---
+            districtSelect.onchange = function () {
+                const districtCode = this.value;
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                if (!districtCode) {
+                    wardSelect.disabled = true;
+                    return;
+                }
+
+                $.getJSON(urlGetWards, { districtCode: districtCode }, function (data) {
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        wardSelect.appendChild(opt);
+                    });
+                    wardSelect.disabled = false;
+                });
+            };
+
+
+            // --- Toggle radio giao hàng ---
+            pickupRadio.onchange = deliveryRadio.onchange = function () {
+                const deliveryChecked = deliveryRadio.checked;
+                deliveryFields.style.display = deliveryChecked ? 'block' : 'none';
+                if (!deliveryChecked) {
+                    // reset nếu quay lại pickup
+                    provinceSelect.value = "";
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    districtSelect.disabled = true;
+                    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                    wardSelect.disabled = true;
+                    enableConfirm();
+                } else {
+                    confirmBtn.style.IDBCursor = 'not-allowed';
+                    disableConfirm();
+                }
+            };
+
+            // --- Xác nhận địa chỉ ---
+            confirmBtn.onclick = onConfirmClick;
+
+            // --- Kiểm tra hợp lệ để bật nút xác nhận ---
+            wardSelect.onchange = checkValidInputs;
+            checkValidInputs();
+
+
+            function onConfirmClick() {
+                if (confirmBtn.disabled) return;
+
+                const isDelivery = deliveryRadio.checked;
+                let finalAddressText = '';
+
+                if (!isDelivery) {
+                    finalAddressText = document.getElementById('addressDefaultText')?.innerText.trim() || '';
+                } else {
+                    const provName = provinceSelect.options[provinceSelect.selectedIndex]?.text || '';
+                    const distName = districtSelect.options[districtSelect.selectedIndex]?.text || '';
+                    const wardName = wardSelect.options[wardSelect.selectedIndex]?.text || '';
+                    finalAddressText = `${wardName}, ${distName}, ${provName}`;
+                }
+
+                const addressElem = document.getElementById('currentAddressText');
+                const addressElemForPopup = document.getElementById('addressDefaultText');
+                if (addressElem) addressElem.innerHTML = finalAddressText;
+                if (addressElemForPopup) addressElemForPopup.innerHTML = finalAddressText;
+
+                const estimatedDays = (!isDelivery) ? 2 : (Number(provinceSelect.value) === SHOP_PROVINCE_CODE ? 2 : 4);
+                const estimateText = formatEstimatedDate(estimatedDays);
+                const elemEstimate = document.getElementById('deliveryEstimateText');
+                if (elemEstimate) elemEstimate.innerHTML = `Dự kiến giao <strong>${estimateText}</strong>`;
+
+                $('#addressPopupOverlay, #addressPopupModal').fadeOut(200);
+            }
+
+            function checkValidInputs() {
+                const deliveryChecked = document.getElementById('delivery').checked;
+                if (!deliveryChecked) { enableConfirm(); return; }
+                if (provinceSelect.value && districtSelect.value && wardSelect.value) enableConfirm();
+                else disableConfirm();
+            }
+
+            function enableConfirm() {
+                confirmBtn.classList.remove('disabledbtn');
+                // confirmBtn.disabled = false;
+            }
+            function disableConfirm() {
+                confirmBtn.classList.add('disabledbtn');
+                // confirmBtn.disabled = true;
+            }
+
+            function formatEstimatedDate(daysToAdd) {
+                const weekdayVN = ['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
+                const now = new Date();
+                const est = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToAdd);
+                const weekday = weekdayVN[est.getDay()];
+                const dd = String(est.getDate()).padStart(2, '0');
+                const mm = String(est.getMonth() + 1).padStart(2, '0');
+                return `${weekday} - ${dd}/${mm}`;
+            }
+            // ---- end helper functions ----
+        }
+
+        // đóng popup khi click overlay
+        function closeAddressPopup() {
+            $('#addressPopupOverlay, #addressPopupModal').fadeOut(200);
+        }
+
+        function openPopup(key) {
+          const content = document.getElementById("policy-" + key);
+          if (!content) return;
+
+          const titleElement = document.getElementById("policy-popup-" + key);
+          if (titleElement) document.getElementById("popupTitle").innerHTML = titleElement.innerHTML;
+
+
+          document.getElementById("popupContent").innerHTML = content.innerHTML;
+          document.getElementById("popupOverlay").style.display = "block";
+          document.getElementById("popupModal").style.display = "block";
+        }
+
+        function closePopup() {
+          document.getElementById("popupOverlay").style.display = "none";
+          document.getElementById("popupModal").style.display = "none";
+        }
+
+        // // Tab switching
+        // document.querySelectorAll('.tab').forEach(tab => {
+        //     tab.addEventListener('click', function() {
+        //         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        //         this.classList.add('active');
+        //     });
+        // });
+
+        // // Like button toggle
+        // document.querySelectorAll('.action-btn').forEach(btn => {
+        //     if (btn.textContent.includes('Thích')) {
+        //         btn.addEventListener('click', function() {
+        //             const currentCount = parseInt(this.textContent.match(/\d+/)[0]);
+        //             if (this.style.color === 'rgb(201, 33, 39)') {
+        //                 this.style.color = '';
+        //                 this.style.borderColor = '';
+        //                 this.innerHTML = `<span class="action-icon">👍</span>Thích (${currentCount - 1})`;
+        //             } else {
+        //                 this.style.color = '#C92127';
+        //                 this.style.borderColor = '#C92127';
+        //                 this.innerHTML = `<span class="action-icon">👍</span>Thích (${currentCount + 1})`;
+        //             }
+        //         });
+        //     }
+        // });
+
+        // Show more review content
+        document.querySelectorAll('.show-more-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const content = this.parentElement;
+                content.style.maxHeight = 'none';
+                this.style.display = 'none';
+            });
+        });
+
+        function changeImage(thumb) {
+            const mainImage = document.getElementById('mainImage');
+            mainImage.src = thumb.src.replace('70x90', '380x480');
+
+            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+        }
+
+        function showToast(message) {
+            console.log("showToast chạy với message:", message); // 👈 test
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = message;
+
+            const container = document.getElementById('toast-container');
+            container.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 300000);
+        }
+
+
+        function increaseQty() {
+            const input = document.getElementById('qty');
+            const id = input.dataset.id;
+            const value = parseInt(input.value);
+            const max = parseInt(input.dataset.max);
+
+            if (value < max) {
+                $.ajax({
+                    url: '/Customer/Home/KiemTraTonKho',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { maSach: id, soLuongMuonTang: value + 1 },
+                    success: function (response) {
+                        if (response.success) {
+                            input.value = value + 1;
+                        }
+                    }
+                });
+            }
+        }
+
+        function decreaseQty() {
+            const input = document.getElementById('qty');
+            const value = parseInt(input.value);
+            if (value > 1) {
+                input.value = value - 1;
+            }
+        }
+
+        document.getElementById("btnBuyNow").addEventListener("click", function () {
+            const input = document.getElementById("qty");
+            const maSach = parseInt(input.dataset.id);
+            const soLuong = parseInt(input.value);
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            if (!token) {
+                console.error("Lỗi: Không tìm thấy AntiForgeryToken.");
+                return;
+            }
+            fetch('/Customer/ThanhToan/LuuThongTinMua', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify({
+                    MaSach: maSach,
+                    SoLuong: soLuong
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Lỗi khi lưu thông tin mua hàng");
+                window.location.href = '/Customer/ThanhToan/ThanhToan';
+            })
+            .catch(error => console.error('Error:', error));
+            alert('Đã xảy ra lỗi khi xử lý. Vui lòng thử lại.');
+        });
+
+        document.getElementById("btnAddToCart").addEventListener("click", function () {
+            const input = document.getElementById("qty");
+            const maSach = parseInt(input.dataset.id);
+            const soLuong = parseInt(input.value);
+
+            $.ajax({
+                url: '/Customer/GioHang/ThemVaoGioHang',
+                type: 'POST',
+                data: { maSach: maSach, soLuong: soLuong },
+                success: function (res) {
+                    if (res.success) {
+                        // ✅ Cập nhật lại số lượng giỏ hàng ở layout
+                        $('#cart-count').text(`(${res.count})`);
+                    }
+                }
+            });
+        });
+    </script>
+}

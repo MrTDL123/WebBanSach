@@ -39,6 +39,8 @@ namespace Meida.DataAccess.Data
         public DbSet<PhieuTraHang> PhieuTraHangs { get; set; }
         public DbSet<ChiTietTraHang> ChiTietTraHangs { get; set; }
         public DbSet<VanChuyen> VanChuyens { get; set; }
+        public DbSet<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
+        public DbSet<LuotThichDanhGiaSanPham> LuotThichDanhGiaSanPhams { get; set; }
 
         // ======================= CONFIG =======================
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -159,12 +161,13 @@ namespace Meida.DataAccess.Data
                 .HasForeignKey(pt => pt.MaNhanVien)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // ========== VẬN CHUYỂN - ĐƠN HÀNG (1-N) ==========
-            modelBuilder.Entity<VanChuyen>()
-                .HasMany(vc => vc.DonHangs)
-                .WithOne(dh => dh.VanChuyen)
-                .HasForeignKey(dh => dh.MaVanChuyen)
+            // ========== VẬN CHUYỂN - ĐƠN HÀNG (1-1) ==========
+            modelBuilder.Entity<DonHang>()
+                .HasOne(dh => dh.VanChuyen)
+                .WithOne(vc => vc.DonHang)
+                .HasForeignKey<VanChuyen>(vc => vc.MaDonHang)
                 .OnDelete(DeleteBehavior.Restrict);
+
 
             // ========== KHÁCH HÀNG - ĐỊA CHỈ NHẬN HÀNG (1-N) ==========
             modelBuilder.Entity<KhachHang>()
@@ -179,6 +182,40 @@ namespace Meida.DataAccess.Data
                 .WithMany(dc => dc.DonHangs)
                 .HasForeignKey(dh => dh.MaDiaChi)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // ========== SÁCH - ĐÁNH GIÁ (1-N) ==========
+            modelBuilder.Entity<Sach>()
+                .HasMany(s => s.DanhSachGiaSanPhams)
+                .WithOne(dg => dg.Sach)
+                .HasForeignKey(dg => dg.MaSach)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ========== KHÁCH HÀNG - ĐÁNH GIÁ (1-N) ==========
+            modelBuilder.Entity<KhachHang>()
+                .HasMany(kh => kh.DanhGiaSanPhams)
+                .WithOne(dg => dg.KhachHang)
+                .HasForeignKey(dg => dg.MaKhachHang)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // ========== CẤU HÌNH BẢNG "LƯỢT THÍCH" (Bảng Join N-N) ==========
+
+            // 1. Đặt khóa chính tổng hợp (Composite Key)
+            modelBuilder.Entity<LuotThichDanhGiaSanPham>()
+                .HasKey(lt => new { lt.MaKhachHang, lt.MaDanhGia });
+
+            // 2. Quan hệ: KHÁCH HÀNG -> LƯỢT THÍCH (1-N)
+            modelBuilder.Entity<KhachHang>()
+                .HasMany(kh => kh.LuotThichDanhGiaSanPhams)
+                .WithOne(lt => lt.KhachHang)
+                .HasForeignKey(lt => lt.MaKhachHang)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 3. Quan hệ: ĐÁNH GIÁ -> LƯỢT THÍCH (1-N)
+            modelBuilder.Entity<DanhGiaSanPham>()
+                .HasMany(dg => dg.LuotThichDanhGiaSanPhams)
+                .WithOne(lt => lt.DanhGiaSanPham)
+                .HasForeignKey(lt => lt.MaDanhGia)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

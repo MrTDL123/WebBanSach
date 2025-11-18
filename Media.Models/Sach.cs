@@ -22,7 +22,10 @@ namespace Media.Models
         public string? MoTa { get; set; }
         [Required]
         [Display(Name = "Giá sản phẩm")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal GiaBan { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal PhanTramGiamGia { get; set; } = 0;
         [ValidateNever]
         public string? AnhBiaChinh { get; set; }
         [ValidateNever]
@@ -45,6 +48,8 @@ namespace Media.Models
         public int MaTacGia { get; set; }
         public int MaNhaXuatBan { get; set; }
         public int MaChuDe { get; set; }
+        [NotMapped]
+        public decimal GiaSauGiam => GiaBan * (1 - (PhanTramGiamGia));
 
         [ForeignKey("MaChuDe")]
         [ValidateNever]
@@ -61,5 +66,6 @@ namespace Media.Models
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         public ICollection<ChiTietTraHang> ChiTietTraHangs { get; set; }
         public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
+        public ICollection<DanhGiaSanPham> DanhSachGiaSanPhams { get; set; }
     }
 }

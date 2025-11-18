@@ -13,7 +13,16 @@ namespace Media.DataAccess.Repository.IRepository
         ISachRepository Saches { get; }
         ITacGiaRepository TacGias { get; }
         INhaXuatBanRepository NhaXuatBans { get; }
-
+        IKhachHangRepository KhachHangs { get; }
+        IGioHangRepository GioHangs { get; }
+        IChiTietGioHangRepository ChiTietGioHangs { get; }
+        IDiaChiNhanHangRepository DiaChiNhanHangs { get; }
+        IDonHangRepository DonHangs { get; }
+        IHoaDonRepository HoaDons { get; }
+        IVanChuyenRepository VanChuyens { get; }
+        IDanhGiaSanPhamRepository DanhGiaSanPhams { get; }
+        ILuotThichDanhGiaSanPhamRepository LuotThichDanhGiaSanPhams { get; }
         void Save();
+        Task SaveAsync();
     }
 }

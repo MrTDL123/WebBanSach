@@ -20,9 +20,10 @@ namespace Media.Models
         [DisplayName("Tổng tiền")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? TongTien { get; set; }
-
+        [DisplayName("Trạng thái")]
+        public TrangThaiHoaDon TrangThai { get; set; } = TrangThaiHoaDon.DaPhatHanh;
         //NAVIGATION PROPERTIES
-        
+
         [ForeignKey("MaDonHang")]
         public DonHang DonHang { get; set; }
     }
