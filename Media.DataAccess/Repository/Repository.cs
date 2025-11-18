@@ -104,36 +104,6 @@ namespace Media.DataAccess.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<List<T>> GetRangeAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string? includeProperties = null)
-        {
-            IQueryable<T> query = dbSet;
-
-            // 1. Áp dụng Filter (nếu có)
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            // 2. Áp dụng Include (nếu có)
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                // Tách chuỗi "VanChuyen,ChiTietDonHangs.Sach"
-                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    query = query.Include(includeProp);
-                }
-            }
-
-            // 3. Áp dụng Sắp xếp (nếu có)
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-            // 4. Lấy danh sách (List) một cách bất đồng bộ
-            return await query.ToListAsync();
-        }
-
         public IEnumerable<T>? GetAll(string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;

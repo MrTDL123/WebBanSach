@@ -17,9 +17,6 @@ namespace Media.DataAccess.Repository.IRepository
         Task<List<T>> GetRangeAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string? includeProperties = null);
 
         Task<List<T>> GetRangeReadOnlyAsync(Expression<Func<T, bool>> filter, string? includeProperties = null);
-        Task<List<T>> GetRangeAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string? includeProperties = null);
-        T? Get(Expression<Func<T, bool>> filter, string? includeProperties = null);
-        Task<T> GetAsync(Expression<Func<T, bool>> filter, string? includeProperties = null);
         void Add(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);

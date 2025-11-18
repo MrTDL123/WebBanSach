@@ -1,6 +1,4 @@
 ﻿@model TrangChuVM
-
-@model TrangChuVM
 @section PageStyles {
     <style>
         header {
@@ -17,6 +15,24 @@
     <link rel="stylesheet" href="~/css/partialview/tacgianoitieng.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/partialview/sachgiamgia.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/pages/khachhang/trangchu.css" asp-append-version="true" />
+}
+@functions {
+    public string Truncate(string noidung, int length)
+    {
+        if (noidung.Length < length)
+        {
+            return noidung;
+        }
+        else
+        {
+            return $"{noidung.Substring(0, length)}...";
+        }
+    }
+
+    public string HienThiDongGia(decimal giaTien)
+    {
+        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
+    }
 }
 @section SliderMenu {
     <div id="slide_container">
@@ -166,13 +182,13 @@
                     <div class="book_img_hover">
                         <ul class="book_icon_container">
                             <li>
-                                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon">
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon"></a>
                                 <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" class="direct_detail_icon book_icon">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="direct_cart_icon book_icon">
+                                <a href="#" class="direct_cart_icon book_icon"></a>
                                 <a href="javascript:void(0);" class="add-to-cart book_icon" data-masach="@sach.MaSach">
                                     <i class="bi bi-cart-fill"></i>
                                 </a>
@@ -217,15 +233,6 @@
 @await Html.PartialAsync("_SachGiamGia", Model.SachBanChay)
 @section Scripts {
     <script src="~/js/index.js"></script>
-}
-                </div>
-                <p class="ten_sach montserrat-regular">@sach.TenSach</p>
-                <p class="ten_tacgia montserrat-bold">@sach.GiaBan.ToString("N0") đ</p>
-            </div>
-        }
-    </div>
-</section>
-@section Scripts {
     <script>
         $(document).ready(function () {
             $('.add-to-cart').click(function () {

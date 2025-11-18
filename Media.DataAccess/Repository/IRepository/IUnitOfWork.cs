@@ -20,6 +20,8 @@ namespace Media.DataAccess.Repository.IRepository
         IVanChuyenRepository VanChuyens { get; }
         IDanhGiaSanPhamRepository DanhGiaSanPhams { get; }
         ILuotThichDanhGiaSanPhamRepository LuotThichDanhGiaSanPhams { get;}
+        ITacGiaRepository TacGias { get; }
+        INhaXuatBanRepository NhaXuatBans { get; }
 
         void Save();
         Task SaveAsync();

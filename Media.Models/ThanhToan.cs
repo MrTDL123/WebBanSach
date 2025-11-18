@@ -61,16 +61,9 @@ namespace Media.Models
         public decimal TongTien { get; set; }
         public string? TenSanPham { get; set; }
         public string? HinhAnhSanPham { get; set; }
-        //[ValidateNever]
-        public string? TenSanPham { get; set; }
-        //[ValidateNever]
-        public string? HinhAnhSanPham { get; set; }
         public int SoLuong { get; set; }
         public int MaDiaChiNhanHang { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn hình thức thanh toán")]
-        [Display(Name = "Hình thức thanh toán")]
-        public HinhThucThanhToan HinhThucThanhToanChon { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang; // Đặt COD làm mặc định
         [Required(ErrorMessage = "Vui lòng chọn hình thức thanh toán")]
         [Display(Name = "Hình thức thanh toán")]
         public HinhThucThanhToan HinhThucThanhToanChon { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang; // Đặt COD làm mặc định
@@ -81,17 +74,6 @@ namespace Media.Models
         public List<SelectListItem>? DanhSachQuanHuyen { get; set; }
         public List<GioHangVM>? DanhSachSanPham { get; set; }
         public List<DiaChiNhanHang>? DanhSachDiaChi { get; set; }
-        public DiaChiNhanHang? DiaChiMacDinh { get; set; }
-        //[ValidateNever]
-        public List<SelectListItem>? DanhSachTinhThanh { get; set; }
-        //[ValidateNever]
-        public List<SelectListItem>? DanhSachPhuongXa { get; set; }
-        //[ValidateNever]
-        public List<SelectListItem>? DanhSachQuanHuyen { get; set; }
-        public List<GioHangVM>? DanhSachSanPham { get; set; }
-        //[ValidateNever]
-        public List<DiaChiNhanHang>? DanhSachDiaChi { get; set; }
-        //[ValidateNever]
         public DiaChiNhanHang? DiaChiMacDinh { get; set; }
     }
 }

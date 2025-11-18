@@ -1039,7 +1039,7 @@ namespace Media.DataAccess.Migrations
                         .IsRequired();
 
                     b.HasOne("Media.Models.Sach", "Sach")
-                        .WithMany("DnahGiaSanPhams")
+                        .WithMany("DanhGiaSanPhams")
                         .HasForeignKey("MaSach")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1349,7 +1349,7 @@ namespace Media.DataAccess.Migrations
 
                     b.Navigation("ChiTietTraHangs");
 
-                    b.Navigation("DnahGiaSanPhams");
+                    b.Navigation("DanhGiaSanPhams");
                 });
 
             modelBuilder.Entity("Media.Models.TaiKhoan", b =>
