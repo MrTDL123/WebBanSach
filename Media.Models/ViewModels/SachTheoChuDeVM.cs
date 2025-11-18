@@ -8,8 +8,12 @@ namespace Media.Models.ViewModels
 {
     public class SachTheoChuDeVM
     {
+        // Breadcurmb URL
+        public List<BreadcrumbItem> Breadcrumbs { get; set; }
+
         // Chủ đề được chọn
-        public ChuDe ChuDeHienTai { get; set; }
+        public ChuDe ChuDeCha { get; set; }
+        public ChuDe ChuDeSelected { get; set; }
 
         // Các dữ liệu lọc
         public IEnumerable<NhaXuatBan>? DanhSachNhaXuatBan { get; set; }
@@ -37,5 +41,12 @@ namespace Media.Models.ViewModels
         public string Label { get; set; }
         public decimal? MinPrice {  get; set; }
         public decimal? MaxPrice { get; set; }
+    }
+
+    public class BreadcrumbItem
+    {
+        public string Text { get; set; }
+        public string Url { get; set; }
+        public bool IsActive { get; set; }
     }
 }

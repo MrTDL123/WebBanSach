@@ -14,22 +14,42 @@
 }
 
 <div id="sachtheochude_container">
-    <p class="montserrat-medium">@ViewBag.Url</p>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            @foreach(var item in Model.Breadcrumbs)
+            {
+                if (item.IsActive)
+                {
+                    <li class="breadcrumb-item active fw-bold" aria-current="page">
+                        @item.Text
+                    </li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item">
+                        <a style="color: black;" 
+                            href="@item.Url"
+                        >@item.Text</a>
+                    </li>
+                }
+            }
+        </ol>
+    </nav>
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
             <form id="filterForm"
-                data-chude-id="@Model.ChuDeHienTai.MaChuDe"
                 data-sort-by="@Model.SortBy"
-                data-page-size="@Model.PageSize">
+                data-page-size="@Model.PageSize"
+                data-path="@Model.ChuDeSelected.FullPath">
 
                 <section id="same_category_books" class="filter-section">
-                    <p class="sachtheochude_left_title montserrat-bold" id="">CHỦ ĐỀ TƯƠNG ỨNG</p>
+                    <p class="sachtheochude_left_title montserrat-bold">CHỦ ĐỀ TƯƠNG ỨNG</p>
                     <aside>
                         <a asp-controller="Home" asp-action="LayTatCaSach">Tất cả chủ đề</a>
 
                         <ul class="chude_item_root">
-                            @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeHienTai)
+                            @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeCha)
                         </ul>
 
                     </aside>

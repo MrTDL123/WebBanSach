@@ -87,6 +87,7 @@ namespace Media.DataAccess.Repository
                                     top => top.MaSach,
                                     sach => sach.MaSach,
                                     (top, sach) => sach)
+                                .Include(s => s.TacGia)
                                 .ToListAsync();
                 return result;
             });

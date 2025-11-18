@@ -1,0 +1,76 @@
+﻿/*SÁCH BÁN NHIỀU*/
+#sach_giam_gia_container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #ff6c6b;
+    padding: 0 5% 2.5rem 5%;
+    overflow: hidden;
+}
+
+#sach_giam_gia_background{
+    display: flex;
+    position: absolute;
+    width: 100%;
+    justify-content: space-between;
+}
+
+    #sach_giam_gia_background img {
+        width: 15rem;
+        opacity: 0.4;
+        z-index: 0;
+    }
+
+#sach_giam_gia_background img:nth-child(1)
+{
+    left: -5rem;
+    top: 0rem;
+    position: absolute;
+}
+
+#sach_giam_gia_background img:nth-child(2)
+{
+    top: -13rem;
+    right: -5rem;
+    position: absolute;
+}
+
+
+
+#sach_ban_nhieu_container h1 {
+    font-size: 3vw;
+    padding-bottom: 3rem;
+}
+
+#giam_gia_title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    width: 100%;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+}
+
+
+#giam_gia_title p {
+    margin-bottom: unset;
+    margin-right: 0.5rem;
+    font-size: 2rem;
+}
+
+
+.sale-badge {
+    color: white;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #C92127; /* Màu xanh lá như trong title */
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}

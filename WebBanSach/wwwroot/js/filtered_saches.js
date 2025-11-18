@@ -1,18 +1,34 @@
 ﻿
 $(document).ready(function () {
 
+    $(document).on('click', '.chude-filter', function (e) {
+        e.preventDefault();
+
+        console.log('📚 Chủ đề clicked');
+
+        var path = $(this).data('path');
+        var newUrl = '/chude/' + path;
+
+        // Highlight
+        $('.chude-filter').removeClass('active fw-bold');
+        $(this).addClass('active fw-bold');
+
+        // Navigate đến URL mới
+        window.location.href = newUrl;
+    });
+
     function loadSaches(page) {
         page = page || 1;
 
         var filters = collectFilters();
         filters.page = page;
 
-        console.log('Các filter được chọn: ', filters);
+        var currentPath = window.location.pathname.substring(1); // Bỏ dấu "/"
 
         showLoading();
 
         $.ajax({
-            url: '/Customer/Home/SachTheoChuDe',
+            url: '/' + currentPath,
             type: 'GET',
             traditional: true,
             data: filters,
@@ -22,7 +38,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     updateContent(response);
-                    updateURL(filters);
+                    updateURL(currentPath, filters);
                     scrollToResults();
                 }
                 else
@@ -40,12 +56,7 @@ $(document).ready(function () {
     //===== HÀM LẤY FILTERS =====
     function collectFilters() {
         var filters = {};
-
-        var chuDeId = $('#filterForm').data('chude-id');
-        if (chuDeId) {
-            filters.id = chuDeId
-        }
-
+            
         var selectedPrices = [];
         $('.price-filter:checked').each(function () {
             selectedPrices.push($(this).val());
@@ -113,20 +124,21 @@ $(document).ready(function () {
         $('#nhaxuatban_filter').html(response.nhaXuatBanList);
         $('#tacgia_filter').html(response.tacGiaList);
         $('#pagination-section').html(response.pagination);
-
         highlightCurrentChuDe();
     }
 
     function highlightCurrentChuDe() {
-        var currentChuDeId = $('#filterForm').data('chude-id');
+        var currentPath = $('#filterForm').data('path');
         $('.chude-filter').removeClass('active fw-bold');
-        if (currentChuDeId) {
-            $(`.chude-filter[data-chude-id="${currentChuDeId}"]`).addClass('active fw-bold');
+        if (currentPath) {
+            $(`.chude-filter[data-path="${currentPath}"]`).addClass('active fw-bold');
         }
     }
 
-    function updateURL(filters) {
-        var newUrl = '/Customer/Home/SachTheoChuDe?' + $.param(filters, true);
+    function updateURL(path, filters)
+    {
+        var queryString = $.param(filters, true);
+        var newUrl = '/' + path + (queryString ? '?' + queryString : '');
         history.pushState(filters, '', newUrl);
     }
 
@@ -135,6 +147,7 @@ $(document).ready(function () {
             scrollTop: $('#sachtheochude_right').offset().top - 20
         }, 300);
     }
+
     function showError(error, detail) {
         $('#sachtheochude_right').html(`
             <div class="alert alert-danger">
@@ -152,23 +165,6 @@ $(document).ready(function () {
     //Lọc theo giá
     $(document).on('change', '.price-filter', function () {
         console.log('💰 Giá filter changed');
-        loadSaches(1);
-    });
-
-    //Lọc theo chủ để
-    $(document).on('click', '.chude-filter', function (e) {
-        e.preventDefault();
-
-        console.log('Chủ đề filter clicked');
-
-        // Highlight chủ đề được chọn
-        $('.chude-filter').removeClass('active');
-        $(this).addClass('active');
-
-        // Update data-chude-id trong form
-        var newChuDeId = $(this).data('chude-id');
-        $('#filterForm').data('chude-id', newChuDeId);
-
         loadSaches(1);
     });
 

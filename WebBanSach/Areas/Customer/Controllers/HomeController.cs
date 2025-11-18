@@ -13,6 +13,7 @@ using X.PagedList;
 using X.PagedList.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Media.Service.IServices;
+using NuGet.Protocol;
 
 namespace ProjectCuoiKi.Areas.Customer.Controllers
 {
@@ -21,59 +22,218 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
     {
 
         private readonly LocationService _locationService;
+        private ISlugService _slugService;
         private readonly IViewRenderService _viewRenderService;
         private readonly IUnitOfWork _unit;
-        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit, LocationService locationService, IViewRenderService viewRenderService)
+        public HomeController(UserManager<TaiKhoan> taiKhoan, IUnitOfWork unit, LocationService locationService, IViewRenderService viewRenderService, ISlugService slugService)
         {
             _unit = unit;
+            _slugService = slugService;
             _locationService = locationService;
             _viewRenderService = viewRenderService;
         }
 
         #region Trang chủ
+        [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            IndexVM viewModel = new IndexVM()
-            {
-                SachBanChay = await _unit.Saches.LaySachBanChay(days: 7, sachCount: 6),
-                DanhSachChuDe = _unit.ChuDes.GetAll()
-            };
-            
+            IndexVM viewModel = await GetIndexVM();
             return View(viewModel);
         }
 
+        private async Task<IndexVM> GetIndexVM()
+        {
+            IndexVM viewModel = new IndexVM();
+
+            viewModel.SachBanChay = await _unit.Saches.LaySachBanChay(days: 7, sachCount: 6);
+
+            viewModel.TacGiaNoiTieng = (viewModel.SachBanChay).Select(s => s.TacGia)
+                    .GroupBy(tg => tg.MaTacGia)
+                    .Select(g => g.First())
+                    .ToList();
+
+            viewModel.TuSachMienPhi = _unit.Saches.GetRange(s => s.GiaBan == 0).Take(12);
+
+            List<ChuDe> listChuDe = _unit.ChuDes.GetRange(cd => cd.ParentId == 1).Take(4).ToList();
+            listChuDe.AddRange(_unit.ChuDes.GetRange(cd => cd.ParentId == 2).Take(5));
+
+            foreach (ChuDe cd in listChuDe)
+            {
+                string duongDanHinhAnh;
+
+                switch (cd.TenChuDe)
+                {
+                    case "Văn Học":
+                        {
+                            duongDanHinhAnh = "/img/product/van_hoc.jpg";
+                            break;
+                        }
+                    case "Kinh Tế":
+                        {
+                            duongDanHinhAnh = "/img/product/kinh_te.jpg";
+                            break;
+                        }
+                    case "Tâm lý - Kĩ Năng Sống":
+                        {
+                            duongDanHinhAnh = "/img/product/tam_ly.jpg";
+                            break;
+                        }
+                    case "Sách Thiếu Nhi":
+                        {
+                            duongDanHinhAnh = "/img/product/doraemon-1.jpg";
+                            break;
+                        }
+                    case "Fiction":
+                        {
+                            duongDanHinhAnh = "/img/product/fiction.jpg";
+                            break;
+                        }
+                    case "Non-Fiction":
+                        {
+                            duongDanHinhAnh = "/img/product/non_fiction.jpg";
+                            break;
+                        }
+                    case "English Learning":
+                        {
+                            duongDanHinhAnh = "/img/product/english.jpg";
+                            break;
+                        }
+                    case "Children Books":
+                        {
+                            duongDanHinhAnh = "/img/product/children_books.jpg";
+                            break;
+                        }
+                    case "Comics & Graphic Novels":
+                    default:
+                        {
+                            duongDanHinhAnh = "/img/product/batman-killing-joke.jpg";
+                            break;
+                        }
+                }
+
+                viewModel.DanhSachChuDe.Add(new DanhSachChuDeTrangIndex
+                {
+                    ChuDeFullPath = cd.FullPath,
+                    TenChuDe = cd.TenChuDe,
+                    DuongDanHinhAnh = duongDanHinhAnh
+                });
+            }
+
+            return viewModel;
+        }
         #endregion
 
+        private async Task<IActionResult> RenderSachListView(SachTheoChuDeVM viewModel, bool includeChudeTuongUng = false)
+        {
+            bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+            if (isAjax)
+            {
+                var response = new Dictionary<string, object>
+                {
+                    ["success"] = true,
+                    ["sachList"] = await _viewRenderService.RenderToStringAsync("_SachListPartial", viewModel),
+                    ["toolbar"] = await _viewRenderService.RenderToStringAsync("_ToolbarPartial", viewModel),
+                    ["pagination"] = await _viewRenderService.RenderToStringAsync("_PaginationPartial", viewModel.DanhSachSach),
+                    ["totalSaches"] = viewModel.DanhSachSach.TotalItemCount,
+                    ["currentPage"] = viewModel.DanhSachSach.PageNumber,
+                    ["totalPages"] = viewModel.DanhSachSach.PageCount
+                };
+
+                if (viewModel.DanhSachTacGia != null)
+                {
+                    response["tacGiaList"] = await _viewRenderService.RenderToStringAsync(
+                        "_TacGiaFilterPartial",
+                        viewModel.DanhSachTacGia
+                    );
+                }
+
+                if (viewModel.DanhSachNhaXuatBan != null)
+                {
+                    response["nhaXuatBanList"] = await _viewRenderService.RenderToStringAsync(
+                        "_NhaXuatBanFilterPartial",
+                        viewModel.DanhSachNhaXuatBan
+                    );
+                }
+
+                if (includeChudeTuongUng && viewModel.ChuDeCha != null)
+                {
+                    response["chuDeTuongUng"] = await _viewRenderService.RenderToStringAsync(
+                        "_ChuDeTuongUngPartial",
+                        viewModel.ChuDeCha
+                    );
+                }
+
+                return Json(response);
+            }
+
+            return View("SachTheoChuDe", viewModel);
+        }
         public IActionResult Details(int id)
         {
             Sach? sach = _unit.Saches.Get(u => u.MaSach == id, includeProperties: "ChuDe,NhaXuatBan,TacGia");
             return View(sach);
         }
 
-
-        public IActionResult TimKiem(string? keyword)
+        public async Task<IActionResult> TimKiemAsync(string? keyword)
         {
-            return RedirectToAction("SachTheoChuDe", new
-            {
-                keyword = keyword,
-            });
+            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, 1, 12, null, null, null, null, keyword);
+
+            viewModel.DanhSachTacGia = viewModel.DanhSachSach.Select(s => s.TacGia)
+                    .GroupBy(tg => tg.MaTacGia)
+                    .Select(g => g.First())
+                    .ToList(); ;
+            viewModel.DanhSachNhaXuatBan = viewModel.DanhSachSach.Select(s => s.NhaXuatBan)
+                                    .GroupBy(nxb => nxb.MaNhaXuatBan)
+                                    .Select(g => g.First())
+                                    .ToList();
+            viewModel.Breadcrumbs = new List<BreadcrumbItem>(){
+                new BreadcrumbItem { Text = "Trang chủ", Url = "/" },
+                new BreadcrumbItem { Text = "Tìm kiếm bằng từ khóa", Url = "/", IsActive = true}
+            };
+
+            return await RenderSachListView(viewModel);
         }
 
-        #region Sách Theo Chủ Đề
         public async Task<IActionResult> LayTatCaSach(int? page, int? pageSize)
         {
-            ViewBag.Url = "Trang chủ > Tất cả chủ đề";
-
-            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, page ?? 1, pageSize ?? 12,null, null, null, null, null);
+            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, page ?? 1, pageSize ?? 12, null, null, null, null, null);
 
             viewModel.DanhSachTacGia = await _unit.TacGias.GetAllReadOnlyAsync();
             viewModel.DanhSachNhaXuatBan = await _unit.NhaXuatBans.GetAllReadOnlyAsync();
+            viewModel.Breadcrumbs = new List<BreadcrumbItem>(){
+                new BreadcrumbItem { Text = "Trang chủ", Url = "/" },
+                new BreadcrumbItem { Text = "Tất cả chủ đề", Url = "/", IsActive = true}
+            };
 
-            return View("SachTheoChuDe", viewModel);
+            return await RenderSachListView(viewModel);
         }
 
+        public async Task<IActionResult> LaySachTheoTacGia(int id)
+        {
+            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, 1, 12, null, new List<int> { id }, null, null, null);
+
+            TacGia selectedTacGia = _unit.TacGias.Get(tg => tg.MaTacGia == id);
+
+            viewModel.DanhSachTacGia = new List<TacGia> { selectedTacGia };
+
+            viewModel.DanhSachNhaXuatBan = viewModel.DanhSachSach.Select(s => s.NhaXuatBan)
+                                    .GroupBy(nxb => nxb.MaNhaXuatBan)
+                                    .Select(g => g.First())
+                                    .ToList();
+
+            viewModel.Breadcrumbs = new List<BreadcrumbItem>(){
+                new BreadcrumbItem { Text = "Trang chủ", Url = "/" },
+                new BreadcrumbItem { Text = $"{viewModel.DanhSachTacGia.First().TenTG}", Url = "/", IsActive = true}
+            };
+
+            return await RenderSachListView(viewModel);
+        }
+
+        #region Sách Theo Chủ Đề
+
+        [Route("chude/{*path}")]
         public async Task<IActionResult> SachTheoChuDe(
-            int id, 
+            string path,
             int? page,
             int? pageSize,
             List<string> priceRanges, 
@@ -82,38 +242,32 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             string? sortBy,
             string? keyword)
         {
-            ViewBag.Url = LayURL(id, new List<string>());
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return RedirectToAction("LayTatCaSach");
+            }
+
+            path = Uri.UnescapeDataString(path);
+
+            ChuDe? selectedChuDe = _slugService.GetChuDeByPath(path);
+            
+            if (selectedChuDe is null)
+            {
+                selectedChuDe = new ChuDe()
+                {
+                    MaChuDe = 0
+                };
+            }
 
             SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(
-                id, page ?? 1, pageSize ?? 12, priceRanges, tacGiaIds, nhaXuatBanIds, sortBy, keyword);
+                selectedChuDe.MaChuDe, page ?? 1, pageSize ?? 12, priceRanges, tacGiaIds, nhaXuatBanIds, sortBy, keyword);
 
+            viewModel.Breadcrumbs = BuildBreadcrumbs(selectedChuDe);
+            viewModel.ChuDeSelected = selectedChuDe;
+            ViewBag.CurrentPath = path;
             ViewBag.SearchKeyword = keyword;
 
-            bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
-
-            if (isAjax)
-            {
-                string chuDeTuongUngHtml = await _viewRenderService.RenderToStringAsync("_ChuDeTuongUngPartial", viewModel.ChuDeHienTai);
-                string sachListHtml = await _viewRenderService.RenderToStringAsync("_SachListPartial", viewModel);
-                string danhSachTacGia = await _viewRenderService.RenderToStringAsync("_TacGiaFilterPartial", viewModel.DanhSachTacGia);
-                string danhSachNhaXuatBan = await _viewRenderService.RenderToStringAsync("_NhaXuatBanFilterPartial", viewModel.DanhSachNhaXuatBan);
-                string toolBarHtml = await _viewRenderService.RenderToStringAsync("_ToolbarPartial", viewModel);
-                string paginationHtml = await _viewRenderService.RenderToStringAsync("_PaginationPartial", viewModel.DanhSachSach);
-                return Json(new
-                {
-                    success = true,
-                    chuDeTuongUng = chuDeTuongUngHtml,
-                    sachList = sachListHtml,
-                    tacGiaList = danhSachTacGia,
-                    nhaXuatBanList = danhSachNhaXuatBan,
-                    toolbar = toolBarHtml,
-                    pagination = paginationHtml,
-                    totalSaches = viewModel.DanhSachSach.TotalItemCount,
-                    currentPage = viewModel.DanhSachSach.PageNumber,
-                    totalPages = viewModel.DanhSachSach.PageCount
-                });
-            }
-            return View(viewModel);
+            return await RenderSachListView(viewModel, includeChudeTuongUng: true);
         }
 
         private async Task<SachTheoChuDeVM> LoadSachTheoChuDeVMAsync(
@@ -135,8 +289,8 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             {
                 ChuDe allParentChuDe = new ChuDe();
                 allParentChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == null);
-                viewModel.ChuDeHienTai = allParentChuDe;
-
+                viewModel.ChuDeCha = allParentChuDe;
+                viewModel.ChuDeSelected = new ChuDe() { MaChuDe = 0};
                 query = _unit.Saches.GetAll().AsQueryable()
                     .Include(s => s.TacGia)
                     .Include(s => s.NhaXuatBan)
@@ -145,8 +299,8 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             else
             {
                 ChuDe? selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == chuDeId);
-                viewModel.ChuDeHienTai = await LayChuDeLevel1(selectedChuDe);
-
+                viewModel.ChuDeCha = await LayChuDeCha(selectedChuDe);
+                viewModel.ChuDeSelected = selectedChuDe;
                 query = _unit.Saches.LaySachTheoChuDe(chuDeId);
             }
 
@@ -205,7 +359,6 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             };
 
 
-
             List<Sach> sachList = await query.ToListAsync();
 
             if(chuDeId != 0)
@@ -220,7 +373,6 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                                         .Select(g => g.First())
                                         .ToList();
             }
-
 
             viewModel.DanhSachSach = sachList.ToPagedList(page, pageSize);
             viewModel.SortBy = sortBy;
@@ -240,7 +392,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             };
         }
 
-        private async Task<ChuDe?> LayChuDeLevel1(ChuDe selectedChuDe)
+        private async Task<ChuDe?> LayChuDeCha(ChuDe selectedChuDe)
         {
             ChuDe? parentChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == selectedChuDe.ParentId);
 
@@ -252,32 +404,45 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
             parentChuDe.Children = new List<ChuDe>() { selectedChuDe };
 
-            return await LayChuDeLevel1(parentChuDe);
+            return await LayChuDeCha(parentChuDe);
         }
 
-
-        private string LayURL(int? maCD, List<string> url)
+        private List<BreadcrumbItem> BuildBreadcrumbs(ChuDe chuDe)
         {
-            ChuDe? selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == maCD);
-            if(selectedChuDe is null)
+            var breadcrumbs = new List<BreadcrumbItem>
             {
-                return "Trang chủ > Tất cả chủ đề";
+                new BreadcrumbItem { Text = "Trang chủ", Url = "/" }
+            };
+
+            if(chuDe.MaChuDe == 0)
+            {
+                return breadcrumbs;
             }
 
-            if(selectedChuDe.ParentId is not null)
+            var pathSegments = new List<ChuDe>();
+            var current = chuDe;
+
+            while (current != null)
             {
-                LayURL(selectedChuDe.ParentId, url);
-            }
-            else
-            {
-                url.Add("Trang chủ");
+                pathSegments.Insert(0, current);
+                current = _unit.ChuDes.Get(cd => cd.MaChuDe == current.ParentId);
             }
 
-            url.Add(" > "  + selectedChuDe.TenChuDe);
+            foreach (var segment in pathSegments)
+            {
+                breadcrumbs.Add(new BreadcrumbItem
+                {
+                    Text = segment.TenChuDe,
+                    Url = "/chude/" + segment.FullPath,
+                    IsActive = segment.MaChuDe == chuDe.MaChuDe
+                });
+            }
 
-            return String.Join("", url);
+            return breadcrumbs;
         }
         #endregion
+
+
 
 
         #region Địa chỉ nhận hàng

@@ -12,6 +12,9 @@
 
     </style>
     <link rel="stylesheet" href="~/css/pages/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partialview/tusachmienphi.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partialview/tacgianoitieng.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partialview/sachgiamgia.css" asp-append-version="true" />
 }
 
 @functions {
@@ -154,10 +157,10 @@
 }
 
 <section id="sach_ban_nhieu_container">
-    <div id="flash_sell">
-        <img src="~/img/web_img/flash-sale.png" alt="Flash Sell Icon" />
-        <p class="montserrat-bold">Sự kiện sẽ kết thúc sau: </p>
-        <div id="countdown">
+    <div id="best_sell">
+        <img src="~/img/web_img/best_seller_icon.png" alt="Best Seller Icon" />
+        <p class="montserrat-bold">Sách bán chạy nhất tuần qua</p>
+@*         <div id="countdown">
             <div class="time-block">
                 <span id="days">0</span>
             </div>
@@ -170,7 +173,7 @@
             <div class="time-block">
                 <span id="seconds">0</span>
             </div>
-        </div>
+        </div> *@
     </div>
     <div id="sach-list-section">
         @foreach (var sach in Model.SachBanChay)
@@ -193,13 +196,41 @@
                         </ul>
                     </div>
                 </div>
-                <p class="ten_sach montserrat-regular">@Truncate(sach.TenSach, 15)</p>
+                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="ten_sach montserrat-regular">
+                    @Truncate(sach.TenSach, 15)
+                </a>
                 <p class="ten_tacgia montserrat-bold">@HienThiDongGia(sach.GiaBan)</p>
             </div>
         }
     </div>
 </section>
 
+<section class="wrapper" >
+    <div id="danh_muc_container" class="content_block">
+        <div id="danh_muc_title" class="title_block">
+            <i class="bi bi-columns-gap"></i>
+            <p class="montserrat-bold">Danh mục sản phẩm</p>
+        </div>
+
+        <div id="danh_muc_content">
+            @foreach (DanhSachChuDeTrangIndex chuDe in Model.DanhSachChuDe)
+            {
+                <div class="danh_muc_item">
+                    <a asp-controller="Home" asp-action="SachTheoChuDe" asp-route-path="@chuDe.ChuDeFullPath">
+                        <img src="@chuDe.DuongDanHinhAnh" alt="Ảnh @chuDe.TenChuDe" />
+                        <span>@chuDe.TenChuDe</span>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@await Html.PartialAsync("_TuSachMienPhi", Model.TuSachMienPhi)
+
+@await Html.PartialAsync("_TacGiaNoiTieng", Model.TacGiaNoiTieng)
+
+@await Html.PartialAsync("_SachGiamGia", Model.SachBanChay)
 @section Scripts {
     <script src="~/js/index.js"></script>
 }

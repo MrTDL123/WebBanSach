@@ -13,8 +13,10 @@ namespace Media.Models
         [MaxLength(255)]
         [DisplayName("Tên thể loại")]
         public string TenChuDe { get; set; }
-        public string DuongDanURL { get; set; }
         public int? ParentId { get; set; }
+
+        public string Slug { get; set; }
+        public string FullPath { get; set; }
 
         public IEnumerable<ChuDe> Children { get; set; } = new List<ChuDe>();
     }

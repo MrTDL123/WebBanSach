@@ -3,9 +3,16 @@
 <li class="chude_item">
     @if (Model.MaChuDe != 0)
     {
-        <a href="#"
-           class="chude-filter"
-           data-chude-id="@Model.MaChuDe">
+@*         <a asp-controller="Home" 
+            asp-action="SachTheoChuDe" 
+            asp-route-path="@Model.FullPath"
+            class="chude-filter"
+            data-path="@Model.FullPath">
+            @Model.TenChuDe
+        </a> *@
+        <a href="/chude/@Model.FullPath"
+            class="chude-filter"
+            data-path="@Model.FullPath">
             @Model.TenChuDe
         </a>
     }

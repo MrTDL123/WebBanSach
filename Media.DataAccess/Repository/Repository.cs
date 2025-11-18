@@ -19,7 +19,6 @@ namespace Media.DataAccess.Repository
         {
             _db = db;
             this.dbSet = _db.Set<T>();
-            //_db.Saches.Include(u => u.ChuDe).Include(u => u.ChuDeId);
         }
         public void Add(T entity)
         {

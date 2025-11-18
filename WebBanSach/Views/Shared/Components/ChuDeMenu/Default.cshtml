@@ -10,9 +10,9 @@
     <div class="dropdown-menu mega-dropdown-menu">
         <div class="chude_dropdown">
             <section class="chude_dropdown_left">
-                <h4 class="dropdown_title montserrat-bold">
+                <p class="dropdown_title montserrat-bold" style="font-size: 20px; color: black;">
                     Danh mục sản phẩm
-                </h4>
+                </p>
                 <ul class="mega-menu-list">
                     @foreach (ChuDe level1ChuDe in Model)
                     {
@@ -20,7 +20,7 @@
                             <a asp-area="Customer" 
                                asp-action="SachTheoChuDe" 
                                asp-controller="Home"
-                               asp-route-id="@level1ChuDe.MaChuDe">
+                               asp-route-path="@level1ChuDe.FullPath">
                                     @level1ChuDe.TenChuDe
                             </a>
                         </li>
@@ -43,7 +43,7 @@
                                     <a asp-area="Customer" 
                                        asp-action="SachTheoChuDe" 
                                        asp-controller="Home"
-                                       asp-route-id="@level2ChuDe.MaChuDe" class="montserrat-bold">
+                                       asp-route-path="@level2ChuDe.FullPath" class="montserrat-bold chude_lv2">
                                             @level2ChuDe.TenChuDe
                                     </a>
                                     <ul class="mega-menu-list">
@@ -53,7 +53,7 @@
                                                 <a asp-area="Customer" 
                                                    asp-action="SachTheoChuDe" 
                                                    asp-controller="Home"
-                                                   asp-route-id="@level3ChuDe.MaChuDe">
+                                                   asp-route-path="@level3ChuDe.FullPath">
                                                         @level3ChuDe.TenChuDe
                                                 </a>
                                             </li>

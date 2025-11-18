@@ -7,8 +7,10 @@ using Media.Utility;
 using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -36,6 +38,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<ISlugService, SlugService>();
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -72,8 +75,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
+
+app.MapControllerRoute(
+    name: "chude",
+    pattern: "chude/{*path}",
+    defaults: new { area = "Customer", controller = "Home", action = "SachTheoChuDe" });
 
 app.Run();
