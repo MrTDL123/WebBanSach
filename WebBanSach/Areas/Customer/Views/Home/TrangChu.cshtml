@@ -1,5 +1,4 @@
 ﻿@model TrangChuVM
-
 @section PageStyles {
     <style>
         header {
@@ -15,8 +14,8 @@
     <link rel="stylesheet" href="~/css/partialview/tusachmienphi.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/partialview/tacgianoitieng.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/partialview/sachgiamgia.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/khachhang/trangchu.css" asp-append-version="true" />
 }
-
 @functions {
     public string Truncate(string noidung, int length)
     {
@@ -35,7 +34,6 @@
         return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
     }
 }
-
 @section SliderMenu {
     <div id="slide_container">
         <section class="slide" id="slide1">
@@ -110,18 +108,18 @@
 
         <section class="slide" id="slide3">
             <div id="clouds">
-                <img id="big_cloud" src="img/web_img/5.png" alt="cloud_background">
+                <img id="big_cloud" src="~/img/web_img/5.png" alt="cloud_background">
 
                 <div id="small_clouds" class="">
-                    <img id="small_cloud1" src="img/web_img/21.png" alt="small_cloud1">
-                    <img id="small_cloud2" src="img/web_img/17.png" alt="small_cloud2">
-                    <img id="small_cloud3" src="img/web_img/3.png" alt="small_cloud2">
+                    <img id="small_cloud1" src="~/img/web_img/21.png" alt="small_cloud1">
+                    <img id="small_cloud2" src="~/img/web_img/17.png" alt="small_cloud2">
+                    <img id="small_cloud3" src="~/img/web_img/3.png" alt="small_cloud2">
                 </div>
 
             </div>
 
             <div id="slide3_content">
-                <img id="book_icon" class="content" src="img/web_img/slider-1_logo.png" alt="book_icon">
+                <img id="book_icon" class="content" src="~/img/web_img/slider-1_logo.png" alt="book_icon">
 
                 <div id="letters" class="content">
                     <p class="montserrat-bold" id="B">B</p>
@@ -184,12 +182,14 @@
                     <div class="book_img_hover">
                         <ul class="book_icon_container">
                             <li>
-                                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon">
+                                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon"></a>
+                                <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" class="direct_detail_icon book_icon">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="direct_cart_icon book_icon">
+                                <a href="#" class="direct_cart_icon book_icon"></a>
+                                <a href="javascript:void(0);" class="add-to-cart book_icon" data-masach="@sach.MaSach">
                                     <i class="bi bi-cart-fill"></i>
                                 </a>
                             </li>
@@ -233,4 +233,22 @@
 @await Html.PartialAsync("_SachGiamGia", Model.SachBanChay)
 @section Scripts {
     <script src="~/js/index.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').click(function () {
+                var maSach = $(this).data('masach');
+
+                $.ajax({
+                    url: '/Customer/GioHang/ThemVaoGioHang',
+                    type: 'POST',
+                    data: { maSach: maSach, soLuong : 1 },
+                    success: function (res) {
+                        if (res.success) {
+                            $('#cart-count').text(`(${res.count})`);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 }

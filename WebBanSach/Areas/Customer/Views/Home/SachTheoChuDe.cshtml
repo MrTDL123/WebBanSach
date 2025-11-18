@@ -1,4 +1,10 @@
 ﻿@model SachTheoChuDeVM
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@addTagHelper *, X.PagedList.Mvc.Core
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/sachtheochude.css" asp-append-version="true" />
+}
 
 @section PageStyles {
     <link rel="stylesheet" href="~/css/pages/sachtheochude.css" asp-append-version="true" />
@@ -35,6 +41,14 @@
             }
         </ol>
     </nav>
+
+    public string HienThiDongGia(decimal giaTien)
+    {
+        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
+    }
+}
+<div id="sachtheochude_container">
+    <p class="montserrat-medium">@ViewBag.Url</p>
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
@@ -110,3 +124,4 @@
     <script src="~/js/filtered_saches.js"></script>
 }
 
+</div>

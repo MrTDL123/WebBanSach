@@ -368,9 +368,11 @@ namespace Media.Areas.Customer.Controllers
                                 <p>Xin chào,</p>
                                 <p>Bạn đang thực hiện <strong>xác thực tài khoản</strong> cho số điện thoại <strong>{soDienThoai}</strong>.</p>
                                 <p>Vui lòng nhập mã OTP dưới đây để hoàn tất quá trình đăng ký:</p>
+
                                 <div class='otp-box'>
                                     <div class='otp-code'>{otp}</div>
                                 </div>
+
                                 <p><strong>Lưu ý:</strong> Mã OTP có hiệu lực trong 5 phút. 
                                 Không chia sẻ mã này cho bất kỳ ai để đảm bảo an toàn tài khoản của bạn.</p>
                             </div>
@@ -502,9 +504,11 @@ namespace Media.Areas.Customer.Controllers
                                 <p>Xin chào,</p>
                                 <p>Bạn đang thực hiện <strong>xác thực tài khoản</strong> cho email <strong>{email}</strong>.</p>
                                 <p>Vui lòng nhập mã OTP dưới đây để hoàn tất quá trình xác thực email để thay đổi mật khẩu:</p>
+
                                 <div class='otp-box'>
                                     <div class='otp-code'>{otp}</div>
                                 </div>
+
                                 <p><strong>Lưu ý:</strong> Mã OTP có hiệu lực trong 5 phút. 
                                 Không chia sẻ mã này cho bất kỳ ai để đảm bảo an toàn tài khoản của bạn.</p>
                             </div>

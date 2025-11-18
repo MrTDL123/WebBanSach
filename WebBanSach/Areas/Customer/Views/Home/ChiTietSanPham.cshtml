@@ -399,10 +399,10 @@
             // (Kiểm tra đăng nhập bằng Razor, an toàn)
             @if (!SignInManager.IsSignedIn(User))
             {
-                        <text>
-                        showToast("Vui lòng đăng nhập để thích đánh giá.", true);
-                        return;
-                        </text>
+                    <text>
+                    showToast("Vui lòng đăng nhập để thích đánh giá.", true);
+                    return;
+                    </text>
             }
             var btn = $(element);
             btn.prop('disabled', true);

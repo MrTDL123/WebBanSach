@@ -66,6 +66,6 @@ namespace Media.Models
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         public ICollection<ChiTietTraHang> ChiTietTraHangs { get; set; }
         public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
-        public ICollection<DanhGiaSanPham> DanhSachGiaSanPhams { get; set; }
+        public ICollection<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
     }
 }

@@ -186,7 +186,7 @@ body {
     border-radius: 4px;
 }
 
-#qtyShoppingCart {
+.qtyShoppingCart {
     width: 30px;
     text-align: center;
     border: none;
