@@ -1,0 +1,78 @@
+﻿.author-section {
+    padding-bottom: 1rem;
+}
+
+.author-slider {
+    position: relative;
+}
+
+.author-list-viewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.author-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    scroll-behavior: smooth;
+
+    overflow-x: auto;
+    padding-bottom: 15px;
+}
+    /* Style cho thanh cuộn (Chrome, Safari, Edge mới) */
+    .author-list::-webkit-scrollbar {
+        height: 8px; 
+    }
+
+    .author-list::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .author-list::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 4px;
+    }
+
+        .author-list::-webkit-scrollbar-thumb:hover {
+            background: #aaa;
+        }
+
+/* Style cho thanh cuộn (Firefox) */
+.author-list {
+    scrollbar-width: thin; 
+    scrollbar-color: #ccc #f1f1f1;
+}
+
+
+.author-item {
+    flex-shrink: 0;
+    width: 140px;
+    text-align: center;
+}
+
+    .author-item a {
+        text-decoration: none;
+        color: #333;
+    }
+
+    .author-item img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #eee;
+        transition: transform 0.2s ease;
+    }
+
+    .author-item a:hover img {
+        transform: scale(1.05);
+    }
+
+    .author-item .author-name {
+        display: block;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }

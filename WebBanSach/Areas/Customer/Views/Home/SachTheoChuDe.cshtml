@@ -6,18 +6,41 @@
     <link rel="stylesheet" href="~/css/pages/khachhang/sachtheochude.css" asp-append-version="true" />
 }
 
-@functions{
-    public string Truncate(string noidung, int length)
-    {
-        if (noidung.Length < length)
-        {
-            return noidung;
-        }
-        else
-        {
-            return $"{noidung.Substring(0, length)}...";
-        }
-    }
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/sachtheochude.css" asp-append-version="true" />
+}
+
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.SearchKeyword)
+        ? "Sách theo chủ đề"
+        : $"Kết quả tìm kiếm: {Model.SearchKeyword}";
+
+    // Truyền keyword ra Layout để hiển thị trong search box
+    ViewBag.SearchKeyword = Model.SearchKeyword;
+}
+
+<div id="sachtheochude_container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            @foreach(var item in Model.Breadcrumbs)
+            {
+                if (item.IsActive)
+                {
+                    <li class="breadcrumb-item active fw-bold" aria-current="page">
+                        @item.Text
+                    </li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item">
+                        <a style="color: black;" 
+                            href="@item.Url"
+                        >@item.Text</a>
+                    </li>
+                }
+            }
+        </ol>
+    </nav>
 
     public string HienThiDongGia(decimal giaTien)
     {
@@ -29,56 +52,76 @@
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
-            <section id="same_category_books">
-                <p class="sachtheochude_left_title montserrat-bold" id="">CHỦ ĐỀ TƯƠNG ỨNG</p>
-                <aside>
-                    <a asp-controller="Home" asp-action="LayTatCaSach">Tất cả chủ đề</a>
+            <form id="filterForm"
+                data-sort-by="@Model.SortBy"
+                data-page-size="@Model.PageSize"
+                data-path="@Model.ChuDeSelected.FullPath">
 
-                    <ul class="chude_item_root">
-                        @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeHienTai)
-                    </ul>
+                <section id="same_category_books" class="filter-section">
+                    <p class="sachtheochude_left_title montserrat-bold">CHỦ ĐỀ TƯƠNG ỨNG</p>
+                    <aside>
+                        <a asp-controller="Home" asp-action="LayTatCaSach">Tất cả chủ đề</a>
 
-                </aside>
-                        
-            </section>
+                        <ul class="chude_item_root">
+                            @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeCha)
+                        </ul>
 
-            <section id="price_filter">
-                <p class="sachtheochude_left_title montserrat-bold" id="">GIÁ</p>
-            </section>
-            
-            <section id="nhaxuatban_filter">
-                <p class="sachtheochude_left_title montserrat-bold" id="">NHÀ XUẤT BẢN</p>
-            </section>
+                    </aside>
+                </section>
 
-            <section id="tacgia_filter">
-                <p class="sachtheochude_left_title montserrat-bold" id="">TÁC GIẢ</p>
-            </section>
+                <section id="price_filter" class="filter-section">
+                    <p class="sachtheochude_left_title montserrat-bold" id="">GIÁ</p>
+                        @foreach (var range in Model.PriceFilter.PriceRanges)
+                        {
+                            <div class="form-check mb-2 filter_section">
+                                <input class="form-check-input price-filter"
+                                       type="checkbox"
+                                       name="priceRanges"
+                                       value="@range.Id"
+                                       id="@range.Id"
+                                       @(Model.PriceFilter.SelectedRanges.Contains(range.Id) ? "checked" : "")>
+                                <label class="form-check-label" for="@range.Id">
+                                    @range.Label
+                                </label>
+                            </div>
+                        }
+                </section>
+
+                <section id="nhaxuatban_filter" class="filter-section">
+                    @await Html.PartialAsync("_NhaXuatBanFilterPartial", Model.DanhSachNhaXuatBan)
+                </section>
+
+                <section id="tacgia_filter" class="filter-section">
+                    @await Html.PartialAsync("_TacGiaFilterPartial", Model.DanhSachTacGia)
+                </section>
+            </form>
         </section>
+
+        
         <section id="sachtheochude_right">
-            @foreach (Sach sach in Model.DanhSachSach)
-            {
-                <div class="book">
-                    <div class="book_img">
-                        <img src="@sach.AnhBiaChinh" alt="Ảnh sách" />
-                        <div class="book_img_hover">
-                            <ul class="book_icon_container">
-                                <li>
-                                    <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="direct_cart_icon book_icon">
-                                        <i class="bi bi-cart-fill"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+            <div id="toolbar-section">
+                @await Html.PartialAsync("_ToolbarPartial", Model)
+                @if(!string.IsNullOrEmpty(Model.SearchKeyword))
+                {
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-search"></i>
+                        Kết quả tìm kiếm cho: <strong>"@Model.SearchKeyword"</strong>
+                        <span class="ms-2">(@Model.DanhSachSach.TotalItemCount sản phẩm)</span>
                     </div>
-                    <p class="ten_sach montserrat-regular">@Truncate(sach.TenSach, 15)</p>
-                    <p class="ten_tacgia montserrat-bold">@HienThiDongGia(sach.GiaBan)</p>
-                </div>
-            }
+                }
+            </div>
+            <div id="sach-list-section">
+                @await Html.PartialAsync("_SachListPartial", Model)
+            </div>
+            <div id="pagination-section">
+                @await Html.PartialAsync("_PaginationPartial", Model.DanhSachSach)
+            </div>
         </section>
     </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/filtered_saches.js"></script>
+}
+
 </div>

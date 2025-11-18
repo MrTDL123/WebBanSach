@@ -143,11 +143,14 @@ namespace Media.DataAccess.Migrations
                     b.Property<int?>("ChuDeMaChuDe")
                         .HasColumnType("int");
 
-                    b.Property<string>("DuongDanURL")
+                    b.Property<string>("FullPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Slug")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TenChuDe")
                         .IsRequired()

@@ -12,7 +12,7 @@ namespace Media.DataAccess.Repository
     public class VanChuyenRepository : Repository<VanChuyen>, IVanChuyenRepository
     {
         private readonly ApplicationDbContext _db;
-        public VanChuyenRepository(ApplicationDbContext db) : base(db) 
+        public VanChuyenRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }

@@ -12,7 +12,7 @@ namespace Media.DataAccess.Repository
     public class GioHangRepository : Repository<GioHang>, IGioHangRepository
     {
         private readonly ApplicationDbContext _db;
-        public GioHangRepository(ApplicationDbContext db) : base(db) 
+        public GioHangRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }

@@ -19,7 +19,6 @@ namespace Media.DataAccess.Repository
         {
             _db = db;
             this.dbSet = _db.Set<T>();
-            //_db.Saches.Include(u => u.ChuDe).Include(u => u.ChuDeId);
         }
         public void Add(T entity)
         {
@@ -72,9 +71,37 @@ namespace Media.DataAccess.Repository
                     query = query.Include(includeProp);
                 }
             }
-
-            
+   
             return query.ToList();
+        }
+        public async Task<List<T>> GetRangeAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+
+            // 1. Áp dụng Filter (nếu có)
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            // 2. Áp dụng Include (nếu có)
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                // Tách chuỗi "VanChuyen,ChiTietDonHangs.Sach"
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
+            // 3. Áp dụng Sắp xếp (nếu có)
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            // 4. Lấy danh sách (List) một cách bất đồng bộ
+            return await query.ToListAsync();
         }
 
         public async Task<List<T>> GetRangeAsync(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string? includeProperties = null)
@@ -118,7 +145,40 @@ namespace Media.DataAccess.Repository
                     query = query.Include(includeProp);
                 }
             }
-            return query.ToList();
+            return query;
+        }
+
+        public async Task<List<T>> GetAllReadOnlyAsync(string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
+            //AsNoTracking để báo EF rằng chỉ lấy danh sách để đọc
+            return await query.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<List<T>> GetRangeReadOnlyAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        {
+            IQueryable<T> query = dbSet;
+            query = dbSet.Where(filter);
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                foreach (var includeProp in includeProperties
+                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
+
+            return await query.AsNoTracking().ToListAsync();
         }
 
         public void Remove(T entity)

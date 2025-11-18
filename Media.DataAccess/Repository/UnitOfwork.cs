@@ -1,5 +1,6 @@
 ﻿using Media.DataAccess.Repository.IRepository;
 using Meida.DataAccess.Data;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,24 @@ namespace Media.DataAccess.Repository
     public class UnitOfwork : IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
+        private readonly IMemoryCache _cache;
         //Add Table
         public IChuDeRepository ChuDes { get; private set; }
         public ISachRepository Saches { get; private set; }
+
+        public ITacGiaRepository TacGias { get; private set; }
+
+        public INhaXuatBanRepository NhaXuatBans { get; private set; }
+        public IKhachHangRepository KhachHangs { get; private set; }
+        public IGioHangRepository GioHangs { get; private set; }
+        public IChiTietGioHangRepository ChiTietGioHangs { get; private set; }
+        public IDiaChiNhanHangRepository DiaChiNhanHangs { get; private set; }
+        public IDonHangRepository DonHangs { get; private set; }
+        public IHoaDonRepository HoaDons { get; private set; }
+        public IVanChuyenRepository VanChuyens { get; private set; }
+        public IDanhGiaSanPhamRepository DanhGiaSanPhams { get; private set; }
+        public ILuotThichDanhGiaSanPhamRepository LuotThichDanhGiaSanPhams { get; private set; }
+        public UnitOfwork(ApplicationDbContext db, IMemoryCache cache)
         public IKhachHangRepository KhachHangs { get; private set; }
         public IGioHangRepository GioHangs { get; private set; }
         public IChiTietGioHangRepository ChiTietGioHangs { get; private set; }
@@ -26,7 +42,20 @@ namespace Media.DataAccess.Repository
         public UnitOfwork(ApplicationDbContext db)
         {
             _db = db;
+            _cache = cache;
             ChuDes = new ChuDeRepository(_db);
+            Saches = new SachRepository(_db, _cache);
+            TacGias = new TacGiaRepository(_db);
+            NhaXuatBans = new NhaXuatBanRepository(_db);
+            KhachHangs = new KhachHangRepository(_db);
+            GioHangs = new GioHangRepository(_db);
+            ChiTietGioHangs = new ChiTietGioHangRepository(_db);
+            DiaChiNhanHangs = new DiaChiNhanHangRepository(_db);
+            DonHangs = new DonHangRepository(_db);
+            HoaDons = new HoaDonRepository(_db);
+            VanChuyens = new VanChuyenRepository(_db);
+            DanhGiaSanPhams = new DanhGiaSanPhamRepository(_db);
+            LuotThichDanhGiaSanPhams = new LuotThichDanhGiaSanPhamRepository(db);
             Saches = new SachRepository(_db);
             KhachHangs = new KhachHangRepository(_db);
             GioHangs = new GioHangRepository(_db);

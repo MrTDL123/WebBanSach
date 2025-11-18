@@ -12,7 +12,7 @@ namespace Media.DataAccess.Repository
     public class DonHangRepository : Repository<DonHang>, IDonHangRepository
     {
         private readonly ApplicationDbContext _db;
-        public DonHangRepository(ApplicationDbContext db) : base(db) 
+        public DonHangRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }

@@ -1,4 +1,9 @@
-﻿header {
+﻿.active {
+    color: #f0ad4e !important;
+    font-weight: 600;
+}
+
+header {
     background-color: #041721;
     max-height: 100vh;
 }

@@ -168,6 +168,7 @@ namespace Meida.DataAccess.Data
                 .HasForeignKey<VanChuyen>(vc => vc.MaDonHang)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
             // ========== KHÁCH HÀNG - ĐỊA CHỈ NHẬN HÀNG (1-N) ==========
             modelBuilder.Entity<KhachHang>()
                 .HasMany(kh => kh.DiaChiNhanHangs)

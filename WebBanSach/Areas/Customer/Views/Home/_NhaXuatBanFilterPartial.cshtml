@@ -1,0 +1,22 @@
+﻿@model IEnumerable<NhaXuatBan>
+
+<p class="sachtheochude_left_title montserrat-bold">NHÀ XUẤT BẢN</p>
+@if (Model != null && Model.Any())
+{
+    @foreach (var nxb in Model)
+    {
+        <div class="form-check mb-2 filter_section">
+            <input class="form-check-input publisher-filter"
+                   type="checkbox"
+                   value="@nxb.MaNhaXuatBan"
+                   id="nxb_@nxb.MaNhaXuatBan">
+            <label class="form-check-label" for="nxb_@nxb.MaNhaXuatBan">
+                @nxb.TenNXB
+            </label>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted">Không có nhà xuất bản</p>
+}

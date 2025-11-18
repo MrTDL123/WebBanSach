@@ -531,14 +531,43 @@
         color: aqua;
     }
 
+
+/*STYLE CHUNG CỦA NỘI DUNG TRANG INDEX*/
+.content_block {
+    width: 90%;
+    margin: 0 auto;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.title_block {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid gray;
+}
+
+.wrapper{
+    padding: 1rem 0;
+}
+
 /*SÁCH BÁN NHIỀU*/
 #sach_ban_nhieu_container {
     position: relative;
-    width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    padding: 3rem 5%;
+
+
+    background-color: yellow;
+    padding-top: unset;
+    padding-bottom: 2.5rem;
+    padding: 0 5% 2.5rem 5%;
 }
 
 #sach_ban_nhieu_container h1 {
@@ -546,47 +575,108 @@
     padding-bottom: 3rem;
 }
 
-#flash_sell{
+#best_sell{
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: center;
     padding: 1rem;
-    background-color: yellow;
     width: 100%;
     margin-bottom: 1rem;
     border-radius: 0.5rem;
 }
 
-    #flash_sell img{
-        width: 2rem;
+    #best_sell img{
+        width: 3.5rem;
         margin-right: 0.5rem;
     }
 
-    #flash_sell p {
+    #best_sell p {
         margin-bottom: unset;
         margin-right: 0.5rem;
+        font-size: 2rem;
     }
 
-#countdown {
-    display: flex;
-    gap: 5px;
-    color: white;
+/*DANH MỤC*/
+    #danh_muc_title i {
+        font-size: 1.5rem; 
+        color: #c92127;
+    }
+
+    #danh_muc_title p {
+        font-size: 1.25rem; 
+        margin: 0;
+    }
+
+
+#danh_muc_content {
+    padding-top: 2.5rem;
+    display: flex; 
+    flex-wrap: nowrap; 
+    overflow-x: auto;
+    gap: 20px;
 }
 
-.time-block {
-    background-color: #041721;
-    padding: 5px 10px;
-    border-radius: 10px;
+/* --- 5. Từng item danh mục --- */
+.danh_muc_item {
+    /* Đặt chiều rộng cố định cho mỗi item */
+    flex-shrink: 0; /* Ngăn item bị co lại */
+    width: 120px;
+    flex-grow: 1;
 }
 
-    .time-block span {
-        font-size: 1.5em;
-        font-weight: bold;
+    .danh_muc_item a {
         display: flex;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center; 
+        text-decoration: none;
+        color: #333333;
+        transition: color 0.2s ease;
     }
 
-/*KEYFRAME SLIDE 1*/
+        .danh_muc_item a:hover {
+            color: #c92127;
+        }
+
+    .danh_muc_item img {
+        width: 100%; /* Lấy hết 120px của .danh_muc_item */
+        height: 120px; /* Đặt chiều cao cố định để tất cả đồng đều */
+        object-fit: contain; /* Đảm bảo ảnh vừa vặn, không bị méo */
+        margin-bottom: 10px; /* Khoảng cách từ ảnh tới chữ */
+    }
+
+    /* --- 7. Chữ (tên danh mục) --- */
+    .danh_muc_item span {
+        font-size: 0.9rem;
+        text-align: center;
+        line-height: 1.3;
+        height: 40px;
+        /* Tùy chọn: Cắt văn bản nếu quá 2 dòng */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+#danh_muc_content::-webkit-scrollbar {
+    height: 8px;
+}
+
+#danh_muc_content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+#danh_muc_content::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 4px;
+}
+
+    #danh_muc_content::-webkit-scrollbar-thumb:hover {
+        background: #aaa;
+    }
+
+
 @keyframes slideshow1_book {
     from {
         opacity: 0;
@@ -715,92 +805,5 @@
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-/**/
-
-/*MEDIA*/
-@media only screen and (max-width: 600px) {
-    #computer {
-        top: 22vw;
-    }
-
-    #quote {
-        font-size: 5px;
-        top: 7vw;
-        left: 30vw;
-    }
-
-    #calendar_graph {
-        width: 45%;
-    }
-
-    #graph {
-        width: 50px;
-        height: 45px;
-    }
-
-    #calendar {
-        width: 35px;
-        height: 40px;
-    }
-
-    #lock_volume,
-    #cup_mail {
-        width: 75%;
-    }
-
-    #cup {
-        width: 35px;
-        height: 25px;
-    }
-
-    #mail {
-        width: 35px;
-        height: 20px;
-    }
-
-    #lock {
-        width: 30px;
-        height: 35px;
-    }
-
-    #volume {
-        width: 35px;
-        height: 35px;
-    }
-
-    #cart_phone {
-        width: 90%;
-    }
-
-    #cart {
-        width: 40px;
-        height: 35px;
-    }
-
-    #phone {
-        width: 20px;
-        height: 35px;
-    }
-
-    #note_message {
-        width: 60%;
-    }
-
-    #note {
-        width: 30px;
-        height: 40px;
-    }
-
-    #message {
-        width: 50px;
-        height: 30px;
-    }
-
-    #img_computer {
-        width: 320px;
-        height: 100px;
     }
 }

@@ -23,6 +23,14 @@
     display: none;
 }
 
+.chude_lv2 {
+    color: #0ce682;
+}
+
+    .chude_lv2:hover {
+        color: green !important;
+    }
+
 /* Hiện menu khi hover */
 .mega-dropdown:hover .mega-dropdown-menu {
     display: block;

@@ -1,12 +1,16 @@
 using Media.DataAccess.Repository;
 using Media.DataAccess.Repository.IRepository;
-using Meida.DataAccess.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Media.Utility;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Media.Service;
 using Media.Models;
+using Media.Service;
+using Media.Service.IServices;
+using Media.Utility;
+using Meida.DataAccess.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -45,8 +49,13 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Bảo mật khi HTTPS
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
+builder.Services.AddMemoryCache();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<ISlugService, SlugService>();
+builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
+builder.Services.AddHttpContextAccessor();
+//builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddHttpClient<LocationService>(client =>
 {
     // Base URL cho API
@@ -83,6 +92,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Customer}/{controller=Home}/{action=TrangChu}/{id?}");
@@ -111,4 +121,10 @@ using (var scope = app.Services.CreateScope())
     await CreateRolesAsync(services);
 }
 
+app.MapControllerRoute(
+    name: "chude",
+    pattern: "chude/{*path}",
+    defaults: new { area = "Customer", controller = "Home", action = "SachTheoChuDe" });
+
+app.Run();
 app.Run();

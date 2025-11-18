@@ -59,6 +59,8 @@ namespace Media.Models
         [Display(Name = "Tong tien")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal TongTien { get; set; }
+        public string? TenSanPham { get; set; }
+        public string? HinhAnhSanPham { get; set; }
         //[ValidateNever]
         public string? TenSanPham { get; set; }
         //[ValidateNever]
@@ -69,8 +71,17 @@ namespace Media.Models
         [Required(ErrorMessage = "Vui lòng chọn hình thức thanh toán")]
         [Display(Name = "Hình thức thanh toán")]
         public HinhThucThanhToan HinhThucThanhToanChon { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang; // Đặt COD làm mặc định
+        [Required(ErrorMessage = "Vui lòng chọn hình thức thanh toán")]
+        [Display(Name = "Hình thức thanh toán")]
+        public HinhThucThanhToan HinhThucThanhToanChon { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang; // Đặt COD làm mặc định
 
         // Dropdown lists
+        public List<SelectListItem>? DanhSachTinhThanh { get; set; }
+        public List<SelectListItem>? DanhSachPhuongXa { get; set; }
+        public List<SelectListItem>? DanhSachQuanHuyen { get; set; }
+        public List<GioHangVM>? DanhSachSanPham { get; set; }
+        public List<DiaChiNhanHang>? DanhSachDiaChi { get; set; }
+        public DiaChiNhanHang? DiaChiMacDinh { get; set; }
         //[ValidateNever]
         public List<SelectListItem>? DanhSachTinhThanh { get; set; }
         //[ValidateNever]

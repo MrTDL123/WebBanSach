@@ -33,7 +33,6 @@ namespace Media.Models
         public DateTime? NgaySinh { get; set; }
         public GioiTinh? GioiTinh { get; set; }
 
-
         //NAVIGATION PROPERTIES
         [ForeignKey("MaTaiKhoan")]
         public TaiKhoan TaiKhoan { get; set; }
