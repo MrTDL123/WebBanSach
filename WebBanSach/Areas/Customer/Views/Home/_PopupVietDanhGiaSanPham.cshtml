@@ -1,4 +1,5 @@
-﻿<style>
+﻿@model Media.Models.DanhGiaSanPham
+<style>
     .review-popup {
         background: white;
         border-radius: 8px;
@@ -174,38 +175,55 @@
     .btn-submit:active {
         transform: scale(0.98);
     }
+
+    .stars-container {
+        display: flex;
+    }
 </style>
 <div class="review-popup">
-    <div class="popup-header">
-        <h2 class="popup-title">Viết Đánh Giá Sản Phẩm</h2>
-        <div class="stars-container" id="starsContainer">
-            <span class="star" data-rating="1">★</span>
-            <span class="star" data-rating="2">★</span>
-            <span class="star" data-rating="3">★</span>
-            <span class="star" data-rating="4">★</span>
-            <span class="star" data-rating="5">★</span>
-        </div>
-    </div>
+    <form id="reviewForm" asp-action="GuiDanhGia" asp-controller="Home" method="post" onsubmit="submitReview(event)">
+        @Html.AntiForgeryToken()
 
-    <div class="form-group">
-        <input type="text" class="input-field" placeholder="Nhập tên để hiển thị khi đánh giá" id="nameInput">
-        <textarea class="input-field" placeholder="Nhập nhận xét của bạn về sản phẩm" id="reviewInput" style="margin:0;"></textarea>
-        <div class="emoji-toggle-container">
-            <div class="emoji-container">
-                <button class="emoji-btn" onclick="insertEmoji('😊')">😊</button>
-                <button class="emoji-btn" onclick="insertEmoji('😍')">😍</button>
+        <input type="hidden" asp-for="MaSach" />
+        <input type="hidden" asp-for="SoSao" id="SoSao_Input" />
+        <input type="hidden" asp-for="IsAnDanh" id="IsAnDanh_Input" value="false" />
+
+        <div class="popup-header">
+            <h2 class="popup-title">Viết Đánh Giá Sản Phẩm</h2>
+            <div class="stars-container" id="starsContainer">
+                <span class="star" data-rating="1">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="5">★</span>
             </div>
-            <div class="toggle-container">
-                <span class="toggle-label">Đánh giá ẩn danh</span>
-                <div class="toggle-switch" id="anonymousToggle" onclick="toggleAnonymous()">
-                    <div class="toggle-slider"></div>
+            <span asp-validation-for="SoSao" class="error" style="font-size: 12px; color: red;"></span>
+        </div>
+
+        <div class="form-group">
+            <input asp-for="TenHienThi" class="input-field" placeholder="Nhập tên để hiển thị khi đánh giá" />
+            <span asp-validation-for="TenHienThi" class="error" style="font-size: 12px; color: red;"></span>
+
+            <textarea asp-for="NoiDung" class="input-field" placeholder="Nhập nhận xét của bạn về sản phẩm" style="margin:0;"></textarea>
+            <span asp-validation-for="NoiDung" class="error" style="font-size: 12px; color: red;"></span>
+
+            <div class="emoji-toggle-container">
+                <div class="emoji-container">
+                    <button type="button" class="emoji-btn" onclick="insertEmoji('😊')">😊</button>
+                    <button type="button" class="emoji-btn" onclick="insertEmoji('😍')">😍</button>
+                </div>
+                <div class="toggle-container">
+                    <span class="toggle-label">Đánh giá ẩn danh</span>
+                    <div class="toggle-switch" id="anonymousToggle" onclick="toggleAnonymous()">
+                        <div class="toggle-slider"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="popup-footer">
-        <button class="btn btn-cancel" onclick="closePopupReview()">Hủy</button>
-        <button class="btn btn-submit" onclick="submitReview()">Gửi nhận xét</button>
-    </div>
+        <div class="popup-footer">
+            <button type="button" class="btn btn-cancel" onclick="dongPopupReview()">Hủy</button>
+            <button type="submit" class="btn btn-submit" id="submitReviewBtn">Gửi nhận xét</button>
+        </div>
+    </form>
 </div>

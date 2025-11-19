@@ -1,0 +1,238 @@
+﻿@model TrangChuVM
+@section PageStyles {
+    <style>
+        header {
+            background-image: url('/img/web_img/header_background.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+        }
+
+    </style>
+    <link rel="stylesheet" href="~/css/pages/index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partialview/tusachmienphi.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partialview/tacgianoitieng.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partialview/sachgiamgia.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages/khachhang/trangchu.css" asp-append-version="true" />
+}
+@functions {
+    public string Truncate(string noidung, int length)
+    {
+        if (noidung.Length < length)
+        {
+            return noidung;
+        }
+        else
+        {
+            return $"{noidung.Substring(0, length)}...";
+        }
+    }
+
+    public string HienThiDongGia(decimal giaTien)
+    {
+        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
+    }
+}
+@section SliderMenu {
+    <div id="slide_container">
+        <section class="slide" id="slide1">
+            <div id="content_slide1">
+                <div id="slogan_slide1_1">
+                    <p id="line1_slide1" class="montserrat-bold">Khuyến mãi to,</p>
+                    <p id="line2_slide1" class="montserrat-bold">Mua ngay</p>
+                </div>
+
+                <div id="slogan_slide1_2" class="montserrat-regular">
+                    <p id="descript1">Bạn có thể khám phá những cuốn sách bổ ích, </p>
+                    <p id="descript2">hoặc sắm cho mình những sản phẩm bán chạy gần đây</p>
+                </div>
+
+                <div class="button">
+                    <a class="montserrat-bold" asp-action="Shop">Hãy mua ngay</a>
+                </div>
+            </div>
+
+            <div id="background_book_slide1">
+                <img id="background_slide1" src="~/img/web_img/slider-1-3_bg.png" alt="Ảnh background" />
+                <img id="book_slide1" src="~/img/web_img/slider-1-3_books.jpg" alt="Ảnh book" />
+            </div>
+        </section>
+
+        <section class="slide" id="slide2">
+            <div id="calendar_graph" class="item_container">
+                <img id="graph" class="item" src="~/img/web_img/slider-1-2_icon-1.png" alt="graph" />
+                <img id="calendar" class="item" src="~/img/web_img/slider-1-2_icon-11.png" alt="calendar" />
+            </div>
+            <div id="lock_volume" class="item_container">
+                <img id="lock" class="item" src="~/img/web_img/slider-1-2_icon-10.png" alt="lock" />
+                <img id="volume" class="item" src="~/img/web_img/slider-1-2_icon-2.png" alt="volume" />
+            </div>
+            <div id="cart_phone" class="item_container">
+                <img id="cart" class="item" src="~/img/web_img/slider-1-2_icon-9.png" alt="cart" />
+                <img id="phone" class="item" src="~/img/web_img/slider-1-2_icon-3.png" alt="phone" />
+            </div>
+            <div id="cup_mail" class="item_container">
+                <img id="cup" class="item" src="~/img/web_img/slider-1-2_icon-8.png" alt="cup" />
+                <img id="mail" class="item" src="~/img/web_img/slider-1-2_icon-4.png" alt="mail" />
+            </div>
+            <div id="note_message" class="item_container">
+                <img id="note" class="item" src="~/img/web_img/slider-1-2_icon-7.png" alt="note" />
+                <img id="message" class="item" src="~/img/web_img/slider-1-2_icon-5.png" alt="message" />
+            </div>
+
+            <div id="slogan_computer">
+                <div id="slogan_slide2" class="montserrat-bold">
+                    <p id="line1_slide2">Learning Has Never Been Easier</p>
+                    <div id="slogan_background">
+                        <img src="~/img/web_img/slider-1-2_cloud-3.png">
+                        <img src="~/img/web_img/11.png">
+                        <img src="~/img/web_img/12.png">
+                    </div>
+                    <p class="montserrat-bold" id="line2_slide2">Learn New</p>
+                    <p class="montserrat-bold" id="line3_slide2">Skills To Change</p>
+                    <p class="montserrat-bold" id="line4_slide2">Your Life</p>
+                </div>
+
+                <div id="computer">
+                    <div id="quote" class="montserrat-bold">
+                        <p id="line5_slide2">Start learning the</p>
+                        <p id="line6_slide2">skills you have always </p>
+                        <p id="line7_slide2">been dreaming of.</p>
+                    </div>
+                    <img id="img_computer" src="~/img/web_img/slider-1-2_icon-6.png" alt="computer">
+                </div>
+            </div>
+
+        </section>
+
+        <section class="slide" id="slide3">
+            <div id="clouds">
+                <img id="big_cloud" src="~/img/web_img/5.png" alt="cloud_background">
+
+                <div id="small_clouds" class="">
+                    <img id="small_cloud1" src="~/img/web_img/21.png" alt="small_cloud1">
+                    <img id="small_cloud2" src="~/img/web_img/17.png" alt="small_cloud2">
+                    <img id="small_cloud3" src="~/img/web_img/3.png" alt="small_cloud2">
+                </div>
+
+            </div>
+
+            <div id="slide3_content">
+                <img id="book_icon" class="content" src="~/img/web_img/slider-1_logo.png" alt="book_icon">
+
+                <div id="letters" class="content">
+                    <p class="montserrat-bold" id="B">B</p>
+                    <p class="montserrat-bold" id="O_1">O</p>
+                    <p class="montserrat-bold" id="O_2">O</p>
+                    <p class="montserrat-bold" id="K">K</p>
+                    <p class="montserrat-bold" id="S">S</p>
+                </div>
+
+                <div id="slogan_slide3" class="content montserrat-bold">
+                    <p id="line1_slide3">Những cuốn sách hay nhất 2024</p>
+                    <p id="line2_slide3">Hoàn hảo cho một mùa hè cháy bỏng</p>
+                </div>
+
+                <div class="button">
+                    <a class="montserrat-bold" asp-action="Shop">
+                        Hãy mua ngay
+                    </a>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+    <div id="btn_slide_container">
+        <div id="btn_slideleft">
+            <i class="bi bi-caret-left-square-fill" style="color: #ffffff;"></i>
+        </div>
+        <div id="btn_slideright">
+            <i class="bi bi-caret-right-square-fill" style="color: #ffffff;"></i>
+        </div>
+    </div>
+}
+
+<section id="sach_ban_nhieu_container">
+    <div id="best_sell">
+        <img src="~/img/web_img/best_seller_icon.png" alt="Best Seller Icon" />
+        <p class="montserrat-bold">Sách bán chạy nhất tuần qua</p>
+    </div>
+    <div id="sach-list-section">
+        @foreach (var sach in Model.SachBanChay)
+        {
+            <div class="book">
+                <div class="book_img">
+                    <img src="~/img/product/@sach.AnhBiaChinh" alt="Ảnh sách" />
+                    <div class="book_img_hover">
+                        <ul class="book_icon_container">
+                            <li>
+                                <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" class="direct_detail_icon book_icon">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="add-to-cart book_icon" data-masach="@sach.MaSach">
+                                    <i class="bi bi-cart-fill"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" class="ten_sach montserrat-regular">
+                    @Truncate(sach.TenSach, 15)
+                </a>
+                <p class="ten_tacgia montserrat-bold">@HienThiDongGia(sach.GiaBan)</p>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="wrapper" >
+    <div id="danh_muc_container" class="content_block">
+        <div id="danh_muc_title" class="title_block">
+            <i class="bi bi-columns-gap"></i>
+            <p class="montserrat-bold">Danh mục sản phẩm</p>
+        </div>
+
+        <div id="danh_muc_content">
+            @foreach (DanhSachChuDeTrangIndex chuDe in Model.DanhSachChuDe)
+            {
+                <div class="danh_muc_item">
+                    <a asp-controller="Home" asp-action="SachTheoChuDe" asp-route-path="@chuDe.ChuDeFullPath">
+                        <img src="@chuDe.DuongDanHinhAnh" alt="Ảnh @chuDe.TenChuDe" />
+                        <span>@chuDe.TenChuDe</span>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@await Html.PartialAsync("_TuSachMienPhi", Model.TuSachMienPhi)
+
+@await Html.PartialAsync("_TacGiaNoiTieng", Model.TacGiaNoiTieng)
+
+@await Html.PartialAsync("_SachGiamGia", Model.SachBanChay)
+@section Scripts {
+    <script src="~/js/index.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').click(function () {
+                var maSach = $(this).data('masach');
+
+                $.ajax({
+                    url: '/Customer/GioHang/ThemVaoGioHang',
+                    type: 'POST',
+                    data: { maSach: maSach, soLuong : 1 },
+                    success: function (res) {
+                        if (res.success) {
+                            $('#cart-count').text(`(${res.count})`);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

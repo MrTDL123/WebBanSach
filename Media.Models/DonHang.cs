@@ -10,26 +10,15 @@ using System.Threading.Tasks;
 
 namespace Media.Models
 {
-    public enum HinhThucThanhToan
-    {
-        [Description("Thanh toán tiền mặt khi nhận hàng")]
-        TienMatKhiNhanHang,
-        [Description("Chuyển khoản")]
-        ChuyenKhoan
-    }
-
     public class DonHang
     {
         [Key]
         public int MaDonHang { get; set; }
         [Required]
         public int MaKhachHang { get; set; }
+        public int? MaNhanVien { get; set; }
         [Required]
-        public int MaNhanVien { get; set; }
-        [Required]
-        public int MaVanChuyen { get; set; }
-        [Required]
-        public int? MaDiaChi { get; set; }
+        public int MaDiaChi { get; set; }
         [Required, StringLength(100)]
         [DisplayName("Tên người nhận")]
         public string TenNguoiNhan { get; set; }
@@ -72,8 +61,7 @@ namespace Media.Models
         [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; }
         [ForeignKey("MaNhanVien")]
-        public NhanVien NhanVien { get; set; }
-        [ForeignKey(nameof(MaVanChuyen))]
+        public NhanVien? NhanVien { get; set; }
         public VanChuyen VanChuyen { get; set; }
         [ForeignKey(nameof(MaDiaChi))]
         public DiaChiNhanHang DiaChiNhanHang { get; set; }

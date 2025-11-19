@@ -1,4 +1,9 @@
-﻿header {
+﻿.active {
+    color: #f0ad4e !important;
+    font-weight: 600;
+}
+
+header {
     background-color: #041721;
     max-height: 100vh;
 }
@@ -9,7 +14,7 @@ header a:hover {
 
 #top_header {
     position: relative;
-    z-index: 100;
+    z-index: 2;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
@@ -47,6 +52,7 @@ header a:hover {
     border: none;
     outline: none;
     border-radius: 10px;
+    flex-grow: 0.5;
 }
 
 #search_button {

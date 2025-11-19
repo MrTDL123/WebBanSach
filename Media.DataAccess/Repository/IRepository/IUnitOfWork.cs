@@ -11,7 +11,19 @@ namespace Media.DataAccess.Repository.IRepository
         //Add Table
         IChuDeRepository ChuDes { get; }
         ISachRepository Saches { get; }
+        IKhachHangRepository KhachHangs { get; }
+        IGioHangRepository GioHangs { get; }
+        IChiTietGioHangRepository ChiTietGioHangs { get; }
+        IDiaChiNhanHangRepository DiaChiNhanHangs { get; }
+        IDonHangRepository DonHangs { get; }
+        IHoaDonRepository HoaDons { get; }
+        IVanChuyenRepository VanChuyens { get; }
+        IDanhGiaSanPhamRepository DanhGiaSanPhams { get; }
+        ILuotThichDanhGiaSanPhamRepository LuotThichDanhGiaSanPhams { get;}
+        ITacGiaRepository TacGias { get; }
+        INhaXuatBanRepository NhaXuatBans { get; }
 
         void Save();
+        Task SaveAsync();
     }
 }

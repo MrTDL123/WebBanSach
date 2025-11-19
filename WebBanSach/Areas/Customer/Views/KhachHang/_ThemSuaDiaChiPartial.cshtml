@@ -1,0 +1,86 @@
+﻿@model Media.Models.DiaChiNhanHang
+@{
+    // Partial view này nhận DiaChiMoi (hoặc một DiaChiNhanHang rỗng)
+}
+
+<form asp-action="LuuDiaChi" asp-controller="KhachHang" asp-area="Customer" method="post" data-tinh-thanh="@Model.TinhThanh" data-quan-huyen="@Model.QuanHuyen" data-phuong-xa="@Model.PhuongXa">
+
+    <div class="popup-header">
+        <div class="popup-spacer"></div>
+        <h2 id="popupTitle">Địa chỉ mới</h2>
+        <button type="button" class="popup-close" onclick="dongPopupDiaChi()">&times;</button>
+    </div>
+
+    <div class="popup-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <input type="hidden" asp-for="MaDiaChi" />
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label required" asp-for="TenNguoiNhan">Họ và tên</label>
+                <input type="text" class="form-input" id="tenNguoiNhan" asp-for="TenNguoiNhan" placeholder="Nguyễn Văn A">
+                <span asp-validation-for="TenNguoiNhan" class="text-danger"></span>
+                <span id="tenNguoiNhanError" class="text-danger" style="display: none;">Vui lòng nhập họ tên.</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label required" asp-for="SoDienThoai">Điện thoại</label>
+                <input type="text" class="form-input" id="soDienThoai" asp-for="SoDienThoai" placeholder="Ex: 0972xxxx">
+                <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+                <span id="soDienThoaiError" class="text-danger" style="display: none;">Vui lòng nhập số điện thoại.</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="provinceSelect" class="form-label required">Tỉnh/Thành phố</label>
+            <select id="provinceSelect" class="form-input">
+                <option value="">Đang tải tỉnh/thành...</option>
+            </select>
+            <span asp-validation-for="TinhThanh" class="text-danger"></span>
+            <span id="provinceError" class="text-danger" style="display: none;">Vui lòng chọn Tỉnh/Thành phố.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="districtSelect" class="form-label required">Quận/Huyện</label>
+            <select id="districtSelect" class="form-input" disabled>
+                <option value="">Chọn quận/huyện</option>
+            </select>
+            <span asp-validation-for="QuanHuyen" class="text-danger"></span>
+            <span id="districtError" class="text-danger" style="display: none;">Vui lòng chọn Tỉnh/Thành phố.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="wardSelect" class="form-label required">Phường/Xã</label>
+            <select id="wardSelect" class="form-input" disabled>
+                <option value="">Chọn phường/xã</option>
+            </select>
+            <span asp-validation-for="PhuongXa" class="text-danger"></span>
+            <span id="wardError" class="text-danger" style="display: none;">Vui lòng chọn Phường/Xã.</span>
+        </div>
+
+        <input type="hidden" asp-for="TinhThanh" id="hiddenTinhThanh" />
+        <input type="hidden" asp-for="QuanHuyen" id="hiddenQuanHuyen" />
+        <input type="hidden" asp-for="PhuongXa" id="hiddenPhuongXa" />
+
+        <input type="hidden" asp-for="MaTinhThanh" id="hiddenMaTinhThanh" />
+        <input type="hidden" asp-for="MaQuanHuyen" id="hiddenMaQuanHuyen" />
+        <input type="hidden" asp-for="MaPhuongXa" id="hiddenMaPhuongXa" />
+
+        <div class="form-group">
+            <label class="form-label required" asp-for="DiaChiChiTiet">Địa chỉ cụ thể</label>
+            <textarea class="form-input" asp-for="DiaChiChiTiet" id="diaChiChiTiet" placeholder="Số nhà, tên đường..." rows="3"></textarea>
+            <span asp-validation-for="DiaChiChiTiet" class="text-danger"></span>
+            <span id="diaChiChiTietError" class="text-danger" style="display: none;">Vui lòng nhập địa chỉ cụ thể.</span>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" asp-for="LaMacDinh" id="LaMacDinhCheckbox" />
+            <label class="form-label-checkbox" for="LaMacDinhCheckbox" style="margin-bottom:unset;">Đặt làm địa chỉ mặc định</label>
+        </div>
+
+        <div class="form-group form-btn popup-footer">
+            <button type="button" class="btn-cancel" onclick="dongPopupDiaChi()">Trở Lại</button>
+            <button type="submit" class="btn-save disabledBtn" id="btnLuuDiaChi">Lưu địa chỉ</button>
+        </div>
+    </div>
+</form>

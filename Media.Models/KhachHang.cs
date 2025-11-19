@@ -31,7 +31,7 @@ namespace Media.Models
         [DisplayName("Ngày sinh")]
         [DataType(DataType.Date)]
         public DateTime? NgaySinh { get; set; }
-
+        public GioiTinh? GioiTinh { get; set; }
 
         //NAVIGATION PROPERTIES
         [ForeignKey("MaTaiKhoan")]
@@ -42,5 +42,7 @@ namespace Media.Models
         public ICollection<PhanHoiKhachHang> PhanHoiKhachHangs { get; set; }
         public ICollection<ChamSocKhachHang> ChamSocKhachHangs { get; set; }
         public ICollection<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
+        public ICollection<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
+        public ICollection<LuotThichDanhGiaSanPham> LuotThichDanhGiaSanPhams { get; set; }
     }
 }

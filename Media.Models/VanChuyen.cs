@@ -18,13 +18,15 @@ namespace Media.Models
         [Description("Giao hàng thành công")]
         GiaoHangThanhCong,
         [Description("Giao thất bại")]
-        GiaoThatBai
+        GiaoThatBai,
+        [Description("Đã hủy")]
+        DaHuy
     }
 
     public class VanChuyen
     {
         [Key]
-        public int MaVanChuyen { get; set; }
+        public int MaDonHang { get; set; }
         [Required, MaxLength(100)]
         [DisplayName("Đơn vị vận chuyển")]
         public string DonViVanChuyen { get; set; }
@@ -44,6 +46,6 @@ namespace Media.Models
         [DisplayName("Ngày nhận hàng thực tế")]
         public DateTime? NgayNhanHangThucTe { get; set; }
 
-        public ICollection<DonHang> DonHangs { get; set; }
+        public DonHang DonHang { get; set; }
     }
 }

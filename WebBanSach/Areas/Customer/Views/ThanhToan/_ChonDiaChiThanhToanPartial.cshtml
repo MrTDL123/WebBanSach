@@ -1,0 +1,58 @@
+﻿@model List<Media.Models.DiaChiNhanHang>
+
+<div class="popup-header">
+    <div class="popup-spacer"></div>
+    <h2 id="popupTitle">Địa chỉ của tôi</h2>
+    <button type="button" class="popup-close" onclick="dongPopupChonDiaChi()">&times;</button>
+</div>
+
+<div class="popup-body" id="address-list-popup">
+    @foreach (var diaChi in Model)
+    {
+        <div class="address-card-popup selected"
+             onclick="selectAddress(this)"
+             data-ma-dia-chi="@diaChi.MaDiaChi"
+             data-ten-nguoi-nhan="@diaChi.TenNguoiNhan"
+             data-sdt="@diaChi.SoDienThoai"
+             data-dia-chi-chi-tiet="@diaChi.DiaChiChiTiet"
+             data-ten-tinh="@diaChi.TinhThanh"
+             data-ten-huyen="@diaChi.QuanHuyen"
+             data-ten-xa="@diaChi.PhuongXa"
+             data-ma-tinh-thanh="@diaChi.MaTinhThanh"
+             data-la-mac-dinh="@diaChi.LaMacDinh.ToString().ToLower()">
+
+             <div class="address-card-main-wrapper">
+                <input type="radio" name="selectedAddress"
+                        @(diaChi.LaMacDinh ? "checked" : "") />
+
+                <div class="address-card-main">
+                    <div class="address-info">
+                        <span class="info-name">@diaChi.TenNguoiNhan</span>
+                        <span class="info-phone">@diaChi.SoDienThoai</span>
+                    </div>
+                    <div class="address-line">@diaChi.DiaChiChiTiet</div>
+                    <div class="address-line">@diaChi.PhuongXa, @diaChi.QuanHuyen, @diaChi.TinhThanh</div>
+                    @if (diaChi.LaMacDinh)
+                    {
+                        <div class="default-badge">Mặc định</div>
+                    }
+                </div>
+            </div>
+            <div class="address-card-actions">
+                <div class="btn-container">
+                    <button type="button" class="action-link" onclick="moPopupSuaDiaChi(@diaChi.MaDiaChi, event)">Cập nhật</button>
+                </div>
+                @if (!diaChi.LaMacDinh)
+                {
+                    <button type="button" class="btn-set-default" onclick="datMacDinh(@diaChi.MaDiaChi, event)">Thiết lập mặc định</button>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="popup-footer">
+        <button type="button" class="btn-add-new-popup" onclick="moPopupThemDiaChi()">
+            Thêm địa chỉ mới
+        </button>
+    </div>
+</div>

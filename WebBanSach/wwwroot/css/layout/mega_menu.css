@@ -4,7 +4,7 @@
 .mega-dropdown {
     position: static !important;
     padding-right: 1rem;
-    z-index: 10000;
+    z-index: 3;
 }
 
 .mega-dropdown-menu {
@@ -22,6 +22,14 @@
 .mega-dropdown-menu {
     display: none;
 }
+
+.chude_lv2 {
+    color: #0ce682;
+}
+
+    .chude_lv2:hover {
+        color: green !important;
+    }
 
 /* Hiện menu khi hover */
 .mega-dropdown:hover .mega-dropdown-menu {

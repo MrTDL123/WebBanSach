@@ -1,0 +1,105 @@
+﻿@model X.PagedList.IPagedList<Sach>
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/components/pagination.css" asp-append-version="true" />
+}
+
+@if (Model.PageCount > 1)
+{
+    <nav aria-label="Product pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <!-- First Page -->
+            <li class="page-item @(Model.IsFirstPage ? "disabled" : "")">
+                <a class="page-link"
+                   href="#"
+                   data-page="1"
+                   aria-label="First">
+                    <i class="bi bi-chevron-bar-left"></i>
+                </a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                <a class="page-link"
+                   href="#"
+                   data-page="@(Model.PageNumber - 1)"
+                   aria-label="Previous">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+
+            <!-- Page Numbers -->
+            @{
+                int startPage = Math.Max(1, Model.PageNumber - 2);
+                int endPage = Math.Min(Model.PageCount, Model.PageNumber + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="#" data-page="1">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="#" data-page="@i">
+                        @i
+                        @if (i == Model.PageNumber)
+                        {
+                            <span class="visually-hidden">(current)</span>
+                        }
+                    </a>
+                </li>
+            }
+
+            @if (endPage < Model.PageCount)
+            {
+                @if (endPage < Model.PageCount - 1)
+                {
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                }
+                <li class="page-item">
+                    <a class="page-link" href="#" data-page="@Model.PageCount">@Model.PageCount</a>
+                </li>
+            }
+
+            <!-- Next Page -->
+            <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                <a class="page-link"
+                   href="#"
+                   data-page="@(Model.PageNumber + 1)"
+                   aria-label="Next">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item @(Model.IsLastPage ? "disabled" : "")">
+                <a class="page-link"
+                   href="#"
+                   data-page="@Model.PageCount"
+                   aria-label="Last">
+                    <i class="bi bi-chevron-bar-right"></i>
+                </a>
+            </li>
+
+        </ul>
+
+        <!-- Page Info -->
+        <div class="text-center text-muted mt-2">
+            Trang <strong>@Model.PageNumber</strong> / <strong>@Model.PageCount</strong>
+            <span class="mx-2">|</span>
+            Tổng <strong>@Model.TotalItemCount</strong> sản phẩm
+        </div>
+    </nav>
+}

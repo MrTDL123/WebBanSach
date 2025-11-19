@@ -21,9 +21,10 @@ namespace Media.Models
 
         [Required(ErrorMessage = "Vui lòng nhập giá bán")]
         [Display(Name = "Giá sản phẩm")]
-        [Range(0, double.MaxValue, ErrorMessage = "Giá phải >= 0")]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal GiaBan { get; set; }
-
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal PhanTramGiamGia { get; set; } = 0;
         [ValidateNever]
         public string? AnhBiaChinh { get; set; }
 
@@ -63,6 +64,8 @@ namespace Media.Models
         [Required]
         [DisplayName("Mã chủ đề")]
         public int MaChuDe { get; set; }
+        [NotMapped]
+        public decimal GiaSauGiam => GiaBan * (1 - (PhanTramGiamGia));
 
         [ForeignKey(nameof(MaChuDe))]
         [ValidateNever]
@@ -76,9 +79,9 @@ namespace Media.Models
         [ValidateNever]
         public NhaXuatBan? NhaXuatBan { get; set; }
 
-        // 🔹 Khởi tạo collection để tránh null
-        public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
-        public ICollection<ChiTietTraHang> ChiTietTraHangs { get; set; } = new List<ChiTietTraHang>();
-        public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; } = new List<ChiTietGioHang>();
+        public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        public ICollection<ChiTietTraHang> ChiTietTraHangs { get; set; }
+        public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
+        public ICollection<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
     }
 }

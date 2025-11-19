@@ -2,120 +2,131 @@
 @using X.PagedList
 @using X.PagedList.Mvc.Core
 @addTagHelper *, X.PagedList.Mvc.Core
-
-@functions{
-    public string Truncate(string noidung, int length)
-    {
-        if (noidung.Length < length)
-        {
-            return noidung;
-        }
-        else
-        {
-            return $"{noidung.Substring(0, length)}...";
-        }
-    }
-
-    public string HienThiDongGia(decimal giaTien)
-    {
-        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
-    }
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/sachtheochude.css" asp-append-version="true" />
 }
+
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.SearchKeyword)
+        ? "Sách theo chủ đề"
+        : $"Kết quả tìm kiếm: {Model.SearchKeyword}";
+
+    // Truyền keyword ra Layout để hiển thị trong search box
+    ViewBag.SearchKeyword = Model.SearchKeyword;
+}
+
 <div id="sachtheochude_container">
-    <p class="montserrat-medium">@ViewBag.Url</p>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            @foreach(var item in Model.Breadcrumbs)
+            {
+                if (item.IsActive)
+                {
+                    <li class="breadcrumb-item active fw-bold" aria-current="page">
+                        @item.Text
+                    </li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item">
+                        <a style="color: black;" 
+                            href="@item.Url"
+                        >@item.Text</a>
+                    </li>
+                }
+            }
+        </ol>
+    </nav>
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
-            <section id="same_category_books">
-                <p class="sachtheochude_left_title montserrat-bold" id="">CHỦ ĐỀ TƯƠNG ỨNG</p>
-                <aside>
-                    <a asp-controller="Home" asp-action="LayTatCaSach">Tất cả chủ đề</a>
+            <form id="filterForm"
+                data-sort-by="@Model.SortBy"
+                data-page-size="@Model.PageSize"
+                data-path="@Model.ChuDeSelected.FullPath">
 
-                    <ul class="chude_item_root">
-                        @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeHienTai)
-                    </ul>
+                <section id="same_category_books" class="filter-section">
+                    <p class="sachtheochude_left_title montserrat-bold">CHỦ ĐỀ TƯƠNG ỨNG</p>
+                    <aside>
+                        <a asp-controller="Home" asp-action="LayTatCaSach">Tất cả chủ đề</a>
 
-                </aside>
-                        
-            </section>
+                        <ul class="chude_item_root">
+                            @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeCha)
+                        </ul>
 
-            <section id="price_filter">
-                <p class="sachtheochude_left_title montserrat-bold" id="">GIÁ</p>
-                <form method="get" asp-action="SachTheoChuDe" asp-controller="Home" id="filterForm">
-                    @foreach (var range in Model.PriceFilter.PriceRanges)
-                    {
-                        <div class="form-check mb-2">
-                            <input class="form-check-input price-filter"
-                                   type="checkbox"
-                                   name="priceRanges"
-                                   value="@range.Id"
-                                   id="@range.Id"
-                                   @(Model.PriceFilter.SelectedRanges.Contains(range.Id) ? "checked" : "")>
-                            <label class="form-check-label" for="@range.Id">
-                                @range.Label
-                            </label>
-                        </div>
-                    }
-                </form>
-            </section>
-            
-            <section id="nhaxuatban_filter">
-                <p class="sachtheochude_left_title montserrat-bold" id="">NHÀ XUẤT BẢN</p>
-            </section>
+                    </aside>
+                </section>
 
-            <section id="tacgia_filter">
-                <p class="sachtheochude_left_title montserrat-bold" id="">TÁC GIẢ</p>
-            </section>
+                <section id="price_filter" class="filter-section">
+                    <p class="sachtheochude_left_title montserrat-bold" id="">GIÁ</p>
+                        @foreach (var range in Model.PriceFilter.PriceRanges)
+                        {
+                            <div class="form-check mb-2 filter_section">
+                                <input class="form-check-input price-filter"
+                                       type="checkbox"
+                                       name="priceRanges"
+                                       value="@range.Id"
+                                       id="@range.Id"
+                                       @(Model.PriceFilter.SelectedRanges.Contains(range.Id) ? "checked" : "")>
+                                <label class="form-check-label" for="@range.Id">
+                                    @range.Label
+                                </label>
+                            </div>
+                        }
+                </section>
+
+                <section id="nhaxuatban_filter" class="filter-section">
+                    @await Html.PartialAsync("_NhaXuatBanFilterPartial", Model.DanhSachNhaXuatBan)
+                </section>
+
+                <section id="tacgia_filter" class="filter-section">
+                    @await Html.PartialAsync("_TacGiaFilterPartial", Model.DanhSachTacGia)
+                </section>
+            </form>
         </section>
 
         
         <section id="sachtheochude_right">
-            
+            <div id="toolbar-section">
+                @await Html.PartialAsync("_ToolbarPartial", Model)
+                @if(!string.IsNullOrEmpty(Model.SearchKeyword))
+                {
+                    <div class="alert alert-info mb-3">
+                        <i class="bi bi-search"></i>
+                        Kết quả tìm kiếm cho: <strong>"@Model.SearchKeyword"</strong>
+                        <span class="ms-2">(@Model.DanhSachSach.TotalItemCount sản phẩm)</span>
+                    </div>
+                }
+            </div>
+            <div id="sach-list-section">
+                @await Html.PartialAsync("_SachListPartial", Model)
+            </div>
+            <div id="pagination-section">
+                @await Html.PartialAsync("_PaginationPartial", Model.DanhSachSach)
+            </div>
         </section>
     </div>
+
 </div>
 
 @section Scripts {
+    <script src="~/js/filtered_saches.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.price-filter').on('change', function() {
-                $('#filterForm').submit();
-            });
-        });
-
-
-                // wwwroot/js/filter-with-url.js
-        $(document).ready(function() {
-
-            function loadProducts() {
-                var selectedPrices = [];
-                $('.price-filter:checked').each(function() {
-                    selectedPrices.push($(this).val());
-                });
-
-                var params = new URLSearchParams();
-                selectedPrices.forEach(p => params.append('priceRanges', p));
-
-                // Cập nhật URL mà không reload trang
-                history.pushState(null, '', '?' + params.toString());
+        $(document).ready(function () {
+            $('.direct_cart_icon').click(function () {
+                var maSach = $(this).data('masach');
 
                 $.ajax({
-                    url: '/Home/SachTheoChuDe?' + params.toString(),
-                    success: function(result) {
-                        $('#toolbar-section').html(result.toolbar);
-                        $('#product-list').html(result.productList);
-                        $('#pagination-section').html(result.pagination);
+                    url: '/Customer/GioHang/ThemVaoGioHang',
+                    type: 'POST',
+                    data: { maSach: maSach, soLuong : 1 },
+                    success: function (res) {
+                        if (res.success) {
+                            $('#cart-count').text(`(${res.count})`);
+                        }
                     }
                 });
-            }
-
-            $('.price-filter').on('change', loadProducts);
-
-            // Xử lý nút Back/Forward của browser
-            window.addEventListener('popstate', function() {
-                location.reload();
             });
         });
     </script>
 }
-

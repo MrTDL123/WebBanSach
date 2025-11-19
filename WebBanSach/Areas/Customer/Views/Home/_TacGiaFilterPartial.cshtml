@@ -1,0 +1,22 @@
+﻿@model IEnumerable<TacGia>
+
+<p class="sachtheochude_left_title montserrat-bold">TÁC GIẢ</p>
+@if (Model != null && Model.Any())
+{
+    @foreach (var tacGia in Model)
+    {
+        <div class="form-check mb-2 filter_section">
+            <input class="form-check-input author-filter"
+                   type="checkbox"
+                   value="@tacGia.MaTacGia"
+                   id="author_@tacGia.MaTacGia">
+            <label class="form-check-label" for="author_@tacGia.MaTacGia">
+                @tacGia.TenTG
+            </label>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted">Không có tác giả</p>
+}

@@ -1,0 +1,106 @@
+﻿@model Media.Models.ViewModels.QuenMatKhauVM
+@{
+    ViewData["Title"] = "Quên mật khẩu";
+}
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/dangky.css" asp-append-version="true" />
+}
+
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2>Quên mật khẩu</h2>
+            <p>Nhập email để khôi phục tài khoản của bạn.</p>
+        </div>
+
+        <form asp-action="QuenMatKhau" asp-controller="KhachHang" method="post" id="FormQuenMatKhau">
+            <div class="form-group">
+                <label asp-for="Email" class="required">Email</label>
+                <div class="email-wrapper">
+                    <input asp-for="Email" id="Email" placeholder="Nhập email của bạn VD:(nguyenvana@gmail.com)" />
+                    <a href="javascript:void(0);" id="sendEmailOtp" class="send-otp">Gửi OTP</a>
+                </div>
+                <small id="emailStatus" style="color:green; display:none;">✅ Email đã xác thực</small>
+                <span asp-validation-for="Email" class="error"></span>
+            </div>
+
+            <div class="form-group" id="otpGroup">
+                <label asp-for="MaOTP" class="required">Nhập mã OTP</label>
+                <div id="otpWrapper" style="margin-top:8px;">
+                    <input asp-for="MaOTP" id="otpInput" class="otp-input" placeholder="Nhập mã OTP" readonly />
+                </div>
+                <span asp-validation-for="MaOTP" class="error"></span>
+            </div>
+
+            <button type="submit" id="btnXacNhan" class="btn-auth disabled" disabled>Xác nhận</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>
+                <a asp-area="Customer" asp-controller="KhachHang" asp-action="DangNhap">Đăng nhập lại</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const emailInput = document.getElementById("Email");
+        const sendEmailOtp = document.getElementById("sendEmailOtp");
+        const otpInput = document.getElementById("otpInput");
+        const emailStatus = document.getElementById("emailStatus");
+        const btnXacNhan = document.getElementById("btnXacNhan");
+
+        // Hiển thị nút "Gửi OTP" khi có cả email và số điện thoại
+        function checkShowSendOtp() {
+            if (emailInput.value.trim() !== "") {
+                sendEmailOtp.style.display = "inline-block";
+            } else {
+                sendEmailOtp.style.display = "none";
+            }
+        }
+
+        // Khi người dùng nhập xong email/sđt, hiển thị nút Gửi OTP
+        emailInput.addEventListener("input", checkShowSendOtp);
+
+        // Khi bấm "Gửi OTP"
+        sendEmailOtp.addEventListener("click", async () => {
+            const email = emailInput.value.trim();
+            if (!email) {
+                alert("Vui lòng nhập email hoặc số điện thoại.");
+                return;
+            }
+
+            sendEmailOtp.style.display = "none"; // ẩn tạm nút khi đang gửi
+
+            fetch(`/Customer/KhachHang/GuiOTPQuenMatKhau?email=${email}`)
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        otpInput.readOnly = false;
+                        otpInput.focus();
+                    } else {
+                        sendEmailOtp.style.display = "inline-block";
+                    }
+                })
+                .catch(() => {
+                    alert("Có lỗi khi gửi OTP, vui lòng thử lại!");
+                    sendEmailOtp.style.display = "inline-block";
+                });
+        });
+
+        // ===== NHẬP MÃ OTP =====
+        otpInput.addEventListener("input", e => {
+            if (e.target.value.trim().length === 6) {
+                emailStatus.style.display = "block";
+
+                otpInput.readOnly = true;
+                alert("Đã xác thực email");
+                btnXacNhan.classList.remove("disabled");
+                btnXacNhan.disabled = false;
+            }
+        });
+    </script>
+}

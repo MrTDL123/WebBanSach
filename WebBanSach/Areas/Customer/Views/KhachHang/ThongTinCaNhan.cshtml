@@ -1,0 +1,916 @@
+﻿@model Media.Models.ViewModels.ThongTinCaNhanVM
+
+@{
+    ViewData["Title"] = "Thông Tin Cá Nhân";
+}
+
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/thongtincanhan.css" asp-append-version="true" />
+}
+
+<div class="container-personinfo">
+    <div class="sidebar">
+        <div class="profile-avatar">
+            <div class="avatar-circle"><div class="crown-icon"></div></div>
+            <div class="profile-name">@Model.ThongTinKhachHang.HoTen</div>
+            <span class="member-badge">Thành viên Bạc</span>
+            <div class="points-info">F-Point tích lũy 0</div>
+            <div class="points-info">Thêm 30.000 để nâng hạng Vàng</div>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-title">👤 Thông tin tài khoản</div>
+            <div class="menu-item active" onclick="showSection(event, 'profile')">Thông tin cá nhân</div>
+            <div class="menu-item" onclick="showSection(event, 'address')">Địa chỉ</div>
+            <div class="menu-item" onclick="showSection(event, 'password')">Đổi mật khẩu</div>
+            <div class="menu-item" onclick="showSection(event, 'member')">Ưu đãi thành viên</div>
+        </div>
+
+        <div class="menu-section">
+            <div class="menu-title">📋 Đơn hàng của tôi</div>
+            <div class="menu-item" onclick="showSection(event, 'orders')">Danh sách đơn hàng</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="profile" class="content-section" style="display:none;">
+            <div class="stats-section">
+                <div class="stats-box">
+                    <h3>Ưu đãi của bạn</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">F-Point hiện có</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Freeship hiện có</span>
+                        <span class="stat-value">0 lần</span>
+                    </div>
+                </div>
+                <div class="stats-box">
+                    <h3>Thành tích năm 2025</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Số đơn hàng</span>
+                        <span class="stat-value">@Model.SoLuongDonHang đơn hàng</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Đã thanh toán</span>
+                        <span class="stat-value">0 đ</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Hồ sơ cá nhân</h2>
+            <form id="profileForm" asp-action="CapNhatHoSo" asp-controller="KhachHang"
+                  method="post" onsubmit="saveProfile(event)">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label class="form-label required" asp-for="ThongTinKhachHang.HoTen">Họ và Tên</label>
+                    <input type="text" class="form-input" asp-for="ThongTinKhachHang.HoTen">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Giới tính</label>
+                    <div class="gender-group">
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="1" @(Model.ThongTinKhachHang.GioiTinh == GioiTinh.Nam ? "checked" : "")> Nam
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="gender" value="0" @(Model.ThongTinKhachHang.GioiTinh == GioiTinh.Nu ? "checked" : "")> Nữ
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Birthday</label>
+                    <div class="birthday-group">
+                        @Html.DropDownListFor(m => m.NgaySinh, Model.CacNgay, "Ngày", new { @class = "form-input" })
+                        @Html.DropDownListFor(m => m.ThangSinh, Model.CacThang, "Tháng", new { @class = "form-input" })
+                        @Html.DropDownListFor(m => m.NamSinh, Model.CacNam, "Năm", new { @class = "form-input" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Số điện thoại</label>
+                    <div class="input-with-link">
+                        <input type="text" class="form-input" asp-for="ThongTinKhachHang.DienThoai" readonly id="profilePhoneInput">
+                        <span class="change-link-inside" onclick="editField('phone')">Thay đổi</span>
+                    </div>
+                    <small id="phoneStatus" style="color:green; display:none;">✅ Số điện thoại đã xác thực</small>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required">Email</label>
+                    <div class="input-with-link">
+                        <input type="email" class="form-input" asp-for="ThongTinKhachHang.Email" readonly id="profileEmailInput">
+                        <span class="change-link-inside" onclick="editField('email')">Thay đổi</span>
+                    </div>
+                </div>
+
+                <div id="profileOtpSection" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label required">Mã xác thực</label>
+                        <div class="email-wrapper">
+                            <input asp-for="MaOTP" id="profileOtpInput" class="otp-input" placeholder="Nhập mã OTP" />
+                            <a href="javascript:void(0);" id="profileSendOtp" class="send-otp">Gửi mã</a>
+                        </div>
+                        <small id="otpHelpText">Mã xác thực sẽ được gửi đến email hiện tại của bạn.</small>
+                    </div>
+                    <small id="emailStatus" style="color:green; display:none;">✅ Email đã xác thực</small>
+                </div>
+
+                <div class="form-group form-btn">
+                    <button type="submit" class="btn-save" id="btnSavePersonInfo">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="address" class="content-section" style="display:none;">
+            @Html.AntiForgeryToken()
+            <div class="address-header">
+                <h2 class="section-title">Địa chỉ của tôi</h2>
+                <button type="button" class="btn-add-new" onclick="moPopupThemMoi()">+ Thêm địa chỉ mới</button>
+            </div>
+
+            <div class="address-list" id="address-list-container">
+                <div class="empty-address">Đang tải danh sách địa chỉ...</div>
+            </div>
+        </div>
+
+        <div id="password" class="content-section" style="display:none;">
+            <h2 class="section-title">Đổi mật khẩu</h2>
+            <form id="passwordForm" asp-action="DoiMatKhau" asp-controller="KhachHang" method="post" onsubmit="savePassword(event)">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label class="form-label required">Mật khẩu hiện tại</label>
+                    <input type="password" name="MatKhauHienTai" class="form-input" id="currentPassword" placeholder="Mật khẩu hiện tại">
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Mật khẩu mới</label>
+                    <input type="password" name="MatKhauMoi" class="form-input" id="newPassword" placeholder="Mật khẩu mới" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label required">Nhập lại mật khẩu mới</label>
+                    <input type="password" name="XacNhanMatKhauMoi" class="form-input" id="confirmNewPassword" placeholder="Nhập lại mật khẩu mới" readonly>
+                </div>
+                <div class="form-group form-btn">
+                    <button type="submit" class="btn-save" id="btnSavePassword">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="member" class="content-section" style="display:none;">
+            <div class="stats-section">
+                <div class="stats-box">
+                    <h3>Ưu đãi của bạn</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">F-Point hiện có</span>
+                        <span class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Freeship hiện có</span>
+                        <span class="stat-value">0 lần</span>
+                    </div>
+                </div>
+                <div class="stats-box">
+                    <h3>Thành tích năm 2025</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Số đơn hàng</span>
+                        <span class="stat-value">0 đơn hàng</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Đã thanh toán</span>
+                        <span class="stat-value">0 đ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member-tier">
+                <h2 class="section-title">Quyền lợi thành viên tại Fahasa.com</h2>
+                <div class="tier-tabs">
+                    <div class="tier-tab active" onclick="selectTier(event, 'silver')">
+                        <div class="tier-tab-icon silver-bg">
+                            <span class="crown-emoji">👑</span>
+                        </div>
+                        <div class="tier-tab-name">Hạng Bạc</div>
+                    </div>
+                    <div class="tier-tab" onclick="selectTier(event, 'gold')">
+                        <div class="tier-tab-icon gold-bg">
+                            <span class="crown-emoji">👑</span>
+                        </div>
+                        <div class="tier-tab-name">Hạng Vàng</div>
+                    </div>
+                    <div class="tier-tab" onclick="selectTier(event, 'diamond')">
+                        <div class="tier-tab-icon diamond-bg">
+                            <span class="crown-emoji">👑</span>
+                        </div>
+                        <div class="tier-tab-name">Kim cương</div>
+                    </div>
+                </div>
+                <div class="benefits-content">
+                    <div id="silver-benefits" class="benefits-panel active">
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Quà tặng sinh nhật:</span>
+                            <span class="benefit-value negative">✕</span>
+                        </div>
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Ưu đãi freeship và mã giảm giá:</span>
+                            <span class="benefit-value negative">✕</span>
+                        </div>
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Tỉ lệ tích lũy F-Point trên giá trị đơn hàng:</span>
+                            <span class="benefit-value positive">0,5%</span>
+                        </div>
+                    </div>
+                    <div id="gold-benefits" class="benefits-panel">
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Quà tặng sinh nhật:</span>
+                            <span class="benefit-value positive">100.000 F-Point</span>
+                        </div>
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Ưu đãi freeship và mã giảm giá:</span>
+                            <span class="benefit-value positive">2 lần</span>
+                        </div>
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Tỉ lệ tích lũy F-Point trên giá trị đơn hàng:</span>
+                            <span class="benefit-value positive">1%</span>
+                        </div>
+                    </div>
+                    <div id="diamond-benefits" class="benefits-panel">
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Quà tặng sinh nhật:</span>
+                            <span class="benefit-value positive">300.000 F-Point</span>
+                        </div>
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Ưu đãi freeship và mã giảm giá:</span>
+                            <span class="benefit-value positive">5 lần</span>
+                        </div>
+                        <div class="benefit-row">
+                            <span class="benefit-label">- Tỉ lệ tích lũy F-Point trên giá trị đơn hàng:</span>
+                            <span class="benefit-value positive">2%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="orders" class="content-section" style="display:none;">
+            @Html.AntiForgeryToken()
+            <h2 class="section-title">Đơn hàng của tôi</h2>
+            <div class="orders-container" id="orders-list-container">
+                <div class="empty-address">
+                    Đang tải danh đơn hàng...
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+<div id="addressPopupOverlay" class="popup-overlay" style="display:none;" onclick="dongPopupDiaChi()"></div>
+<div id="addressPopupModal" class="popup-modal" style="display:none;">
+    <div id="addressPopupContent"></div>
+</div>
+<div id="toastNotification" class="toast-notification"></div>
+@section Scripts {
+    <script>
+        // === JavaScript cho TAB (ĐÃ CẬP NHẬT) ===
+        function showSection(event, section) {
+            const sections = ['profile', 'address', 'password', 'member', 'orders'];
+            sections.forEach(s => {
+                const el = document.getElementById(s);
+                if (el) el.style.display = 'none';
+            });
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const activeSection = document.getElementById(section);
+            if (activeSection) activeSection.style.display = 'block';
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                const menuItem = document.querySelector(`.menu-item[onclick="showSection('${section}')"]`);
+                if(menuItem) menuItem.classList.add('active');
+            }
+
+            // ⭐ BỔ SUNG: Tải danh sách địa chỉ khi bấm tab 'address'
+            if (section === 'address') {
+                // Chỉ tải nếu danh sách chưa được tải (để tránh gọi API liên tục)
+                const container = document.getElementById('address-list-container');
+                if (container && (container.innerHTML.includes('Đang tải') || container.innerHTML.trim() === '')) {
+                     taiLaiDanhSachDiaChi();
+                }
+            }
+
+            if (section === 'orders') {
+                const container = document.getElementById('orders-list-container');
+                // Chỉ tải nếu chưa tải (hoặc đang hiển thị "Đang tải")
+                if (container && (container.innerHTML.includes('Đang tải') || container.innerHTML.trim() === '')) {
+                    taiLaiDanhSachDonHang();
+                }
+            }
+        }
+
+        function selectTier(event, tier) {
+            // (Code của bạn giữ nguyên)
+            document.querySelectorAll('.tier-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.benefits-panel').forEach(panel => panel.classList.remove('active'));
+            if (event && event.target) {
+                event.target.closest('.tier-tab').classList.add('active');
+            }
+            const benefitsPanel = document.getElementById(tier + '-benefits');
+            if(benefitsPanel) benefitsPanel.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('profile').style.display = 'block';
+        });
+
+        // === JavaScript cho POPUP ĐỊA CHỈ ===
+        const popup = document.getElementById('addressPopupModal');
+        const popupOverlay = document.getElementById('addressPopupOverlay');
+        const popupContent = document.getElementById('addressPopupContent');
+
+        // 1. Hàm Mở Popup (Giữ nguyên logic $.get)
+        function moPopupThemMoi(event) {
+            if (event) event.preventDefault();
+            var url = '@Url.Action("ThemDiaChiPartial", "KhachHang", new { area = "Customer" })';
+
+            $.get(url, function (data) {
+                $(popupContent).html(data);
+                initAddressDropdownsPopup(null); // Khởi tạo dropdown và form submit
+                $(popupOverlay).fadeIn(200);
+                $(popup).fadeIn(200);
+            });
+        }
+
+        function moPopupSuaDiaChi(maDiaChi) {
+            var url = `@Url.Action("SuaDiaChiPartial", "KhachHang", new { area = "Customer" })?maDiaChi=${maDiaChi}`;
+
+            $.get(url, function (data) {
+                $(popupContent).html(data);
+                // Đọc các giá trị đã lưu từ data-* attributes
+                const form = $(popupContent).find('form');
+                const preselectData = {
+                    tinh: form.data('tinh-thanh'),
+                    huyen: form.data('quan-huyen'),
+                    xa: form.data('phuong-xa')
+                };
+                initAddressDropdownsPopup(preselectData); // Khởi tạo lại dropdown
+                $('#popupTitle').text('Cập nhật địa chỉ');
+                $(popupOverlay).fadeIn(200);
+                $(popup).fadeIn(200);
+            }).fail(function() {
+                showToast("Không thể tải thông tin địa chỉ.", true);
+            });
+        }
+
+        // 2. ⭐ HÀM INIT (ĐÃ SỬA: Bỏ ajaxSubmit, thay bằng fetch)
+        function initAddressDropdownsPopup(preselect) {
+            let provinceSelect = document.getElementById('provinceSelect');
+            let districtSelect = document.getElementById('districtSelect');
+            let wardSelect = document.getElementById('wardSelect');
+
+            let tenNguoiNhan = document.getElementById('tenNguoiNhan');
+            let soDienThoai = document.getElementById('soDienThoai');
+            let diaChiChiTiet = document.getElementById('diaChiChiTiet');
+
+            let saveButton = document.getElementById('btnLuuDiaChi');
+
+            // Lấy 6 span báo lỗi
+            let tenNguoiNhanError = document.getElementById('tenNguoiNhanError');
+            let soDienThoaiError = document.getElementById('soDienThoaiError');
+            let provinceError = document.getElementById('provinceError');
+            let districtError = document.getElementById('districtError');
+            let wardError = document.getElementById('wardError');
+            let diaChiError = document.getElementById('diaChiChiTietError');
+            if (!provinceSelect || !districtSelect || !wardSelect || !diaChiChiTiet || !saveButton || !tenNguoiNhan || !soDienThoai) {
+                console.error("Không tìm thấy các dropdown trong partial view.");
+                return;
+            }
+
+            const urlGetProvinces = '@Url.Action("GetProvinces", "Home", new { area = "Customer" })';
+            const urlGetDistricts = '@Url.Action("GetDistricts", "Home", new { area = "Customer" })';
+            const urlGetWards = '@Url.Action("GetWards", "Home", new { area = "Customer" })';
+
+            // --- Hàm Kiểm Tra Validation (Kiểm tra cả 6 trường) ---
+            function kiemTraHopLe() {
+                const tenHopLe = tenNguoiNhan.value.trim() !== "";
+                const sdtHopLe = soDienThoai.value.trim() !== "";
+                const tinhThanhHopLe = provinceSelect.value !== "";
+                const quanHuyenHopLe = districtSelect.value !== "";
+                const phuongXaHopLe = wardSelect.value !== "";
+                const diaChiHopLe = diaChiChiTiet.value.trim() !== "";
+
+                // Ẩn/hiện lỗi
+                if(tenNguoiNhanError) tenNguoiNhanError.style.display = tenHopLe ? 'none' : 'block';
+                if(soDienThoaiError) soDienThoaiError.style.display = sdtHopLe ? 'none' : 'block';
+                if(provinceError) provinceError.style.display = tinhThanhHopLe ? 'none' : 'block';
+                if(districtError) districtError.style.display = (tinhThanhHopLe && !quanHuyenHopLe) ? 'block' : 'none';
+                if(wardError) wardError.style.display = (tinhThanhHopLe && quanHuyenHopLe && !phuongXaHopLe) ? 'block' : 'none';
+                if(diaChiError) diaChiError.style.display = diaChiHopLe ? 'none' : 'block';
+
+                const tatCaHopLe = tenHopLe && sdtHopLe && tinhThanhHopLe && quanHuyenHopLe && phuongXaHopLe && diaChiHopLe;
+                saveButton.disabled = !tatCaHopLe;
+                if (tatCaHopLe) { saveButton.classList.remove('disabledBtn'); }
+                else { saveButton.classList.add('disabledBtn'); }
+            }
+
+            // --- Hàm Tải Huyện (Tách ra) ---
+            function loadDistricts(provinceCode, callback) {
+                districtSelect.disabled = true;
+                districtSelect.innerHTML = '<option value="">Đang tải...</option>';
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = true;
+
+                $.getJSON(urlGetDistricts, { provinceCode: provinceCode }, function (data) {
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    let selectedDistrictCode = null;
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        districtSelect.appendChild(opt);
+
+                        if (preselect && opt.textContent === preselect.huyen) {
+                            opt.selected = true;
+                            selectedDistrictCode = opt.value;
+                        }
+                    });
+                    districtSelect.disabled = false;
+
+                    if (selectedDistrictCode && callback) {
+                        callback(selectedDistrictCode);
+                    } else {
+                        kiemTraHopLe();
+                    }
+                });
+            }
+
+            // --- Hàm Tải Xã (Tách ra) ---
+            function loadWards(districtCode, callback) {
+                wardSelect.disabled = true;
+                wardSelect.innerHTML = '<option value="">Đang tải...</option>';
+
+                $.getJSON(urlGetWards, { districtCode: districtCode }, function (data) {
+                    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                    data.forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.value || item.Value;
+                        opt.textContent = item.text || item.Text;
+                        wardSelect.appendChild(opt);
+
+                        if (preselect && opt.textContent === preselect.xa) {
+                            opt.selected = true;
+                        }
+                    });
+                    wardSelect.disabled = false;
+                    if(callback) callback();
+                });
+            }
+
+            // --- Khi chọn tỉnh ---
+            provinceSelect.onchange = function () {
+                const provinceCode = this.value;
+                $('#hiddenTinhThanh').val($(this).find('option:selected').text());
+                $('#hiddenMaTinhThanh').val(provinceCode);
+                districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                wardSelect.disabled = true;
+                if (!provinceCode) {
+                    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+                    districtSelect.disabled = true;
+                    kiemTraHopLe();
+                    return;
+                }
+                loadDistricts(provinceCode, (districtCode) => {
+                    loadWards(districtCode, kiemTraHopLe);
+                });
+            };
+
+            // --- Khi chọn huyện ---
+            districtSelect.onchange = function () {
+                const districtCode = this.value;
+                $('#hiddenQuanHuyen').val($(this).find('option:selected').text());
+                $('#hiddenMaQuanHuyen').val(districtCode);
+                wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+                if (!districtCode) {
+                    wardSelect.disabled = true;
+                    kiemTraHopLe();
+                    return;
+                }
+                loadWards(districtCode, kiemTraHopLe);
+            };
+
+            // --- Khi chọn xã ---
+            wardSelect.onchange = function () {
+                const wardCode = this.value;
+                $('#hiddenPhuongXa').val($(this).find('option:selected').text());
+                $('#hiddenMaPhuongXa').val(wardCode);
+                kiemTraHopLe();
+            };
+
+            tenNguoiNhan.oninput = kiemTraHopLe;
+            soDienThoai.oninput = kiemTraHopLe;
+            diaChiChiTiet.oninput = kiemTraHopLe;
+
+            // --- Load tỉnh/thành ---
+            $.getJSON(urlGetProvinces, function (data) {
+                provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+                let selectedProvinceCode = null;
+                data.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.value || item.Value;
+                    opt.textContent = item.text || item.Text;
+                    provinceSelect.appendChild(opt);
+
+                    if (preselect && opt.textContent === preselect.tinh) {
+                        opt.selected = true;
+                        selectedProvinceCode = opt.value;
+                    }
+                });
+                provinceSelect.disabled = false;
+
+                if (selectedProvinceCode) {
+                    loadDistricts(selectedProvinceCode, (districtCode) => {
+                        loadWards(districtCode, kiemTraHopLe);
+                    });
+                } else {
+                    kiemTraHopLe();
+                }
+            });
+
+            // ⭐ MỚI: Bắt sự kiện submit form (thay thế ajaxSubmit)
+            $(popupContent).find('form').off('submit').on('submit', function (e) {
+                e.preventDefault(); // Ngăn submit
+
+                const form = this;
+                // Lấy AntiForgeryToken từ div#address
+                const token = $('#address input[name="__RequestVerificationToken"]').val();
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token
+                    },
+                    body: new FormData(form) // Gửi dữ liệu form
+                })
+                .then(response => {
+                    const contentType = response.headers.get('content-type');
+                    // Kiểm tra xem controller có trả về lỗi validation không
+                    if (response.status === 400 || (contentType && contentType.includes('text/html'))) {
+                        // LỖI VALIDATION (Controller trả về PartialView)
+                        return response.text().then(html => {
+                            throw new Error(html); // Ném HTML ra để catch xử lý
+                        });
+                    }
+                    if (response.ok && contentType && contentType.includes('application/json')) {
+                        // THÀNH CÔNG (Controller trả về JSON)
+                        return response.json();
+                    }
+                    // Các lỗi server 500
+                    return response.text().then(err => { throw new Error('Lỗi server: ' + err); });
+                })
+                .then(data => {
+                    // XỬ LÝ KHI THÀNH CÔNG (JSON)
+                    if (data.success) {
+                        dongPopupDiaChi();
+                        taiLaiDanhSachDiaChi(); // Tải lại danh sách
+                        showToast(data.message, false);
+                    } else {
+                        showToast(data.message, true);
+                    }
+                })
+                .catch(error => {
+                    // XỬ LÝ KHI LỖI VALIDATION (HTML)
+                    if (error.message.startsWith('<form')) {
+                        $(popupContent).html(error.message); // Tải lại HTML vào popup
+                        initAddressDropdownsPopup(preselect); // Phải khởi tạo lại
+                        showToast("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.", true);
+                    } else {
+                        // Lỗi mạng hoặc lỗi server 500
+                        console.error("Lỗi submit form:", error);
+                        showToast("Đã xảy ra lỗi. Vui lòng thử lại.", true);
+                    }
+                });
+            });
+        }
+
+        // 3. Hàm Đóng Popup (Giữ nguyên)
+        function dongPopupDiaChi() {
+            $(popupOverlay).fadeOut(200);
+            $(popup).fadeOut(200, function() {
+                $(popupContent).html('');
+            });
+        }
+
+        // 4. Hàm tải lại danh sách địa chỉ (Giữ nguyên)
+        function taiLaiDanhSachDiaChi() {
+            var url = '@Url.Action("DanhSachDiaChi", "KhachHang", new { area = "Customer" })';
+            $('#address-list-container').html('<div class="empty-address">Đang tải...</div>');
+
+            $.get(url, function(data) {
+                $('#address-list-container').html(data);
+            });
+        }
+
+        // 5. Hàm hiển thị thông báo (Giữ nguyên)
+        function showToast(message, isError = false) {
+            const toast = $('#toastNotification');
+            toast.text(message);
+            if (isError) {
+                toast.addClass('error');
+            } else {
+                toast.removeClass('error');
+            }
+            toast.fadeIn(400).delay(3000).fadeOut(400);
+        }
+
+        // 6. Hàm Xóa và Đặt Mặc Định (Giữ nguyên)
+        function xoaDiaChi(maDiaChi) {
+            if (!confirm("Bạn có chắc muốn xóa địa chỉ này?")) return;
+            const token = $('#address input[name="__RequestVerificationToken"]').val();
+
+            $.post('@Url.Action("XoaDiaChi", "KhachHang", new { area = "Customer" })', { maDiaChi: maDiaChi, __RequestVerificationToken: token })
+                .done(function (data) {
+                    if (data.success) {
+                        showToast(data.message, false);
+                        taiLaiDanhSachDiaChi();
+                    } else {
+                        showToast(data.message, true);
+                    }
+                })
+                .fail(function() { showToast("Đã xảy ra lỗi. Vui lòng thử lại.", true); });
+        }
+
+        function datMacDinh(maDiaChi) {
+            const token = $('#address input[name="__RequestVerificationToken"]').val();
+
+            $.post('@Url.Action("DatMacDinh", "KhachHang", new { area = "Customer" })', { maDiaChi: maDiaChi, __RequestVerificationToken: token })
+                .done(function (data) {
+                    if (data.success) {
+                        showToast(data.message, false);
+                        taiLaiDanhSachDiaChi();
+                    } else {
+                        showToast(data.message, true);
+                    }
+                })
+                .fail(function() { showToast("Đã xảy ra lỗi. Vui lòng thử lại.", true); });
+        }
+
+        // === Tải dữ liệu lần đầu ===
+        $(document).ready(function () {
+
+            // Xử lý khi có lỗi validation từ server (khi reload)
+            var openPopup = '@(TempData["OpenAddressPopup"] ?? "false")';
+            if (openPopup.toLowerCase() === 'true') {
+                showSection(null, 'address');
+                showToast("@TempData["ErrorMessage"]", true);
+
+                // Mở popup Thêm Mới
+                moPopupThemMoi(null);
+            }
+        });
+
+        function taiLaiDanhSachDonHang() {
+            const container = $('#orders-list-container');
+            container.html('<div class="empty-address">Đang tải đơn hàng...</div>');
+
+            var url = '@Url.Action("DanhSachDonHangPartial", "KhachHang", new { area = "Customer" })';
+            $.get(url, function(data) {
+                container.html(data);
+            }).fail(function() {
+                container.html('<div class="empty-address">Lỗi khi tải đơn hàng. Vui lòng thử lại.</div>');
+            });
+        }
+
+        // Hàm xử lý nút Hủy Đơn
+        function huyDonHang(maDonHang, element) {
+            if (!confirm("Bạn có chắc chắn muốn hủy đơn hàng này không?")) {
+                return;
+            }
+
+            // Lấy token từ form địa chỉ (vì chúng cùng trang)
+            const token = $('#address input[name="__RequestVerificationToken"]').val();
+            if (!token) {
+                showToast("Không tìm thấy token. Vui lòng tải lại trang.", true);
+                return;
+            }
+
+            $(element).text('Đang hủy...').prop('disabled', true);
+
+            $.post('@Url.Action("HuyDonHang", "KhachHang", new { area = "Customer" })', { maDonHang: maDonHang, __RequestVerificationToken: token })
+                .done(function (data) {
+                    if (data.success) {
+                        showToast(data.message, false);
+                        taiLaiDanhSachDonHang(); // Tải lại danh sách sau khi hủy
+                    } else {
+                        showToast(data.message, true);
+                        $(element).text('Hủy đơn').prop('disabled', false);
+                    }
+                })
+                .fail(function() {
+                    showToast("Đã xảy ra lỗi. Vui lòng thử lại.", true);
+                    $(element).text('Hủy đơn').prop('disabled', false);
+                });
+        }
+
+        // (Bạn tự định nghĩa các hàm này)
+        function xemChiTietDonHang(maDonHang) {
+            // (Chuyển hướng đến trang Chi Tiết Đơn Hàng)
+            showToast("Chức năng 'Xem chi tiết' cho đơn " + maDonHang + " chưa được cài đặt.", true);
+        }
+
+        function muaLai(maDonHang) {
+            // (Logic thêm các sản phẩm của đơn hàng cũ vào giỏ hàng)
+            showToast("Chức năng 'Mua lại' cho đơn " + maDonHang + " chưa được cài đặt.", true);
+        }
+
+        function theoDoiDonHang(maDonHang) {
+            showToast("Chức năng 'Theo dõi' cho đơn " + maDonHang + " chưa được cài đặt.", true);
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            const form = $(event.target);
+            const btn = form.find('#btnSavePersonInfo');
+            const token = form.find('input[name="__RequestVerificationToken"]').val();
+
+            btn.text('Đang lưu...').prop('disabled', true);
+
+            // Tạo FormData và XÓA các trường nhạy cảm
+            const formData = new FormData(event.target);
+            formData.delete("ThongTinKhachHang.Email");
+            formData.delete("ThongTinKhachHang.DienThoai");
+            formData.delete("MaOTP");
+
+            fetch(form.action, { // (Gọi action 'CapNhatHoSo')
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, false);
+                    $('.profile-name').text(data.hoTenMoi);
+                    $('input[name="gender"]').prop('checked', false);
+                    if (data.gioiTinh !== null) {
+                         $('input[name="gender"][value="' + data.gioiTinh + '"]').prop('checked', true);
+                    }
+                    $('#NgaySinh').val(data.ngaySinh || "");
+                    $('#ThangSinh').val(data.thangSinh || "");
+                    $('#NamSinh').val(data.namSinh || "");
+                } else {
+                    showToast(data.message || 'Lưu thất bại.', true);
+                }
+            })
+            .catch(err => showToast('Đã xảy ra lỗi. Vui lòng thử lại.', true))
+            .finally(() => btn.text('Lưu thay đổi').prop('disabled', false));
+        }
+
+        // ⭐ 2. HÀM KÍCH HOẠT CHẾ ĐỘ SỬA (Bấm "Thay đổi")
+        function editField(fieldType) {
+            if (fieldType === 'phone') {
+                $('#profilePhoneInput').prop('readonly', false).focus();
+            }
+            if (fieldType === 'email') {
+                $('#profileEmailInput').prop('readonly', false).focus();
+            }
+
+            $('#profileOtpSection').slideDown();
+            // Đổi hành động của nút "Lưu thay đổi"
+            $('#btnSavePersonInfo').text('Lưu SĐT/Email')
+                                   .attr('onsubmit', 'saveSensitiveInfo(event)');
+            // Gỡ bỏ onsubmit của form
+            $('#profileForm').attr('onsubmit', 'saveSensitiveInfo(event)');
+        }
+
+        // ⭐ 3. HÀM GỬI OTP (Bấm "Gửi mã")
+        $('#profileSendOtp').on('click', function() {
+            const btn = $(this);
+            const token = $('#profileForm input[name="__RequestVerificationToken"]').val();
+            const emailMoi = $('#profileEmailInput').val();
+
+            if (!emailMoi) {
+                showToast("Vui lòng nhập email mới trước.", true);
+                return;
+            }
+            btn.text('Đang gửi...').prop('disabled', true);
+
+            $.post('@Url.Action("GuiMaXacThucCapNhat", "KhachHang")', { "__RequestVerificationToken": token,
+            "emailMoi": emailMoi })
+                .done(function(data) {
+                    showToast(data.message, !data.success);
+                    if (data.success) { $('#profileOtpInput').focus(); }
+                })
+                .fail(function() { showToast('Lỗi kết nối.', true); })
+                .always(function() { btn.text('Gửi mã').prop('disabled', false); });
+        });
+
+        // ⭐ 4. HÀM LƯU THÔNG TIN NHẠY CẢM
+        function saveSensitiveInfo(event) {
+            event.preventDefault();
+            const form = $('#profileForm');
+            const btn = form.find('#btnSavePersonInfo');
+            const token = form.find('input[name="__RequestVerificationToken"]').val();
+
+            btn.text('Đang lưu...').prop('disabled', true);
+
+            $.post('@Url.Action("XacNhanCapNhat", "KhachHang")', form.serialize())
+            .done(function(data) {
+                if (data.success) {
+                    showToast(data.message, false);
+                    // Reset lại form về trạng thái ban đầu
+                    $('#profilePhoneInput').prop('readonly', true).val(data.newPhone);
+                    $('#profileEmailInput').prop('readonly', true).val(data.newEmail);
+                    $('#profileOtpSection').slideUp();
+                    $('#profileOtpInput').val('');
+                    // Đổi nút "Lưu" về lại trạng thái ban đầu
+                    btn.text('Lưu thay đổi');
+                    form.attr('onsubmit', 'saveProfile(event)');
+                } else {
+                    showToast(data.message, true);
+                }
+            })
+            .fail(function() { showToast('Lỗi kết nối.', true); })
+            .always(function() {
+                // (Chỉ bật lại nếu lỗi, nếu thành công thì đã reset)
+                if ($('#profileOtpSection').is(':visible')) {
+                     btn.text('Lưu SĐT/Email').prop('disabled', false);
+                }
+            });
+        }
+
+        const currentPass = document.getElementById('currentPassword');
+        const newPass = document.getElementById('newPassword');
+        const confirmPass = document.getElementById('confirmNewPassword');
+        const savePassBtn = document.getElementById('btnSavePassword');
+
+        if (currentPass) { // Đảm bảo các element tồn tại
+            currentPass.addEventListener('input', function() {
+                if (currentPass.value.trim().length > 0) {
+                    // Mở khóa 2 ô input
+                    newPass.readOnly = false;
+                    confirmPass.readOnly = false;
+                    savePassBtn.disabled = false; // Bật nút Lưu
+                } else {
+                    // Khóa lại nếu người dùng xóa hết
+                    newPass.readOnly = true;
+                    newPass.value = ''; // Xóa nếu người dùng xóa pass cũ
+                    confirmPass.readOnly = true;
+                    confirmPass.value = ''; // Xóa
+                    savePassBtn.disabled = true; // Tắt nút Lưu
+                }
+            });
+        }
+
+        // ⭐ 2. LOGIC LƯU MẬT KHẨU MỚI (AJAX)
+        function savePassword(event) {
+            event.preventDefault(); // Ngăn form submit
+
+            const form = event.target; // form#passwordForm
+            const btn = $(form).find('#btnSavePassword');
+            const token = $(form).find('input[name="__RequestVerificationToken"]').val();
+
+            btn.text('Đang lưu...').prop('disabled', true); // Vô hiệu hóa nút khi gửi
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                body: new FormData(form)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showToast(data.message, !data.success);
+
+                if (data.success) {
+                    // 1. THÀNH CÔNG:
+                    form.reset(); // Xóa sạch các ô input
+                    // Khóa lại các trường
+                    newPass.readOnly = true;
+                    confirmPass.readOnly = true;
+                    // Nút "Lưu" sẽ tự động bị vô hiệu hóa do form.reset()
+                    // kích hoạt 'currentPass.addEventListener'
+                } else {
+                    // 2. LỖI (vd: Sai mật khẩu)
+                    form.reset(); // Xóa sạch các ô input
+                    // Khóa lại các trường
+                    newPass.readOnly = true;
+                    confirmPass.readOnly = true;
+                }
+            })
+            .catch(err => {
+                showToast('Đã xảy ra lỗi kết nối. Vui lòng thử lại.', true);
+
+                // 3. LỖI (vd: 500, mạng rớt)
+                form.reset(); // Xóa sạch các ô input
+                // Khóa lại các trường
+                newPass.readOnly = true;
+                confirmPass.readOnly = true;
+            })
+            .finally(() => {
+                // ⭐ SỬA LỖI: Luôn luôn đặt lại văn bản của nút
+                // (Nút "Lưu" sẽ bị khóa/mở bởi listener,
+                // nhưng text của nó phải được reset về "Lưu thay đổi")
+                btn.text('Lưu thay đổi');
+            });
+        }
+    </script>
+}

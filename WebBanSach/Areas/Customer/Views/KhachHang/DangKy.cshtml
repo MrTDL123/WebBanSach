@@ -1,0 +1,156 @@
+﻿@model Media.Models.ViewModels.DangKyVM
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+@section PageStyles {
+    <link rel="stylesheet" href="~/css/pages/khachhang/dangky.css" asp-append-version="true" />
+}
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2>Đăng ký tài khoản</h2>
+            <p>Tạo tài khoản để mua sắm dễ dàng hơn</p>
+        </div>
+
+        <form asp-action="DangKy" asp-controller="KhachHang" method="post" id="formDangKy">
+            <!-- Họ tên -->
+            <div class="form-group">
+                <label asp-for="HoTen" class="required">Họ tên</label>
+                <input asp-for="HoTen" placeholder="Nhập họ tên của bạn" />
+                <span asp-validation-for="HoTen" class="error"></span>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label asp-for="Email" class="required">Email</label>
+                <div class="email-wrapper">
+                    <input asp-for="Email" id="emailInput" placeholder="Nhập email của bạn VD:(nguyenvana@gmail.com)" />
+                    <a href="javascript:void(0);" id="sendEmailOtp" class="send-otp">Gửi OTP</a>
+                </div>
+                <small id="emailStatus" style="color:green; display:none;">✅ Email đã xác thực</small>
+                <span asp-validation-for="Email" class="error"></span>
+            </div>
+
+            <!-- Số điện thoại -->
+            <div class="form-group">
+                <label asp-for="SoDienThoai" class="required">Số điện thoại</label>
+                <input asp-for="SoDienThoai" id="phoneInput" placeholder="Nhập số điện thoại" />
+                <div id="otpWrapper" style="margin-top:8px;">
+                    <input asp-for="MaOTP" id="otpInput" class="otp-input" placeholder="Nhập mã OTP" readonly />
+                </div>
+                <small id="phoneStatus" style="color:green; display:none;">✅ Số điện thoại đã xác thực</small>
+                <span asp-validation-for="SoDienThoai" class="error"></span>
+            </div>
+
+            <!-- Địa chỉ -->
+            <div class="form-group">
+                <label asp-for="DiaChi">Địa chỉ</label>
+                <input asp-for="DiaChi" placeholder="Nhập địa chỉ" />
+                <span asp-validation-for="DiaChi" class="error"></span>
+            </div>
+
+            <!-- Mật khẩu -->
+            <div class="form-group">
+                <label asp-for="MatKhau" class="required">Mật khẩu</label>
+                <input asp-for="MatKhau" type="password" id="matKhau" placeholder="Nhập mật khẩu" disabled />
+                <span asp-validation-for="MatKhau" class="error"></span>
+            </div>
+
+            <!-- Xác nhận mật khẩu -->
+            <div class="form-group">
+                <label asp-for="XacNhanMatKhau" class="required">Xác nhận mật khẩu</label>
+                <input asp-for="XacNhanMatKhau" type="password" id="xacNhanMatKhau" placeholder="Nhập lại mật khẩu" disabled />
+                <span asp-validation-for="XacNhanMatKhau" class="error"></span>
+            </div>
+
+            <button type="submit" id="btnDangKy" class="btn-auth disabled" disabled>Đăng ký</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>
+                Đã có tài khoản?
+                <a asp-area="Customer" asp-controller="KhachHang" asp-action="DangNhap">Đăng nhập ngay</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const emailInput = document.getElementById("emailInput");
+        const phoneInput = document.getElementById("phoneInput");
+        const sendEmailOtp = document.getElementById("sendEmailOtp");
+        const otpWrapper = document.getElementById("otpWrapper");
+        const otpInput = document.getElementById("otpInput");
+        const emailStatus = document.getElementById("emailStatus");
+        const phoneStatus = document.getElementById("phoneStatus");
+
+        const matKhau = document.getElementById("matKhau");
+        const xacNhanMatKhau = document.getElementById("xacNhanMatKhau");
+        const btnDangKy = document.getElementById("btnDangKy");
+
+        // Hiển thị nút "Gửi OTP" khi có cả email và số điện thoại
+        function checkShowSendOtp() {
+            if (emailInput.value.trim() !== "" && phoneInput.value.trim() !== "") {
+                sendEmailOtp.style.display = "inline-block";
+            } else {
+                sendEmailOtp.style.display = "none";
+            }
+        }
+
+        emailInput.addEventListener("input", checkShowSendOtp);
+        phoneInput.addEventListener("input", checkShowSendOtp);
+
+        // ===== GỬI OTP =====
+        sendEmailOtp.addEventListener("click", () => {
+            const email = emailInput.value.trim();
+            const phone = phoneInput.value.trim();
+
+            if (!email || !phone) {
+                alert("Vui lòng nhập cả email và số điện thoại trước khi gửi OTP!");
+                return;
+            }
+
+            sendEmailOtp.style.display = "none"; // ẩn tạm nút khi đang gửi
+
+            fetch(`/Customer/KhachHang/GuiOTP?soDienThoai=${phone}&email=${email}`)
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        otpWrapper.style.display = "block";
+                        otpInput.readOnly = false;
+                        otpInput.focus();
+                    } else {
+                        sendEmailOtp.style.display = "inline-block";
+                    }
+                })
+                .catch(() => {
+                    alert("Có lỗi khi gửi OTP, vui lòng thử lại!");
+                    sendEmailOtp.style.display = "inline-block";
+                });
+        });
+
+        // ===== NHẬP MÃ OTP =====
+        otpInput.addEventListener("input", e => {
+            if (e.target.value.trim().length === 6) {
+                emailStatus.style.display = "block";
+                phoneStatus.style.display = "block";
+
+                otpInput.readOnly = true;
+                alert("Đã xác thực email và số điện thoại!");
+
+                enablePassword();
+            }
+        });
+
+        // ===== KÍCH HOẠT NHẬP MẬT KHẨU =====
+        function enablePassword() {
+            matKhau.disabled = false;
+            xacNhanMatKhau.disabled = false;
+            btnDangKy.classList.remove("disabled");
+            btnDangKy.disabled = false;
+        }
+    </script>
+}

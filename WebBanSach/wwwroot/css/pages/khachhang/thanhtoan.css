@@ -1,0 +1,408 @@
+﻿* {
+    font-family: Montserrat;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.checkout-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.section-title-checkout {
+    color: #0d3b66;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.address-container-checkout {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-control .dropdownlist {
+    cursor: pointer;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #2196f3;
+}
+
+.form-control.input-validation-error {
+    border-color: #f44336;
+}
+
+.text-danger {
+    color: #f44336;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+.shipping-method {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.shipping-method-container {
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.note-method {
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.note-label {
+    width: 100px;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.note {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    background: none;
+}
+
+.note:focus {
+    outline: none;
+    border-color: #c92127;
+    box-shadow: none;
+}
+
+.shipping-method input[type="radio"] {
+    accent-color: #f44336;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.shipping-method .method-info {
+    flex: 1;
+}
+
+.shipping-method .method-price {
+    font-weight: bold;
+    color: #f44336;
+}
+
+.shipping-method .method-note {
+    font-size: 13px;
+    color: #666;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.product-info-checkout {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.product-name-checkout {
+    width: 70%;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.product-price-checkout {
+    width: 12%;
+    font-weight: bold;
+    color: #f44336;
+}
+
+.product-quantity {
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+.summary-name-phone {
+    font-weight: bold;
+}
+
+.summary-address {
+    display:block; 
+    margin-top:5px; 
+    color:#555;
+    font-weight: 600;
+}
+
+.summary-default-badge {
+    border: 2px solid #28a745; 
+    color: #28a745; 
+    font-size: 12px; 
+    padding: 2px 6px; 
+    border-radius: 4px; 
+    display: inline-block; 
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.summary-row.total {
+    font-weight: bold;
+    font-size: 18px;
+    color: #f44336;
+}
+
+.order-summary .btn-submit {
+    width: 100%;
+    padding: 15px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #d32f2f;
+}
+
+.grid-2col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 50px;
+}
+
+.quantity-section-checkout {
+    display: flex;
+    align-items: center;
+    width: 17%;
+}
+
+.quantity-control-checkout {
+    display: flex;
+    height: 32px;
+    border: 1px solid #ececec;
+    border-radius: 4px;
+}
+
+.btn-qty-checkout {
+    width: 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-qty-checkout:hover {
+    background: #b2b0b0;
+    border-radius: 4px;
+}
+
+.qtyCheckout {
+    width: 50px;
+    text-align: center;
+    border: none;
+    font-weight: 700;
+    cursor: unset;
+}
+
+.delete-btn {
+    border: none;
+    background: white;
+    cursor: pointer;
+    font-size: 18px;
+    transition: color 0.2s;
+}
+
+.delete-btn i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-btn:hover {
+    color: #d32f2f;
+}
+
+/* Khi hover vào các dropdown thì con trỏ là pointer */
+#provinceSelect:hover,
+#districtSelect:hover,
+#wardSelect:hover {
+    cursor: pointer;
+}
+
+/* Khi dropdown bị disabled, đổi màu nền và con trỏ */
+#districtSelect:disabled,
+#wardSelect:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+/* CSS riêng cho popup chọn địa chỉ */
+.address-card-popup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.address-card-main-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.address-card-popup:hover {
+    border-color: #c92127;
+}
+
+.address-card-popup.selected {
+    background-color: #e7f3ff;
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+.address-card-popup input[type="radio"] {
+    margin-right: 15px;
+    margin-top: 5px;
+    accent-color: #c92127;
+}
+
+.popup-footer {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-add-new-popup {
+    width: 30%;
+    padding: 12px;
+    background: none;
+    border: 2px dashed #c92127;
+    color: #c92127;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.action-link-checkout {
+    background: none;
+    border: none;
+    color: #3571E9;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.action-link-checkout:hover {
+    color: #F22C36;
+}
+
+.payment-option {
+    margin-bottom: 15px; /* Khoảng cách giữa 2 lựa chọn */
+}
+
+/* Khi input được chọn, đổi viền của div cha */
+.payment-option:has(input:checked) {
+    font-weight: 600; /* Giả sử đây là màu đỏ chủ đạo của bạn */
+}
+
+.payment-option label.method-info {
+    cursor: pointer; /* Biến toàn bộ label thành nút bấm */
+}
+
+.payment-option input[type="radio"] {
+    margin-top: 5px; /* Căn chỉnh radio button với dòng chữ */
+    align-self: flex-start;
+    accent-color: #f44336;
+    cursor: pointer;
+}
+
+.order-details .order-more-items {
+    font-size: 13px;
+    color: #666; /* Màu xám mờ */
+    margin-top: 4px;
+}

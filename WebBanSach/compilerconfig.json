@@ -2,5 +2,9 @@
   {
     "outputFile": "wwwroot/css/main.css",
     "inputFile": "wwwroot/css/main.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/khachangdangnhapdangky.css",
+    "inputFile": "wwwroot/css/khachangdangnhapdangky.scss"
   }
 ]

@@ -1,0 +1,123 @@
+﻿/*TỦ SÁCH 0 ĐỒNG*/
+#sach_tu_thien_container {
+    background-color: #58D68D;
+    background-image: linear-gradient(to bottom, #58D68D 0%, #ABEBC6 40%, #FFFFFF 100%);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#sach_tu_thien_title {
+    align-items: center;
+    border-bottom: 1px solid white;
+}
+
+    #sach_tu_thien_title img {
+        width: 2.5rem;
+    }
+
+    #sach_tu_thien_title p {
+        color: white;
+        font-size: 1.25rem;
+    }
+
+#sach_tu_thien_list {
+    padding-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+
+.book-item {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+    
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+    .book-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .book-item a {
+        text-decoration: none;
+        color: #333;
+        display: block; /* Đảm bảo link bao trọn */
+    }
+
+.book-image-container {
+    position: relative; /* Để đặt badge "Miễn Phí" */
+    text-align: center;
+}
+
+    .book-image-container img {
+        width: 100%;
+        height: 200px; /* Đặt chiều cao cố định để sách đồng đều */
+        object-fit: contain; /* Giữ tỷ lệ ảnh, không bị méo */
+        padding: 5px;
+    }
+
+.free-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: lawngreen; /* Màu xanh lá như trong title */
+    color: #333; /* Màu chữ tối cho dễ đọc */
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.book-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.book-title {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    /* Cắt văn bản nếu quá 2 dòng */
+    height: 40px; /* (1.4 * 0.95rem * 2) ~ 40px */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.book-price .sale-price {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #28a745; /* Màu xanh lá */
+    margin-right: 8px;
+}
+
+
+.view-all-container {
+    text-align: center;
+    margin-top: 2rem; /* Khoảng cách với lưới sách bên trên */
+}
+
+/* Style cho chính nút "Xem tất cả" */
+.btn-view-all {
+    display: inline-block;
+    padding: 10px 30px;
+    font-size: 1rem;
+    color: white; /* Màu đỏ chủ đạo */
+    background-color: #0ce682;
+    border: 4px solid #0ce682; /* Viền màu đỏ */
+
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+    /* Hiệu ứng hover: Đổi màu nền và màu chữ */
+    .btn-view-all:hover {
+        background-color: #041721;
+        color: #0ce682;
+        border-color: #0ce682;
+    }

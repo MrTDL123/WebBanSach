@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="shortcut icon" type="image/x-icon" href="~/img/web_img/logo.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-straight/css/uicons-regular-straight.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,13 +14,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <environment include="Development">
         <link rel="stylesheet" href="~/css/main.css" />
+        <link rel="stylesheet" href="~/css/khachangdangnhapdangky.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/css/khachangdangnhapdangky.min.css" asp-append-version="true" />
     </environment>
 
     <link rel="stylesheet" href="~/WebBanSach.styles.css" asp-append-version="true" />
-    @RenderSection("PageStyles", required: false)
+
+    @await RenderSectionAsync("PageStyles", required: false)
 </head>
 
 <body>
@@ -30,17 +32,17 @@
         <div id="top_header">
             @*Top header left*@
             <!-- Logo và tên -->
-            <a asp-area="Customer" asp-controller="Home" asp-action="Index">
+            <a asp-area="Customer" asp-controller="Home" asp-action="TrangChu">
                 <img id="logo" src="~/img/web_img/logo.png" alt="Logo">
             </a>
 
 
             <!-- Form tìm kiếm -->
-            <form action="/" method="post" id="search_box">
+            <form asp-area="Customer" asp-controller="Home" asp-action="TimKiem" method="get" id="search_box">
                 @await Component.InvokeAsync("ChuDeMenu")
 
-                <input type="text" id="search_bar" placeholder="Bạn muôn tìm gì?" />
-                <button type="button" id="search_button" style="color: #0ce682;"><i class="bi bi-search"></i></button>
+                <input type="search" name="keyword" aria-label="Search" value="@ViewBag.SearchKeyword" id="search_bar" placeholder="Bạn muôn tìm gì?" />
+                <button type="submit" id="search_button" style="color: #0ce682;"><i class="bi bi-search"></i></button>
             </form>
 
             <div id="top_header_right">
@@ -48,9 +50,8 @@
                 <partial name="_LoginPartial" />
 
                 <!-- Giỏ hàng -->
-                <a class="montserrat-regular" asp-controller="Home" asp-action="Shop"><i class="bi bi-cart-fill"></i> Giỏ hàng</a>
+                @await Component.InvokeAsync("GioHang")
             </div>
-
         </div>
         <div id="bottom_header">
             <!-- Nav items -->
@@ -125,7 +126,7 @@
             </ul>
         </div>
         <div>
-            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#" style="color: #0ce682;">Trần Duy Long</a></p>
+            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#">Trần Duy Long</a></p>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -133,7 +134,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/yfm2tzcw10n183a3sq1ddo8j7btx6a161wqkyashxwwo4l45/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @* <script src="~/js/site.js" asp-append-version="true"></script> *@
     <script>
         $(document).ready(function () {
             $('#backtop_container').click(function () {

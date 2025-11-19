@@ -1,0 +1,13 @@
+﻿@model int
+
+<a class="montserrat-regular account-menu" asp-controller="GioHang" asp-action="GioHang">
+    <i class="bi bi-cart-fill account-icon">
+        <span id="cart-count" class="text-success fw-bold">
+            @if (Model > 0)
+            {
+                @($"({Model})")
+            }
+        </span>
+    </i>
+    <span class="account-text">Giỏ hàng</span>
+</a>

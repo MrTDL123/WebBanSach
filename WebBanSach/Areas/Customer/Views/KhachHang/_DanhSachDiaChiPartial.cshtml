@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Media.Models.DiaChiNhanHang>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="empty-address">Bạn chưa có địa chỉ nào.</div>
+}
+else
+{
+    @foreach (var diaChi in Model)
+    {
+        <div class="address-card">
+            <div class="address-card-main">
+                <div class="address-info">
+                    <span class="info-name">@diaChi.TenNguoiNhan</span>
+                    <span class="info-phone">@diaChi.SoDienThoai</span>
+                </div>
+                <div class="address-line">@diaChi.DiaChiChiTiet</div>
+                <div class="address-line">@diaChi.PhuongXa, @diaChi.QuanHuyen, @diaChi.TinhThanh</div>
+                @if (diaChi.LaMacDinh)
+                {
+                    <div class="default-badge">Mặc định</div>
+                }
+            </div>
+            <div class="address-card-actions">
+                <div class="btn-container">
+                    <button type="button" class="action-link" onclick="moPopupSuaDiaChi(@diaChi.MaDiaChi)">Cập nhật</button>
+                    <button type="button" class="action-link" onclick="xoaDiaChi(@diaChi.MaDiaChi)">Xóa</button>
+                </div>
+                @if (!diaChi.LaMacDinh)
+                {
+                    <button type="button" class="btn-set-default" onclick="datMacDinh(@diaChi.MaDiaChi)">Thiết lập mặc định</button>
+                }
+            </div>
+        </div>
+    }
+}

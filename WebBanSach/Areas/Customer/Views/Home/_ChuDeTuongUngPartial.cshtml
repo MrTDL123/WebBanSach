@@ -1,18 +1,28 @@
 ﻿@model ChuDe
 
-
 <li class="chude_item">
     @if (Model.MaChuDe != 0)
     {
-        <a asp-controller="Home" asp-action="SachTheoChuDe" asp-route-id="@Model.MaChuDe">@Model.TenChuDe</a>
+@*         <a asp-controller="Home" 
+            asp-action="SachTheoChuDe" 
+            asp-route-path="@Model.FullPath"
+            class="chude-filter"
+            data-path="@Model.FullPath">
+            @Model.TenChuDe
+        </a> *@
+        <a href="/chude/@Model.FullPath"
+            class="chude-filter"
+            data-path="@Model.FullPath">
+            @Model.TenChuDe
+        </a>
     }
 
     @if (Model.Children is not null && Model.Children.Any())
     {
         <ul class="child_chude_list">
-            @foreach(var childChuDe in Model.Children)
+            @foreach (var childChuDe in Model.Children)
             {
-                @await Html.PartialAsync("_ChuDeTuongUngPartial", childChuDe);
+                @await Html.PartialAsync("_ChuDeTuongUngPartial", childChuDe)
             }
         </ul>
     }

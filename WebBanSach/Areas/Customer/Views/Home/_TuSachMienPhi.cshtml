@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Sach>
+
+<section class="wrapper">
+    <div id="sach_tu_thien_container" class="content_block">
+        <div id="sach_tu_thien_title" class="title_block">
+            <img src="~/img/web_img/free_icon.png" alt="Best Seller Icon" />
+            <p class="montserrat-bold" style="margin: 0;">Tủ sách <span style="color: lawngreen">0</span> đồng</p>
+        </div>
+
+        <div id="sach_tu_thien_list">
+            @foreach (Sach sachMienPhi in Model)
+            {
+                <div class="book-item">
+                    <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sachMienPhi.MaSach })" title="@sachMienPhi.TenSach">
+
+                        <div class="book-image-container">
+                            <img src="~/img/product/@sachMienPhi.AnhBiaChinh" alt="Bìa sách @sachMienPhi.TenSach">
+
+                            <span class="free-badge">Miễn Phí</span>
+                        </div>
+
+                        <div class="book-info">
+                            <p class="book-title montserrat-regular">@sachMienPhi.TenSach</p>
+                            <div class="book-price">
+                                <span class="sale-price">0 đ</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="view-all-container">
+            <a asp-controller="Home" asp-action="SachTheoChuDe" asp-route-id="37" class="btn-view-all montserrat-bold">
+                Xem tất cả
+            </a>
+        </div>
+    </div>
+</section>

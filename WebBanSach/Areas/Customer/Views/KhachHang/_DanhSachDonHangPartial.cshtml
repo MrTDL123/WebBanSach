@@ -1,0 +1,91 @@
+﻿@model List<Media.Models.ViewModels.DanhSachDonHangVM>
+
+@functions {
+    public string GetTrangThaiCss(TrangThaiGiaoHang trangThai)
+    {
+        switch (trangThai)
+        {
+            case TrangThaiGiaoHang.ChoXuLy:
+                return "status-pending"; // (CSS Vàng)
+            case TrangThaiGiaoHang.DangGiaoHang:
+                return "status-shipping"; // (CSS Xanh dương)
+            case TrangThaiGiaoHang.GiaoHangThanhCong:
+                return "status-completed"; // (CSS Xanh lá)
+            case TrangThaiGiaoHang.GiaoThatBai:
+                // case TrangThaiGiaoHang.DaHuy:
+                return "status-cancelled"; // (CSS Đỏ/Xám)
+            default:
+                return "";
+        }
+    }
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="empty-address">
+        Bạn chưa có đơn hàng nào.
+    </div>
+}
+else
+{
+    foreach (var donHang in Model)
+    {
+        <div class="order-card">
+            <div class="order-header">
+                <span class="order-id">Đơn hàng #FH@(donHang.MaDonHang)</span>
+
+                @{
+                    var trangThaiText = donHang.TrangThai.GetDescription();
+                    var trangThaiCss = GetTrangThaiCss(donHang.TrangThai);
+                }
+                <span class="order-status @trangThaiCss">@trangThaiText</span>
+            </div>
+            <div class="order-body">
+                <div class="order-image">
+                    <img src="~/img/product/@donHang.HinhAnhDauTien" alt="@donHang.TenSanPhamDauTien" />
+                </div>
+                <div class="order-details">
+                    <div class="order-product-name">@donHang.TenSanPhamDauTien</div>
+
+                    <div class="order-quantity">Số lượng: @donHang.SoLuongSanPhamDauTien</div>
+
+                    @if (donHang.SoLuongSanPhamKhac > 0)
+                    {
+                        <div class="order-more-items">
+                            và @donHang.SoLuongSanPhamKhac sản phẩm khác...
+                        </div>
+                    }
+
+                    <div class="order-date">Ngày đặt: @donHang.NgayDat.ToString("dd/MM/yyyy")</div>
+                </div>
+            </div>
+            <div class="order-footer">
+                <div class="order-total">
+                    <span class="order-total-label">Tổng tiền:</span>
+                    <span class="order-total-amount">@donHang.TongTien.ToString("N0")đ</span>
+                </div>
+                <div class="order-actions">
+                    <button class="btn-order" onclick="xemChiTietDonHang(@donHang.MaDonHang)">Xem chi tiết</button>
+
+                    @* ⭐ LOGIC HIỂN THỊ NÚT BẤM (Yêu cầu của bạn) *@
+                    @switch (donHang.TrangThai)
+                    {
+                        case TrangThaiGiaoHang.GiaoHangThanhCong:
+                            // case TrangThaiGiaoHang.DaHuy:
+                            // case TrangThaiGiaoHang.GiaoThatBai:
+                            <button class="btn-order btn-order-primary" onclick="muaLai(@donHang.MaDonHang)">Mua lại</button>
+                            break;
+
+                        case TrangThaiGiaoHang.DangGiaoHang:
+                            <button class="btn-order" onclick="theoDoiDonHang('@(donHang.MaDonHang)')">Theo dõi</button>
+                            break;
+
+                        case TrangThaiGiaoHang.ChoXuLy:
+                            <button class="btn-order btn-order-danger" onclick="huyDonHang(@donHang.MaDonHang, this)">Hủy đơn</button>
+                            break;
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
