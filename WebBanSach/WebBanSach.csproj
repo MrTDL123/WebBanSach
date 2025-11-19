@@ -39,6 +39,9 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\img\product\" />
+    <Folder Include="wwwroot\js\components\" />
+    <Folder Include="wwwroot\js\pages\" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
 </Project>

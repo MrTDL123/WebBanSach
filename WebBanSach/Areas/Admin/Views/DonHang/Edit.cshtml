@@ -1,0 +1,52 @@
+﻿@model Media.Models.DonHang
+
+@{
+    ViewData["Title"] = "Sửa Đơn Hàng";
+}
+
+<h1>Sửa Đơn Hàng</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaDonHang" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="MaKhachHang" class="control-label">Khách Hàng</label>
+                        <select asp-for="MaKhachHang" class="form-control" asp-items="ViewBag.KhachHangs">
+                            <option value="">-- Chọn Khách Hàng --</option>
+                        </select>
+                        <span asp-validation-for="MaKhachHang" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label asp-for="MaNhanVien" class="control-label">Nhân Viên</label>
+                        <select asp-for="MaNhanVien" class="form-control" asp-items="ViewBag.NhanViens">
+                            <option value="">-- Chọn Nhân Viên --</option>
+                        </select>
+                        <span asp-validation-for="MaNhanVien" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Các field khác tương tự như Create view -->
+            <!-- Copy phần form từ Create view và thêm giá trị hiện tại -->
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DaThanhToan" /> @Html.DisplayNameFor(model => model.DaThanhToan)
+                </label>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Lưu Thay Đổi" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+            </div>
+        </form>
+    </div>
+</div>

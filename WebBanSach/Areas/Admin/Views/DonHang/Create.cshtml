@@ -1,0 +1,312 @@
+﻿@model Media.Models.DonHang
+@{
+    ViewData["Title"] = "Tạo Đơn Hàng Mới";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white py-3">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-plus-circle me-2 fs-4"></i>
+                <h2 class="mb-0 fs-4">Tạo Đơn Hàng Mới</h2>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <form asp-action="Create" method="post" id="createForm">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <!-- Thông tin khách hàng và nhân viên -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-users me-2"></i>Thông tin khách hàng & nhân viên
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Khách hàng <span class="text-danger">*</span></label>
+                        <input type="text" name="tenKhachHang" class="form-control" placeholder="Nhập tên khách hàng..." required />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Nhân viên phụ trách <span class="text-danger">*</span></label>
+                        <input type="text" name="tenNhanVien" class="form-control" placeholder="Nhập tên nhân viên..." required />
+                    </div>
+                </div>
+
+                <!-- Thông tin vận chuyển và thanh toán -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-shipping-fast me-2"></i>Thông tin vận chuyển & thanh toán
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-semibold">Đơn vị vận chuyển</label>
+                        <input type="text" name="donViVanChuyen" class="form-control" placeholder="Nhập đơn vị vận chuyển..." />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="HinhThucThanhToan" class="form-label fw-semibold">Hình thức thanh toán <span class="text-danger">*</span></label>
+                        <select asp-for="HinhThucThanhToan" class="form-select" required>
+                            <option value="">-- Chọn hình thức thanh toán --</option>
+                            <option value="0">Thanh toán trực tiếp</option>
+                            <option value="1">Chuyển khoản</option>
+                        </select>
+                        <span asp-validation-for="HinhThucThanhToan" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Thông tin người nhận -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-user-circle me-2"></i>Thông tin người nhận
+                        </h5>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="TenNguoiNhan" class="form-label fw-semibold">Tên người nhận <span class="text-danger">*</span></label>
+                        <input asp-for="TenNguoiNhan" class="form-control" placeholder="Nhập tên người nhận..." />
+                        <span asp-validation-for="TenNguoiNhan" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="SoDienThoaiNhan" class="form-label fw-semibold">Số điện thoại <span class="text-danger">*</span></label>
+                        <input asp-for="SoDienThoaiNhan" class="form-control" placeholder="Nhập số điện thoại..." />
+                        <span asp-validation-for="SoDienThoaiNhan" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="TinhThanh" class="form-label fw-semibold">Tỉnh/Thành <span class="text-danger">*</span></label>
+                        <input asp-for="TinhThanh" class="form-control" placeholder="Tỉnh/Thành phố" />
+                        <span asp-validation-for="TinhThanh" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="QuanHuyen" class="form-label fw-semibold">Quận/Huyện <span class="text-danger">*</span></label>
+                        <input asp-for="QuanHuyen" class="form-control" placeholder="Quận/Huyện" />
+                        <span asp-validation-for="QuanHuyen" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label asp-for="PhuongXa" class="form-label fw-semibold">Phường/Xã <span class="text-danger">*</span></label>
+                        <input asp-for="PhuongXa" class="form-control" placeholder="Phường/Xã" />
+                        <span asp-validation-for="PhuongXa" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label asp-for="DiaChiChiTiet" class="form-label fw-semibold">Địa chỉ chi tiết <span class="text-danger">*</span></label>
+                        <input asp-for="DiaChiChiTiet" class="form-control" placeholder="Số nhà, tên đường, tòa nhà..." />
+                        <span asp-validation-for="DiaChiChiTiet" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label asp-for="GhiChu" class="form-label fw-semibold">Ghi chú</label>
+                        <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Ghi chú cho đơn hàng..."></textarea>
+                        <span asp-validation-for="GhiChu" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <!-- Chi tiết đơn hàng -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5 class="text-primary mb-3 border-bottom pb-2">
+                            <i class="fas fa-list-alt me-2"></i>Chi tiết đơn hàng
+                        </h5>
+                    </div>
+
+                    <div id="chiTietContainer" class="col-12">
+                        <div class="chi-tiet-item card mb-3">
+                            <div class="card-body">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-5">
+                                        <label class="form-label fw-semibold">Sách <span class="text-danger">*</span></label>
+                                        <select name="chiTietDonHangs[0].MaSach" class="sach-select form-select" onchange="updateDonGia(this)" required>
+                                            <option value="">-- Chọn Sách --</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">Số lượng <span class="text-danger">*</span></label>
+                                        <input type="number" name="chiTietDonHangs[0].SoLuong" class="so-luong form-control" value="1" min="1" onchange="calculateThanhTien(this)" required />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-semibold">Đơn giá</label>
+                                        <input type="number" name="chiTietDonHangs[0].DonGia" class="don-gia form-control bg-light" readonly />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label fw-semibold">Thành tiền</label>
+                                        <input type="number" name="chiTietDonHangs[0].ThanhTien" class="thanh-tien form-control bg-light" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tổng tiền -->
+                    <div class="col-12">
+                        <div class="card bg-light border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-dark">Tổng tiền:</span>
+                                    <span id="totalAmount" class="fs-4 fw-bold text-primary">0 ₫</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="@Url.Action("Index")" class="btn btn-outline-secondary px-4">
+                                <i class="fas fa-times me-2"></i>Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>Tạo đơn hàng
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSachs();
+        });
+
+        function loadSachs() {
+            fetch('@Url.Action("GetSachs", "DonHang")')
+                .then(response => response.json())
+                .then(data => {
+                    const selects = document.querySelectorAll('.sach-select');
+                    selects.forEach(select => {
+                        select.innerHTML = '<option value="">-- Chọn Sách --</option>';
+                        data.forEach(sach => {
+                            const option = document.createElement('option');
+                            option.value = sach.maSach;
+                            option.textContent = sach.tenSach;
+                            option.setAttribute('data-dongia', sach.donGia);
+                            select.appendChild(option);
+                        });
+                    });
+                })
+                .catch(error => console.error('Không thể tải danh sách sách:', error));
+        }
+
+        function updateDonGia(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            const donGia = selectedOption.getAttribute('data-dongia') || 0;
+            const row = select.closest('.chi-tiet-item');
+            const donGiaInput = row.querySelector('.don-gia');
+            if (donGiaInput) {
+                donGiaInput.value = donGia;
+                calculateThanhTien(select);
+            }
+        }
+
+        function calculateThanhTien(input) {
+            const row = input.closest('.chi-tiet-item');
+            const soLuongInput = row.querySelector('.so-luong');
+            const donGiaInput = row.querySelector('.don-gia');
+            const thanhTienInput = row.querySelector('.thanh-tien');
+
+            const soLuong = parseInt(soLuongInput.value) || 0;
+            const donGia = parseFloat(donGiaInput.value) || 0;
+            const thanhTien = soLuong * donGia;
+
+            if (thanhTienInput) {
+                thanhTienInput.value = thanhTien;
+                calculateTotal();
+            }
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            const thanhTienInputs = document.querySelectorAll('.thanh-tien');
+
+            thanhTienInputs.forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+
+            const totalAmountElement = document.getElementById('totalAmount');
+            if (totalAmountElement) {
+                totalAmountElement.textContent = total.toLocaleString('vi-VN') + ' ₫';
+            }
+        }
+
+        // Xử lý form submit
+        document.getElementById('createForm').addEventListener('submit', function(e) {
+            const tenKhachHang = document.querySelector('[name="tenKhachHang"]').value.trim();
+            const tenNhanVien = document.querySelector('[name="tenNhanVien"]').value.trim();
+            const hinhThucThanhToan = document.querySelector('[name="HinhThucThanhToan"]').value;
+            const tenNguoiNhan = document.querySelector('[name="TenNguoiNhan"]').value.trim();
+            const soDienThoaiNhan = document.querySelector('[name="SoDienThoaiNhan"]').value.trim();
+            const sachSelect = document.querySelector('.sach-select');
+            const soLuong = document.querySelector('.so-luong').value;
+
+            if (!tenKhachHang) {
+                e.preventDefault();
+                alert('Vui lòng nhập tên khách hàng');
+                return;
+            }
+
+            if (!tenNhanVien) {
+                e.preventDefault();
+                alert('Vui lòng nhập tên nhân viên phụ trách');
+                return;
+            }
+
+            if (!hinhThucThanhToan) {
+                e.preventDefault();
+                alert('Vui lòng chọn hình thức thanh toán');
+                return;
+            }
+
+            if (!tenNguoiNhan) {
+                e.preventDefault();
+                alert('Vui lòng nhập tên người nhận');
+                return;
+            }
+
+            if (!soDienThoaiNhan) {
+                e.preventDefault();
+                alert('Vui lòng nhập số điện thoại người nhận');
+                return;
+            }
+
+            if (!sachSelect.value) {
+                e.preventDefault();
+                alert('Vui lòng chọn sách cho đơn hàng');
+                return;
+            }
+
+            if (!soLuong || soLuong <= 0) {
+                e.preventDefault();
+                alert('Vui lòng nhập số lượng hợp lệ');
+                return;
+            }
+        });
+    </script>
+}

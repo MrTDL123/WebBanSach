@@ -1,0 +1,55 @@
+﻿@model Media.Models.TacGia
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Xóa Tác giả";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4 border-left-danger">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Xác nhận xóa
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.CoSach)
+                    {
+                        <div class="alert alert-warning">
+                            <h5 class="alert-heading">
+                                <i class="fas fa-exclamation-circle me-2"></i>Không thể xóa!
+                            </h5>
+                            <p class="mb-0">Tác giả <strong>@Model.TenTG</strong> đang có sách trong hệ thống. Vui lòng xóa hoặc chuyển các sách này trước khi xóa tác giả.</p>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="@Url.Action("QuanLyTacGia", "Book")" class="btn btn-primary">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">
+                            <h5 class="alert-heading">Bạn có chắc chắn muốn xóa?</h5>
+                            <p class="mb-0">Tác giả: <strong>@Model.TenTG</strong></p>
+                            <p class="mb-0">Mã TG: <strong>@Model.MaTacGia</strong></p>
+                        </div>
+
+                        <form asp-action="XoaTacGiaConfirmed" method="post">
+                            <input type="hidden" asp-for="MaTacGia" />
+                            <div class="form-group text-center mt-4">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash me-2"></i>Xác nhận xóa
+                                </button>
+                                <a href="@Url.Action("QuanLyTacGia", "Book")" class="btn btn-secondary">
+                                    <i class="fas fa-times me-2"></i>Hủy bỏ
+                                </a>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

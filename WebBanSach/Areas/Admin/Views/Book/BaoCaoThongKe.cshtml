@@ -1,0 +1,109 @@
+﻿@model IEnumerable<Media.Models.DonHang>
+@{
+    ViewBag.Title = "Báo cáo thống kê";
+    var totalOrders = Model.Count();
+    var totalRevenue = Model.Sum(x => x.Total);
+    var paidOrders = Model.Count(x => x.DaThanhToan);
+    var unpaidOrders = totalOrders - paidOrders;
+    var cashOrders = Model.Count(x => x.HinhThucThanhToan == Media.Models.HinhThucThanhToan.TienMatKhiNhanHang);
+    var bankOrders = Model.Count(x => x.HinhThucThanhToan == Media.Models.HinhThucThanhToan.ChuyenKhoan);
+}
+
+<h2 class="text-center my-4">📊 Báo Cáo Thống Kê Đơn Hàng</h2>
+
+<div class="row">
+
+    <!-- Tổng đơn hàng -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white p-3 shadow">
+            <h5>Tổng số đơn hàng</h5>
+            <h3>@totalOrders</h3>
+        </div>
+    </div>
+
+    <!-- Doanh thu -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white p-3 shadow">
+            <h5>Tổng doanh thu</h5>
+            <h3>@totalRevenue.ToString("N0") ₫</h3>
+        </div>
+    </div>
+
+    <!-- Đơn đã thanh toán -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white p-3 shadow">
+            <h5>Đơn đã thanh toán</h5>
+            <h3>@paidOrders</h3>
+        </div>
+    </div>
+
+    <!-- Đơn chưa thanh toán -->
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-dark p-3 shadow">
+            <h5>Đơn chưa thanh toán</h5>
+            <h3>@unpaidOrders</h3>
+        </div>
+    </div>
+
+</div>
+
+<hr />
+
+<h3 class="mt-4">📌 Thống kê theo hình thức thanh toán</h3>
+
+<div class="row my-3">
+    <div class="col-md-6">
+        <div class="alert alert-secondary">
+            <b>Tiền mặt khi nhận hàng:</b> @cashOrders đơn
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="alert alert-secondary">
+            <b>Chuyển khoản:</b> @bankOrders đơn
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h3 class="mt-4">📃 Danh sách đơn hàng</h3>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Mã ĐH</th>
+            <th>Tên người nhận</th>
+            <th>Số điện thoại</th>
+            <th>Tỉnh/TP</th>
+            <th>Tổng tiền</th>
+            <th>Ngày tạo</th>
+            <th>TT Thanh toán</th>
+            <th>Hình thức</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MaDonHang</td>
+                <td>@item.TenNguoiNhan</td>
+                <td>@item.SoDienThoaiNhan</td>
+                <td>@item.TinhThanh</td>
+                <td>@item.Total.ToString("N0") ₫</td>
+                <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                <td>
+                    @if (item.DaThanhToan)
+                    {
+                        <span class="badge bg-success">Đã thanh toán</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Chưa thanh toán</span>
+                    }
+                </td>
+                <td>@item.HinhThucThanhToan.ToString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

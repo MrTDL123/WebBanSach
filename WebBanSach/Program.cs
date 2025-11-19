@@ -94,6 +94,7 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 
+
 async Task CreateRolesAsync(IServiceProvider serviceProvider)
 {
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -114,7 +115,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await CreateRolesAsync(services);
 }
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
@@ -124,7 +124,6 @@ app.MapControllerRoute(
     name: "chude",
     pattern: "chude/{*path}",
     defaults: new { area = "Customer", controller = "Home", action = "SachTheoChuDe" });
-
 
 
 app.Run();

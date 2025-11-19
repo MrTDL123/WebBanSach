@@ -15,5 +15,6 @@ namespace Media.Models
         [Required]
         [DisplayName("Tên nhà xuất bản")]
         public string TenNXB { get; set; }
+       
     }
 }

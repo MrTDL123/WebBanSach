@@ -1,0 +1,567 @@
+﻿@model dynamic
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* 🔥 FIX FOCUS cho Bootstrap */
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Fix cho tất cả button và link có class btn */
+        .btn {
+            outline: none !important;
+        }
+
+        /* Giữ nguyên các style đẹp từ code cũ và thêm mới */
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            border: none;
+        }
+
+        .user-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none;
+            border-radius: 12px;
+        }
+
+            .user-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+        .avatar-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .avatar-circle-sm {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .badge-pill {
+            font-size: 0.75rem;
+            padding: 0.5em 0.75em;
+        }
+
+        .table th {
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+        }
+
+        .nav-pills .nav-link {
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            margin: 0 5px;
+        }
+
+            .nav-pills .nav-link.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-color: #667eea;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .nav-pills .nav-link:not(.active):hover {
+                border-color: #e3e6f0;
+                transform: translateY(-1px);
+            }
+
+        .action-buttons .btn {
+            border-radius: 8px;
+            padding: 6px 12px;
+            transition: all 0.3s ease;
+        }
+
+            .action-buttons .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            }
+
+        .search-box input {
+            border-radius: 25px;
+            border: 2px solid #e3e6f0;
+            transition: all 0.3s ease;
+        }
+
+            .search-box input:focus {
+                border-color: #4e73df;
+                box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            }
+
+        .user-row {
+            transition: all 0.3s ease;
+        }
+
+            .user-row:hover {
+                background-color: #f8f9fc !important;
+                transform: translateX(5px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 fw-bold text-primary mb-1">
+                            <i class="fas fa-users me-2"></i>Quản lý người dùng
+                        </h1>
+                        <p class="text-muted mb-0">Quản lý thông tin khách hàng và nhân viên</p>
+                    </div>
+                    <a href="@Url.Action("ThemNhanVien")" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user-plus me-2"></i>Thêm nhân viên
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stats-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-white-50 mb-1">Tổng khách hàng</h6>
+                                <h3 class="text-white mb-0">@ViewBag.KhachHangs.Count</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-users fa-2x text-white-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-muted mb-1">Tổng nhân viên</h6>
+                                <h3 class="text-dark mb-0">@ViewBag.NhanViens.Count</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-user-tie fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-muted mb-1">Khách hàng mới</h6>
+                                <h3 class="text-dark mb-0">12</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-user-plus fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-muted mb-1">Nhân viên mới</h6>
+                                <h3 class="text-dark mb-0">3</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-user-check fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle fa-lg me-3"></i>
+                    <div class="flex-grow-1">
+                        <strong>Thành công!</strong> @TempData["Success"]
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-circle fa-lg me-3"></i>
+                    <div class="flex-grow-1">
+                        <strong>Lỗi!</strong> @TempData["Error"]
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Tab Navigation -->
+        <div class="card border-0 shadow-lg mb-4">
+            <div class="card-header bg-white py-3">
+                <ul class="nav nav-pills nav-fill mb-3" id="userTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer" type="button" role="tab">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="fas fa-users me-2"></i>
+                                <span>Khách hàng</span>
+                                <span class="badge bg-primary ms-2">@ViewBag.KhachHangs.Count</span>
+                            </div>
+                            <small class="text-muted d-block mt-1">Chỉ xem thông tin</small>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user-tie me-2"></i>
+                                <span>Nhân viên</span>
+                                <span class="badge bg-success ms-2">@ViewBag.NhanViens.Count</span>
+                            </div>
+                            <small class="text-muted d-block mt-1">Quản lý đầy đủ</small>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body">
+                <div class="tab-content" id="userTabsContent">
+                    <!-- Customer Tab -->
+                    <div class="tab-pane fade show active" id="customer" role="tabpanel">
+                        <div class="alert alert-info border-0 shadow-sm mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-info-circle fa-lg me-3 text-info"></i>
+                                <div class="flex-grow-1">
+                                    <strong>Thông báo:</strong> Chức năng thêm/sửa khách hàng đã bị vô hiệu hóa.
+                                    Chỉ có thể xem thông tin và xóa khách hàng (nếu không có dữ liệu liên quan).
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0 text-dark">
+                                        <i class="fas fa-list me-2 text-primary"></i>Danh sách khách hàng
+                                    </h5>
+                                    <div class="search-box position-relative" style="width: 300px;">
+                                        <i class="fas fa-search position-absolute text-muted" style="left: 15px; top: 50%; transform: translateY(-50%);"></i>
+                                        <input type="text" id="customerSearch" class="form-control ps-4" placeholder="Tìm kiếm khách hàng...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Mã KH</th>
+                                                <th>Họ tên</th>
+                                                <th>Email</th>
+                                                <th>Số điện thoại</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Ngày sinh</th>
+                                                <th class="text-center pe-4">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var kh in ViewBag.KhachHangs)
+                                            {
+                                                <tr class="user-row" data-id="@kh.MaKhachHang" ondblclick="viewCustomer(@kh.MaKhachHang)">
+                                                    <td class="ps-4">
+                                                        <span class="badge bg-secondary badge-pill">KH@(kh.MaKhachHang.ToString("D4"))</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar-circle-sm bg-primary text-white me-3">
+                                                                <i class="fas fa-user"></i>
+                                                            </div>
+                                                            <span class="fw-bold text-dark">@kh.HoTen</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-envelope text-muted me-2"></i>
+                                                            @kh.Email
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-phone text-muted me-2"></i>
+                                                            @kh.DienThoai
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(kh.DiaChi))
+                                                        {
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fas fa-map-marker-alt text-muted me-2"></i>
+                                                                <span class="text-truncate" style="max-width: 200px;" title="@kh.DiaChi">
+                                                                    @kh.DiaChi
+                                                                </span>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Chưa cập nhật</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (kh.NgaySinh.HasValue)
+                                                        {
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fas fa-birthday-cake text-muted me-2"></i>
+                                                                @kh.NgaySinh.Value.ToString("dd/MM/yyyy")
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Chưa cập nhật</span>
+                                                        }
+                                                    </td>
+                                                    <td class="text-center pe-4 action-buttons">
+                                                        <div class="btn-group" role="group">
+                                                            <button class="btn btn-outline-info btn-sm" onclick="viewCustomer(@kh.MaKhachHang)" title="Xem chi tiết">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger btn-sm" onclick="deleteCustomer(@kh.MaKhachHang, '@kh.HoTen')" title="Xóa">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Staff Tab -->
+                    <div class="tab-pane fade" id="staff" role="tabpanel">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0 text-dark">
+                                        <i class="fas fa-list me-2 text-success"></i>Danh sách nhân viên
+                                    </h5>
+                                    <div class="search-box position-relative" style="width: 300px;">
+                                        <i class="fas fa-search position-absolute text-muted" style="left: 15px; top: 50%; transform: translateY(-50%);"></i>
+                                        <input type="text" id="staffSearch" class="form-control ps-4" placeholder="Tìm kiếm nhân viên...">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="ps-4">Mã NV</th>
+                                                <th>Họ tên</th>
+                                                <th>Email</th>
+                                                <th>Lương</th>
+                                                <th>Ngày vào làm</th>
+                                                <th>CCCD</th>
+                                                <th class="text-center pe-4">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var nv in ViewBag.NhanViens)
+                                            {
+                                                <tr class="user-row" data-id="@nv.MaNhanVien" ondblclick="editStaff(@nv.MaNhanVien)">
+                                                    <td class="ps-4">
+                                                        <span class="badge bg-success badge-pill">NV@(nv.MaNhanVien.ToString("D4"))</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar-circle-sm bg-success text-white me-3">
+                                                                <i class="fas fa-user-tie"></i>
+                                                            </div>
+                                                            <span class="fw-bold text-dark">@nv.HoTen</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-envelope text-muted me-2"></i>
+                                                            @nv.TaiKhoan?.Email
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if (nv.Luong.HasValue)
+                                                        {
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fas fa-money-bill-wave text-muted me-2"></i>
+                                                                <span class="fw-bold text-success">@nv.Luong.Value.ToString("N0") VNĐ</span>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Chưa cập nhật</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (nv.NgayVaoLam.HasValue)
+                                                        {
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fas fa-calendar-alt text-muted me-2"></i>
+                                                                @nv.NgayVaoLam.Value.ToString("dd/MM/yyyy")
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Chưa cập nhật</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (!string.IsNullOrEmpty(nv.CCCD))
+                                                        {
+                                                            <div class="d-flex align-items-center">
+                                                                <i class="fas fa-id-card text-muted me-2"></i>
+                                                                @nv.CCCD
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-muted">Chưa cập nhật</span>
+                                                        }
+                                                    </td>
+                                                    <td class="text-center pe-4 action-buttons">
+                                                        <div class="btn-group" role="group">
+                                                            <button class="btn btn-outline-info btn-sm" onclick="viewStaff(@nv.MaNhanVien)" title="Xem chi tiết">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-warning btn-sm" onclick="editStaff(@nv.MaNhanVien)" title="Chỉnh sửa">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button class="btn btn-outline-danger btn-sm" onclick="deleteStaff(@nv.MaNhanVien, '@nv.HoTen')" title="Xóa">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer thông tin -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="text-center text-muted">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        Hiển thị @ViewBag.KhachHangs.Count khách hàng • @ViewBag.NhanViens.Count nhân viên •
+                        Cập nhật lúc: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Customer functions - CHỈ XEM VÀ XÓA
+        function viewCustomer(id) {
+            window.location.href = '@Url.Action("ChiTietKhachHang", "User")/' + id;
+        }
+
+        function deleteCustomer(id, name) {
+            if (confirm('Bạn có chắc muốn xóa khách hàng "' + name + '"?')) {
+                window.location.href = '@Url.Action("XoaUser", "User")/' + id;
+            }
+        }
+
+        // Staff functions - VẪN ĐẦY ĐỦ CHỨC NĂNG
+        function editStaff(id) {
+            window.location.href = '@Url.Action("SuaNhanVien", "User")/' + id;
+        }
+
+        function viewStaff(id) {
+            window.location.href = '@Url.Action("ChiTietNhanVien", "User")/' + id;
+        }
+
+        function deleteStaff(id, name) {
+            if (confirm('Bạn có chắc muốn xóa nhân viên "' + name + '"?')) {
+                window.location.href = '@Url.Action("XoaNhanVien", "User")/' + id;
+            }
+        }
+
+        // Search functionality
+        document.getElementById('customerSearch').addEventListener('keyup', function() {
+            const value = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#customer tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.indexOf(value) > -1 ? '' : 'none';
+            });
+        });
+
+        document.getElementById('staffSearch').addEventListener('keyup', function() {
+            const value = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#staff tbody tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.indexOf(value) > -1 ? '' : 'none';
+            });
+        });
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+    </script>
+</body>
+</html>

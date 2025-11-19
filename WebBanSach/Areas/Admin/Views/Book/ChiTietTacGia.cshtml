@@ -1,0 +1,124 @@
+﻿@model Media.Models.TacGia
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Chi tiết Tác giả";
+    var saches = ViewBag.Saches as List<Media.Models.Sach> ?? new List<Media.Models.Sach>();
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-4">
+            <!-- Thông tin tác giả -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-info-circle me-1"></i>Thông tin Tác giả
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                             style="width: 80px; height: 80px; font-size: 2rem;">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                    </div>
+
+                    <table class="table table-borderless">
+                        <tr>
+                            <td class="font-weight-bold" style="width: 120px;">Mã TG:</td>
+                            <td>@Model.MaTacGia</td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">Tên:</td>
+                            <td><strong class="text-dark">@Model.TenTG</strong></td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">Quốc tịch:</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(Model.QuocTich))
+                                {
+                                    <span class="badge badge-info">@Model.QuocTich</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Chưa cập nhật</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold">Số sách:</td>
+                            <td>
+                                <span class="badge badge-success">@ViewBag.SoLuongSach</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    @if (!string.IsNullOrEmpty(Model.TieuSu))
+                    {
+                        <div class="mt-3">
+                            <label class="font-weight-bold">Tiểu sử:</label>
+                            <p class="text-muted mt-2">@Model.TieuSu</p>
+                        </div>
+                    }
+
+                    <div class="mt-4 text-center">
+                        <a href="@Url.Action("SuaTacGia", "Book", new { id = Model.MaTacGia })"
+                           class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit me-1"></i>Sửa
+                        </a>
+                        <a href="@Url.Action("QuanLyTacGia", "Book")"
+                           class="btn btn-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <!-- Danh sách sách -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-book me-1"></i>Danh sách Sách (@saches.Count)
+                    </h6>
+                </div>
+                <div class="card-body">
+                    @if (saches.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Mã sách</th>
+                                        <th>Tên sách</th>
+                                        <th>Giá bán</th>
+                                        <th>Số lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var sach in saches)
+                                    {
+                                        <tr>
+                                            <td>@sach.MaSach</td>
+                                            <td>@sach.TenSach</td>
+                                            <td>@sach.GiaBan.ToString("N0") ₫</td>
+                                            <td>@sach.SoLuong</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-book fa-3x mb-3"></i>
+                            <p>Tác giả chưa có sách nào trong hệ thống</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

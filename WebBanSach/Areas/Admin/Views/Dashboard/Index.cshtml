@@ -1,0 +1,340 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<style>
+    .stat-card {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+
+    .chart-card {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        height: 100%;
+    }
+
+    .chart-container {
+        height: 300px;
+        width: 100%;
+    }
+
+    .text-success {
+        color: #10b981 !important;
+    }
+
+    .text-primary {
+        color: #3b82f6 !important;
+    }
+
+    .text-warning {
+        color: #f59e0b !important;
+    }
+
+    .text-info {
+        color: #06b6d4 !important;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Dashboard Overview</h4>
+                    <p class="text-muted mb-0">Summary of your business performance</p>
+                </div>
+                <select id="filterRange" class="form-select w-auto">
+                    <option value="7">7 Days</option>
+                    <option value="30" selected>30 Days</option>
+                    <option value="90">90 Days</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Stats -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Total Revenue</h6>
+                            <h4 class="fw-bold text-dark mb-0" id="revenueCount">0₫</h4>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>12.5%
+                            </small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 rounded p-3">
+                            <i class="fas fa-money-bill-wave fa-lg text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Total Orders</h6>
+                            <h4 class="fw-bold text-dark mb-0" id="orderCount">0</h4>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>8.3%
+                            </small>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 rounded p-3">
+                            <i class="fas fa-shopping-cart fa-lg text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Total Books</h6>
+                            <h4 class="fw-bold text-dark mb-0" id="bookCount">0</h4>
+                            <small class="text-muted">In inventory</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 rounded p-3">
+                            <i class="fas fa-book fa-lg text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <h6 class="text-muted mb-1">Active Users</h6>
+                            <h4 class="fw-bold text-dark mb-0" id="userCount">0</h4>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>15.7%
+                            </small>
+                        </div>
+                        <div class="bg-info bg-opacity-10 rounded p-3">
+                            <i class="fas fa-users fa-lg text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row">
+        <!-- Revenue Chart -->
+        <div class="col-xl-8 mb-4">
+            <div class="card chart-card">
+                <div class="card-header bg-white border-0">
+                    <h6 class="fw-bold mb-0">Revenue Over Time</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Chart -->
+        <div class="col-xl-4 mb-4">
+            <div class="card chart-card">
+                <div class="card-header bg-white border-0">
+                    <h6 class="fw-bold mb-0">Popular Categories</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bestselling Books -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card chart-card">
+                <div class="card-header bg-white border-0">
+                    <h6 class="fw-bold mb-0">Bestselling Books</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="bestsellerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let currentDays = 30;
+        let revenueChart, categoryChart, bestsellerChart;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard(currentDays);
+
+            // Event listener for filter
+            document.getElementById('filterRange').addEventListener('change', function(e) {
+                currentDays = parseInt(e.target.value);
+                updateDashboard(currentDays);
+            });
+        });
+
+        async function updateDashboard(days) {
+            try {
+                const data = await fetchDashboardData(days);
+
+                if (data) {
+                    updateKPI(data);
+                    renderCharts(data);
+                } else {
+                    renderSampleData();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                renderSampleData();
+            }
+        }
+
+        async function fetchDashboardData(days) {
+            const response = await fetch(`/Admin/Dashboard/GetData?days=${days}`);
+            if (!response.ok) throw new Error('Network error');
+            return await response.json();
+        }
+
+        function updateKPI(data) {
+            const kpi = data.kpi || {};
+
+            document.getElementById('bookCount').textContent = kpi.sach?.toLocaleString() || '0';
+            document.getElementById('userCount').textContent = kpi.user?.toLocaleString() || '0';
+            document.getElementById('revenueCount').textContent = (kpi.revenue || 0).toLocaleString('vi-VN') + '₫';
+            document.getElementById('orderCount').textContent = kpi.order?.toLocaleString() || '0';
+        }
+
+        function renderCharts(data) {
+            renderRevenueChart(data);
+            renderCategoryChart(data);
+            renderBestsellerChart(data);
+        }
+
+        function renderRevenueChart(data) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+
+            if (revenueChart) revenueChart.destroy();
+
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: data.doanhThu || [1200000, 1900000, 1500000, 2500000, 2200000, 3000000, 2800000],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value / 1000000).toFixed(0) + 'M₫';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCategoryChart(data) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+
+            if (categoryChart) categoryChart.destroy();
+
+            categoryChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.theLoaiLabels || ['Fiction', 'Science', 'Business', 'History', 'Other'],
+                    datasets: [{
+                        data: data.theLoai || [25, 20, 18, 15, 12],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function renderBestsellerChart(data) {
+            const ctx = document.getElementById('bestsellerChart').getContext('2d');
+
+            if (bestsellerChart) bestsellerChart.destroy();
+
+            bestsellerChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.topSachLabels || ['Book 1', 'Book 2', 'Book 3', 'Book 4', 'Book 5'],
+                    datasets: [{
+                        label: 'Sold',
+                        data: data.topSach || [45, 32, 28, 25, 18],
+                        backgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function renderSampleData() {
+            const sampleData = {
+                kpi: { sach: 156, user: 89, revenue: 12500000, order: 45 },
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                doanhThu: [1200000, 1900000, 1500000, 2500000, 2200000, 3000000, 2800000],
+                theLoai: [25, 20, 18, 15, 12],
+                theLoaiLabels: ['Fiction', 'Science', 'Business', 'History', 'Other'],
+                topSach: [45, 32, 28, 25, 18],
+                topSachLabels: ['Book One', 'Book Two', 'Book Three', 'Book Four', 'Book Five']
+            };
+
+            updateKPI(sampleData);
+            renderCharts(sampleData);
+        }
+    </script>
+}

@@ -57,8 +57,6 @@ namespace Media.Models
         [Required]
         [DisplayName("Hình thức thanh toán")]
         public HinhThucThanhToan HinhThucThanhToan { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang;
-
-
         //NAVIGATION PROPERTIES
         [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; }
@@ -67,8 +65,7 @@ namespace Media.Models
         public VanChuyen VanChuyen { get; set; }
         [ForeignKey(nameof(MaDiaChi))]
         public DiaChiNhanHang DiaChiNhanHang { get; set; }
-
-
+        
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         public ICollection<PhieuTraHang> PhieuTraHangs { get; set; }
         public HoaDon HoaDon { get; set; }
