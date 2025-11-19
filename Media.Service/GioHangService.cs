@@ -147,7 +147,7 @@ namespace Media.Service
             }
 
             _session.SetObjectAsJson("GioHang", gioHangDb);
-            _session.Remove("GioHangThanhToan");
+            //_session.Remove("GioHangThanhToan");
 
             return gioHangDb;
         }
