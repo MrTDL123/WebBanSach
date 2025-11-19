@@ -423,7 +423,7 @@
             $('#QuanHuyen').val(data.huyen);
             $('#PhuongXa').val(data.xa);
 
-            updateDeliveryEstimate(data.maTinh);
+            updateDeliveryEstimate(data.maTinhThanh);
         }
 
         // 4. HÀM CŨ selectAddress() - GIỮ LẠI ĐỂ TƯƠNG THÍCH NGƯỢC
@@ -436,6 +436,7 @@
                 ten: $btn.data('ten-nguoi-nhan'),
                 sdt: $btn.data('sdt'),
                 diaChiChiTiet: $btn.data('dia-chi-chi-tiet'),
+                maTinhThanh: $btn.data('ma-tinh-thanh'),
                 tinh: $btn.data('ten-tinh'),
                 huyen: $btn.data('ten-huyen'),
                 xa: $btn.data('ten-xa'),
