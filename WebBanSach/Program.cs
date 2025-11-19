@@ -118,6 +118,8 @@ using (var scope = app.Services.CreateScope())
 app.MapControllerRoute(
     name: "default",
     pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
+
+
 app.MapControllerRoute(
     name: "chude",
     pattern: "chude/{*path}",

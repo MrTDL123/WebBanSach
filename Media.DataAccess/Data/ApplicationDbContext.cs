@@ -41,7 +41,8 @@ namespace Meida.DataAccess.Data
         public DbSet<VanChuyen> VanChuyens { get; set; }
         public DbSet<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
         public DbSet<LuotThichDanhGiaSanPham> LuotThichDanhGiaSanPhams { get; set; }
-        public DbSet<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
+        public DbSet<DiaChiNhanHang> DiaChiNhanHangs{ get; set; }
+        
 
         // ======================= CONFIG =======================
         protected override void OnModelCreating(ModelBuilder modelBuilder)
