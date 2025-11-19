@@ -161,13 +161,12 @@
                 const input = row.querySelector('.qtyShoppingCart');
                 const maSach = row.dataset.masash || row.dataset.masach;
                 let soLuong = parseInt(input.value);
-                const bodyPayload = `maSach=${maSach}&soLuong=${soLuong}&__RequestVerificationToken=${antiForgeryToken}`;
 
                 if (btn.classList.contains('increase')) soLuong++;
                 else if (btn.classList.contains('decrease') && soLuong > 1) soLuong--;
 
                 input.value = soLuong;
-
+                const bodyPayload = `maSach=${maSach}&soLuong=${soLuong}&__RequestVerificationToken=${antiForgeryToken}`;
                 // ⚙️ Gửi Ajax cập nhật server
                 const res = await fetch('/Customer/GioHang/CapNhatThanhTienTrongGioHang', {
                     method: 'POST',

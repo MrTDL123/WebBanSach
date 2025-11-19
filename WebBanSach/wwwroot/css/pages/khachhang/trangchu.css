@@ -5,6 +5,7 @@
     height: 58vh;
     width: 100%;
     z-index: 1;
+    position: relative;
 }
 
 #slide1,
@@ -16,6 +17,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: inherit;
 }
 /*SLIDE 1*/
 #slide1 {

@@ -4,7 +4,7 @@
 .mega-dropdown {
     position: static !important;
     padding-right: 1rem;
-    z-index: 10000;
+    z-index: 3;
 }
 
 .mega-dropdown-menu {
