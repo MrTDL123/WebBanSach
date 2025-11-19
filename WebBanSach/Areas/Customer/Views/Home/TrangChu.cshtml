@@ -158,27 +158,13 @@
     <div id="best_sell">
         <img src="~/img/web_img/best_seller_icon.png" alt="Best Seller Icon" />
         <p class="montserrat-bold">Sách bán chạy nhất tuần qua</p>
-@*         <div id="countdown">
-            <div class="time-block">
-                <span id="days">0</span>
-            </div>
-            <div class="time-block">
-                <span id="hours">0</span>
-            </div>
-            <div class="time-block">
-                <span id="minutes">0</span>
-            </div>
-            <div class="time-block">
-                <span id="seconds">0</span>
-            </div>
-        </div> *@
     </div>
     <div id="sach-list-section">
         @foreach (var sach in Model.SachBanChay)
         {
             <div class="book">
                 <div class="book_img">
-                    <img src="@sach.AnhBiaChinh" alt="Ảnh sách" />
+                    <img src="~/img/product/@sach.AnhBiaChinh" alt="Ảnh sách" />
                     <div class="book_img_hover">
                         <ul class="book_icon_container">
                             <li>

@@ -6,6 +6,8 @@
 @section PageStyles {
     <link rel="stylesheet" href="~/css/pages/khachhang/giohang.css" asp-append-version="true" />
 }
+
+@Html.AntiForgeryToken()
 <div class="container-shoppingcart">
     <h3 class="header">Giỏ hàng <span class="count-product-shoping-cart">(@Model.Count sản phẩm)</span></h3>
 

@@ -6,10 +6,6 @@
     <link rel="stylesheet" href="~/css/pages/khachhang/sachtheochude.css" asp-append-version="true" />
 }
 
-@section PageStyles {
-    <link rel="stylesheet" href="~/css/pages/sachtheochude.css" asp-append-version="true" />
-}
-
 @{
     ViewData["Title"] = string.IsNullOrEmpty(Model.SearchKeyword)
         ? "Sách theo chủ đề"
@@ -41,14 +37,6 @@
             }
         </ol>
     </nav>
-
-    public string HienThiDongGia(decimal giaTien)
-    {
-        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
-    }
-}
-<div id="sachtheochude_container">
-    <p class="montserrat-medium">@ViewBag.Url</p>
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
@@ -118,10 +106,28 @@
             </div>
         </section>
     </div>
+
 </div>
 
 @section Scripts {
     <script src="~/js/filtered_saches.js"></script>
-}
 
-</div>
+    <script>
+        $(document).ready(function () {
+            $('.add-to-cart').click(function () {
+                var maSach = $(this).data('masach');
+
+                $.ajax({
+                    url: '/Customer/GioHang/ThemVaoGioHang',
+                    type: 'POST',
+                    data: { maSach: maSach, soLuong : 1 },
+                    success: function (res) {
+                        if (res.success) {
+                            $('#cart-count').text(`(${res.count})`);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}
