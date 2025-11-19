@@ -12,7 +12,6 @@ using Media.Utility;
 namespace WebBanSach.Areas.Customer.Controllers
 {
     [Area("Customer")]
-    [Authorize]
     public class ThanhToanController : Controller
     {
         private readonly IUnitOfWork _unit;
@@ -28,22 +27,34 @@ namespace WebBanSach.Areas.Customer.Controllers
         [HttpPost]
         public IActionResult LayDanhSachSanPhamThanhToan([FromBody] DanhSachSanPhamGioHangRequest request)
         {
+            // Khai báo biến
+            List<GioHangVM> gioHangHienTai = new List<GioHangVM>();
+
             try
             {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    gioHangHienTai = _gioHangService.TaiGioHangTuDb(userId);
+                }
+                else
+                {
+                    gioHangHienTai = HttpContext.Session.GetObjectFromJson<List<GioHangVM>>("GioHang") ?? new List<GioHangVM>();
+                }
 
                 if (request.DanhSachMaSach == null || !request.DanhSachMaSach.Any())
                     return Json(new { success = false, message = "Không có sản phẩm nào được chọn." });
 
-                // 🔹 Lấy toàn bộ giỏ hàng hiện tại
-                var gioHang = HttpContext.Session.GetObjectFromJson<List<GioHangVM>>("GioHang") ?? new List<GioHangVM>();
+                if (!gioHangHienTai.Any())
+                    return Json(new { success = false, message = "Giỏ hàng của bạn đang trống hoặc phiên làm việc đã hết hạn." });
 
-                // 🔹 Lọc ra các sản phẩm được chọn để thanh toán
-                var gioHangThanhToan = gioHang.Where(sp => request.DanhSachMaSach.Contains(sp.MaSach)).ToList();
+                var gioHangThanhToan = gioHangHienTai
+                    .Where(sp => request.DanhSachMaSach.Contains(sp.MaSach))
+                    .ToList();
 
                 if (!gioHangThanhToan.Any())
-                    return Json(new { success = false, message = "Không tìm thấy sản phẩm trong giỏ hàng." });
+                    return Json(new { success = false, message = "Không tìm thấy sản phẩm được chọn." });
 
-                // ✅ Lưu danh sách sản phẩm được chọn vào Session
                 HttpContext.Session.SetObjectAsJson("GioHangThanhToan", gioHangThanhToan);
 
                 return Json(new { success = true });
@@ -68,12 +79,11 @@ namespace WebBanSach.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public async Task<IActionResult> ThanhToan()
         {
             if (!User.Identity.IsAuthenticated)
             {
-                TempData["ReturnUrlThanhToan"] = Url.Action("ThanhToan", "Home", new { area = "Customer" });
+                TempData["ReturnUrl"] = Url.Action("ThanhToan", "ThanhToan", new { area = "Customer" });
                 return RedirectToAction("DangNhap", "KhachHang", new { area = "Customer" });
             }
 
@@ -228,7 +238,6 @@ namespace WebBanSach.Areas.Customer.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize] // Bắt buộc [Authorize] để đảm bảo đã đăng nhập
         public async Task<IActionResult> ThanhToan(ThanhToan model)
         {
             // === BƯỚC 1: KIỂM TRA PHÒNG VỆ (DEFENSIVE PROGRAMMING) ===
@@ -409,7 +418,6 @@ namespace WebBanSach.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        [Authorize] // Đảm bảo người dùng đã đăng nhập
         public IActionResult ReLoadDiaChiNhanHangThanhToan()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
