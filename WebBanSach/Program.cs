@@ -93,12 +93,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{area=Customer}/{controller=Home}/{action=TrangChu}/{id?}");
-app.MapControllerRoute(
-    name: "admin",
-    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
 async Task CreateRolesAsync(IServiceProvider serviceProvider)
 {
@@ -122,8 +116,15 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapControllerRoute(
+    name: "default",
+    pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
+
+
+app.MapControllerRoute(
     name: "chude",
     pattern: "chude/{*path}",
     defaults: new { area = "Customer", controller = "Home", action = "SachTheoChuDe" });
+
+
 
 app.Run();
