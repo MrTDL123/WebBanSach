@@ -158,37 +158,21 @@
     <div id="best_sell">
         <img src="~/img/web_img/best_seller_icon.png" alt="Best Seller Icon" />
         <p class="montserrat-bold">Sách bán chạy nhất tuần qua</p>
-@*         <div id="countdown">
-            <div class="time-block">
-                <span id="days">0</span>
-            </div>
-            <div class="time-block">
-                <span id="hours">0</span>
-            </div>
-            <div class="time-block">
-                <span id="minutes">0</span>
-            </div>
-            <div class="time-block">
-                <span id="seconds">0</span>
-            </div>
-        </div> *@
     </div>
     <div id="sach-list-section">
         @foreach (var sach in Model.SachBanChay)
         {
             <div class="book">
                 <div class="book_img">
-                    <img src="@sach.AnhBiaChinh" alt="Ảnh sách" />
+                    <img src="~/img/product/@sach.AnhBiaChinh" alt="Ảnh sách" />
                     <div class="book_img_hover">
                         <ul class="book_icon_container">
                             <li>
-                                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon"></a>
                                 <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" class="direct_detail_icon book_icon">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="direct_cart_icon book_icon"></a>
                                 <a href="javascript:void(0);" class="add-to-cart book_icon" data-masach="@sach.MaSach">
                                     <i class="bi bi-cart-fill"></i>
                                 </a>
@@ -196,7 +180,7 @@
                         </ul>
                     </div>
                 </div>
-                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="ten_sach montserrat-regular">
+                <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" class="ten_sach montserrat-regular">
                     @Truncate(sach.TenSach, 15)
                 </a>
                 <p class="ten_tacgia montserrat-bold">@HienThiDongGia(sach.GiaBan)</p>
