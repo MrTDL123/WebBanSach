@@ -1,0 +1,85 @@
+﻿@model Media.Models.DonHang
+
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng";
+}
+
+<h1>Chi Tiết Đơn Hàng</h1>
+
+<div>
+    <h4>Đơn Hàng #@Model.MaDonHang</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Mã Đơn Hàng:</dt>
+        <dd class="col-sm-10">@Model.MaDonHang</dd>
+
+        <dt class="col-sm-2">Khách Hàng:</dt>
+        <dd class="col-sm-10">@Model.KhachHang?.HoTen</dd>
+
+        <dt class="col-sm-2">Nhân Viên:</dt>
+        <dd class="col-sm-10">@Model.NhanVien?.HoTen</dd>
+
+        <dt class="col-sm-2">Vận Chuyển:</dt>
+        <dd class="col-sm-10">@Model.VanChuyen?.MaVanChuyen</dd>
+
+        <dt class="col-sm-2">Tên Người Nhận:</dt>
+        <dd class="col-sm-10">@Model.TenNguoiNhan</dd>
+
+        <dt class="col-sm-2">SĐT Người Nhận:</dt>
+        <dd class="col-sm-10">@Model.SoDienThoaiNhan</dd>
+
+        <dt class="col-sm-2">Địa Chỉ:</dt>
+        <dd class="col-sm-10">@Model.DiaChiChiTiet, @Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh</dd>
+
+        <dt class="col-sm-2">Tổng Tiền:</dt>
+        <dd class="col-sm-10">@Model.Total.ToString("N0") ₫</dd>
+
+        <dt class="col-sm-2">Ngày Tạo:</dt>
+        <dd class="col-sm-10">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+
+        <dt class="col-sm-2">Thanh Toán:</dt>
+        <dd class="col-sm-10">
+            @if (Model.DaThanhToan)
+            {
+                <span class="badge bg-success">Đã thanh toán</span>
+            }
+            else
+            {
+                <span class="badge bg-warning">Chưa thanh toán</span>
+            }
+        </dd>
+
+        <dt class="col-sm-2">Hình Thức TT:</dt>
+        <dd class="col-sm-10">@Model.HinhThucThanhToan</dd>
+
+        <dt class="col-sm-2">Ghi Chú:</dt>
+        <dd class="col-sm-10">@Model.GhiChu</dd>
+    </dl>
+
+    <h5>Chi Tiết Đơn Hàng</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sách</th>
+                <th>Số Lượng</th>
+                <th>Đơn Giá</th>
+                <th>Thành Tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var chiTiet in Model.ChiTietDonHangs)
+            {
+                <tr>
+                    <td>@chiTiet.Sach?.TenSach</td>
+                    <td>@chiTiet.SoLuong</td>
+                    <td>@chiTiet.DonGia.ToString("N0") ₫</td>
+                    <td>@chiTiet.ThanhTien.ToString("N0") ₫</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.MaDonHang" class="btn btn-warning">Sửa</a>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+</div>

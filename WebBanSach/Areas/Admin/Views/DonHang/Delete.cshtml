@@ -1,0 +1,31 @@
+﻿@model Media.Models.DonHang
+
+@{
+    ViewData["Title"] = "Xóa Đơn Hàng";
+}
+
+<h1>Xóa Đơn Hàng</h1>
+
+<h3>Bạn có chắc chắn muốn xóa đơn hàng này?</h3>
+<div>
+    <h4>Đơn Hàng #@Model.MaDonHang</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Mã Đơn Hàng:</dt>
+        <dd class="col-sm-10">@Model.MaDonHang</dd>
+        <dt class="col-sm-2">Khách Hàng:</dt>
+        <dd class="col-sm-10">@Model.KhachHang?.HoTen</dd>
+        <dt class="col-sm-2">Nhân Viên:</dt>
+        <dd class="col-sm-10">@Model.NhanVien?.HoTen</dd>
+        <dt class="col-sm-2">Tổng Tiền:</dt>
+        <dd class="col-sm-10">@Model.Total.ToString("N0") ₫</dd>
+        <dt class="col-sm-2">Ngày Tạo:</dt>
+        <dd class="col-sm-10">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="MaDonHang" />
+        <input type="submit" value="Xóa" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+    </form>
+</div>

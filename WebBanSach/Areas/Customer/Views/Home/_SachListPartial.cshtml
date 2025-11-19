@@ -1,10 +1,26 @@
-﻿
+﻿@functions {
+    public string Truncate(string noidung, int length)
+    {
+        if (noidung.Length < length)
+        {
+            return noidung;
+        }
+        else
+        {
+            return $"{noidung.Substring(0, length)}...";
+        }
+    }
 
+    public string HienThiDongGia(decimal giaTien)
+    {
+        return giaTien.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
+    }
+}
 @foreach (Sach sach in Model.DanhSachSach)
 {
     <div class="book">
         <div class="book_img">
-            <img src="@sach.ImageUrl" alt="Ảnh sách" />
+            <img src="@sach.AnhBiaChinh" alt="Ảnh sách" />
             <div class="book_img_hover">
                 <ul class="book_icon_container">
                     <li>

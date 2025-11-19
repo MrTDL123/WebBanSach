@@ -1,0 +1,222 @@
+﻿@model Media.Models.NhanVien
+@{
+    ViewData["Title"] = "Thêm nhân viên";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-user-tie text-success"></i> Thêm nhân viên mới
+        </h1>
+        <a asp-action="QuanLyNguoiDung" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-success">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-id-card"></i> Thông tin nhân viên
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ThemNhanVien" id="staffForm" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="HoTen" class="control-label font-weight-bold text-success"></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        </div>
+                                        <input asp-for="HoTen" class="form-control" placeholder="Nguyễn Văn B" required />
+                                    </div>
+                                    <span asp-validation-for="HoTen" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label font-weight-bold text-success">Email</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        </div>
+                                        <input name="Email" type="email" class="form-control" placeholder="nhanvien@company.com" required />
+                                    </div>
+                                    <span class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="CCCD" class="control-label font-weight-bold text-success"></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                        </div>
+                                        <input asp-for="CCCD" class="form-control" placeholder="001234567890" required />
+                                    </div>
+                                    <span asp-validation-for="CCCD" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="NgaySinh" class="control-label font-weight-bold text-success"></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                        </div>
+                                        <input asp-for="NgaySinh" type="date" class="form-control" required />
+                                    </div>
+                                    <span asp-validation-for="NgaySinh" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="Luong" class="control-label font-weight-bold text-success"></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
+                                        </div>
+                                        <input asp-for="Luong" class="form-control" type="number" placeholder="5000000" required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">VNĐ</span>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="Luong" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="BacLuong" class="control-label font-weight-bold text-success"></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-sort-numeric-up"></i></span>
+                                        </div>
+                                        <input asp-for="BacLuong" class="form-control" type="number" placeholder="1" required />
+                                    </div>
+                                    <span asp-validation-for="BacLuong" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="NgayVaoLam" class="control-label font-weight-bold text-success"></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                                        </div>
+                                        <input asp-for="NgayVaoLam" type="date" class="form-control" required />
+                                    </div>
+                                    <span asp-validation-for="NgayVaoLam" class="text-danger small"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label asp-for="QueQuan" class="control-label font-weight-bold text-success"></label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-home"></i></span>
+                                        </div>
+                                        <input asp-for="QueQuan" class="form-control" placeholder="Nhập quê quán" required />
+                                    </div>
+                                    <span asp-validation-for="QueQuan" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="DiaChi" class="control-label font-weight-bold text-success"></label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                </div>
+                                <textarea asp-for="DiaChi" class="form-control" rows="3" placeholder="Địa chỉ hiện tại" required></textarea>
+                            </div>
+                            <span asp-validation-for="DiaChi" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-lg mr-3">
+                                <i class="fas fa-save"></i> Thêm nhân viên
+                            </button>
+                            <a asp-action="QuanLyNguoiDung" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Hủy bỏ
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-info">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-info-circle"></i> Hướng dẫn
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-lightbulb"></i> <strong>Lưu ý khi thêm nhân viên:</strong></h6>
+                        <ul class="mb-0 pl-3">
+                            <li>CCCD phải có 12 chữ số</li>
+                            <li>Lương cơ bản theo tháng</li>
+                            <li>Bậc lương từ 1-15</li>
+                            <li>Ngày vào làm không được lớn hơn ngày hiện tại</li>
+                            <li>Email sẽ được dùng để đăng nhập hệ thống</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-header py-3 bg-warning">
+                    <h6 class="m-0 font-weight-bold text-white">
+                        <i class="fas fa-users"></i> Thống kê nhân sự
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <h4 class="text-warning">@ViewBag.TotalStaff</h4>
+                        <p class="mb-0">Tổng số nhân viên</p>
+                        <hr>
+                        <small class="text-muted">Nhân viên mới: +@ViewBag.NewStaff</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            $('#staffForm').on('submit', function(e) {
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                $(this).addClass('was-validated');
+            });
+
+            // Set today as default for NgayVaoLam
+            const today = new Date().toISOString().split('T')[0];
+            $('#NgayVaoLam').val(today);
+        });
+    </script>
+}

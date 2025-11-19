@@ -34,11 +34,12 @@ namespace Meida.DataAccess.Data
 
         public DbSet<DonHang> DonHangs { get; set; }
         public DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
-
+        public DbSet<PhanHoiKhachHang> PhanHoiKhachHangs { get; set; }
         public DbSet<HoaDon> HoaDons { get; set; }
         public DbSet<PhieuTraHang> PhieuTraHangs { get; set; }
         public DbSet<ChiTietTraHang> ChiTietTraHangs { get; set; }
         public DbSet<VanChuyen> VanChuyens { get; set; }
+        public DbSet<DiaChiNhanHang> DiaChiNhanHangs { get; set; }
 
         // ======================= CONFIG =======================
         protected override void OnModelCreating(ModelBuilder modelBuilder)

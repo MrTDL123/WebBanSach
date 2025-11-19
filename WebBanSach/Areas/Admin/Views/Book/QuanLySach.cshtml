@@ -1,0 +1,439 @@
+﻿@model IEnumerable<Media.Models.Sach>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Quản lý sách";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* 🔥 FIX FOCUS cho Bootstrap */
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Fix cho tất cả button và link có class btn */
+        .btn {
+            outline: none !important;
+        }
+
+        /* Fix riêng cho các nút trong action-buttons */
+        .action-buttons .btn:focus {
+            background-color: transparent !important;
+            border-color: currentColor !important;
+        }
+
+        /* Giữ nguyên các style cũ */
+        .book-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none;
+            border-radius: 12px;
+        }
+
+            .book-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+        .book-image {
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .price-tag {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .quantity-badge {
+            background: #6c757d;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .action-buttons .btn {
+            border-radius: 8px;
+            padding: 6px 12px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+        }
+
+        .table-image {
+            height: 60px;
+            width: 45px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .table th {
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+        }
+
+        .category-management {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .category-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 10px;
+        }
+
+            .category-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 fw-bold text-primary mb-1">
+                            <i class="fas fa-book me-2"></i>Quản lý sách
+                        </h1>
+                        <p class="text-muted mb-0">Quản lý toàn bộ sách và danh mục trong hệ thống</p>
+                    </div>
+                  
+                </div>
+            </div>
+        </div>
+
+        <!-- Quản lý danh mục -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="category-management">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0 text-dark">
+                            <i class="fas fa-tags me-2"></i>Quản lý danh mục
+                        </h4>
+                    </div>
+                    <div class="row g-3">
+                        <!-- Quản lý Thể loại -->
+                        <div class="col-md-4">
+                            <div class="card category-card h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-bookmark me-2"></i>Thể loại
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">Quản lý các thể loại sách</p>
+                                    <div class="d-grid gap-2">
+                                        <a href="@Url.Action("QuanLyTheLoai", "Book")" class="btn btn-outline-info">
+                                            <i class="fas fa-list me-2"></i>Danh sách thể loại
+                                        </a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quản lý Tác giả -->
+                        <div class="col-md-4">
+                            <div class="card category-card h-100">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-user-edit me-2"></i>Tác giả
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">Quản lý thông tin tác giả</p>
+                                    <div class="d-grid gap-2">
+                                        <a href="@Url.Action("QuanLyTacGia", "Book")" class="btn btn-outline-warning">
+                                            <i class="fas fa-list me-2"></i>Danh sách tác giả
+                                        </a>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quản lý NXB -->
+                        <div class="col-md-4">
+                            <div class="card category-card h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-building me-2"></i>Nhà xuất bản
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">Quản lý nhà xuất bản</p>
+                                    <div class="d-grid gap-2">
+                                        <a href="@Url.Action("QuanLyNXB", "Book")" class="btn btn-outline-success">
+                                            <i class="fas fa-list me-2"></i>Danh sách NXB
+                                        </a>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phần còn lại giữ nguyên -->
+        <!-- Thống kê -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stats-card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-white-50 mb-1">Tổng số sách</h6>
+                                <h3 class="text-white mb-0">@Model.Count()</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-book fa-2x text-white-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-muted mb-1">Tổng số lượng</h6>
+                                <h3 class="text-dark mb-0">@Model.Sum(s => s.SoLuong)</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-copy fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-muted mb-1">Tổng giá trị</h6>
+                                <h3 class="text-dark mb-0">@String.Format("{0:N0} ₫", Model.Sum(s => s.GiaBan * s.SoLuong))</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-muted mb-1">Sách có sẵn</h6>
+                                <h3 class="text-dark mb-0">@Model.Count(s => s.SoLuong > 0)</h3>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-check-circle fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách sách -->
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-white py-3 border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-dark">
+                        <i class="fas fa-list me-2 text-primary"></i>Danh sách sách
+                    </h5>
+                    <div class="btn-group">
+                        <a href="@Url.Action("ThemSach")" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-2"></i>Thêm sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">#</th>
+                                <th>Ảnh bìa</th>
+                                <th>Tên sách</th>
+                                <th>Chủ đề</th>
+                                <th>Tác giả</th>
+                                <th>NXB</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng</th>
+                                <th>Trạng thái</th>
+                                <th class="text-center pe-4">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                int stt = 1;
+                                foreach (var sach in Model)
+                                {
+                                    <tr class="book-card">
+                                        <td class="ps-4 fw-semibold">@stt</td>
+                                        <td>
+                                            <img src="~/uploads/@sach.AnhBiaChinh"
+                                                 alt="Ảnh bìa"
+                                                 class="table-image"
+                                                 onerror="this.src='https://via.placeholder.com/45x60?text=No+Image'" />
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark">@sach.TenSach</div>
+                                            @if (!string.IsNullOrEmpty(sach.NhaCungCap))
+                                            {
+                                                <small class="text-muted">@sach.NhaCungCap</small>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (sach.ChuDe != null)
+                                            {
+                                                <span class="badge bg-light text-dark border">@sach.ChuDe.TenChuDe</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Chưa có</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (sach.TacGia != null)
+                                            {
+                                                <span class="text-dark">@sach.TacGia.TenTG</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Chưa có</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (sach.NhaXuatBan != null)
+                                            {
+                                                <span class="text-dark">@sach.NhaXuatBan.TenNXB</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Chưa có</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="price-tag">@String.Format("{0:N0} ₫", sach.GiaBan)</span>
+                                        </td>
+                                        <td>
+                                            <span class="quantity-badge">@sach.SoLuong</span>
+                                        </td>
+                                        <td>
+                                            @if (sach.SoLuong > 0)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-check me-1"></i>Còn hàng
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times me-1"></i>Hết hàng
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="text-center pe-4 action-buttons">
+                                            <div class="btn-group" role="group">
+                                                <a class="btn btn-outline-primary btn-sm"
+                                                   href="@Url.Action("SuaSach", new { id = sach.MaSach })"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Sửa thông tin">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a class="btn btn-outline-danger btn-sm"
+                                                   href="@Url.Action("XoaSach", new { id = sach.MaSach })"
+                                                   onclick="return confirm('Bạn có chắc muốn xóa sách \'@sach.TenSach\'?');"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Xóa sách">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    stt++;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="10" class="text-center py-5">
+                                        <div class="text-muted">
+                                            <i class="fas fa-book fa-3x mb-3"></i>
+                                            <h5>Chưa có sách nào trong hệ thống</h5>
+                                            <p class="mb-0">Hãy thêm sách mới để bắt đầu quản lý</p>
+                                            <a href="@Url.Action("ThemSach")" class="btn btn-primary mt-3">
+                                                <i class="fas fa-plus me-2"></i>Thêm sách đầu tiên
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer thông tin -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="text-center text-muted">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        Hiển thị @Model.Count() sách •
+                        Cập nhật lúc: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Khởi tạo tooltip
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+    </script>
+</body>
+</html>
