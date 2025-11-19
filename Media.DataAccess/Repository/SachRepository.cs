@@ -65,7 +65,6 @@ namespace Media.DataAccess.Repository
 
             List<Sach> topSellers = await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
-
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4);
 
                 var topSellersQuery = _db.ChiTietDonHangs.

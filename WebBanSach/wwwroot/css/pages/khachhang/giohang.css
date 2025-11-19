@@ -28,6 +28,7 @@ body {
 .wrapper {
     display: flex;
     gap: 15px;
+    padding-bottom: 2rem;
 }
 
 .cart-content {

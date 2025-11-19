@@ -5,17 +5,19 @@
     height: 58vh;
     width: 100%;
     z-index: 1;
+    position: relative;
 }
 
 #slide1,
 #slide2,
 #slide3 {
-    display: none;
+    display: none;  
     grid-row-start: 1;
     grid-column-start: 1;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: inherit;
 }
 /*SLIDE 1*/
 #slide1 {
@@ -23,8 +25,6 @@
     position: relative;
     flex-direction: row;
 }
-
-
 
 #background_book_slide1 {
     display: grid;
