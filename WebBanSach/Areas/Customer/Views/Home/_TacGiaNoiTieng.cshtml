@@ -11,7 +11,7 @@
                     {
                         <div class="author-item">
                             <a asp-action="LaySachTheoTacGia" asp-controller="Home" asp-route-id="@tacGia.MaTacGia">
-                                <img src="/img/tac_gia/@(tacGia.TenTG.XoaDauTiengViet().Replace(' ', '-')).jpg" alt="@tacGia.TenTG img">
+                                <img src="~/img/tac_gia/@(tacGia.TenTG.XoaDauTiengViet().Replace(' ', '-')).jpg" alt="@tacGia.TenTG img">
                                 <span class="author-name">@tacGia.TenTG</span>
                             </a>
                         </div>

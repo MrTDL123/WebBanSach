@@ -823,9 +823,9 @@
             .then(response => {
                 if (!response.ok) throw new Error("Lỗi khi lưu thông tin mua hàng");
                 window.location.href = '/Customer/ThanhToan/ThanhToan';
-            })
-            .catch(error => console.error('Error:', error));
-            alert('Đã xảy ra lỗi khi xử lý. Vui lòng thử lại.');
+            });
+            // .catch(error => console.error('Error:', error));
+            // alert('Đã xảy ra lỗi khi xử lý. Vui lòng thử lại.');
         });
 
         document.getElementById("btnAddToCart").addEventListener("click", function () {

@@ -11,10 +11,10 @@
             @foreach (Sach sachMienPhi in Model)
             {
                 <div class="book-item">
-                    <a asp-controller="Home" asp-action="Details" asp-route-id="@sachMienPhi.MaSach" title="@sachMienPhi.TenSach">
+                    <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sachMienPhi.MaSach })" title="@sachMienPhi.TenSach">
 
                         <div class="book-image-container">
-                            <img src="@sachMienPhi.AnhBiaChinh" alt="Bìa sách @sachMienPhi.TenSach">
+                            <img src="~/img/product/@sachMienPhi.AnhBiaChinh" alt="Bìa sách @sachMienPhi.TenSach">
 
                             <span class="free-badge">Miễn Phí</span>
                         </div>

@@ -72,16 +72,16 @@
     {
         <div class="book">
             <div class="book_img">
-                <img src="~/img/product/@sach.AnhBiaChinh" alt="Ảnh sách" />
+                <img src="~/img/product/@sach.AnhBiaChinh" alt="Ảnh sách @sach.AnhBiaChinh" />
                 <div class="book_img_hover">
                     <ul class="book_icon_container">
                         <li>
-                            <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" class="direct_detail_icon book_icon">
+                            <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" class="direct_detail_icon book_icon">
                                 <i class="bi bi-eye-fill"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="javascript:void(0);" class="add-to-cart book_icon" data-masach="@sach.MaSach">
+                            <a href="javascript:void(0);" class="direct_cart_icon book_icon" data-masach="@sach.MaSach">
                                 <i class="bi bi-cart-fill"></i>
                             </a>
                         </li>
