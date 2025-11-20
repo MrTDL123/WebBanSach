@@ -44,8 +44,8 @@
                     <p class="text-muted mb-0">Quản lý thông tin các nhà xuất bản trong hệ thống</p>
                 </div>
                 <div>
-                    
-                    <a href="@Url.Action("ThemNXB", "Book")" class="btn btn-success">
+
+                    <a href="@Url.Action("ThemNXB", "NXB")" class="btn btn-success">
                         <i class="fas fa-plus-circle me-2"></i>Thêm NXB
                     </a>
                 </div>
@@ -149,13 +149,13 @@
                                     <td class="text-center pe-4 action-buttons">
                                         <div class="btn-group" role="group">
                                             <a class="btn btn-outline-primary btn-sm"
-                                               href="@Url.Action("SuaNXB", "Book", new { id = nxb.MaNhaXuatBan })"
+                                               href="@Url.Action("SuaNXB", "NXB", new { id = nxb.MaNhaXuatBan })"
                                                data-bs-toggle="tooltip"
                                                title="Sửa thông tin">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <a class="btn btn-outline-danger btn-sm"
-                                               href="@Url.Action("XoaNXB", "Book", new { id = nxb.MaNhaXuatBan })"
+                                               href="@Url.Action("XoaNXB", "NXB", new { id = nxb.MaNhaXuatBan })"
                                                onclick="return confirm('Bạn có chắc muốn xóa nhà xuất bản \" @nxb.TenNXB\"?');"
                                                data-bs-toggle="tooltip"
                                                title="Xóa NXB">

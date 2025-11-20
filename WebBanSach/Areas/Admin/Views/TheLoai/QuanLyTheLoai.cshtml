@@ -1,0 +1,605 @@
+﻿@model IEnumerable<Media.Models.ChuDe>
+@{
+    ViewData["Title"] = "Quản lý Thể loại";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* 🔥 FIX FOCUS cho Bootstrap */
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Fix cho tất cả button và link có class btn */
+        .btn {
+            outline: none !important;
+        }
+
+        /* Main styles */
+        .category-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fe 100%);
+            overflow: hidden;
+        }
+
+            .category-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+            }
+
+        .stats-card {
+            border: none;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .stats-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #667eea, #764ba2);
+            }
+
+            .stats-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            }
+
+        .stats-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stats-warning {
+            background: linear-gradient(135deg, #ffd166 0%, #f8961e 100%);
+            color: #2d3748;
+        }
+
+        .stats-success {
+            background: linear-gradient(135deg, #06d6a0 0%, #04a777 100%);
+            color: white;
+        }
+
+        .stats-info {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2d3748;
+        }
+
+        .table th {
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 700;
+            color: #4a5568;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        .action-buttons .btn {
+            border-radius: 10px;
+            padding: 8px 14px;
+            transition: all 0.3s ease;
+            border: 2px solid;
+        }
+
+            .action-buttons .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+
+        /* Style mới cho tìm kiếm */
+        .search-container {
+            position: relative;
+            max-width: 300px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            z-index: 5;
+        }
+
+        .search-input {
+            padding-left: 45px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            background: #fff;
+            transition: all 0.3s ease;
+            height: 45px;
+        }
+
+            .search-input:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+        .search-results-info {
+            font-size: 0.9rem;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .type-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: none;
+        }
+
+        .badge-parent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .badge-child {
+            background: linear-gradient(135deg, #ffd166 0%, #f8961e 100%);
+            color: #2d3748;
+            box-shadow: 0 4px 15px rgba(255, 209, 102, 0.3);
+        }
+
+        .children-count {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .slug-text {
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+            background: linear-gradient(135deg, #f8f9fe 0%, #e2e8f0 100%);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+            font-weight: 500;
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .icon-parent {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .icon-child {
+            background: linear-gradient(135deg, #ffd166 0%, #f8961e 100%);
+            color: #2d3748;
+        }
+
+        .main-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fe 100%);
+        }
+
+        .card-header-custom {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fe 100%);
+            border-bottom: 2px solid #e2e8f0;
+            padding: 1.5rem 2rem;
+            border-radius: 20px 20px 0 0 !important;
+        }
+
+        .table > :not(caption) > * > * {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .table-hover > tbody > tr:hover {
+            background: linear-gradient(135deg, #f8f9fe 0%, #e2e8f0 100%);
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+            .btn-primary-custom:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            }
+
+        .hierarchy-indent {
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .hierarchy-line {
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #e2e8f0, #cbd5e0);
+        }
+
+        .full-path {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9fe 0%, #e2e8f0 100%);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 fw-bold text-dark mb-2">
+                            <i class="fas fa-tags me-3 text-primary"></i>Quản lý Thể loại
+                        </h1>
+                        <p class="text-muted mb-0 fs-6">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Quản lý toàn bộ thể loại và danh mục trong hệ thống
+                        </p>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="search-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Tìm kiếm thể loại..." />
+                        </div>
+                        <a href="@Url.Action("ThemTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-primary-custom">
+                            <i class="fas fa-plus me-2"></i>Thêm thể loại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="row mb-5">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stats-card stats-primary text-white">
+                    <div class="card-body py-4">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-white-80 mb-2 fw-semibold">Tổng số thể loại</h6>
+                                <h2 class="text-white mb-0 fw-bold">@Model.Count()</h2>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-tags fa-2x text-white-60"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stats-card stats-warning">
+                    <div class="card-body py-4">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-dark-80 mb-2 fw-semibold">Thể loại cha</h6>
+                                <h2 class="text-dark mb-0 fw-bold">@Model.Count(c => c.ParentId == null)</h2>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-folder fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stats-card stats-success text-white">
+                    <div class="card-body py-4">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-white-80 mb-2 fw-semibold">Thể loại con</h6>
+                                <h2 class="text-white mb-0 fw-bold">@Model.Count(c => c.ParentId != null)</h2>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-folder-open fa-2x text-white-60"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stats-card stats-info">
+                    <div class="card-body py-4">
+                        <div class="row align-items-center">
+                            <div class="col-8">
+                                <h6 class="text-dark-80 mb-2 fw-semibold">Có thể loại con</h6>
+                                <h2 class="text-dark mb-0 fw-bold">@Model.Count(c => c.Children != null && c.Children.Any())</h2>
+                            </div>
+                            <div class="col-4 text-end">
+                                <i class="fas fa-sitemap fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách thể loại -->
+        <div class="card main-card">
+            <div class="card-header card-header-custom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-dark fw-bold">
+                        <i class="fas fa-list me-3 text-primary"></i>Danh sách thể loại
+                    </h5>
+                    <div class="text-muted">
+                        <small>
+                            <i class="fas fa-sync-alt me-1"></i>
+                            Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <!-- Thông tin kết quả tìm kiếm -->
+                <div class="px-4 py-3 border-bottom bg-light d-none" id="searchResultsInfo">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="search-results-info" id="searchResultsText"></span>
+                        <button class="btn btn-sm btn-outline-primary" id="clearSearchBtn">
+                            <i class="fas fa-times me-1"></i>Xóa tìm kiếm
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="categoriesTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4" style="width: 60px;">#</th>
+                                <th>Tên thể loại</th>
+                                <th style="width: 200px;">Slug</th>
+                                <th style="width: 120px;">Loại</th>
+                                <th class="text-center pe-4" style="width: 140px;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoriesTableBody">
+                            @if (Model != null && Model.Any())
+                            {
+                                int stt = 1;
+                                foreach (var item in Model)
+                                {
+                                    <tr class="category-card" data-search="@item.TenChuDe.ToLower() @item.FullPath?.ToLower() @item.Slug?.ToLower()">
+                                        <td class="ps-4 fw-bold text-primary">@stt</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-icon @(item.ParentId == null ? "icon-parent" : "icon-child")">
+                                                    <i class="fas @(item.ParentId == null ? "fa-folder" : "fa-folder-open")"></i>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-bold text-dark fs-6">@item.TenChuDe</div>
+                                                    @if (!string.IsNullOrEmpty(item.FullPath))
+                                                    {
+                                                        <div class="full-path">
+                                                            <i class="fas fa-link me-1 text-muted"></i>@item.FullPath
+                                                        </div>
+                                                    }
+                                                </div>
+                                                @if (item.Children != null && item.Children.Any())
+                                                {
+                                                    <span class="children-count">
+                                                        <i class="fas fa-sitemap me-1"></i>@item.Children.Count()
+                                                    </span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Slug))
+                                            {
+                                                <code class="slug-text">@item.Slug</code>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">Chưa có slug</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.ParentId == null)
+                                            {
+                                                <span class="type-badge badge-parent">
+                                                    <i class="fas fa-folder me-1"></i>Thể loại cha
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="type-badge badge-child">
+                                                    <i class="fas fa-folder-open me-1"></i>Thể loại con
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="text-center pe-4 action-buttons">
+                                            <div class="btn-group" role="group">
+                                                <a class="btn btn-outline-primary btn-sm"
+                                                   href="@Url.Action("SuaTheLoai", "TheLoai", new { area = "Admin", id = item.MaChuDe })"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Sửa thông tin">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a class="btn btn-outline-danger btn-sm"
+                                                   href="@Url.Action("XoaTheLoai", "TheLoai", new { area = "Admin", id = item.MaChuDe })"
+                                                   onclick="return confirm('Bạn có chắc muốn xóa thể loại \'@item.TenChuDe\'?');"
+                                                   data-bs-toggle="tooltip"
+                                                   title="Xóa thể loại">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    stt++;
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="border-0">
+                                        <div class="empty-state">
+                                            <div class="empty-icon">
+                                                <i class="fas fa-tags"></i>
+                                            </div>
+                                            <h4 class="text-dark mb-3">Chưa có thể loại nào</h4>
+                                            <p class="text-muted mb-4">Hãy thêm thể loại mới để bắt đầu quản lý hệ thống</p>
+                                            <a href="@Url.Action("ThemTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-primary-custom">
+                                                <i class="fas fa-plus me-2"></i>Thêm thể loại đầu tiên
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer thông tin -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="text-center text-muted">
+                    <small>
+                        <i class="fas fa-info-circle me-2"></i>
+                        Hiển thị @Model.Count() thể loại •
+                        Hệ thống quản lý thể loại •
+                        @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Khởi tạo tooltip
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Tìm kiếm thể loại
+            const searchInput = document.getElementById('searchInput');
+            const categoriesTableBody = document.getElementById('categoriesTableBody');
+            const searchResultsInfo = document.getElementById('searchResultsInfo');
+            const searchResultsText = document.getElementById('searchResultsText');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const originalRows = Array.from(categoriesTableBody.querySelectorAll('tr'));
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                if (searchTerm === '') {
+                    // Hiển thị tất cả thể loại
+                    originalRows.forEach(row => {
+                        row.style.display = '';
+                    });
+                    searchResultsInfo.classList.add('d-none');
+                    updateRowNumbers();
+                    return;
+                }
+
+                // Lọc thể loại theo từ khóa
+                let matchCount = 0;
+                originalRows.forEach(row => {
+                    const searchData = row.getAttribute('data-search');
+                    if (searchData && searchData.includes(searchTerm)) {
+                        row.style.display = '';
+                        matchCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Hiển thị thông tin kết quả tìm kiếm
+                if (matchCount > 0) {
+                    searchResultsText.textContent = `Tìm thấy ${matchCount} kết quả cho "${searchTerm}"`;
+                    searchResultsInfo.classList.remove('d-none');
+                } else {
+                    searchResultsText.textContent = `Không tìm thấy kết quả nào cho "${searchTerm}"`;
+                    searchResultsInfo.classList.remove('d-none');
+                }
+
+                updateRowNumbers();
+            });
+
+            // Xóa tìm kiếm
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+            });
+
+            // Cập nhật số thứ tự
+            function updateRowNumbers() {
+                const visibleRows = Array.from(categoriesTableBody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+                visibleRows.forEach((row, index) => {
+                    const td = row.querySelector('td:first-child');
+                    if (td) {
+                        td.textContent = index + 1;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

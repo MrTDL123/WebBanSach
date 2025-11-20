@@ -1,0 +1,187 @@
+﻿@model Media.Models.ChuDe
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Xóa thể loại";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-gradient-danger text-white py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-white bg-opacity-20 rounded-circle p-3 me-3">
+                                <i class="fas fa-exclamation-triangle fa-lg text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-0 fw-bold">Xóa thể loại</h4>
+                                <p class="mb-0 opacity-75">Hành động này không thể hoàn tác</p>
+                            </div>
+                        </div>
+                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left me-2"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Thông báo cảnh báo -->
+                    <div class="alert alert-warning border-0 rounded-3 mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle fa-2x text-warning mt-1"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="alert-heading mb-2">Cảnh báo quan trọng!</h5>
+                                <p class="mb-2">Bạn đang chuẩn bị xóa vĩnh viễn thể loại này. Hành động này sẽ:</p>
+                                <ul class="mb-0 ps-3">
+                                    <li>Xóa hoàn toàn thể loại khỏi hệ thống</li>
+                                    <li>Không thể khôi phục sau khi xóa</li>
+                                    <li>Ảnh hưởng đến các sách thuộc thể loại này</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (ViewBag.CoSach == true)
+                    {
+                        <!-- Không thể xóa vì có sách liên quan -->
+                        <div class="text-center">
+                            <div class="alert alert-danger border-0 rounded-3 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-ban fa-2x text-danger me-3"></i>
+                                    <div class="text-start">
+                                        <h5 class="mb-1">Không thể xóa thể loại!</h5>
+                                        <p class="mb-0">Thể loại này đang được sử dụng bởi một hoặc nhiều sách trong hệ thống.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-primary px-4 py-2">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Có thể xóa -->
+                        <div class="text-center">
+                            <!-- Thông tin thể loại -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light py-3">
+                                    <h6 class="mb-0 text-dark">
+                                        <i class="fas fa-info-circle me-2 text-primary"></i>
+                                        Thông tin thể loại sẽ bị xóa
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-start">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                                <strong>Mã thể loại:</strong>
+                                                <span class="badge bg-primary">@Model.MaChuDe</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                                <strong>Tên thể loại:</strong>
+                                                <span class="text-dark fw-semibold">@Model.TenChuDe</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                                <strong>Slug:</strong>
+                                                <span class="text-muted">@(Model.Slug ?? "Chưa có slug")</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between align-items-center p-2 bg-light rounded">
+                                                <strong>Đường dẫn:</strong>
+                                                <span class="text-muted">@(Model.FullPath ?? "Chưa có đường dẫn")</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Xác nhận cuối cùng -->
+                            <div class="border-top pt-4">
+                                <div class="mb-4">
+                                    <div class="icon-circle-danger mb-3 mx-auto">
+                                        <i class="fas fa-shield-alt fa-2x text-white"></i>
+                                    </div>
+                                    <h5 class="text-danger mb-2">Xác nhận xóa vĩnh viễn</h5>
+                                    <p class="text-muted">Bạn có chắc chắn muốn xóa thể loại "<strong>@Model.TenChuDe</strong>" không?</p>
+                                </div>
+
+                                <form method="post" action="@Url.Action("XoaTheLoaiConfirmed", "TheLoai", new { area = "Admin" })" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.MaChuDe" />
+
+                                    <div class="d-grid gap-3 d-md-flex justify-content-md-center">
+                                        <button type="submit" class="btn btn-gradient-danger btn-lg px-5 py-2">
+                                            <i class="fas fa-trash me-2"></i>
+                                            XÓA VĨNH VIỄN
+                                        </button>
+                                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-outline-secondary btn-lg px-5 py-2">
+                                            <i class="fas fa-times me-2"></i>
+                                            Hủy bỏ
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+
+    .btn-gradient-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-gradient-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+            color: white;
+        }
+
+    .icon-circle-danger {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-outline-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+    .alert {
+        border-radius: 10px;
+    }
+</style>

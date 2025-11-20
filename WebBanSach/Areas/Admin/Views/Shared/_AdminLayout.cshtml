@@ -21,29 +21,175 @@
 
     <!-- ✅ FIX CSS cho menu -->
     <style>
-        /* 🔥 FIX HOÀN TOÀN: Loại bỏ mọi focus state */
-        aside a:focus,
-        aside a:active,
-        aside a:focus-visible {
-            outline: none !important;
-            box-shadow: none !important;
-            background-color: transparent !important;
-            color: inherit !important;
-        }
-
-        /* Đảm bảo không có background khi focus */
-        aside a:hover {
-            background-color: #f3f4f6 !important;
-        }
-
-        .dark aside a:hover {
-            background-color: #1f2937 !important;
-        }
-
-        /* Thêm transition mượt mà */
+        /* 🔥 XÓA GẠCH CHÂN VÀ FOCUS CHO MENU */
         aside a {
-            transition: all 0.2s ease-in-out;
+            outline: none !important;
+            text-decoration: none !important;
         }
+
+            aside a:focus,
+            aside a:active,
+            aside a:hover {
+                outline: none !important;
+                box-shadow: none !important;
+                text-decoration: none !important;
+            }
+
+        /* Dark mode cho body */
+        html.dark body {
+            background-color: #0b0b0b;
+            color: #f5f5f5;
+        }
+
+        /* Card chính */
+        html.dark .card {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            border-color: #333;
+        }
+
+        /* Card header màu cố định */
+        html.dark .card-header.bg-white {
+            background-color: #111 !important;
+            color: #f5f5f5 !important;
+        }
+
+        html.dark .card-header.bg-info {
+            background-color: #0d6efd !important;
+            color: #fff !important;
+        }
+
+        html.dark .card-header.bg-warning {
+            background-color: #ffc107 !important;
+            color: #111 !important;
+        }
+
+        html.dark .card-header.bg-success {
+            background-color: #198754 !important;
+            color: #fff !important;
+        }
+
+        /* Table header */
+        html.dark .table thead {
+            background-color: #222 !important;
+            color: #f5f5f5;
+        }
+
+        /* Table row hover */
+        html.dark .table-hover tbody tr:hover {
+            background-color: #2a2a2a !important;
+        }
+
+        /* Badge màu */
+        html.dark .badge.bg-success {
+            background-color: #28a745 !important;
+            color: #fff !important;
+        }
+
+        html.dark .badge.bg-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+        }
+
+        html.dark .badge.bg-secondary {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        /* Price tag */
+        html.dark .price-tag {
+            background: linear-gradient(135deg, #20c997, #28a745);
+            color: #fff;
+        }
+
+        /* Quantity badge */
+        html.dark .quantity-badge {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        /* Card thống kê */
+        html.dark .stats-card {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            color: #fff;
+        }
+
+        /* Category card */
+        html.dark .category-card {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            border-color: #333;
+        }
+
+        /* Search input */
+        html.dark .search-input {
+            background-color: #222;
+            color: #f5f5f5;
+            border-color: #444;
+        }
+
+            html.dark .search-input::placeholder {
+                color: #bbb;
+            }
+
+        /* Buttons */
+        html.dark .btn-outline-primary {
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+            html.dark .btn-outline-primary:hover {
+                background-color: #0d6efd;
+                color: #fff;
+            }
+
+        html.dark .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+            html.dark .btn-outline-danger:hover {
+                background-color: #dc3545;
+                color: #fff;
+            }
+
+        html.dark .btn-outline-warning {
+            color: #ffc107;
+            border-color: #ffc107;
+        }
+
+            html.dark .btn-outline-warning:hover {
+                background-color: #ffc107;
+                color: #111;
+            }
+
+        html.dark .btn-outline-info {
+            color: #0dcaf0;
+            border-color: #0dcaf0;
+        }
+
+            html.dark .btn-outline-info:hover {
+                background-color: #0dcaf0;
+                color: #111;
+            }
+
+        /* 🔥 CSS cho menu active */
+        aside a.bg-blue-100 {
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+            font-weight: 600;
+        }
+
+        html.dark aside a.dark\:bg-blue-900 {
+            background-color: #1e3a8a !important;
+            color: #93c5fd !important;
+        }
+
+            /* Đảm bảo icon cũng đổi màu theo */
+            aside a.bg-blue-100 i,
+            html.dark aside a.dark\:bg-blue-900 i {
+                color: inherit !important;
+            }
     </style>
 </head>
 
@@ -54,7 +200,7 @@
         <aside class="w-72 bg-white border-r border-gray-200 dark:bg-[#111] dark:border-gray-800 flex-col hidden md:flex sticky top-0 h-screen">
             <div class="px-6 py-5 flex items-center gap-3 border-b border-gray-200 dark:border-gray-800">
                 <div class="w-9 h-9 rounded-lg bg-black dark:bg-white"></div>
-                <span class="font-semibold text-gray-900 dark:text-gray-100">TailAdmin</span>
+                <span class="font-semibold text-gray-900 dark:text-gray-100"> ADMIN - Quản trị hệ thống  </span>
             </div>
 
             <nav class="flex-1 overflow-y-auto py-4">
@@ -63,7 +209,7 @@
                 <ul class="px-2 space-y-1">
                     <li>
                         <a asp-controller="Dashboard" asp-action="Index"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-home text-lg'></i>
                             Thống kê tổng quan
                         </a>
@@ -71,7 +217,7 @@
 
                     <li>
                         <a asp-controller="Book" asp-action="QuanLySach"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-book text-lg'></i>
                             Quản lý book
                         </a>
@@ -79,7 +225,7 @@
 
                     <li>
                         <a asp-controller="DonHang" asp-action="QuanLyDonHang"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-cart text-lg'></i>
                             Quản lý đơn hàng
                         </a>
@@ -87,7 +233,7 @@
 
                     <li>
                         <a asp-controller="User" asp-action="QuanLyNguoiDung"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-user text-lg'></i>
                             Quản lý người dùng
                         </a>
@@ -95,7 +241,7 @@
 
                     <li>
                         <a asp-controller="Book" asp-action="BaoCaoThongKe"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-bar-chart text-lg'></i>
                             Báo cáo & Thống kê
                         </a>
@@ -103,7 +249,7 @@
 
                     <li>
                         <a asp-controller="System" asp-action="CauHinh"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-cog text-lg'></i>
                             Cấu hình hệ thống
                         </a>
@@ -111,7 +257,7 @@
 
                     <li>
                         <a asp-controller="Auth" asp-action="Logout"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 text-red-600 dark:text-red-400 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 text-red-600 dark:text-red-400 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-log-out text-lg'></i>
                             Đăng xuất
                         </a>
@@ -138,11 +284,11 @@
                     <div class="flex items-center gap-3">
                         <!-- ☀️🌙 Toggle -->
                         <button id="modeToggle" title="Chuyển chế độ sáng/tối"
-                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors">
+                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors outline-none focus:outline-none focus:ring-0">
                             <i id="modeIcon" class='bx bx-moon text-lg'></i>
                         </button>
 
-                        <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="focus:outline-none">
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="focus:outline-none outline-none">
                             <img src="https://i.pravatar.cc/40" class="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-700 cursor-pointer" />
                         </a>
 
@@ -181,17 +327,39 @@
 
         // ✅ Thêm: Highlight menu item đang active
         document.addEventListener('DOMContentLoaded', function() {
-            const currentUrl = window.location.href;
+            const currentUrl = window.location.href.toLowerCase();
             const menuItems = document.querySelectorAll('aside a');
 
+            // Xác định trang hiện tại
+            const isBookManagement = currentUrl.includes('/book') ||
+                                    currentUrl.includes('/sach') ||
+                                    currentUrl.includes('quanlysach');
+
             menuItems.forEach(item => {
-                if (currentUrl.includes(item.getAttribute('href'))) {
+                const itemHref = item.getAttribute('href')?.toLowerCase() || '';
+                const itemText = item.textContent?.toLowerCase() || '';
+
+                // Kiểm tra URL hoặc text content
+                if (currentUrl.includes(itemHref) ||
+                    (isBookManagement && itemText.includes('quản lý book'))) {
+
+                    // Thêm class active
                     item.classList.add('bg-blue-100', 'text-blue-600', 'dark:bg-blue-900', 'dark:text-blue-300');
+
+                    // Đảm bảo không có hover conflict
+                    item.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-900');
                 }
 
-                // 🔥 THÊM: Remove focus khi click
-                item.addEventListener('click', function() {
+                // 🔥 XÓA FOCUS KHI CLICK
+                item.addEventListener('click', function(e) {
                     this.blur();
+                    // Thêm delay để chắc chắn
+                    setTimeout(() => this.blur(), 100);
+                });
+
+                // 🔥 Ngăn focus khi mousedown
+                item.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
                 });
             });
         });

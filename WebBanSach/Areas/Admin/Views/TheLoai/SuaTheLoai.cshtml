@@ -1,0 +1,556 @@
+﻿@model Media.Models.ChuDe
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Sửa thể loại";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* 🔥 FIX FOCUS cho Bootstrap */
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Fix cho tất cả button và link có class btn */
+        .btn {
+            outline: none !important;
+        }
+
+        /* Main styles */
+        .edit-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fe 100%);
+        }
+
+            .edit-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            }
+
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .avatar-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3);
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px);
+            }
+
+        .form-control-lg {
+            padding: 1rem 1.25rem;
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .required-star {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+
+        .input-group-icon {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            z-index: 5;
+        }
+
+        .input-group-icon .form-control {
+            padding-left: 45px;
+        }
+
+        .btn {
+            border-radius: 12px;
+            padding: 0.875rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s;
+            }
+
+            .btn:hover::before {
+                left: 100%;
+            }
+
+            .btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-warning-custom {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #2d3748;
+        }
+
+        .btn-outline-custom {
+            border: 2px solid #cbd5e0;
+            color: #4a5568;
+            background: transparent;
+        }
+
+            .btn-outline-custom:hover {
+                background: #4a5568;
+                color: white;
+                border-color: #4a5568;
+            }
+
+        .floating-label {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .floating-input {
+            padding-top: 1.5rem;
+        }
+
+        .floating-label .form-label {
+            position: absolute;
+            top: 0.5rem;
+            left: 1rem;
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 600;
+            background: white;
+            padding: 0 0.5rem;
+            z-index: 2;
+        }
+
+        .stats-badge {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2d3748;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            border: none;
+        }
+
+        .system-info {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .system-info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+            .system-info-item:last-child {
+                border-bottom: none;
+            }
+
+        .tooltip-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .help-text {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+        }
+
+        .progress-ring-circle {
+            stroke: #667eea;
+            stroke-width: 4;
+            fill: transparent;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-8">
+                <!-- Header -->
+                <div class="card border-0 shadow-lg edit-card mb-4">
+                    <div class="card-header header-gradient py-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-4">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="fw-bold mb-2">Chỉnh Sửa Thể Loại</h2>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="stats-badge">Mã: @Model.MaChuDe</span>
+                                            <span class="text-white-80">@Model.TenChuDe</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="progress-ring">
+                                    <svg class="progress-ring" width="60" height="60">
+                                        <circle class="progress-ring-circle" stroke="#fff" stroke-width="3" fill="transparent" r="25" cx="30" cy="30" stroke-dasharray="157" stroke-dashoffset="78.5"></circle>
+                                    </svg>
+                                    <div class="text-white text-center mt-1">
+                                        <small>Đang chỉnh sửa</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Container -->
+                <div class="card border-0 shadow-lg edit-card">
+                    <div class="card-body p-4">
+                        <form asp-action="SuaTheLoai" method="post" id="editCategoryForm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="MaChuDe" />
+
+                            <!-- Thông tin thể loại -->
+                            <div class="mb-5">
+                                <div class="section-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-info-circle me-2"></i>Thông tin thể loại
+                                    </h5>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="floating-label">
+                                            <label asp-for="TenChuDe" class="form-label">Tên thể loại <span class="required-star">*</span></label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-heading input-icon"></i>
+                                                <input asp-for="TenChuDe" class="form-control form-control-lg floating-input" placeholder="Nhập tên thể loại" required>
+                                            </div>
+                                            <span asp-validation-for="TenChuDe" class="text-danger small mt-1 d-block"></span>
+                                            @if (ViewData.ModelState["TenChuDe"]?.Errors?.Count > 0)
+                                            {
+                                                <span class="text-danger small">@ViewData.ModelState["TenChuDe"].Errors[0].ErrorMessage</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <label asp-for="Slug" class="form-label">Slug</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-link input-icon"></i>
+                                                <input asp-for="Slug" class="form-control floating-input" placeholder="VD: tieu-thuyet, sach-giao-khoa">
+                                            </div>
+                                            <div class="help-text">Slug sẽ được tự động tạo nếu để trống</div>
+                                            <span asp-validation-for="Slug" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <label asp-for="FullPath" class="form-label">Đường dẫn đầy đủ</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-route input-icon"></i>
+                                                <input asp-for="FullPath" class="form-control floating-input" placeholder="VD: /sach-van-hoc/tieu-thuyet">
+                                            </div>
+                                            <span asp-validation-for="FullPath" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Thể loại cha -->
+                            <div class="mb-5">
+                                <div class="section-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-sitemap me-2"></i>Phân cấp thể loại
+                                    </h5>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="floating-label">
+                                            <label asp-for="ParentId" class="form-label">Thể loại cha</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-level-up-alt input-icon"></i>
+                                                <select asp-for="ParentId" class="form-select floating-input">
+                                                    <option value="">-- Thể loại chính (không có cha) --</option>
+                                                    @if (ViewBag.ParentCategories != null)
+                                                    {
+                                                        foreach (var category in ViewBag.ParentCategories as List<Media.Models.ChuDe>)
+                                                        {
+                                                            <option value="@category.MaChuDe" selected="@(category.MaChuDe == Model.ParentId)">
+                                                                @category.TenChuDe
+                                                            </option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </div>
+                                            <span asp-validation-for="ParentId" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Info Box -->
+                            <div class="info-box">
+                                <div class="d-flex align-items-center">
+                                    <div class="category-icon">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Mẹo chỉnh sửa</h6>
+                                        <p class="mb-0 small opacity-90">
+                                            • Tên thể loại nên ngắn gọn và dễ hiểu<br>
+                                            • Slug sẽ được dùng trong URL<br>
+                                            • Chọn thể loại cha để tạo phân cấp
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Sidebar Information -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="system-info">
+                                        <h6 class="fw-bold mb-3">
+                                            <i class="fas fa-database me-2"></i>Thông tin hệ thống
+                                        </h6>
+                                        <div class="system-info-item">
+                                            <span>Mã thể loại:</span>
+                                            <span class="fw-bold">@Model.MaChuDe</span>
+                                        </div>
+                                        <div class="system-info-item">
+                                            <span>Ngày cập nhật:</span>
+                                            <span>@DateTime.Now.ToString("dd/MM/yyyy")</span>
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <!-- Action Buttons -->
+                                    <div class="d-grid gap-3">
+                                        <button type="submit" class="btn btn-warning-custom btn-lg">
+                                            <i class="fas fa-save me-2"></i>Cập nhật thể loại
+                                        </button>
+                                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-outline-custom btn-lg">
+                                            <i class="fas fa-times me-2"></i>Hủy bỏ
+                                        </a>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer Info -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Chỉnh sửa thông tin thể loại • Mã: @Model.MaChuDe •
+                        Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editCategoryForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            // Add floating label functionality
+            const floatingInputs = document.querySelectorAll('.floating-input');
+            floatingInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.parentElement.classList.add('focused');
+                });
+
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.parentElement.parentElement.classList.remove('focused');
+                    }
+                });
+
+                // Initialize on load
+                if (input.value) {
+                    input.parentElement.parentElement.classList.add('focused');
+                }
+            });
+
+            // Tự động tạo slug từ tên thể loại
+            const tenChuDeInput = document.getElementById('TenChuDe');
+            const slugInput = document.getElementById('Slug');
+
+            if (tenChuDeInput && slugInput) {
+                tenChuDeInput.addEventListener('blur', function() {
+                    if (!slugInput.value && this.value) {
+                        // Chuyển đổi tiếng Việt có dấu thành không dấu
+                        const slug = this.value
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[\u0300-\u036f]/g, '')
+                            .replace(/[đĐ]/g, 'd')
+                            .replace(/[^a-z0-9 -]/g, '')
+                            .replace(/\s+/g, '-')
+                            .replace(/-+/g, '-');
+
+                        slugInput.value = slug;
+                    }
+                });
+            }
+
+            form.addEventListener('submit', function(e) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang cập nhật...';
+                submitBtn.disabled = true;
+
+                // Animate progress ring
+                const progressCircle = document.querySelector('.progress-ring-circle');
+                progressCircle.style.strokeDashoffset = '0';
+                progressCircle.style.stroke = '#10b981';
+
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    progressCircle.style.strokeDashoffset = '78.5';
+                    progressCircle.style.stroke = '#fff';
+                }, 5000);
+            });
+
+            // Add input animations
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    template: '<div class="tooltip tooltip-custom" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

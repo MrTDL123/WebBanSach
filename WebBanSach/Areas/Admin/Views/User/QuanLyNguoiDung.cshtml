@@ -350,11 +350,30 @@
                                                         }
                                                     </td>
                                                     <td>
-                                                        @if (kh.NgaySinh.HasValue)
+                                                        @{
+                                                            // Sử dụng cách an toàn để kiểm tra ngày sinh
+                                                            var ngaySinh = kh.NgaySinh;
+                                                            bool coNgaySinh = false;
+
+                                                            if (ngaySinh != null)
+                                                            {
+                                                                try
+                                                                {
+                                                                    DateTime ngaySinhValue = ngaySinh;
+                                                                    coNgaySinh = ngaySinhValue != DateTime.MinValue && ngaySinhValue > new DateTime(1900, 1, 1);
+                                                                }
+                                                                catch
+                                                                {
+                                                                    coNgaySinh = false;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        @if (coNgaySinh)
                                                         {
                                                             <div class="d-flex align-items-center">
                                                                 <i class="fas fa-birthday-cake text-muted me-2"></i>
-                                                                @kh.NgaySinh.Value.ToString("dd/MM/yyyy")
+                                                                @ngaySinh.ToString("dd/MM/yyyy")
                                                             </div>
                                                         }
                                                         else
@@ -427,15 +446,20 @@
                                                     <td>
                                                         <div class="d-flex align-items-center">
                                                             <i class="fas fa-envelope text-muted me-2"></i>
-                                                            @nv.TaiKhoan?.Email
+                                                            @(nv.TaiKhoan?.Email ?? "Chưa có email")
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        @if (nv.Luong.HasValue)
+                                                        @{
+                                                            var luong = nv.Luong;
+                                                            bool coLuong = luong != null && luong > 0;
+                                                        }
+
+                                                        @if (coLuong)
                                                         {
                                                             <div class="d-flex align-items-center">
                                                                 <i class="fas fa-money-bill-wave text-muted me-2"></i>
-                                                                <span class="fw-bold text-success">@nv.Luong.Value.ToString("N0") VNĐ</span>
+                                                                <span class="fw-bold text-success">@(luong?.ToString("N0") ?? "0") VNĐ</span>
                                                             </div>
                                                         }
                                                         else
@@ -444,11 +468,29 @@
                                                         }
                                                     </td>
                                                     <td>
-                                                        @if (nv.NgayVaoLam.HasValue)
+                                                        @{
+                                                            var ngayVaoLam = nv.NgayVaoLam;
+                                                            bool coNgayVaoLam = false;
+
+                                                            if (ngayVaoLam != null)
+                                                            {
+                                                                try
+                                                                {
+                                                                    DateTime ngayVaoLamValue = ngayVaoLam;
+                                                                    coNgayVaoLam = ngayVaoLamValue != DateTime.MinValue && ngayVaoLamValue > new DateTime(1900, 1, 1);
+                                                                }
+                                                                catch
+                                                                {
+                                                                    coNgayVaoLam = false;
+                                                                }
+                                                            }
+                                                        }
+
+                                                        @if (coNgayVaoLam)
                                                         {
                                                             <div class="d-flex align-items-center">
                                                                 <i class="fas fa-calendar-alt text-muted me-2"></i>
-                                                                @nv.NgayVaoLam.Value.ToString("dd/MM/yyyy")
+                                                                @ngayVaoLam.ToString("dd/MM/yyyy")
                                                             </div>
                                                         }
                                                         else

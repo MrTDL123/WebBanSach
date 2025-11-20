@@ -109,6 +109,28 @@
                 transform: translateY(-2px);
                 box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             }
+
+        /* Style mới cho tìm kiếm */
+        .search-container {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .search-input {
+            padding-left: 40px;
+        }
+
+        .search-results-info {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -123,7 +145,6 @@
                         </h1>
                         <p class="text-muted mb-0">Quản lý toàn bộ sách và danh mục trong hệ thống</p>
                     </div>
-                  
                 </div>
             </div>
         </div>
@@ -149,10 +170,9 @@
                                 <div class="card-body">
                                     <p class="text-muted mb-3">Quản lý các thể loại sách</p>
                                     <div class="d-grid gap-2">
-                                        <a href="@Url.Action("QuanLyTheLoai", "Book")" class="btn btn-outline-info">
+                                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-outline-info">
                                             <i class="fas fa-list me-2"></i>Danh sách thể loại
                                         </a>
-                                        
                                     </div>
                                 </div>
                             </div>
@@ -169,10 +189,9 @@
                                 <div class="card-body">
                                     <p class="text-muted mb-3">Quản lý thông tin tác giả</p>
                                     <div class="d-grid gap-2">
-                                        <a href="@Url.Action("QuanLyTacGia", "Book")" class="btn btn-outline-warning">
+                                        <a href="@Url.Action("QuanLyTacGia", "Author", new { area = "Admin" })" class="btn btn-outline-warning">
                                             <i class="fas fa-list me-2"></i>Danh sách tác giả
                                         </a>
-                                        
                                     </div>
                                 </div>
                             </div>
@@ -189,10 +208,9 @@
                                 <div class="card-body">
                                     <p class="text-muted mb-3">Quản lý nhà xuất bản</p>
                                     <div class="d-grid gap-2">
-                                        <a href="@Url.Action("QuanLyNXB", "Book")" class="btn btn-outline-success">
+                                        <a href="@Url.Action("QuanLyNXB", "NXB", new { area = "Admin" })" class="btn btn-outline-success">
                                             <i class="fas fa-list me-2"></i>Danh sách NXB
                                         </a>
-                                       
                                     </div>
                                 </div>
                             </div>
@@ -202,7 +220,6 @@
             </div>
         </div>
 
-        <!-- Phần còn lại giữ nguyên -->
         <!-- Thống kê -->
         <div class="row mb-4">
             <div class="col-xl-3 col-md-6 mb-4">
@@ -241,7 +258,7 @@
                         <div class="row align-items-center">
                             <div class="col-8">
                                 <h6 class="text-muted mb-1">Tổng giá trị</h6>
-                                <h3 class="text-dark mb-0">@String.Format("{0:N0} ₫", Model.Sum(s => s.GiaBan * s.SoLuong))</h3>
+                                <h3 class="text-dark mb-0">@String.Format("{0:N0} ₫", Model.Sum(s => s.GiaBan * (decimal)s.SoLuong))</h3>
                             </div>
                             <div class="col-4 text-end">
                                 <i class="fas fa-money-bill-wave fa-2x text-success"></i>
@@ -274,16 +291,31 @@
                     <h5 class="mb-0 text-dark">
                         <i class="fas fa-list me-2 text-primary"></i>Danh sách sách
                     </h5>
-                    <div class="btn-group">
-                        <a href="@Url.Action("ThemSach")" class="btn btn-primary btn-sm">
-                            <i class="fas fa-plus me-2"></i>Thêm sách
-                        </a>
+                    <div class="d-flex align-items-center">
+                        <!-- Thanh tìm kiếm -->
+                        <div class="search-container me-3">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Tìm kiếm sách..." />
+                        </div>
+                        <div class="btn-group">
+                            <a href="@Url.Action("ThemSach", "Book", new { area = "Admin" })" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus me-2"></i>Thêm sách
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card-body p-0">
+                <!-- Thông tin kết quả tìm kiếm -->
+                <div class="px-4 py-2 border-bottom bg-light d-none" id="searchResultsInfo">
+                    <span class="search-results-info" id="searchResultsText"></span>
+                    <button class="btn btn-sm btn-outline-secondary ms-2" id="clearSearchBtn">
+                        <i class="fas fa-times me-1"></i>Xóa tìm kiếm
+                    </button>
+                </div>
+
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0" id="booksTable">
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4">#</th>
@@ -298,19 +330,28 @@
                                 <th class="text-center pe-4">Hành động</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="booksTableBody">
                             @if (Model != null && Model.Any())
                             {
                                 int stt = 1;
                                 foreach (var sach in Model)
                                 {
-                                    <tr class="book-card">
+                                    <tr class="book-card" data-search="@sach.TenSach.ToLower() @(sach.TacGia?.TenTG?.ToLower() ?? "") @(sach.NhaXuatBan?.TenNXB?.ToLower() ?? "") @(sach.ChuDe?.TenChuDe?.ToLower() ?? "")">
                                         <td class="ps-4 fw-semibold">@stt</td>
                                         <td>
-                                            <img src="~/uploads/@sach.AnhBiaChinh"
-                                                 alt="Ảnh bìa"
-                                                 class="table-image"
-                                                 onerror="this.src='https://via.placeholder.com/45x60?text=No+Image'" />
+                                            @if (!string.IsNullOrEmpty(sach.AnhBiaChinh))
+                                            {
+                                                <img src="~/uploads/@sach.AnhBiaChinh"
+                                                     alt="Ảnh bìa"
+                                                     class="table-image"
+                                                     onerror="this.src='https://via.placeholder.com/45x60?text=No+Image'" />
+                                            }
+                                            else
+                                            {
+                                                <img src="https://via.placeholder.com/45x60?text=No+Image"
+                                                     alt="No Image"
+                                                     class="table-image" />
+                                            }
                                         </td>
                                         <td>
                                             <div class="fw-bold text-dark">@sach.TenSach</div>
@@ -372,13 +413,13 @@
                                         <td class="text-center pe-4 action-buttons">
                                             <div class="btn-group" role="group">
                                                 <a class="btn btn-outline-primary btn-sm"
-                                                   href="@Url.Action("SuaSach", new { id = sach.MaSach })"
+                                                   href="@Url.Action("SuaSach", "Book", new { area = "Admin", id = sach.MaSach })"
                                                    data-bs-toggle="tooltip"
                                                    title="Sửa thông tin">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <a class="btn btn-outline-danger btn-sm"
-                                                   href="@Url.Action("XoaSach", new { id = sach.MaSach })"
+                                                   href="@Url.Action("XoaSach", "Book", new { area = "Admin", id = sach.MaSach })"
                                                    onclick="return confirm('Bạn có chắc muốn xóa sách \'@sach.TenSach\'?');"
                                                    data-bs-toggle="tooltip"
                                                    title="Xóa sách">
@@ -398,7 +439,7 @@
                                             <i class="fas fa-book fa-3x mb-3"></i>
                                             <h5>Chưa có sách nào trong hệ thống</h5>
                                             <p class="mb-0">Hãy thêm sách mới để bắt đầu quản lý</p>
-                                            <a href="@Url.Action("ThemSach")" class="btn btn-primary mt-3">
+                                            <a href="@Url.Action("ThemSach", "Book", new { area = "Admin" })" class="btn btn-primary mt-3">
                                                 <i class="fas fa-plus me-2"></i>Thêm sách đầu tiên
                                             </a>
                                         </div>
@@ -433,6 +474,68 @@
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
+
+            // Tìm kiếm sách
+            const searchInput = document.getElementById('searchInput');
+            const booksTableBody = document.getElementById('booksTableBody');
+            const searchResultsInfo = document.getElementById('searchResultsInfo');
+            const searchResultsText = document.getElementById('searchResultsText');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const originalRows = Array.from(booksTableBody.querySelectorAll('tr'));
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+
+                if (searchTerm === '') {
+                    // Hiển thị tất cả sách
+                    originalRows.forEach(row => {
+                        row.style.display = '';
+                    });
+                    searchResultsInfo.classList.add('d-none');
+                    updateRowNumbers();
+                    return;
+                }
+
+                // Lọc sách theo từ khóa
+                let matchCount = 0;
+                originalRows.forEach(row => {
+                    const searchData = row.getAttribute('data-search');
+                    if (searchData && searchData.includes(searchTerm)) {
+                        row.style.display = '';
+                        matchCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Hiển thị thông tin kết quả tìm kiếm
+                if (matchCount > 0) {
+                    searchResultsText.textContent = `Tìm thấy ${matchCount} kết quả cho "${searchTerm}"`;
+                    searchResultsInfo.classList.remove('d-none');
+                } else {
+                    searchResultsText.textContent = `Không tìm thấy kết quả nào cho "${searchTerm}"`;
+                    searchResultsInfo.classList.remove('d-none');
+                }
+
+                updateRowNumbers();
+            });
+
+            // Xóa tìm kiếm
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                searchInput.dispatchEvent(new Event('input'));
+            });
+
+            // Cập nhật số thứ tự
+            function updateRowNumbers() {
+                const visibleRows = Array.from(booksTableBody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+                visibleRows.forEach((row, index) => {
+                    const td = row.querySelector('td:first-child');
+                    if (td) {
+                        td.textContent = index + 1;
+                    }
+                });
+            }
         });
     </script>
 </body>

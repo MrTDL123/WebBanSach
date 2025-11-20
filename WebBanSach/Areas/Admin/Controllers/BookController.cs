@@ -1,576 +1,431 @@
 ﻿using Media.Models;
 using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ProjectCuoiKi.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class BookController : Controller
     {
-        private readonly ApplicationDbContext _db;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public BookController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
+        public BookController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
-            _db = db;
-            _webHostEnvironment = webHostEnvironment;
+            _context = context;
+            _environment = environment;
         }
 
-        // 📚 Danh sách sách
-        public IActionResult QuanLySach()
-        {
-            var dsSach = _db.Saches
-                .Include(s => s.ChuDe)      // Load dữ liệu Chủ đề
-                .Include(s => s.TacGia)     // Load dữ liệu Tác giả  
-                .Include(s => s.NhaXuatBan) // Load dữ liệu Nhà xuất bản
-                .ToList();
-            return View(dsSach);
-        }
-
-        // ➕ GET: Thêm sách
+        // GET: Sửa sách
         [HttpGet]
-        public IActionResult ThemSach()
+        public async Task<IActionResult> SuaSach(int id)
         {
-            LoadDropdowns();
-            return View(new Sach());
+            try
+            {
+                var sach = await _context.Saches
+                    .Include(s => s.ChuDe)
+                    .Include(s => s.TacGia)
+                    .Include(s => s.NhaXuatBan)
+                    .FirstOrDefaultAsync(s => s.MaSach == id);
+
+                if (sach == null)
+                {
+                    TempData["Error"] = "Không tìm thấy sách";
+                    return RedirectToAction("QuanLySach");
+                }
+
+                // Load dropdown data
+                await LoadDropdownData();
+                return View(sach);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi tải thông tin sách: " + ex.Message;
+                return RedirectToAction("QuanLySach");
+            }
         }
 
-        // ➕ POST: Thêm sách
+        // POST: Sửa sách
         [HttpPost]
-        public IActionResult ThemSach(Sach model, IFormFile fileAnhBia)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SuaSach(int id, Sach sach, IFormFile fileAnhBiaChinh, List<IFormFile> filesAnhBiaPhu)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                LoadDropdowns();
-                return View(model);
+                if (id != sach.MaSach)
+                {
+                    TempData["Error"] = "ID sách không khớp";
+                    return RedirectToAction("QuanLySach");
+                }
+
+                // Tắt validation cho navigation properties
+                ModelState.Remove("ChuDe");
+                ModelState.Remove("TacGia");
+                ModelState.Remove("NhaXuatBan");
+
+                if (ModelState.IsValid)
+                {
+                    var existingSach = await _context.Saches.FindAsync(id);
+                    if (existingSach == null)
+                    {
+                        TempData["Error"] = "Không tìm thấy sách";
+                        return RedirectToAction("QuanLySach");
+                    }
+
+                    // Cập nhật thông tin cơ bản
+                    existingSach.TenSach = sach.TenSach;
+                    existingSach.GiaBan = sach.GiaBan;
+                    existingSach.PhanTramGiamGia = sach.PhanTramGiamGia;
+                    existingSach.SoLuong = sach.SoLuong;
+                    existingSach.NhaCungCap = sach.NhaCungCap;
+                    existingSach.MoTa = sach.MoTa;
+                    existingSach.MaChuDe = sach.MaChuDe;
+                    existingSach.MaTacGia = sach.MaTacGia;
+                    existingSach.MaNhaXuatBan = sach.MaNhaXuatBan;
+                    existingSach.NgayCapNhat = DateTime.Now;
+
+                    // Xử lý ảnh bìa chính
+                    if (fileAnhBiaChinh != null && fileAnhBiaChinh.Length > 0)
+                    {
+                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "product");
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileAnhBiaChinh.FileName);
+                        var filePath = Path.Combine(uploadsFolder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await fileAnhBiaChinh.CopyToAsync(stream);
+                        }
+
+                        // Xóa ảnh cũ nếu có
+                        if (!string.IsNullOrEmpty(existingSach.AnhBiaChinh))
+                        {
+                            var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingSach.AnhBiaChinh.TrimStart('/'));
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
+                        }
+
+                        existingSach.AnhBiaChinh = "/img/product/" + fileName;
+                    }
+
+                    // Xử lý ảnh bìa phụ
+                    if (filesAnhBiaPhu != null && filesAnhBiaPhu.Count > 0)
+                    {
+                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "product");
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+
+                        // Reset ảnh bìa phụ
+                        existingSach.AnhBiaPhu1 = null;
+                        existingSach.AnhBiaPhu2 = null;
+                        existingSach.AnhBiaPhu3 = null;
+                        existingSach.AnhBiaPhu4 = null;
+
+                        // Xóa ảnh cũ
+                        DeleteOldImages(existingSach);
+
+                        // Upload ảnh mới (tối đa 4 ảnh)
+                        for (int i = 0; i < Math.Min(filesAnhBiaPhu.Count, 4); i++)
+                        {
+                            var file = filesAnhBiaPhu[i];
+                            if (file != null && file.Length > 0)
+                            {
+                                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                                using (var stream = new FileStream(filePath, FileMode.Create))
+                                {
+                                    await file.CopyToAsync(stream);
+                                }
+
+                                // Gán vào các property tương ứng
+                                switch (i)
+                                {
+                                    case 0:
+                                        existingSach.AnhBiaPhu1 = "/img/product/" + fileName;
+                                        break;
+                                    case 1:
+                                        existingSach.AnhBiaPhu2 = "/img/product/" + fileName;
+                                        break;
+                                    case 2:
+                                        existingSach.AnhBiaPhu3 = "/img/product/" + fileName;
+                                        break;
+                                    case 3:
+                                        existingSach.AnhBiaPhu4 = "/img/product/" + fileName;
+                                        break;
+                                }
+                            }
+                        }
+                    }
+
+                    _context.Saches.Update(existingSach);
+                    await _context.SaveChangesAsync();
+
+                    TempData["Success"] = "Cập nhật sách thành công!";
+                    return RedirectToAction("QuanLySach");
+                }
+                else
+                {
+                    // Log lỗi validation
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($"Validation Error: {error.ErrorMessage}");
+                    }
+
+                    TempData["Error"] = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                }
+            }
+            catch (DbUpdateException dbEx)
+            {
+                TempData["Error"] = $"Lỗi database: {dbEx.InnerException?.Message ?? dbEx.Message}";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Lỗi: {ex.Message}";
             }
 
-            if (fileAnhBia != null && fileAnhBia.Length > 0)
-            {
-                string uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-                if (!Directory.Exists(uploadDir)) Directory.CreateDirectory(uploadDir);
-
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileAnhBia.FileName);
-                string path = Path.Combine(uploadDir, fileName);
-
-                using var stream = new FileStream(path, FileMode.Create);
-                fileAnhBia.CopyTo(stream);
-
-                model.AnhBiaChinh = fileName;
-            }
-
-            model.NgayCapNhat = DateTime.Now;
-            _db.Saches.Add(model);
-            _db.SaveChanges();
-
-            TempData["Success"] = "Thêm sách thành công!";
-            return RedirectToAction("QuanLySach");
-        }
-
-        private void LoadDropdowns()
-        {
-            // Đảm bảo không có null và filter ra chỉ những item có giá trị
-            ViewBag.ChuDes = _db.ChuDes?.Where(c => c != null && !string.IsNullOrEmpty(c.TenChuDe)).ToList() ?? new List<ChuDe>();
-            ViewBag.TacGias = _db.TacGias?.Where(t => t != null && !string.IsNullOrEmpty(t.TenTG)).ToList() ?? new List<TacGia>();
-            ViewBag.NhaXuatBans = _db.NhaXuatBans?.Where(n => n != null && !string.IsNullOrEmpty(n.TenNXB)).ToList() ?? new List<NhaXuatBan>();
-        }
-
-        [HttpGet]
-        public IActionResult SuaSach(int id)
-        {
-            var sach = _db.Saches.FirstOrDefault(x => x.MaSach == id);
-            if (sach == null) return NotFound();
-
-            LoadDropdowns();
+            // Load lại dropdown data nếu có lỗi
+            await LoadDropdownData();
             return View(sach);
         }
 
-        [HttpPost]
-        public IActionResult SuaSach(Sach model, IFormFile fileAnhBia)
+        // Hàm xóa ảnh cũ
+        private void DeleteOldImages(Sach sach)
         {
-            // Nếu dữ liệu không hợp lệ, load lại dropdown trước khi trả view
-            if (!ModelState.IsValid)
+            var imageProperties = new[] { sach.AnhBiaPhu1, sach.AnhBiaPhu2, sach.AnhBiaPhu3, sach.AnhBiaPhu4 };
+
+            foreach (var imagePath in imageProperties)
             {
-                LoadDropdowns();
-                return View(model);
-            }
-
-            // Tìm sách cần sửa
-            var sach = _db.Saches.FirstOrDefault(x => x.MaSach == model.MaSach);
-            if (sach == null) return NotFound();
-
-            // Cập nhật dữ liệu
-            sach.TenSach = model.TenSach;
-            sach.MaChuDe = model.MaChuDe;
-            sach.MaTacGia = model.MaTacGia;
-            sach.MaNhaXuatBan = model.MaNhaXuatBan;
-            sach.GiaBan = model.GiaBan;
-            sach.SoLuong = model.SoLuong;
-            sach.NhaCungCap = model.NhaCungCap;
-            sach.MoTa = model.MoTa;
-            sach.NgayCapNhat = DateTime.Now;
-
-            // Upload ảnh bìa nếu có
-            if (fileAnhBia != null && fileAnhBia.Length > 0)
-            {
-                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-
-                // Tạo thư mục uploads nếu chưa tồn tại
-                if (!Directory.Exists(uploadsFolder))
+                if (!string.IsNullOrEmpty(imagePath))
                 {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-
-                // Xóa ảnh cũ nếu tồn tại
-                if (!string.IsNullOrEmpty(sach.AnhBiaChinh))
-                {
-                    string oldFilePath = Path.Combine(uploadsFolder, sach.AnhBiaChinh);
-                    if (System.IO.File.Exists(oldFilePath))
+                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(fullPath))
                     {
-                        System.IO.File.Delete(oldFilePath);
+                        System.IO.File.Delete(fullPath);
                     }
                 }
-
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileAnhBia.FileName);
-                string filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    fileAnhBia.CopyTo(stream);
-                }
-
-                sach.AnhBiaChinh = fileName;
             }
-
-            // Cập nhật vào DB
-            _db.Saches.Update(sach);
-            _db.SaveChanges();
-
-            TempData["Success"] = "Cập nhật sách thành công!";
-            return RedirectToAction("QuanLySach");
         }
-
-        // ❌ Xóa sách
-        public IActionResult XoaSach(int id)
+        // GET: Thêm sách
+        public async Task<IActionResult> ThemSach()
         {
-            var sach = _db.Saches.FirstOrDefault(x => x.MaSach == id);
-            if (sach == null) return NotFound();
-
-            // Xóa ảnh nếu tồn tại
-            if (!string.IsNullOrEmpty(sach.AnhBiaChinh))
+            try
             {
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", sach.AnhBiaChinh);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
+                // Load dropdown data
+                ViewBag.ChuDes = await _context.ChuDes.ToListAsync();
+                ViewBag.TacGias = await _context.TacGias.ToListAsync();
+                ViewBag.NhaXuatBans = await _context.NhaXuatBans.ToListAsync();
+
+                var model = new Sach();
+                return View(model);
             }
-
-            _db.Saches.Remove(sach);
-            _db.SaveChanges();
-
-            TempData["Success"] = "Xóa sách thành công!";
-            return RedirectToAction("QuanLySach");
-        }
-
-        // ========== QUẢN LÝ THỂ LOẠI ==========
-        public IActionResult QuanLyTheLoai()
-        {
-            var theLoais = _db.ChuDes.ToList();
-            return View(theLoais);
-        }
-
-        public IActionResult ThemTheLoai()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult ThemTheLoai(ChuDe model)
-        {
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                _db.ChuDes.Add(model);
-                _db.SaveChanges();
-                return RedirectToAction("QuanLyTheLoai");
+                TempData["Error"] = "Lỗi khi tải trang: " + ex.Message;
+                return View(new Sach());
             }
-            return View(model);
         }
 
-        // ========== QUẢN LÝ TÁC GIẢ ==========
-        // GET: Danh sách tác giả với tìm kiếm
-        public async Task<IActionResult> QuanLyTacGia(string searchString)
-        {
-            var tacGias = from tg in _db.TacGias
-                          select tg;
-
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                tacGias = tacGias.Where(tg => tg.TenTG.Contains(searchString) ||
-                                             (tg.QuocTich != null && tg.QuocTich.Contains(searchString)) ||
-                                             (tg.TieuSu != null && tg.TieuSu.Contains(searchString)));
-            }
-
-            tacGias = tacGias.OrderBy(tg => tg.TenTG);
-
-            // Tính tổng số sách từ các tác giả
-            var tongSach = _db.Saches.Count();
-            ViewBag.TongSach = tongSach;
-            ViewData["CurrentFilter"] = searchString;
-
-            return View(await tacGias.AsNoTracking().ToListAsync());
-        }
-
-        // GET: Thêm tác giả
-        public IActionResult ThemTacGia()
-        {
-            return View();
-        }
-
-        // POST: Thêm tác giả
+        // POST: Thêm sách
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ThemTacGia(TacGia tacGia)
+        public async Task<IActionResult> ThemSach(Sach sach, IFormFile fileAnhBiaChinh)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    // Kiểm tra tên tác giả đã tồn tại chưa
-                    var existingTacGia = await _db.TacGias
-                        .FirstOrDefaultAsync(tg => tg.TenTG.ToLower() == tacGia.TenTG.ToLower());
-
-                    if (existingTacGia != null)
+                    // Xử lý upload ảnh - SỬA ĐƯỜNG DẪN THÀNH img/product
+                    if (fileAnhBiaChinh != null && fileAnhBiaChinh.Length > 0)
                     {
-                        ModelState.AddModelError("TenTG", "Tên tác giả đã tồn tại trong hệ thống");
-                        return View(tacGia);
+                        // Sửa đường dẫn thành img/product
+                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "product");
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(fileAnhBiaChinh.FileName);
+                        var filePath = Path.Combine(uploadsFolder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await fileAnhBiaChinh.CopyToAsync(stream);
+                        }
+
+                        // Sửa đường dẫn ảnh thành /img/product/
+                        sach.AnhBiaChinh = "/img/product/" + fileName;
                     }
 
-                    // Đảm bảo các trường nullable được xử lý đúng
-                    tacGia.TieuSu ??= string.Empty;
-                    tacGia.QuocTich ??= string.Empty;
+                    // Đảm bảo các giá trị mặc định
+                    sach.NgayCapNhat = DateTime.Now;
 
-                    // Thêm tác giả mới
-                    _db.TacGias.Add(tacGia);
-                    await _db.SaveChangesAsync();
+                    _context.Saches.Add(sach);
+                    await _context.SaveChangesAsync();
 
-                    TempData["Success"] = "Thêm tác giả thành công!";
-                    return RedirectToAction(nameof(QuanLyTacGia));
+                    TempData["Success"] = "Thêm sách thành công!";
+                    return RedirectToAction("QuanLySach");
                 }
+                else
+                {
+                    // Log lỗi validation
+                    var errors = ModelState.Values.SelectMany(v => v.Errors);
+                    foreach (var error in errors)
+                    {
+                        Console.WriteLine($"Validation Error: {error.ErrorMessage}");
+                    }
 
-                // Nếu ModelState không valid, trả về view với lỗi
-                return View(tacGia);
+                    TempData["Error"] = "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.";
+                }
+            }
+            catch (DbUpdateException dbEx)
+            {
+                TempData["Error"] = $"Lỗi database: {dbEx.InnerException?.Message ?? dbEx.Message}";
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Lỗi khi thêm tác giả: " + ex.Message);
-                return View(tacGia);
+                TempData["Error"] = $"Lỗi: {ex.Message}";
             }
+
+            // Load lại dropdown data nếu có lỗi
+            LoadViewData();
+            return View(sach);
         }
 
-        // GET: Sửa tác giả
-        [HttpGet]
-        public async Task<IActionResult> SuaTacGia(int id)
+        private void LoadViewData()
         {
-            var tacGia = await _db.TacGias.FindAsync(id);
-            if (tacGia == null)
-            {
-                return NotFound();
-            }
-            return View(tacGia);
+            ViewBag.ChuDes = _context.ChuDes.ToList();
+            ViewBag.TacGias = _context.TacGias.ToList();
+            ViewBag.NhaXuatBans = _context.NhaXuatBans.ToList();
         }
-
-        // POST: Sửa tác giả
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SuaTacGia(int id, TacGia tacGia)
+        private async Task LoadDropdownData()
         {
-            // 🔥 DEBUG CHI TIẾT
-            Console.WriteLine($"=== 🎯 CONTROLLER: SuaTacGia POST STARTED ===");
-            Console.WriteLine($"ID from route: {id}");
-            Console.WriteLine($"ID from model: {tacGia.MaTacGia}");
-            Console.WriteLine($"TenTG: {tacGia.TenTG}");
-            Console.WriteLine($"QuocTich: {tacGia.QuocTich}");
-            Console.WriteLine($"TieuSu: {tacGia.TieuSu}");
-            Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
-
-            // Kiểm tra ID có khớp không
-            if (id != tacGia.MaTacGia)
-            {
-                Console.WriteLine($"❌ ID MISMATCH: Route {id} != Model {tacGia.MaTacGia}");
-                TempData["Error"] = "ID không khớp!";
-                return View(tacGia);
-            }
-
-            // Debug ModelState errors
-            if (!ModelState.IsValid)
-            {
-                Console.WriteLine("=== ❌ MODEL STATE ERRORS ===");
-                foreach (var key in ModelState.Keys)
-                {
-                    var state = ModelState[key];
-                    foreach (var error in state.Errors)
-                    {
-                        Console.WriteLine($"Key: {key}, Error: {error.ErrorMessage}");
-                    }
-                }
-
-                // Trả về view với model để hiển thị lỗi
-                return View(tacGia);
-            }
-
-            try
-            {
-                Console.WriteLine("=== 🔍 KIỂM TRA DỮ LIỆU ==");
-
-                // Kiểm tra tên tác giả đã tồn tại chưa (trừ chính nó)
-                var existingTacGia = await _db.TacGias
-                    .FirstOrDefaultAsync(tg => tg.TenTG.ToLower() == tacGia.TenTG.ToLower() && tg.MaTacGia != id);
-
-                if (existingTacGia != null)
-                {
-                    Console.WriteLine($"❌ TÊN TRÙNG: {tacGia.TenTG} đã tồn tại với ID {existingTacGia.MaTacGia}");
-                    ModelState.AddModelError("TenTG", "Tên tác giả đã tồn tại trong hệ thống");
-                    TempData["Error"] = "Tên tác giả đã tồn tại trong hệ thống";
-                    return View(tacGia);
-                }
-
-                // Lấy tác giả hiện tại từ database
-                var existing = await _db.TacGias.FindAsync(id);
-                if (existing == null)
-                {
-                    Console.WriteLine($"❌ KHÔNG TÌM THẤY: Tác giả với ID {id} không tồn tại");
-                    return NotFound();
-                }
-
-                Console.WriteLine("=== ✏️ CẬP NHẬT DỮ LIỆU ===");
-                Console.WriteLine($"Từ: {existing.TenTG} -> {tacGia.TenTG}");
-
-                // Cập nhật thông tin
-                existing.TenTG = tacGia.TenTG.Trim();
-                existing.QuocTich = tacGia.QuocTich?.Trim() ?? string.Empty;
-                existing.TieuSu = tacGia.TieuSu?.Trim() ?? string.Empty;
-
-                _db.TacGias.Update(existing);
-                await _db.SaveChangesAsync();
-
-                Console.WriteLine("✅ CẬP NHẬT THÀNH CÔNG");
-                TempData["Success"] = "Cập nhật tác giả thành công!";
-                return RedirectToAction(nameof(QuanLyTacGia));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ EXCEPTION: {ex.Message}");
-                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                ModelState.AddModelError("", "Lỗi khi cập nhật tác giả: " + ex.Message);
-                TempData["Error"] = "Lỗi khi cập nhật tác giả: " + ex.Message;
-                return View(tacGia);
-            }
+            ViewBag.ChuDes = await _context.ChuDes.ToListAsync();
+            ViewBag.TacGias = await _context.TacGias.ToListAsync();
+            ViewBag.NhaXuatBans = await _context.NhaXuatBans.ToListAsync();
         }
 
-        // GET: Xóa tác giả
-        public async Task<IActionResult> XoaTacGia(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tacGia = await _db.TacGias
-                .FirstOrDefaultAsync(m => m.MaTacGia == id);
-
-            if (tacGia == null)
-            {
-                return NotFound();
-            }
-
-            // Kiểm tra xem tác giả có sách nào không
-            var coSach = await _db.Saches.AnyAsync(s => s.MaTacGia == id);
-            ViewBag.CoSach = coSach;
-
-            return View(tacGia);
-        }
-
-        // POST: Xóa tác giả
-        [HttpPost, ActionName("XoaTacGia")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> XoaTacGiaConfirmed(int id)
+        private async Task<string> SaveImage(IFormFile file)
         {
             try
             {
-                var tacGia = await _db.TacGias.FindAsync(id);
-                if (tacGia == null)
+                // Tạo thư mục nếu chưa tồn tại
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "books");
+                if (!Directory.Exists(uploadsFolder))
                 {
-                    return NotFound();
+                    Directory.CreateDirectory(uploadsFolder);
                 }
 
-                // Kiểm tra xem tác giả có sách nào không
-                var coSach = await _db.Saches.AnyAsync(s => s.MaTacGia == id);
-                if (coSach)
+                // Tạo tên file unique
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                // Lưu file
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    TempData["Error"] = "Không thể xóa tác giả vì có sách liên quan!";
-                    return RedirectToAction(nameof(QuanLyTacGia));
+                    await file.CopyToAsync(stream);
                 }
 
-                _db.TacGias.Remove(tacGia);
-                await _db.SaveChangesAsync();
-
-                TempData["Success"] = "Xóa tác giả thành công!";
-                return RedirectToAction(nameof(QuanLyTacGia));
+                // Trả về đường dẫn tương đối
+                return $"/images/books/{fileName}";
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Lỗi khi xóa tác giả: " + ex.Message;
-                return RedirectToAction(nameof(QuanLyTacGia));
+                Console.WriteLine($"Lỗi khi lưu ảnh: {ex.Message}");
+                throw;
             }
         }
 
-        // GET: Chi tiết tác giả
-        public async Task<IActionResult> ChiTietTacGia(int? id)
+        // GET: Quản lý sách
+        public async Task<IActionResult> QuanLySach()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tacGia = await _db.TacGias
-                .FirstOrDefaultAsync(m => m.MaTacGia == id);
-
-            if (tacGia == null)
-            {
-                return NotFound();
-            }
-
-            // Lấy danh sách sách của tác giả
-            var saches = await _db.Saches
-                .Where(s => s.MaTacGia == id)
+            var saches = await _context.Saches
+                .Include(s => s.TacGia)
                 .Include(s => s.NhaXuatBan)
+                .Include(s => s.ChuDe)
                 .ToListAsync();
-
-            ViewBag.Saches = saches;
-            ViewBag.SoLuongSach = saches.Count;
-
-            return View(tacGia);
+            return View(saches);
         }
-
-        // API: Lấy danh sách tác giả cho dropdown
+        // GET: Xóa sách
         [HttpGet]
-        public async Task<JsonResult> GetTacGias()
+        public async Task<IActionResult> XoaSach(int id)
         {
             try
             {
-                var tacGias = await _db.TacGias
-                    .Select(tg => new {
-                        maTacGia = tg.MaTacGia,
-                        tenTacGia = tg.TenTG,
-                        quocTich = tg.QuocTich
-                    })
-                    .OrderBy(tg => tg.tenTacGia)
-                    .ToListAsync();
+                var sach = await _context.Saches.FindAsync(id);
+                if (sach == null)
+                {
+                    TempData["Error"] = "Không tìm thấy sách";
+                    return RedirectToAction("QuanLySach");
+                }
 
-                return Json(tacGias);
+                // Xóa ảnh bìa chính
+                if (!string.IsNullOrEmpty(sach.AnhBiaChinh))
+                {
+                    var mainImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", sach.AnhBiaChinh.TrimStart('/'));
+                    if (System.IO.File.Exists(mainImagePath))
+                    {
+                        System.IO.File.Delete(mainImagePath);
+                    }
+                }
+
+                // Xóa ảnh bìa phụ
+                DeleteOldImages(sach);
+
+                // Xóa sách khỏi database
+                _context.Saches.Remove(sach);
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Xóa sách thành công!";
             }
             catch (Exception ex)
             {
-                return Json(new { error = ex.Message });
+                TempData["Error"] = $"Lỗi khi xóa sách: {ex.Message}";
             }
+
+            return RedirectToAction("QuanLySach");
         }
 
-        // API: Tìm kiếm tác giả
+        // GET: Chi tiết sách
         [HttpGet]
-        public async Task<JsonResult> SearchTacGias(string keyword)
+        public async Task<IActionResult> ChiTietSach(int id)
         {
             try
             {
-                var tacGias = await _db.TacGias
-                    .Where(tg => tg.TenTG.Contains(keyword) || (tg.QuocTich != null && tg.QuocTich.Contains(keyword)))
-                    .Select(tg => new {
-                        maTacGia = tg.MaTacGia,
-                        tenTacGia = tg.TenTG,
-                        quocTich = tg.QuocTich
-                    })
-                    .ToListAsync();
+                var sach = await _context.Saches
+                    .Include(s => s.TacGia)
+                    .Include(s => s.NhaXuatBan)
+                    .Include(s => s.ChuDe)
+                    .FirstOrDefaultAsync(s => s.MaSach == id);
 
-                return Json(tacGias);
+                if (sach == null)
+                {
+                    TempData["Error"] = "Không tìm thấy sách";
+                    return RedirectToAction("QuanLySach");
+                }
+
+                return View(sach);
             }
             catch (Exception ex)
             {
-                return Json(new { error = ex.Message });
+                TempData["Error"] = "Lỗi khi tải thông tin sách: " + ex.Message;
+                return RedirectToAction("QuanLySach");
             }
         }
 
-        private bool TacGiaExists(int id)
-        {
-            return _db.TacGias.Any(e => e.MaTacGia == id);
-        }
-
-        // ========== QUẢN LÝ NHÀ XUẤT BẢN ==========
-        public IActionResult QuanLyNXB()
-        {
-            var nxbList = _db.NhaXuatBans.ToList();
-            ViewBag.TongSach = _db.Saches.Count();
-            return View(nxbList);
-        }
-
-        public IActionResult ThemNXB()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult ThemNXB(NhaXuatBan model)
-        {
-            if (ModelState.IsValid)
-            {
-                _db.NhaXuatBans.Add(model);
-                _db.SaveChanges();
-                TempData["Success"] = "Thêm nhà xuất bản thành công!";
-                return RedirectToAction("QuanLyNXB");
-            }
-            return View(model);
-        }
-
-        public IActionResult SuaNXB(int id)
-        {
-            var nxb = _db.NhaXuatBans.Find(id);
-            if (nxb == null) return NotFound();
-            return View(nxb);
-        }
-
-        [HttpPost]
-        public IActionResult SuaNXB(NhaXuatBan model)
-        {
-            if (ModelState.IsValid)
-            {
-                _db.NhaXuatBans.Update(model);
-                _db.SaveChanges();
-                TempData["Success"] = "Cập nhật nhà xuất bản thành công!";
-                return RedirectToAction("QuanLyNXB");
-            }
-            return View(model);
-        }
-
-        public IActionResult XoaNXB(int id)
-        {
-            var nxb = _db.NhaXuatBans.Find(id);
-            if (nxb == null) return NotFound();
-
-            // Kiểm tra xem có sách nào thuộc NXB này không
-            var coSach = _db.Saches.Any(s => s.MaNhaXuatBan == id);
-            var soSach = _db.Saches.Count(s => s.MaNhaXuatBan == id);
-
-            if (coSach)
-            {
-                TempData["Error"] = $"Không thể xóa nhà xuất bản '{nxb.TenNXB}' vì có {soSach} sách thuộc nhà xuất bản này!";
-                return RedirectToAction("QuanLyNXB");
-            }
-
-            _db.NhaXuatBans.Remove(nxb);
-            _db.SaveChanges();
-            TempData["Success"] = "Xóa nhà xuất bản thành công!";
-            return RedirectToAction("QuanLyNXB");
-        }
     }
+
 }

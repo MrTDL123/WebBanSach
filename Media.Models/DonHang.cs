@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation; // THÊM USING NÀY
 
 namespace Media.Models
 {
@@ -57,17 +58,31 @@ namespace Media.Models
         [Required]
         [DisplayName("Hình thức thanh toán")]
         public HinhThucThanhToan HinhThucThanhToan { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang;
-        //NAVIGATION PROPERTIES
+
+        //NAVIGATION PROPERTIES - THÊM [ValidateNever]
+        [ValidateNever]
         [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; }
+
+        [ValidateNever]
         [ForeignKey("MaNhanVien")]
         public NhanVien? NhanVien { get; set; }
+
+        [ValidateNever]
         public VanChuyen VanChuyen { get; set; }
+
+        [ValidateNever]
         [ForeignKey(nameof(MaDiaChi))]
         public DiaChiNhanHang DiaChiNhanHang { get; set; }
-        
+
+        [ValidateNever]
         public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+
+        [ValidateNever]
         public ICollection<PhieuTraHang> PhieuTraHangs { get; set; }
+
+        [ValidateNever]
         public HoaDon HoaDon { get; set; }
+
     }
 }

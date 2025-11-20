@@ -2,84 +2,280 @@
 
 @{
     ViewData["Title"] = "Chi Tiết Đơn Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Chi Tiết Đơn Hàng</h1>
+<div class="min-h-screen bg-gradient-to-br from-gray-50/50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-<div>
-    <h4>Đơn Hàng #@Model.MaDonHang</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Mã Đơn Hàng:</dt>
-        <dd class="col-sm-10">@Model.MaDonHang</dd>
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl">
+                        <i class='bx bx-show text-2xl text-white'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Chi Tiết Đơn Hàng
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Thông tin chi tiết đơn hàng #@Model.MaDonHang</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a asp-action="Edit" asp-route-id="@Model.MaDonHang"
+                       class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1">
+                        <i class='bx bx-edit mr-2 group-hover:scale-110 transition-transform'></i>
+                        Chỉnh Sửa
+                    </a>
+                    <a asp-action="Index"
+                       class="group inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                        <i class='bx bx-arrow-back mr-2 group-hover:-translate-x-1 transition-transform'></i>
+                        Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
 
-        <dt class="col-sm-2">Khách Hàng:</dt>
-        <dd class="col-sm-10">@Model.KhachHang?.HoTen</dd>
+        <!-- Main Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-detail text-2xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Đơn Hàng #@Model.MaDonHang</h2>
+                            <p class="text-blue-100 text-sm mt-1">Thông tin chi tiết đơn hàng</p>
+                        </div>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="bg-white/20 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-calendar mr-2'></i>
+                            @Model.NgayTao.ToString("dd/MM/yyyy")
+                        </span>
+                    </div>
+                </div>
+            </div>
 
-        <dt class="col-sm-2">Nhân Viên:</dt>
-        <dd class="col-sm-10">@Model.NhanVien?.HoTen</dd>
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Thông tin chính -->
+                    <div class="space-y-6">
+                        <!-- Thông tin khách hàng -->
+                        <div class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                    <i class='bx bx-user-circle text-blue-600 dark:text-blue-400'></i>
+                                </div>
+                                Thông tin khách hàng
+                            </h3>
+                            <dl class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Khách hàng</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.KhachHang?.HoTen</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Nhân viên phụ trách</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.NhanVien?.HoTen</dd>
+                                </div>
+                            </dl>
+                        </div>
 
-        <dt class="col-sm-2">Vận Chuyển:</dt>
-        <dd class="col-sm-10">@Model.VanChuyen?.MaDonHang</dd>
+                        <!-- Thông tin thanh toán -->
+                        <div class="bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-green-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                    <i class='bx bx-credit-card text-green-600 dark:text-green-400'></i>
+                                </div>
+                                Thông tin thanh toán
+                            </h3>
+                            <dl class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Tổng tiền</dt>
+                                    <dd class="text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                        @Model.Total.ToString("N0") ₫
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Hình thức thanh toán</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-white">@Model.HinhThucThanhToan</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Tình trạng thanh toán</dt>
+                                    <dd>
+                                        @if (Model.DaThanhToan)
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg">
+                                                <i class='bx bx-check-circle mr-2'></i>
+                                                Đã thanh toán
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg">
+                                                <i class='bx bx-time mr-2'></i>
+                                                Chờ thanh toán
+                                            </span>
+                                        }
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
 
-        <dt class="col-sm-2">Tên Người Nhận:</dt>
-        <dd class="col-sm-10">@Model.TenNguoiNhan</dd>
+                    <!-- Thông tin người nhận & vận chuyển -->
+                    <div class="space-y-6">
+                        <!-- Thông tin người nhận -->
+                        <div class="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-purple-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                    <i class='bx bx-user-pin text-purple-600 dark:text-purple-400'></i>
+                                </div>
+                                Thông tin người nhận
+                            </h3>
+                            <dl class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Tên người nhận</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.TenNguoiNhan</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Số điện thoại</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-white">@Model.SoDienThoaiNhan</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Địa chỉ</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        @Model.DiaChiChiTiet, @Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
 
-        <dt class="col-sm-2">SĐT Người Nhận:</dt>
-        <dd class="col-sm-10">@Model.SoDienThoaiNhan</dd>
+                        <!-- Thông tin vận chuyển -->
+                        <div class="bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-amber-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                <div class="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                                    <i class='bx bx-truck text-amber-600 dark:text-amber-400'></i>
+                                </div>
+                                Thông tin vận chuyển
+                            </h3>
+                            <dl class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Trạng thái</dt>
+                                    <dd>
+                                        @if (Model.VanChuyen?.TrangThaiGiaoHang == TrangThaiGiaoHang.GiaoHangThanhCong)
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg">
+                                                <i class='bx bx-check-double mr-2'></i>
+                                                Giao hàng thành công
+                                            </span>
+                                        }
+                                        else if (Model.VanChuyen?.TrangThaiGiaoHang == TrangThaiGiaoHang.DangGiaoHang)
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg">
+                                                <i class='bx bx-truck mr-2'></i>
+                                                Đang giao hàng
+                                            </span>
+                                        }
+                                        else if (Model.VanChuyen?.TrangThaiGiaoHang == TrangThaiGiaoHang.GiaoThatBai)
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg">
+                                                <i class='bx bx-x-circle mr-2'></i>
+                                                Giao thất bại
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg">
+                                                <i class='bx bx-time-five mr-2'></i>
+                                                Chờ xử lý
+                                            </span>
+                                        }
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Ngày tạo đơn</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-white">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Ghi chú</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-white">@(string.IsNullOrEmpty(Model.GhiChu) ? "Không có ghi chú" : Model.GhiChu)</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
 
-        <dt class="col-sm-2">Địa Chỉ:</dt>
-        <dd class="col-sm-10">@Model.DiaChiChiTiet, @Model.PhuongXa, @Model.QuanHuyen, @Model.TinhThanh</dd>
+                <!-- Chi tiết đơn hàng -->
+                <div class="mt-8 bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-indigo-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                        <div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                            <i class='bx bx-list-ul text-indigo-600 dark:text-indigo-400'></i>
+                        </div>
+                        Chi tiết đơn hàng
+                    </h3>
 
-        <dt class="col-sm-2">Tổng Tiền:</dt>
-        <dd class="col-sm-10">@Model.Total.ToString("N0") ₫</dd>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-gray-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900/30 border-b-2 border-gray-200/50 dark:border-gray-700/50">
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Sách</th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Số lượng</th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Đơn giá</th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200/30 dark:divide-gray-700/30">
+                                @foreach (var chiTiet in Model.ChiTietDonHangs)
+                                {
+                                    <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors duration-150">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                                    <i class='bx bx-book text-white'></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-semibold text-gray-900 dark:text-white">@chiTiet.Sach?.TenSach</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">Mã: @chiTiet.MaSach</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">@chiTiet.SoLuong</td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">@chiTiet.DonGia.ToString("N0") ₫</td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                            @chiTiet.ThanhTien.ToString("N0") ₫
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-gradient-to-r from-gray-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900/30 border-t-2 border-gray-200/50 dark:border-gray-700/50">
+                                    <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-gray-700 dark:text-gray-300">Tổng cộng:</td>
+                                    <td class="px-6 py-4 text-lg font-bold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                        @Model.Total.ToString("N0") ₫
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
 
-        <dt class="col-sm-2">Ngày Tạo:</dt>
-        <dd class="col-sm-10">@Model.NgayTao.ToString("dd/MM/yyyy HH:mm")</dd>
-
-        <dt class="col-sm-2">Thanh Toán:</dt>
-        <dd class="col-sm-10">
-            @if (Model.DaThanhToan)
-            {
-                <span class="badge bg-success">Đã thanh toán</span>
-            }
-            else
-            {
-                <span class="badge bg-warning">Chưa thanh toán</span>
-            }
-        </dd>
-
-        <dt class="col-sm-2">Hình Thức TT:</dt>
-        <dd class="col-sm-10">@Model.HinhThucThanhToan</dd>
-
-        <dt class="col-sm-2">Ghi Chú:</dt>
-        <dd class="col-sm-10">@Model.GhiChu</dd>
-    </dl>
-
-    <h5>Chi Tiết Đơn Hàng</h5>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Sách</th>
-                <th>Số Lượng</th>
-                <th>Đơn Giá</th>
-                <th>Thành Tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var chiTiet in Model.ChiTietDonHangs)
-            {
-                <tr>
-                    <td>@chiTiet.Sach?.TenSach</td>
-                    <td>@chiTiet.SoLuong</td>
-                    <td>@chiTiet.DonGia.ToString("N0") ₫</td>
-                    <td>@chiTiet.ThanhTien.ToString("N0") ₫</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.MaDonHang" class="btn btn-warning">Sửa</a>
-    <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200 dark:border-gray-700">
+                    <a asp-action="Edit" asp-route-id="@Model.MaDonHang"
+                       class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-amber-200 dark:focus:ring-amber-900/30 transform hover:-translate-y-1">
+                        <i class='bx bx-edit text-xl mr-3'></i>
+                        Chỉnh Sửa Đơn Hàng
+                    </a>
+                    <a asp-action="Index"
+                       class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 font-bold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600 text-center transform hover:-translate-y-1">
+                        <i class='bx bx-arrow-back mr-2'></i>
+                        Quay Lại Danh Sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

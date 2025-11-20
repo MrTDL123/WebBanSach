@@ -1,0 +1,515 @@
+﻿@model Media.Models.NhanVien
+@{
+    ViewData["Title"] = "Sửa Thông Tin Nhân Viên";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* 🔥 FIX FOCUS cho Bootstrap */
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Fix cho tất cả button và link có class btn */
+        .btn {
+            outline: none !important;
+        }
+
+        /* Main styles */
+        .edit-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+        }
+
+            .edit-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            }
+
+        .header-gradient {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .avatar-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fff;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px);
+            }
+
+        .form-control-lg {
+            padding: 1rem 1.25rem;
+            font-size: 1.1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .required-star {
+            color: #e53e3e;
+            font-weight: bold;
+        }
+
+        .input-group-icon {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            z-index: 5;
+        }
+
+        .input-group-icon .form-control {
+            padding-left: 45px;
+        }
+
+        .btn {
+            border-radius: 12px;
+            padding: 0.875rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+                transition: left 0.5s;
+            }
+
+            .btn:hover::before {
+                left: 100%;
+            }
+
+            .btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #2d3748;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2d3748;
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #cbd5e0;
+            color: #4a5568;
+            background: transparent;
+        }
+
+            .btn-outline-secondary:hover {
+                background: #4a5568;
+                color: white;
+                border-color: #4a5568;
+            }
+
+        .floating-label {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .floating-input {
+            padding-top: 1.5rem;
+        }
+
+        .floating-label .form-label {
+            position: absolute;
+            top: 0.5rem;
+            left: 1rem;
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 600;
+            background: white;
+            padding: 0 0.5rem;
+            z-index: 2;
+        }
+
+        .stats-badge {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .progress-ring {
+            width: 60px;
+            height: 60px;
+        }
+
+        .progress-ring-circle {
+            stroke: #667eea;
+            stroke-width: 4;
+            fill: transparent;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-right: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tooltip-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 col-xl-8">
+                <!-- Header -->
+                <div class="card border-0 shadow-lg edit-card mb-4">
+                    <div class="card-header header-gradient py-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle me-4">
+                                        <i class="fas fa-user-edit"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="fw-bold mb-2">Chỉnh Sửa Nhân Viên</h2>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="stats-badge">NV@(Model.MaNhanVien.ToString("D4"))</span>
+                                            <span class="text-white-80">@Model.HoTen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="progress-ring">
+                                    <svg class="progress-ring" width="60" height="60">
+                                        <circle class="progress-ring-circle" stroke="#fff" stroke-width="3" fill="transparent" r="25" cx="30" cy="30" stroke-dasharray="157" stroke-dashoffset="78.5"></circle>
+                                    </svg>
+                                    <div class="text-white text-center mt-1">
+                                        <small>Đang chỉnh sửa</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Container -->
+                <div class="card border-0 shadow-lg edit-card">
+                    <div class="card-body p-4">
+                        <form asp-action="SuaNhanVien" method="post" id="editStaffForm">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="MaNhanVien" />
+
+                            <!-- Thông tin cá nhân -->
+                            <div class="mb-5">
+                                <div class="section-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                                    </h5>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="floating-label">
+                                            <label asp-for="HoTen" class="form-label">Họ và tên <span class="required-star">*</span></label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-signature input-icon"></i>
+                                                <input asp-for="HoTen" class="form-control form-control-lg floating-input" placeholder="Nhập họ và tên đầy đủ">
+                                            </div>
+                                            <span asp-validation-for="HoTen" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <label asp-for="NgaySinh" class="form-label">Ngày sinh</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-calendar-day input-icon"></i>
+                                                <input asp-for="NgaySinh" type="date" class="form-control floating-input">
+                                            </div>
+                                            <span asp-validation-for="NgaySinh" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <label asp-for="CCCD" class="form-label">CCCD</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-id-card input-icon"></i>
+                                                <input asp-for="CCCD" class="form-control floating-input" placeholder="Nhập số CCCD">
+                                            </div>
+                                            <span asp-validation-for="CCCD" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Thông tin liên hệ -->
+                            <div class="mb-5">
+                                <div class="section-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-address-card me-2"></i>Thông tin liên hệ
+                                    </h5>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <div class="floating-label">
+                                            <label asp-for="DiaChi" class="form-label">Địa chỉ</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-map-marker-alt input-icon"></i>
+                                                <textarea asp-for="DiaChi" class="form-control floating-input" rows="3" placeholder="Nhập địa chỉ đầy đủ"></textarea>
+                                            </div>
+                                            <span asp-validation-for="DiaChi" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="floating-label">
+                                            <label asp-for="QueQuan" class="form-label">Quê quán</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-home input-icon"></i>
+                                                <input asp-for="QueQuan" class="form-control floating-input" placeholder="Nhập quê quán">
+                                            </div>
+                                            <span asp-validation-for="QueQuan" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Thông tin công việc -->
+                            <div class="mb-5">
+                                <div class="section-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-briefcase me-2"></i>Thông tin công việc
+                                    </h5>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <label asp-for="NgayVaoLam" class="form-label">Ngày vào làm</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-calendar-check input-icon"></i>
+                                                <input asp-for="NgayVaoLam" type="date" class="form-control floating-input">
+                                            </div>
+                                            <span asp-validation-for="NgayVaoLam" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="floating-label">
+                                            <label asp-for="BacLuong" class="form-label">Bậc lương</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-chart-line input-icon"></i>
+                                                <input asp-for="BacLuong" type="number" class="form-control floating-input" placeholder="Nhập bậc lương">
+                                            </div>
+                                            <span asp-validation-for="BacLuong" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="floating-label">
+                                            <label asp-for="Luong" class="form-label">Lương cơ bản (VNĐ)</label>
+                                            <div class="input-group-icon">
+                                                <i class="fas fa-money-bill-wave input-icon"></i>
+                                                <input asp-for="Luong" type="number" step="100000" class="form-control floating-input" placeholder="Nhập mức lương">
+                                            </div>
+                                            <span asp-validation-for="Luong" class="text-danger small mt-1 d-block"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Info Box -->
+                            <div class="info-box">
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-icon">
+                                        <i class="fas fa-lightbulb"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">Mẹo chỉnh sửa</h6>
+                                        <p class="mb-0 small opacity-90">Đảm bảo thông tin được cập nhật chính xác và đầy đủ trước khi lưu thay đổi.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex gap-3 pt-4 border-top">
+                                <button type="submit" class="btn btn-warning flex-fill">
+                                    <i class="fas fa-save me-2"></i>Cập nhật thông tin
+                                </button>
+                                <a href="@Url.Action("QuanLyNguoiDung")" class="btn btn-outline-secondary flex-fill">
+                                    <i class="fas fa-times me-2"></i>Hủy bỏ
+                                </a>
+                                <a href="@Url.Action("ChiTietNhanVien", new { id = Model.MaNhanVien })" class="btn btn-info flex-fill">
+                                    <i class="fas fa-eye me-2"></i>Xem chi tiết
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer Info -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Chỉnh sửa thông tin nhân viên • Mã: NV@(Model.MaNhanVien.ToString("D4")) •
+                        Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('editStaffForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            // Add floating label functionality
+            const floatingInputs = document.querySelectorAll('.floating-input');
+            floatingInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.parentElement.classList.add('focused');
+                });
+
+                input.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.parentElement.parentElement.classList.remove('focused');
+                    }
+                });
+
+                // Initialize on load
+                if (input.value) {
+                    input.parentElement.parentElement.classList.add('focused');
+                }
+            });
+
+            form.addEventListener('submit', function(e) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang cập nhật...';
+                submitBtn.disabled = true;
+
+                // Animate progress ring
+                const progressCircle = document.querySelector('.progress-ring-circle');
+                progressCircle.style.strokeDashoffset = '0';
+                progressCircle.style.stroke = '#10b981';
+
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    progressCircle.style.strokeDashoffset = '78.5';
+                    progressCircle.style.stroke = '#fff';
+                }, 5000);
+            });
+
+            // Add input animations
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+
+                input.addEventListener('blur', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    template: '<div class="tooltip tooltip-custom" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

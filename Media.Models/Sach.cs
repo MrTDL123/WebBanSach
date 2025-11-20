@@ -14,6 +14,7 @@ namespace Media.Models
 
         [Required(ErrorMessage = "Tên sách không được để trống")]
         [DisplayName("Tên sách")]
+        [StringLength(255, ErrorMessage = "Tên sách không được vượt quá 255 ký tự")]
         public string TenSach { get; set; } = string.Empty;
 
         [Display(Name = "Mô tả sản phẩm")]
@@ -22,9 +23,15 @@ namespace Media.Models
         [Required(ErrorMessage = "Vui lòng nhập giá bán")]
         [Display(Name = "Giá sản phẩm")]
         [Column(TypeName = "decimal(18,2)")]
+        [Range(0, double.MaxValue, ErrorMessage = "Giá bán phải lớn hơn 0")]
         public decimal GiaBan { get; set; }
-        [Column(TypeName = "decimal(18,2)")]
+
+        // SỬA: Phần trăm giảm giá nên là decimal với độ chính xác phù hợp
+        [Display(Name = "Phần trăm giảm giá")]
+        [Column(TypeName = "decimal(5,2)")]
+        [Range(0, 100, ErrorMessage = "Phần trăm giảm giá phải từ 0 đến 100")]
         public decimal PhanTramGiamGia { get; set; } = 0;
+
         [ValidateNever]
         public string? AnhBiaChinh { get; set; }
 
@@ -48,24 +55,27 @@ namespace Media.Models
         [Range(0, int.MaxValue, ErrorMessage = "Số lượng phải >= 0")]
         public int SoLuong { get; set; }
 
-        [Required, MaxLength(100)]
+        [Required(ErrorMessage = "Nhà cung cấp không được để trống")]
+        [MaxLength(100, ErrorMessage = "Nhà cung cấp không được vượt quá 100 ký tự")]
         [DisplayName("Nhà cung cấp")]
         public string NhaCungCap { get; set; } = string.Empty;
 
         // 🔹 Navigation Properties
-        [Required]
+        [Required(ErrorMessage = "Vui lòng chọn tác giả")]
         [DisplayName("Mã tác giả")]
         public int MaTacGia { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng chọn nhà xuất bản")]
         [DisplayName("Mã nhà xuất bản")]
         public int MaNhaXuatBan { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng chọn chủ đề")]
         [DisplayName("Mã chủ đề")]
         public int MaChuDe { get; set; }
+
+        // SỬA: Tính toán đúng giá sau giảm
         [NotMapped]
-        public decimal GiaSauGiam => GiaBan * (1 - (PhanTramGiamGia));
+        public decimal GiaSauGiam => GiaBan * (1 - (PhanTramGiamGia / 100));
 
         [ForeignKey(nameof(MaChuDe))]
         [ValidateNever]
@@ -79,9 +89,9 @@ namespace Media.Models
         [ValidateNever]
         public NhaXuatBan? NhaXuatBan { get; set; }
 
-        public ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
-        public ICollection<ChiTietTraHang> ChiTietTraHangs { get; set; }
-        public ICollection<ChiTietGioHang> ChiTietGioHangs { get; set; }
-        public ICollection<DanhGiaSanPham> DanhGiaSanPhams { get; set; }
+        public ICollection<ChiTietDonHang>? ChiTietDonHangs { get; set; }
+        public ICollection<ChiTietTraHang>? ChiTietTraHangs { get; set; }
+        public ICollection<ChiTietGioHang>? ChiTietGioHangs { get; set; }
+        public ICollection<DanhGiaSanPham>? DanhGiaSanPhams { get; set; }
     }
 }

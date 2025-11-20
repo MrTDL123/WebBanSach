@@ -1,0 +1,163 @@
+﻿@model Media.Models.KhachHang
+@{
+    ViewData["Title"] = "Chi Tiết Khách Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    // Pagination cho đơn hàng của khách
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int pageSize = ViewBag.PageSize ?? 5;
+    var donHangKH = Model.DonHangs as IEnumerable<Media.Models.DonHang> ?? new List<Media.Models.DonHang>();
+
+    int totalOrders = donHangKH.Count();
+    int startOrder = ((currentPage - 1) * pageSize) + 1;
+    int endOrder = Math.Min(currentPage * pageSize, totalOrders);
+
+    var pagedOrders = donHangKH.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+}
+
+<div class="min-h-screen bg-gradient-to-br from-gray-50/50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header khách hàng -->
+        <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div class="flex items-center gap-4">
+                <div class="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl">
+                    <i class='bx bx-user text-2xl text-white'></i>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        @Model.HoTen
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">
+                        Thông tin chi tiết và lịch sử đơn hàng
+                    </p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <a href="@Url.Action("Edit", "KhachHang", new { id = Model.MaKhachHang })"
+                   class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1">
+                    <i class='bx bx-edit mr-2 group-hover:scale-110 transition-transform'></i>
+                    Chỉnh sửa
+                </a>
+                <a href="@Url.Action("Index", "KhachHang")"
+                   class="group inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                    <i class='bx bx-arrow-back mr-2'></i>
+                    Quay lại
+                </a>
+            </div>
+        </div>
+
+        <!-- Thông tin khách hàng -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Thông tin cơ bản</h3>
+                <ul class="space-y-3">
+                    <li><strong>Email:</strong> @Model.Email</li>
+                    <li><strong>Số điện thoại:</strong> @Model.DienThoai</li>
+                    <li><strong>Địa chỉ:</strong> @Model.DiaChi</li>
+                    
+                </ul>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6">
+                <h3 class="text-xl font-bold mb-4">Thống kê</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl text-white text-center">
+                        <p class="text-sm">Tổng đơn hàng</p>
+                        <p class="text-2xl font-bold">@totalOrders</p>
+                    </div>
+                    <div class="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl text-white text-center">
+                        <p class="text-sm">Tổng đã thanh toán</p>
+                        <p class="text-2xl font-bold">@donHangKH.Count(d => d.DaThanhToan)</p>
+                    </div>
+                    <div class="p-4 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl shadow-xl text-white text-center">
+                        <p class="text-sm">Chờ thanh toán</p>
+                        <p class="text-2xl font-bold">@donHangKH.Count(d => !d.DaThanhToan)</p>
+                    </div>
+                    <div class="p-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-xl text-white text-center">
+                        <p class="text-sm">Tổng doanh thu</p>
+                        <p class="text-2xl font-bold">@donHangKH.Sum(d => d.Total).ToString("N0") ₫</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách đơn hàng -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/30 overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                <h2 class="text-2xl font-bold text-white">Đơn Hàng Đã Mua</h2>
+                <p class="text-blue-100 text-sm mt-1">@totalOrders đơn hàng</p>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-gray-900 border-b-2 border-gray-200/50 dark:border-gray-700/50">
+                            <th class="px-8 py-4 text-left">#Đơn hàng</th>
+                            <th class="px-8 py-4 text-left">Ngày tạo</th>
+                            <th class="px-8 py-4 text-left">Tổng tiền</th>
+                            <th class="px-8 py-4 text-left">Thanh toán</th>
+                            <th class="px-8 py-4 text-left">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200/30 dark:divide-gray-700/30">
+                        @if (pagedOrders.Any())
+                        {
+                            foreach (var item in pagedOrders)
+                            {
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+                                    <td class="px-8 py-4">#@item.MaDonHang</td>
+                                    <td class="px-8 py-4">@item.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="px-8 py-4">@item.Total.ToString("N0") ₫</td>
+                                    <td class="px-8 py-4">
+                                        @if (item.DaThanhToan)
+                                        {
+                                            <span class="px-3 py-1 rounded-full bg-green-500 text-white">Đã thanh toán</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="px-3 py-1 rounded-full bg-amber-500 text-white">Chờ thanh toán</span>
+                                        }
+                                    </td>
+                                    <td class="px-8 py-4">
+                                        <a asp-area="Admin" asp-controller="DonHang" asp-action="Details" asp-route-id="@item.MaDonHang"
+                                           class="px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all duration-300">
+                                            Xem chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-12 text-gray-400 dark:text-gray-500">
+                                    Khách hàng chưa có đơn hàng nào.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Phân trang -->
+            @if (totalPages > 1)
+            {
+                <div class="px-8 py-4 flex justify-center gap-2">
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        if (i == currentPage)
+                        {
+                            <span class="px-4 py-2 bg-blue-500 text-white rounded-xl">@i</span>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("ChiTietKhachHang", new { id = Model.MaKhachHang, page = i, pageSize = pageSize })"
+                               class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-blue-500 hover:text-white transition-all duration-300">@i</a>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
