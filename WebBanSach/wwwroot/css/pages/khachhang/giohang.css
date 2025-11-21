@@ -5,19 +5,9 @@ body {
 }
 
 .container-shoppingcart {
-    max-width: 1230px;
+    width: 90%;
+    margin: 0 auto;
     margin-top: 20px;
-    --bs-gutter-x: 1.5rem;
-    --bs-gutter-y: 0;
-    width: 100%;
-    padding-right: calc(var(--bs-gutter-x) * 0.5);
-    padding-left: calc(var(--bs-gutter-x) * 0.5);
-    margin-right: auto;
-    margin-left: auto;
-}
-
-.header {
-    margin-bottom: 20px;
 }
 
 .count-product-shoping-cart {

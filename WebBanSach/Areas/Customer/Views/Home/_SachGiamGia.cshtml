@@ -33,23 +33,26 @@
         @foreach (var sach in Model)
         {
             <div class="book-item">
-                <a asp-controller="Home" asp-action="Details" asp-route-id="@sach.MaSach" title="@sach.TenSach">
+                <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" title="@sach.TenSach">
 
                     <div class="book-image-container">
                         <img src="~/img/product/@sach.AnhBiaChinh" alt="Bìa sách @sach.TenSach">
 
-                        <span class="sale-badge">-81%</span>
+                        <span class="sale-badge">@((sach.PhanTramGiamGia * 100).ToString("N0"))%</span>
                     </div>
 
                     <div class="book-info">
                         <p class="book-title montserrat-regular">@sach.TenSach</p>
                         <div class="book-price">
-                            <span class="sale-price">0 đ</span>
-                            @*                             @if (sach.GiaGoc > 0)
+                            @if (sach.PhanTramGiamGia > 0)
                             {
-                                <span class="original-price">@sach.GiaGoc.ToString("N0") đ</span>
-                            } *@
+                                <span class="original-price">@sach.GiaBan.ToString("N0") đ</span>
+                            }
+
+                            <span class="sale-price">@((sach.GiaBan * (1 - sach.PhanTramGiamGia)).ToString("N0")) đ</span>
                         </div>
+
+                        
                     </div>
                 </a>
             </div>

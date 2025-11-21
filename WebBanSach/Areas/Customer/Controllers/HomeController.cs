@@ -23,7 +23,6 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
     [Area("Customer")]
     public class HomeController : Controller
     {
-
         private readonly LocationService _locationService;
         private ISlugService _slugService;
         private readonly IViewRenderService _viewRenderService;
@@ -65,7 +64,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         private async Task<TrangChuVM> GetIndexVM()
         {
             TrangChuVM viewModel = new TrangChuVM();
-
+            viewModel.SachGiamGia = await _unit.Saches.GetRangeReadOnlyAsync(s => s.PhanTramGiamGia > 0);
             viewModel.SachBanChay = await _unit.Saches.LaySachBanChay(days: 7, sachCount: 6);
 
             viewModel.TacGiaNoiTieng = (viewModel.SachBanChay).Select(s => s.TacGia)

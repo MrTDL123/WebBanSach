@@ -1,50 +1,31 @@
 ﻿
 /*--CỐ ĐỊNH HEADER--*/
-#co_dinh_header{
-    z-index: 1000;
+.co_dinh_header {
+    width: 100%;
+    transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt cho các thuộc tính khác */
+    z-index: 999;
 }
-#co_dinh_header.sticky {
-    top: 0;
-    background-color: #041721;
-    opacity: 1;
-    animation-name: animation_co_dinh_header;
-    animation-duration: 0.3s;
-    height: 82px;
-    position: sticky;
-}
-
-#co_dinh_header.sticky #header_logo {
-    margin-top: -20px;
-    display: flex;
-    flex-direction: row !important;
-    justify-content: center;
-    align-items: center;
-}
-
-#co_dinh_header.sticky #header_logo p {
-    font-size: 12px;
-    line-height: 42px;
-    margin-left: -12px;
-}
-
-#co_dinh_header.sticky #bottom_header_right > ul.navbar-nav {
-    margin-top: -20px;
-}
-
-@keyframes animation_co_dinh_header {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
+    .co_dinh_header.sticky {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #041721; /* Màu nền khi scroll */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Đổ bóng để nổi bật */
+        /* Animation trượt từ trên xuống */
+        animation: slideDown 0.35s ease-out forwards;
+    }
+@keyframes slideDown {
+    0% {
+        transform: translateY(-100%);
     }
 
-    to {
-        opacity: 1;
+    100% {
         transform: translateY(0);
     }
 }
 
                                                     /*BACK TOP*/
-
 #backtop_container {
     position: fixed;
     width: 60px;
@@ -52,11 +33,26 @@
     bottom: 40px;
     right: 40px;
     background-color: #0ce682;
+    z-index: 99999;
+
+    /* Ẩn mặc định */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px); /* Dịch xuống dưới 1 chút */
+    transition: all 0.4s ease;
 }
-#backtop_container:hover{
+
+#backtop_container:hover{ 
     transform: scale(1.12);
     transition: all 0.5s ease;
 }
+
+    #backtop_container.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0); /* Trượt lên vị trí gốc */
+    }
+
 #backtop {
     top: 8px;
     left: 8px;
@@ -64,8 +60,11 @@
     height: 45px;
     color: #ffde3c;
     background-color: #041721;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     cursor: pointer;
+    transition: transform 0.2s;
 }
+
 #backtop:hover {
     color: #041721;
     background-color: #ffde3c;

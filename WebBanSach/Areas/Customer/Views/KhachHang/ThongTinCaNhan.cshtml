@@ -6,6 +6,7 @@
 
 @section PageStyles {
     <link rel="stylesheet" href="~/css/pages/khachhang/thongtincanhan.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/partialview/chitietdonhang.css" asp-append-version="true" />
 }
 
 <div class="container-personinfo">
@@ -261,6 +262,11 @@
                 </div>
             </div> 
         </div>
+
+        <div id="order-detail-container" class="content-section" style="display: none;">
+            <div class="loading-spinner">Đang tải dữ liệu...</div>
+        </div>
+
     </div>
 </div>
 <div id="addressPopupOverlay" class="popup-overlay" style="display:none;" onclick="dongPopupDiaChi()"></div>
@@ -713,13 +719,33 @@
 
         // (Bạn tự định nghĩa các hàm này)
         function xemChiTietDonHang(maDonHang) {
-            // (Chuyển hướng đến trang Chi Tiết Đơn Hàng)
-            showToast("Chức năng 'Xem chi tiết' cho đơn " + maDonHang + " chưa được cài đặt.", true);
+            document.getElementById('orders').style.display = 'none';
+            const detailContainer = document.getElementById('order-detail-container');
+            detailContainer.style.display = 'block';
+
+            // Hiện trạng thái loading trước khi có dữ liệu
+            detailContainer.innerHTML = '<div class="text-center p-5"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Đang tải thông tin đơn hàng...</p></div>';
+
+            // 2. Gọi AJAX lấy Partial View từ Server
+            fetch('/Customer/KhachHang/GetChiTietDonHangPartial?id=' + maDonHang)
+                .then(response => {
+                    if (!response.ok) throw new Error('Lỗi tải trang');
+                    return response.text(); // Lấy về HTML
+                })
+                .then(html => {
+                    // 3. Đổ HTML nhận được vào div
+                    detailContainer.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error(error);
+                    detailContainer.innerHTML = '<p class="text-danger text-center">Không thể tải chi tiết đơn hàng.</p>';
+                });
         }
 
-        function muaLai(maDonHang) {
-            // (Logic thêm các sản phẩm của đơn hàng cũ vào giỏ hàng)
-            showToast("Chức năng 'Mua lại' cho đơn " + maDonHang + " chưa được cài đặt.", true);
+        // Hàm để quay lại danh sách (Gắn vào nút "Quay lại")
+        function quayLaiDanhSach() {
+            document.getElementById('order-detail-container').style.display = 'none'; // Ẩn chi tiết
+            document.getElementById('orders').style.display = 'block'; // Hiện lại danh sách
         }
 
         function theoDoiDonHang(maDonHang) {

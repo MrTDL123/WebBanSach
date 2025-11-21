@@ -15,7 +15,7 @@
 }
 
 .account-icon {
-    font-size: 28px;
+    font-size: 1rem;
     color: #0ce682;
     transition: transform 0.2s;
 }
@@ -38,7 +38,7 @@
 /* Popup dropdown */
 .account-dropdown {
     position: absolute;
-    top: 60px; /* Điều chỉnh khoảng cách từ icon */
+    top: 42px; /* Điều chỉnh khoảng cách từ icon */
     background-color: #fff;
     border: 1px solid #ddd;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
