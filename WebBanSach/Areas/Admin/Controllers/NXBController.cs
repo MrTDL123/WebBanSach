@@ -3,7 +3,7 @@ using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace ProjectCuoiKi.Areas.Admin.Controllers
+namespace ProjectCuoiKi.Areas.Admin.Controllers 
 {
     [Area("Admin")]
     public class NXBController : Controller

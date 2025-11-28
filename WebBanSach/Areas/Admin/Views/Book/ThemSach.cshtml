@@ -328,7 +328,7 @@
                             </div>
                         </div>
 
-                        <!-- 4 Ảnh bìa phụ -->
+                        <!-- 4 Ảnh bìa phụ - SỬA LẠI ĐỂ PHÙ HỢP VỚI CONTROLLER -->
                         <div class="group">
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                                 Ảnh bìa phụ
@@ -340,13 +340,11 @@
                                 <div class="group/item">
                                     <div class="relative">
                                         <input type="file"
-                                               name="fileAnhBiaPhu1"
-                                               id="fileAnhBiaPhu1"
+                                               name="filesAnhBiaPhu"
                                                accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
-                                               class="hidden"
+                                               class="hidden sub-image-input"
                                                data-preview="previewPhu1" />
-                                        <label for="fileAnhBiaPhu1"
-                                               class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden">
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
                                             <div id="previewPhu1" class="w-full h-full flex flex-col items-center justify-center p-4">
                                                 <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
                                                 <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 1</p>
@@ -354,26 +352,22 @@
                                             </div>
                                         </label>
                                         <button type="button"
-                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-image"
-                                                data-target="fileAnhBiaPhu1"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
                                                 data-preview="previewPhu1">
                                             <i class='bx bx-x'></i>
                                         </button>
                                     </div>
-                                    <span class="fileError text-red-600 dark:text-red-400 text-xs mt-1 block" data-for="fileAnhBiaPhu1"></span>
                                 </div>
 
                                 <!-- Ảnh phụ 2 -->
                                 <div class="group/item">
                                     <div class="relative">
                                         <input type="file"
-                                               name="fileAnhBiaPhu2"
-                                               id="fileAnhBiaPhu2"
+                                               name="filesAnhBiaPhu"
                                                accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
-                                               class="hidden"
+                                               class="hidden sub-image-input"
                                                data-preview="previewPhu2" />
-                                        <label for="fileAnhBiaPhu2"
-                                               class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden">
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
                                             <div id="previewPhu2" class="w-full h-full flex flex-col items-center justify-center p-4">
                                                 <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
                                                 <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 2</p>
@@ -381,26 +375,22 @@
                                             </div>
                                         </label>
                                         <button type="button"
-                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-image"
-                                                data-target="fileAnhBiaPhu2"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
                                                 data-preview="previewPhu2">
                                             <i class='bx bx-x'></i>
                                         </button>
                                     </div>
-                                    <span class="fileError text-red-600 dark:text-red-400 text-xs mt-1 block" data-for="fileAnhBiaPhu2"></span>
                                 </div>
 
                                 <!-- Ảnh phụ 3 -->
                                 <div class="group/item">
                                     <div class="relative">
                                         <input type="file"
-                                               name="fileAnhBiaPhu3"
-                                               id="fileAnhBiaPhu3"
+                                               name="filesAnhBiaPhu"
                                                accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
-                                               class="hidden"
+                                               class="hidden sub-image-input"
                                                data-preview="previewPhu3" />
-                                        <label for="fileAnhBiaPhu3"
-                                               class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden">
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
                                             <div id="previewPhu3" class="w-full h-full flex flex-col items-center justify-center p-4">
                                                 <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
                                                 <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 3</p>
@@ -408,26 +398,22 @@
                                             </div>
                                         </label>
                                         <button type="button"
-                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-image"
-                                                data-target="fileAnhBiaPhu3"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
                                                 data-preview="previewPhu3">
                                             <i class='bx bx-x'></i>
                                         </button>
                                     </div>
-                                    <span class="fileError text-red-600 dark:text-red-400 text-xs mt-1 block" data-for="fileAnhBiaPhu3"></span>
                                 </div>
 
                                 <!-- Ảnh phụ 4 -->
                                 <div class="group/item">
                                     <div class="relative">
                                         <input type="file"
-                                               name="fileAnhBiaPhu4"
-                                               id="fileAnhBiaPhu4"
+                                               name="filesAnhBiaPhu"
                                                accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
-                                               class="hidden"
+                                               class="hidden sub-image-input"
                                                data-preview="previewPhu4" />
-                                        <label for="fileAnhBiaPhu4"
-                                               class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden">
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
                                             <div id="previewPhu4" class="w-full h-full flex flex-col items-center justify-center p-4">
                                                 <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
                                                 <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 4</p>
@@ -435,13 +421,11 @@
                                             </div>
                                         </label>
                                         <button type="button"
-                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-image"
-                                                data-target="fileAnhBiaPhu4"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
                                                 data-preview="previewPhu4">
                                             <i class='bx bx-x'></i>
                                         </button>
                                     </div>
-                                    <span class="fileError text-red-600 dark:text-red-400 text-xs mt-1 block" data-for="fileAnhBiaPhu4"></span>
                                 </div>
                             </div>
 
@@ -510,11 +494,11 @@
                 calculateDiscountedPrice();
             }
 
-            // Image preview function
-            function setupImagePreview(inputId, previewId, errorSpanId) {
-                const input = document.getElementById(inputId);
-                const preview = document.getElementById(previewId);
-                const errorSpan = document.getElementById(errorSpanId);
+            // Image preview function for main image
+            function setupMainImagePreview() {
+                const input = document.getElementById('fileAnhBiaChinh');
+                const preview = document.getElementById('imagePreviewMain');
+                const errorSpan = document.getElementById('fileErrorMain');
 
                 if (input && preview) {
                     input.addEventListener('change', function() {
@@ -561,13 +545,73 @@
                 }
             }
 
+            // Image preview function for sub images
+            function setupSubImagePreview(input, previewId) {
+                const preview = document.getElementById(previewId);
+
+                if (input && preview) {
+                    input.addEventListener('change', function() {
+                        const file = this.files[0];
+
+                        if (file) {
+                            // Kiểm tra loại file
+                            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+                            if (!allowedTypes.includes(file.type)) {
+                                alert('Chỉ chấp nhận file ảnh (jpg, jpeg, png, gif, bmp, webp)');
+                                this.value = '';
+                                resetImagePreview(preview, 'Ảnh phụ');
+                                return;
+                            }
+
+                            // Kiểm tra kích thước file (5MB)
+                            if (file.size > 5 * 1024 * 1024) {
+                                alert('Kích thước file không được vượt quá 5MB');
+                                this.value = '';
+                                resetImagePreview(preview, 'Ảnh phụ');
+                                return;
+                            }
+
+                            // Hiển thị preview với hiệu ứng
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                preview.style.opacity = '0';
+                                setTimeout(() => {
+                                    preview.innerHTML = `
+                                        <img src="${e.target.result}" class="w-full h-full object-cover rounded-xl shadow-lg" alt="Preview">
+                                        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                            ${file.name}
+                                        </div>
+                                    `;
+                                    preview.style.opacity = '1';
+                                }, 200);
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            resetImagePreview(preview, 'Ảnh phụ');
+                        }
+                    });
+                }
+            }
+
             // Setup preview for main image
-            setupImagePreview('fileAnhBiaChinh', 'imagePreviewMain', 'fileErrorMain');
+            setupMainImagePreview();
 
             // Setup preview for additional images
-            for (let i = 1; i <= 4; i++) {
-                setupImagePreview(`fileAnhBiaPhu${i}`, `previewPhu${i}`, `fileErrorPhu${i}`);
-            }
+            const subImageInputs = document.querySelectorAll('.sub-image-input');
+            subImageInputs.forEach((input, index) => {
+                setupSubImagePreview(input, `previewPhu${index + 1}`);
+            });
+
+            // Setup click events for sub image labels
+            const subImageLabels = document.querySelectorAll('.sub-image-label');
+            subImageLabels.forEach((label, index) => {
+                label.addEventListener('click', function() {
+                    const input = this.previousElementSibling;
+                    if (input) {
+                        input.click();
+                    }
+                });
+            });
 
             function resetImagePreview(previewElement, type = 'Ảnh phụ') {
                 previewElement.style.opacity = '0';
@@ -589,18 +633,18 @@
                 }, 200);
             }
 
-            // Remove image functionality
-            document.querySelectorAll('.remove-image').forEach(button => {
+            // Remove image functionality for sub images
+            document.querySelectorAll('.remove-sub-image').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    const targetInput = document.getElementById(this.getAttribute('data-target'));
                     const previewId = this.getAttribute('data-preview');
                     const preview = document.getElementById(previewId);
+                    const input = preview.closest('.relative').querySelector('.sub-image-input');
 
-                    if (targetInput) {
-                        targetInput.value = '';
+                    if (input) {
+                        input.value = '';
                     }
 
                     const type = previewId === 'imagePreviewMain' ? 'Ảnh chính' : 'Ảnh phụ';
@@ -698,16 +742,18 @@
             // Setup drag and drop for main image
             const mainDropZone = document.getElementById('imagePreviewMain').closest('div');
             const mainInput = document.getElementById('fileAnhBiaChinh');
-            setupDragAndDrop(mainDropZone, mainInput);
+            if (mainDropZone && mainInput) {
+                setupDragAndDrop(mainDropZone, mainInput);
+            }
 
             // Setup drag and drop for additional images
-            for (let i = 1; i <= 4; i++) {
-                const dropZone = document.getElementById(`previewPhu${i}`).closest('label');
-                const input = document.getElementById(`fileAnhBiaPhu${i}`);
+            const subDropZones = document.querySelectorAll('.sub-image-label');
+            subDropZones.forEach((dropZone, index) => {
+                const input = dropZone.previousElementSibling;
                 if (dropZone && input) {
                     setupDragAndDrop(dropZone, input);
                 }
-            }
+            });
         });
     </script>
 }

@@ -29,9 +29,10 @@
         </div>
 
         <!-- Main Form -->
-        <form asp-action="Edit" method="post" id="editForm">
+        <form asp-action="Edit" method="post" id="editForm" data-order-id="@Model.MaDonHang">
             @Html.AntiForgeryToken()
-            <input type="hidden" asp-for="MaDonHang" />
+            <input type="hidden" asp-for="MaDonHang" id="MaDonHang" />
+            <input type="hidden" asp-for="MaKhachHang" />
 
             <div class="space-y-6">
                 <!-- Thông tin cơ bản -->
@@ -44,20 +45,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Khách hàng -->
                         <div>
-                            <label asp-for="MaKhachHang" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Khách hàng <span class="text-red-500">*</span>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Khách hàng
                             </label>
-                            <select asp-for="MaKhachHang" asp-items="ViewBag.KhachHangs"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                <option value="">-- Chọn Khách Hàng --</option>
-                            </select>
-                            <span asp-validation-for="MaKhachHang" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <div class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                                @(Model.KhachHang?.HoTen ?? "Không có thông tin") - @(Model.KhachHang?.DienThoai ?? "N/A")
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Khách hàng không thể thay đổi</p>
                         </div>
 
                         <!-- Nhân viên -->
                         <div>
                             <label asp-for="MaNhanVien" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Nhân viên <span class="text-red-500">*</span>
+                                Nhân viên xử lý <span class="text-red-500">*</span>
                             </label>
                             <select asp-for="MaNhanVien" asp-items="ViewBag.NhanViens"
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -99,9 +99,80 @@
                             <div class="flex items-center">
                                 <input asp-for="DaThanhToan" type="checkbox"
                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                <label class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Đã thanh toán</label>
+                                <label asp-for="DaThanhToan" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Đã thanh toán</label>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Trạng thái vận chuyển -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <i class='bx bx-truck text-yellow-500'></i>
+                        Trạng thái vận chuyển
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Trạng thái hiện tại -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Trạng thái hiện tại
+                            </label>
+                            <div id="currentShippingStatus" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white">
+                                @if (Model.VanChuyen != null)
+                                {
+                                    @switch (Model.VanChuyen.TrangThaiGiaoHang)
+                                    {
+                                        case TrangThaiGiaoHang.ChoXuLy:
+                                            <text>Chờ xử lý</text>
+                                            break;
+                                        case TrangThaiGiaoHang.DangGiaoHang:
+                                            <text>Đang giao hàng</text>
+                                            break;
+                                        case TrangThaiGiaoHang.GiaoHangThanhCong:
+                                            <text>Giao hàng thành công</text>
+                                            break;
+                                        case TrangThaiGiaoHang.GiaoThatBai:
+                                            <text>Giao thất bại</text>
+                                            break;
+                                        case TrangThaiGiaoHang.DaHuy:
+                                            <text>Đã hủy</text>
+                                            break;
+                                        default:
+                                            <text>Không xác định</text>
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    <text>Chưa cập nhật</text>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Cập nhật trạng thái -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Cập nhật trạng thái
+                            </label>
+                            <select id="shippingStatus" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                                <option value="">-- Chọn trạng thái --</option>
+                                <option value="ChoXuLy">Chờ xử lý</option>
+                                <option value="DangGiaoHang">Đang giao hàng</option>
+                                <option value="GiaoHangThanhCong">Giao hàng thành công</option>
+                                <option value="GiaoThatBai">Giao thất bại</option>
+                                <option value="DaHuy">Đã hủy</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Nút cập nhật -->
+                    <div class="mt-4">
+                        <button type="button" id="updateShippingStatusBtn"
+                                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+                            <i class='bx bx-refresh mr-1'></i>
+                            Cập nhật trạng thái vận chuyển
+                        </button>
                     </div>
                 </div>
 
@@ -193,7 +264,7 @@
                     </div>
                 </div>
 
-                <!-- CHI TIẾT ĐƠN HÀNG - PHẦN MỚI THÊM -->
+                <!-- Chi tiết đơn hàng -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                         <i class='bx bx-book text-orange-500'></i>
@@ -250,14 +321,15 @@
                                 {
                                     foreach (var chiTiet in Model.ChiTietDonHangs)
                                     {
-                                        <tr data-chitiet-id="@chiTiet.MaDonHang">
+                                        <tr>
                                             <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">@chiTiet.Sach?.TenSach</td>
                                             <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">@chiTiet.SoLuong</td>
                                             <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">@chiTiet.DonGia.ToString("N0")</td>
                                             <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">@chiTiet.ThanhTien.ToString("N0")</td>
                                             <td class="px-4 py-3 text-sm">
                                                 <button type="button" class="btnRemoveBook text-red-600 hover:text-red-800"
-                                                        data-id="@chiTiet.MaDonHang">
+                                                        data-ma-don-hang="@chiTiet.MaDonHang"
+                                                        data-ma-sach="@chiTiet.MaSach">
                                                     <i class='bx bx-trash'></i> Xóa
                                                 </button>
                                             </td>
@@ -307,13 +379,15 @@
 
 @section Scripts {
     <script>
+        // Biến global lưu orderId
+        const CURRENT_ORDER_ID = @Model.MaDonHang;
+        console.log('=== DEBUG: Order ID =', CURRENT_ORDER_ID, '===');
+
         // Hàm hiển thị thông báo
         function showNotification(message, type) {
-            // Xóa thông báo cũ
             const oldNotifications = document.querySelectorAll('.custom-notification');
             oldNotifications.forEach(noti => noti.remove());
 
-            // Tạo thông báo mới
             const notification = document.createElement('div');
             notification.className = `custom-notification fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 max-w-sm ${
                 type === 'success'
@@ -335,13 +409,83 @@
 
             document.body.appendChild(notification);
 
-            // Tự động xóa sau 5 giây
             setTimeout(() => {
                 if (notification.parentElement) {
                     notification.remove();
                 }
             }, 5000);
         }
+
+        // Hàm chuyển đổi giá trị enum thành text hiển thị
+        function getStatusText(status) {
+            const statusMap = {
+                'ChoXuLy': 'Chờ xử lý',
+                'DangGiaoHang': 'Đang giao hàng',
+                'GiaoHangThanhCong': 'Giao hàng thành công',
+                'GiaoThatBai': 'Giao thất bại',
+                'DaHuy': 'Đã hủy'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Cập nhật trạng thái vận chuyển
+        document.getElementById('updateShippingStatusBtn').addEventListener('click', async function() {
+            const orderId = CURRENT_ORDER_ID;
+            const status = document.getElementById('shippingStatus').value;
+
+            console.log('Order ID:', orderId);
+            console.log('Status:', status);
+
+            if (!orderId || orderId <= 0) {
+                showNotification('Lỗi: Không thể xác định ID đơn hàng!', 'error');
+                return;
+            }
+
+            if (!status) {
+                showNotification('Vui lòng chọn trạng thái!', 'error');
+                return;
+            }
+
+            const btn = this;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-1"></i> Đang cập nhật...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/Admin/DonHang/UpdateShippingStatus', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({
+                        id: orderId,
+                        trangThai: status
+                    })
+                });
+
+                const result = await response.json();
+                console.log('Kết quả từ server:', result);
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    document.getElementById('currentShippingStatus').textContent = getStatusText(status);
+                    document.getElementById('shippingStatus').value = '';
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showNotification(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Lỗi kết nối:', error);
+                showNotification('Lỗi kết nối: ' + error.message, 'error');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        });
 
         // Lấy giá sách khi chọn sách
         document.getElementById('newMaSach').addEventListener('change', async function() {
@@ -355,16 +499,24 @@
                     }
                 } catch (error) {
                     console.error('Lỗi khi lấy giá sách:', error);
+                showNotification('Lỗi khi lấy giá sách: ' + error.message, 'error');
                 }
             }
         });
 
         // Thêm sách vào đơn hàng
         document.getElementById('btnAddBook').addEventListener('click', async function() {
+            const orderId = CURRENT_ORDER_ID;
             const maSach = document.getElementById('newMaSach').value;
             const soLuong = document.getElementById('newSoLuong').value;
             const donGia = document.getElementById('newDonGia').value;
-            const maDonHang = @Model.MaDonHang;
+
+            console.log('Add Book - Order ID:', orderId);
+
+            if (!orderId || orderId <= 0) {
+                showNotification('Lỗi: Không thể xác định ID đơn hàng!', 'error');
+                return;
+            }
 
             if (!maSach || !soLuong || !donGia) {
                 showNotification('Vui lòng điền đầy đủ thông tin!', 'error');
@@ -378,7 +530,7 @@
 
             try {
                 const formData = new FormData();
-                formData.append('maDonHang', maDonHang);
+                formData.append('maDonHang', orderId);
                 formData.append('maSach', maSach);
                 formData.append('soLuong', soLuong);
                 formData.append('donGia', donGia);
@@ -395,11 +547,9 @@
 
                 if (result.success) {
                     showNotification(result.message, 'success');
-                    // Reset form
                     document.getElementById('newMaSach').value = '';
                     document.getElementById('newSoLuong').value = '1';
                     document.getElementById('newDonGia').value = '';
-                    // Reload trang để cập nhật danh sách
                     setTimeout(() => location.reload(), 1000);
                 } else {
                     showNotification(result.message, 'error');
@@ -416,7 +566,10 @@
         document.addEventListener('click', async function(e) {
             if (e.target.classList.contains('btnRemoveBook') || e.target.closest('.btnRemoveBook')) {
                 const button = e.target.classList.contains('btnRemoveBook') ? e.target : e.target.closest('.btnRemoveBook');
-                const chiTietId = button.getAttribute('data-id');
+                const maDonHang = button.getAttribute('data-ma-don-hang');
+                const maSach = button.getAttribute('data-ma-sach');
+
+                console.log('Remove Book - Order ID:', maDonHang, 'MaSach:', maSach);
 
                 if (!confirm('Bạn có chắc muốn xóa sách này khỏi đơn hàng?')) {
                     return;
@@ -428,7 +581,8 @@
 
                 try {
                     const formData = new FormData();
-                    formData.append('id', chiTietId);
+                    formData.append('maDonHang', maDonHang);
+                    formData.append('maSach', maSach);
 
                     const response = await fetch('/Admin/DonHang/RemoveChiTietDonHang', {
                         method: 'POST',
@@ -442,10 +596,8 @@
 
                     if (result.success) {
                         showNotification(result.message, 'success');
-                        // Xóa hàng khỏi bảng
                         const row = button.closest('tr');
                         row.remove();
-                        // Reload để cập nhật tổng tiền
                         setTimeout(() => location.reload(), 1000);
                     } else {
                         showNotification(result.message, 'error');
@@ -474,51 +626,25 @@
             const form = document.getElementById('editForm');
             const submitBtn = document.getElementById('submitBtn');
 
-            if (!form) {
-                console.log('Không tìm thấy form');
-                return;
-            }
+            if (form && submitBtn) {
+                form.addEventListener('submit', function(e) {
+                    console.log('Form đang được gửi...');
+                    const originalHTML = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-2"></i> Đang cập nhật...';
+                    submitBtn.disabled = true;
 
-            if (!submitBtn) {
-                console.log('Không tìm thấy nút submit');
-                return;
-            }
-
-            // Xử lý khi submit form
-            form.addEventListener('submit', function(e) {
-                console.log('Form đang được gửi...');
-
-                // Lưu nội dung gốc của button
-                const originalHTML = submitBtn.innerHTML;
-
-                // Hiển thị trạng thái loading
-                submitBtn.innerHTML = '<i class="bx bx-loader-alt bx-spin mr-2"></i> Đang cập nhật...';
-                submitBtn.disabled = true;
-
-                // Fallback: sau 10 giây tự động reset nếu có lỗi
-                setTimeout(() => {
-                    if (submitBtn.disabled) {
-                        submitBtn.innerHTML = originalHTML;
-                        submitBtn.disabled = false;
-                        console.log('Đã reset button sau timeout');
-                    }
-                }, 10000);
-            });
-
-            // Tự động focus vào field đầu tiên
-            try {
-                const firstInput = form.querySelector('input, select, textarea');
-                if (firstInput) {
-                    firstInput.focus();
-                }
-            } catch (error) {
-                console.log('Lỗi khi focus:', error);
+                    setTimeout(() => {
+                        if (submitBtn.disabled) {
+                            submitBtn.innerHTML = originalHTML;
+                            submitBtn.disabled = false;
+                        }
+                    }, 10000);
+                });
             }
         });
     </script>
 
     <style>
-        /* CSS animations - ĐÃ SỬA LỖI KEYFRAMES */
         .bx-loader-alt.bx-spin {
             animation: spinAnimation 1s linear infinite;
         }
@@ -527,7 +653,6 @@
             animation: slideInAnimation 0.3s ease-out;
         }
 
-        /* Keyframes với tên duy nhất để tránh xung đột */
         @@keyframes spinAnimation {
             from {
                 transform: rotate(0deg);

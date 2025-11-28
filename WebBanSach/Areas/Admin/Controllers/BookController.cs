@@ -66,6 +66,8 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 ModelState.Remove("ChuDe");
                 ModelState.Remove("TacGia");
                 ModelState.Remove("NhaXuatBan");
+                ModelState.Remove("fileAnhBiaChinh");
+                ModelState.Remove("filesAnhBiaPhu");
 
                 if (ModelState.IsValid)
                 {
@@ -91,7 +93,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     // Xử lý ảnh bìa chính
                     if (fileAnhBiaChinh != null && fileAnhBiaChinh.Length > 0)
                     {
-                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "product");
+                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "product");
                         if (!Directory.Exists(uploadsFolder))
                         {
                             Directory.CreateDirectory(uploadsFolder);
@@ -108,33 +110,39 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                         // Xóa ảnh cũ nếu có
                         if (!string.IsNullOrEmpty(existingSach.AnhBiaChinh))
                         {
-                            var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingSach.AnhBiaChinh.TrimStart('/'));
+                            var oldImagePath = Path.Combine(_environment.WebRootPath, existingSach.AnhBiaChinh.TrimStart('/'));
                             if (System.IO.File.Exists(oldImagePath))
                             {
                                 System.IO.File.Delete(oldImagePath);
                             }
                         }
 
-                        existingSach.AnhBiaChinh = "/img/product/" + fileName;
+                        existingSach.AnhBiaChinh = fileName; // Chỉ lưu tên file, không lưu đường dẫn đầy đủ
                     }
 
                     // Xử lý ảnh bìa phụ
                     if (filesAnhBiaPhu != null && filesAnhBiaPhu.Count > 0)
                     {
-                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "product");
+                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "product");
                         if (!Directory.Exists(uploadsFolder))
                         {
                             Directory.CreateDirectory(uploadsFolder);
                         }
+
+                        // Lưu danh sách ảnh cũ để xóa sau
+                        var oldImages = new List<string>
+                        {
+                            existingSach.AnhBiaPhu1,
+                            existingSach.AnhBiaPhu2,
+                            existingSach.AnhBiaPhu3,
+                            existingSach.AnhBiaPhu4
+                        };
 
                         // Reset ảnh bìa phụ
                         existingSach.AnhBiaPhu1 = null;
                         existingSach.AnhBiaPhu2 = null;
                         existingSach.AnhBiaPhu3 = null;
                         existingSach.AnhBiaPhu4 = null;
-
-                        // Xóa ảnh cũ
-                        DeleteOldImages(existingSach);
 
                         // Upload ảnh mới (tối đa 4 ảnh)
                         for (int i = 0; i < Math.Min(filesAnhBiaPhu.Count, 4); i++)
@@ -154,17 +162,30 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                                 switch (i)
                                 {
                                     case 0:
-                                        existingSach.AnhBiaPhu1 = "/img/product/" + fileName;
+                                        existingSach.AnhBiaPhu1 = fileName;
                                         break;
                                     case 1:
-                                        existingSach.AnhBiaPhu2 = "/img/product/" + fileName;
+                                        existingSach.AnhBiaPhu2 = fileName;
                                         break;
                                     case 2:
-                                        existingSach.AnhBiaPhu3 = "/img/product/" + fileName;
+                                        existingSach.AnhBiaPhu3 = fileName;
                                         break;
                                     case 3:
-                                        existingSach.AnhBiaPhu4 = "/img/product/" + fileName;
+                                        existingSach.AnhBiaPhu4 = fileName;
                                         break;
+                                }
+                            }
+                        }
+
+                        // Xóa ảnh cũ sau khi upload thành công
+                        foreach (var oldImage in oldImages)
+                        {
+                            if (!string.IsNullOrEmpty(oldImage))
+                            {
+                                var oldImagePath = Path.Combine(_environment.WebRootPath, "img", "product", oldImage);
+                                if (System.IO.File.Exists(oldImagePath))
+                                {
+                                    System.IO.File.Delete(oldImagePath);
                                 }
                             }
                         }
@@ -207,11 +228,11 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         {
             var imageProperties = new[] { sach.AnhBiaPhu1, sach.AnhBiaPhu2, sach.AnhBiaPhu3, sach.AnhBiaPhu4 };
 
-            foreach (var imagePath in imageProperties)
+            foreach (var imageName in imageProperties)
             {
-                if (!string.IsNullOrEmpty(imagePath))
+                if (!string.IsNullOrEmpty(imageName))
                 {
-                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagePath.TrimStart('/'));
+                    var fullPath = Path.Combine(_environment.WebRootPath, "img", "product", imageName);
                     if (System.IO.File.Exists(fullPath))
                     {
                         System.IO.File.Delete(fullPath);
@@ -219,6 +240,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 }
             }
         }
+
         // GET: Thêm sách
         public async Task<IActionResult> ThemSach()
         {
@@ -246,13 +268,14 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         {
             try
             {
+                ModelState.Remove("fileAnhBiaChinh");
+
                 if (ModelState.IsValid)
                 {
-                    // Xử lý upload ảnh - SỬA ĐƯỜNG DẪN THÀNH img/product
+                    // Xử lý upload ảnh
                     if (fileAnhBiaChinh != null && fileAnhBiaChinh.Length > 0)
                     {
-                        // Sửa đường dẫn thành img/product
-                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "product");
+                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "product");
                         if (!Directory.Exists(uploadsFolder))
                         {
                             Directory.CreateDirectory(uploadsFolder);
@@ -266,8 +289,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                             await fileAnhBiaChinh.CopyToAsync(stream);
                         }
 
-                        // Sửa đường dẫn ảnh thành /img/product/
-                        sach.AnhBiaChinh = "/img/product/" + fileName;
+                        sach.AnhBiaChinh = fileName; // Chỉ lưu tên file
                     }
 
                     // Đảm bảo các giá trị mặc định
@@ -311,6 +333,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             ViewBag.TacGias = _context.TacGias.ToList();
             ViewBag.NhaXuatBans = _context.NhaXuatBans.ToList();
         }
+
         private async Task LoadDropdownData()
         {
             ViewBag.ChuDes = await _context.ChuDes.ToListAsync();
@@ -318,47 +341,65 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             ViewBag.NhaXuatBans = await _context.NhaXuatBans.ToListAsync();
         }
 
-        private async Task<string> SaveImage(IFormFile file)
+        // GET: Quản lý sách với tìm kiếm và phân trang
+        public async Task<IActionResult> QuanLySach(string search = "", int page = 1)
         {
             try
             {
-                // Tạo thư mục nếu chưa tồn tại
-                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "books");
-                if (!Directory.Exists(uploadsFolder))
+                var pageSize = 10;
+
+                // Lấy toàn bộ sách để tính thống kê
+                var allBooksQuery = _context.Saches
+                    .Include(s => s.TacGia)
+                    .Include(s => s.NhaXuatBan)
+                    .Include(s => s.ChuDe)
+                    .AsQueryable();
+
+                // Áp dụng tìm kiếm nếu có
+                if (!string.IsNullOrEmpty(search))
                 {
-                    Directory.CreateDirectory(uploadsFolder);
+                    search = search.ToLower();
+                    allBooksQuery = allBooksQuery.Where(s =>
+                        s.TenSach.ToLower().Contains(search) ||
+                        (s.TacGia != null && s.TacGia.TenTG.ToLower().Contains(search)) ||
+                        (s.NhaXuatBan != null && s.NhaXuatBan.TenNXB.ToLower().Contains(search)) ||
+                        (s.ChuDe != null && s.ChuDe.TenChuDe.ToLower().Contains(search)) ||
+                        s.NhaCungCap.ToLower().Contains(search)
+                    );
                 }
 
-                // Tạo tên file unique
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
+                var allBooks = await allBooksQuery.ToListAsync();
 
-                // Lưu file
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
+                // Tính toán thống kê
+                var totalBooks = allBooks.Count;
+                var availableBooks = allBooks.Count(s => s.SoLuong > 0);
+                var totalQuantity = allBooks.Sum(s => s.SoLuong);
+                var totalValue = allBooks.Sum(s => s.GiaBan * (decimal)s.SoLuong);
 
-                // Trả về đường dẫn tương đối
-                return $"/images/books/{fileName}";
+                // Phân trang
+                var pagedBooks = allBooks
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                // Truyền dữ liệu
+                ViewBag.TotalBooks = totalBooks;
+                ViewBag.AvailableBooks = availableBooks;
+                ViewBag.TotalQuantity = totalQuantity;
+                ViewBag.TotalValue = totalValue;
+                ViewBag.CurrentPage = page;
+                ViewBag.TotalPages = (int)Math.Ceiling(totalBooks / (double)pageSize);
+                ViewBag.Search = search;
+
+                return View(pagedBooks);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi khi lưu ảnh: {ex.Message}");
-                throw;
+                TempData["Error"] = $"Lỗi khi tải danh sách sách: {ex.Message}";
+                return View(new List<Sach>());
             }
         }
 
-        // GET: Quản lý sách
-        public async Task<IActionResult> QuanLySach()
-        {
-            var saches = await _context.Saches
-                .Include(s => s.TacGia)
-                .Include(s => s.NhaXuatBan)
-                .Include(s => s.ChuDe)
-                .ToListAsync();
-            return View(saches);
-        }
         // GET: Xóa sách
         [HttpGet]
         public async Task<IActionResult> XoaSach(int id)
@@ -375,7 +416,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 // Xóa ảnh bìa chính
                 if (!string.IsNullOrEmpty(sach.AnhBiaChinh))
                 {
-                    var mainImagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", sach.AnhBiaChinh.TrimStart('/'));
+                    var mainImagePath = Path.Combine(_environment.WebRootPath, "img", "product", sach.AnhBiaChinh);
                     if (System.IO.File.Exists(mainImagePath))
                     {
                         System.IO.File.Delete(mainImagePath);
@@ -425,7 +466,5 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 return RedirectToAction("QuanLySach");
             }
         }
-
     }
-
 }

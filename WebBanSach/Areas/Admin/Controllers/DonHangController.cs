@@ -1,15 +1,18 @@
 ﻿using Media.Models;
+using Media.Models.ViewModels;
 using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using OfficeOpenXml;
 
-namespace Media.Controllers
+namespace ProjectCuoiKi.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class DonHangController : Controller
@@ -50,7 +53,7 @@ namespace Media.Controllers
                         dh.TenNguoiNhan.Contains(search));
                 }
 
-                // Status filter - Chỉ còn 2 trạng thái thanh toán
+                // Status filter
                 if (!string.IsNullOrEmpty(status))
                 {
                     switch (status.ToLower())
@@ -100,55 +103,72 @@ namespace Media.Controllers
         // GET: DonHang/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var donHang = await _context.DonHangs
                 .Include(dh => dh.KhachHang)
                 .Include(dh => dh.NhanVien)
                 .Include(dh => dh.VanChuyen)
+                .Include(dh => dh.DiaChiNhanHang)
+                .Include(dh => dh.HoaDon)
                 .Include(dh => dh.ChiTietDonHangs)
-                .ThenInclude(ct => ct.Sach)
+                    .ThenInclude(ct => ct.Sach)
                 .FirstOrDefaultAsync(m => m.MaDonHang == id);
 
-            if (donHang == null)
-            {
-                return NotFound();
-            }
+            if (donHang == null) return NotFound();
 
             return View(donHang);
         }
 
-        // GET: DonHang/Edit/5 - ĐÃ SỬA
+
+        // GET: DonHang/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            Console.WriteLine($"=== DEBUG: Edit called with id = {id} ===");
+
             if (id == null)
             {
+                Console.WriteLine("ID is null");
                 return NotFound();
             }
 
-            var donHang = await _context.DonHangs
-                .Include(dh => dh.ChiTietDonHangs)
-                .ThenInclude(ct => ct.Sach)
-                .Include(dh => dh.KhachHang)
-                .Include(dh => dh.NhanVien)
-                .FirstOrDefaultAsync(m => m.MaDonHang == id);
-
-            if (donHang == null)
+            try
             {
-                return NotFound();
+                // Debug: Kiểm tra xem có đơn hàng nào trong DB không
+                var allOrders = await _context.DonHangs.Select(dh => dh.MaDonHang).ToListAsync();
+                Console.WriteLine($"All order IDs in DB: {string.Join(", ", allOrders)}");
+                Console.WriteLine($"Looking for order with ID: {id}");
+
+                var donHang = await _context.DonHangs
+                    .Include(dh => dh.ChiTietDonHangs)
+                        .ThenInclude(ct => ct.Sach)
+                    .Include(dh => dh.KhachHang)
+                    .Include(dh => dh.NhanVien)
+                    .Include(dh => dh.VanChuyen)
+                    .Include(dh => dh.DiaChiNhanHang)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(m => m.MaDonHang == id);
+
+                if (donHang == null)
+                {
+                    Console.WriteLine($"Order with ID {id} NOT FOUND in database");
+                    TempData["Error"] = $"Không tìm thấy đơn hàng #{id}";
+                    return RedirectToAction(nameof(QuanLyDonHang));
+                }
+
+                Console.WriteLine($"Order found: #{donHang.MaDonHang}, Customer: {donHang.KhachHang?.HoTen}");
+                LoadViewData();
+                return View(donHang);
             }
-
-            // Thêm danh sách sách cho dropdown
-            ViewBag.Saches = new SelectList(_context.Saches, "MaSach", "TenSach");
-
-            LoadViewData();
-            return View(donHang);
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in Edit: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                TempData["Error"] = $"Lỗi: {ex.Message}";
+                return RedirectToAction(nameof(QuanLyDonHang));
+            }
         }
-
-        // POST: DonHang/Edit/5 - ĐÃ SỬA HOÀN TOÀN
+        // POST: DonHang/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DonHang donHang)
@@ -159,34 +179,12 @@ namespace Media.Controllers
                 return RedirectToAction(nameof(QuanLyDonHang));
             }
 
-            // DEBUG: Kiểm tra lỗi ModelState
-            if (!ModelState.IsValid)
-            {
-                // Lấy tất cả lỗi để debug
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .ToList();
-
-                var errorMessage = "Dữ liệu không hợp lệ! Lỗi: " + string.Join("; ", errors);
-                TempData["Error"] = errorMessage;
-
-                Console.WriteLine("=== MODEL STATE ERRORS ===");
-                foreach (var error in errors)
-                {
-                    Console.WriteLine(error);
-                }
-
-                ViewBag.Saches = new SelectList(_context.Saches, "MaSach", "TenSach");
-                LoadViewData();
-                return View(donHang);
-            }
-
             try
             {
                 // Lấy đơn hàng hiện tại từ database
                 var existingDonHang = await _context.DonHangs
                     .Include(dh => dh.ChiTietDonHangs)
+                    .Include(dh => dh.VanChuyen)
                     .FirstOrDefaultAsync(dh => dh.MaDonHang == id);
 
                 if (existingDonHang == null)
@@ -195,8 +193,7 @@ namespace Media.Controllers
                     return RedirectToAction(nameof(QuanLyDonHang));
                 }
 
-                // Cập nhật thông tin cơ bản - GIỮ NGUYÊN ENUM
-                existingDonHang.MaKhachHang = donHang.MaKhachHang;
+                // Chỉ cập nhật các thông tin cho phép
                 existingDonHang.MaNhanVien = donHang.MaNhanVien;
                 existingDonHang.TenNguoiNhan = donHang.TenNguoiNhan;
                 existingDonHang.SoDienThoaiNhan = donHang.SoDienThoaiNhan;
@@ -204,15 +201,12 @@ namespace Media.Controllers
                 existingDonHang.PhuongXa = donHang.PhuongXa;
                 existingDonHang.QuanHuyen = donHang.QuanHuyen;
                 existingDonHang.TinhThanh = donHang.TinhThanh;
-
-                // QUAN TRỌNG: Giữ nguyên enum, không cần chuyển đổi
                 existingDonHang.HinhThucThanhToan = donHang.HinhThucThanhToan;
-
                 existingDonHang.DaThanhToan = donHang.DaThanhToan;
                 existingDonHang.GhiChu = donHang.GhiChu;
-                existingDonHang.NgayCapNhat = DateTime.Now;
+                existingDonHang.NgayCapNhat = DateTime.Now; // CẬP NHẬT NGÀY SỬA
 
-                // KHÔNG xử lý chi tiết đơn hàng ở đây nữa - sẽ dùng AJAX
+                // Cập nhật tổng tiền từ chi tiết đơn hàng
                 existingDonHang.Total = existingDonHang.ChiTietDonHangs?.Sum(ct => ct.ThanhTien) ?? 0;
 
                 _context.Update(existingDonHang);
@@ -221,26 +215,134 @@ namespace Media.Controllers
                 TempData["Success"] = "Cập nhật đơn hàng thành công!";
                 return RedirectToAction(nameof(QuanLyDonHang));
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DonHangExists(donHang.MaDonHang))
-                {
-                    TempData["Error"] = "Đơn hàng không tồn tại!";
-                    return RedirectToAction(nameof(QuanLyDonHang));
-                }
-                else
-                {
-                    throw;
-                }
-            }
             catch (Exception ex)
             {
                 TempData["Error"] = "Lỗi khi cập nhật đơn hàng: " + ex.Message;
-                ViewBag.Saches = new SelectList(_context.Saches, "MaSach", "TenSach");
                 LoadViewData();
                 return View(donHang);
             }
         }
+
+        // GET: Lấy thông tin vận chuyển
+        [HttpGet]
+        public async Task<IActionResult> GetShippingInfo(int id)
+        {
+            try
+            {
+                var vanChuyen = await _context.VanChuyens
+                    .FirstOrDefaultAsync(vc => vc.MaDonHang == id);
+
+                if (vanChuyen == null)
+                {
+                    return Json(new { exists = false, message = "Chưa có thông tin vận chuyển" });
+                }
+
+                return Json(new
+                {
+                    exists = true,
+                    donViVanChuyen = vanChuyen.DonViVanChuyen,
+                    maVanDon = vanChuyen.MaVanDon,
+                    trangThaiGiaoHang = vanChuyen.TrangThaiGiaoHang.ToString()
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi: " + ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateShippingStatus([FromBody] CapNhatTrangThaiGiaoHangVM data)
+        {
+            try
+            {
+                Console.WriteLine($"=== DEBUG: Received data - ID: {data?.id}, TrangThai: {data?.trangThai} ===");
+
+                if (data == null)
+                {
+                    return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
+                }
+
+                // Lấy dữ liệu từ body JSON
+                int id = data.id;
+                string trangThaiString = data.trangThai; // NHẬN string từ client
+
+                Console.WriteLine($"Processing - ID: {id}, TrangThaiString: {trangThaiString}");
+
+                // Parse string sang enum
+                if (!Enum.TryParse<TrangThaiGiaoHang>(trangThaiString, out TrangThaiGiaoHang trangThaiEnum))
+                {
+                    Console.WriteLine($"Failed to parse TrangThai: {trangThaiString}");
+                    return Json(new { success = false, message = $"Trạng thái không hợp lệ: {trangThaiString}" });
+                }
+
+                Console.WriteLine($"Parsed enum: {trangThaiEnum}");
+
+                // Tìm đơn hàng
+                var donHang = await _context.DonHangs
+                    .Include(dh => dh.VanChuyen)
+                    .FirstOrDefaultAsync(dh => dh.MaDonHang == id);
+
+                if (donHang == null)
+                {
+                    Console.WriteLine($"Order #{id} not found");
+                    return Json(new { success = false, message = $"Không tìm thấy đơn hàng #{id}" });
+                }
+
+                Console.WriteLine($"Found order: #{donHang.MaDonHang}");
+
+                // Nếu chưa có vận chuyển thì tạo mới
+                if (donHang.VanChuyen == null)
+                {
+                    Console.WriteLine("Creating new VanChuyen record");
+                    donHang.VanChuyen = new VanChuyen
+                    {
+                        MaDonHang = id,
+                        DonViVanChuyen = "Đang cập nhật",
+                        MaVanDon = $"VC-{id}-{DateTime.Now:yyyyMMddHHmmss}",
+                        PhiVanChuyen = 0,
+                        TrangThaiGiaoHang = trangThaiEnum
+                    };
+
+                    _context.VanChuyens.Add(donHang.VanChuyen);
+                }
+                else
+                {
+                    Console.WriteLine($"Updating existing VanChuyen from {donHang.VanChuyen.TrangThaiGiaoHang} to {trangThaiEnum}");
+                    // Cập nhật trạng thái
+                    donHang.VanChuyen.TrangThaiGiaoHang = trangThaiEnum;
+                    _context.VanChuyens.Update(donHang.VanChuyen);
+                }
+
+                // Kiểm tra xem có thay đổi không
+                Console.WriteLine($"Has changes: {_context.ChangeTracker.HasChanges()}");
+
+                var result = await _context.SaveChangesAsync();
+                Console.WriteLine($"SaveChanges result: {result} rows affected");
+
+                if (result > 0)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Đã cập nhật trạng thái vận chuyển!",
+                        newStatus = trangThaiEnum.ToString()
+                    });
+                }
+                else
+                {
+                    return Json(new { success = false, message = "Không có thay đổi nào được lưu!" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"=== EXCEPTION: {ex.Message} ===");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                return Json(new { success = false, message = $"Lỗi server: {ex.Message}" });
+            }
+        }
+
+
 
         // GET: DonHang/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -300,11 +402,6 @@ namespace Media.Controllers
                 await _context.SaveChangesAsync();
 
                 TempData["Success"] = $"Đã xóa đơn hàng #{id} thành công!";
-                return RedirectToAction(nameof(QuanLyDonHang));
-            }
-            catch (DbUpdateException dbEx)
-            {
-                TempData["Error"] = $"Lỗi database: {dbEx.InnerException?.Message ?? dbEx.Message}";
                 return RedirectToAction(nameof(QuanLyDonHang));
             }
             catch (Exception ex)
@@ -386,13 +483,14 @@ namespace Media.Controllers
 
         // THÊM MỚI: Action để xóa chi tiết đơn hàng
         [HttpPost]
-        public async Task<IActionResult> RemoveChiTietDonHang(int id)
+        public async Task<IActionResult> RemoveChiTietDonHang(int maDonHang, int maSach)
         {
             try
             {
+                // Tìm chi tiết bằng cả MaDonHang và MaSach
                 var chiTiet = await _context.ChiTietDonHangs
                     .Include(ct => ct.DonHang)
-                    .FirstOrDefaultAsync(ct => ct.MaDonHang == id);
+                    .FirstOrDefaultAsync(ct => ct.MaDonHang == maDonHang && ct.MaSach == maSach);
 
                 if (chiTiet != null)
                 {
@@ -400,7 +498,7 @@ namespace Media.Controllers
                     await _context.SaveChangesAsync();
 
                     // Cập nhật tổng tiền đơn hàng
-                    await UpdateTotalDonHang(chiTiet.MaDonHang);
+                    await UpdateTotalDonHang(maDonHang);
 
                     return Json(new { success = true, message = "Xóa sách thành công!" });
                 }
@@ -432,12 +530,27 @@ namespace Media.Controllers
                 ViewBag.KhachHangs = new SelectList(_context.KhachHangs, "MaKhachHang", "HoTen");
                 ViewBag.NhanViens = new SelectList(_context.NhanViens, "MaNhanVien", "HoTen");
 
-                // SỬA LẠI: Sử dụng giá trị string của enum thay vì số
+                // QUAN TRỌNG: Thêm dòng này để fix lỗi null
+                ViewBag.Saches = new SelectList(_context.Saches, "MaSach", "TenSach");
+
+                // SelectList cho hình thức thanh toán
                 ViewBag.HinhThucThanhToan = new SelectList(
                     Enum.GetValues(typeof(HinhThucThanhToan))
                         .Cast<HinhThucThanhToan>()
                         .Select(e => new {
-                            Value = e.ToString(), // SỬA: e.ToString() thay vì (int)e
+                            Value = e.ToString(),
+                            Text = GetEnumDescription(e)
+                        }),
+                    "Value",
+                    "Text"
+                );
+
+                // SelectList cho trạng thái vận chuyển
+                ViewBag.TrangThaiGiaoHang = new SelectList(
+                    Enum.GetValues(typeof(TrangThaiGiaoHang))
+                        .Cast<TrangThaiGiaoHang>()
+                        .Select(e => new {
+                            Value = e.ToString(),
                             Text = GetEnumDescription(e)
                         }),
                     "Value",
@@ -450,7 +563,6 @@ namespace Media.Controllers
             }
         }
 
-        // THÊM MỚI: Hàm lấy description từ enum
         private string GetEnumDescription(Enum value)
         {
             var field = value.GetType().GetField(value.ToString());
@@ -472,5 +584,111 @@ namespace Media.Controllers
                 await _context.SaveChangesAsync();
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> CheckOrderExists(int id)
+        {
+            try
+            {
+                var exists = await _context.DonHangs.AnyAsync(dh => dh.MaDonHang == id);
+                return Json(new { exists = exists, id = id });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { exists = false, error = ex.Message });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ExportToExcel(string search = "", string status = "")
+        {
+            try
+            {
+                // Lấy dữ liệu đơn hàng
+                var query = _context.DonHangs
+                    .Include(dh => dh.KhachHang)
+                    .Include(dh => dh.NhanVien)
+                    .Include(dh => dh.VanChuyen)
+                    .Include(dh => dh.ChiTietDonHangs)
+                        .ThenInclude(ct => ct.Sach)
+                    .AsQueryable();
+
+                // Filter search
+                if (!string.IsNullOrEmpty(search))
+                {
+                    query = query.Where(dh =>
+                        dh.MaDonHang.ToString().Contains(search) ||
+                        dh.KhachHang.HoTen.Contains(search) ||
+                        dh.SoDienThoaiNhan.Contains(search) ||
+                        dh.TenNguoiNhan.Contains(search));
+                }
+
+                // Filter status
+                if (!string.IsNullOrEmpty(status))
+                {
+                    switch (status.ToLower())
+                    {
+                        case "paid":
+                            query = query.Where(dh => dh.DaThanhToan);
+                            break;
+                        case "pending":
+                            query = query.Where(dh => !dh.DaThanhToan);
+                            break;
+                    }
+                }
+
+                var donHangs = await query.OrderByDescending(dh => dh.NgayTao).ToListAsync();
+
+                // Tạo Excel
+                using var package = new ExcelPackage();
+                var worksheet = package.Workbook.Worksheets.Add("Đơn hàng");
+
+                // Header
+                var headers = new[]
+                {
+            "Mã đơn hàng", "Khách hàng", "Nhân viên", "Tên người nhận",
+            "Số điện thoại", "Địa chỉ", "Tổng tiền", "Ngày tạo",
+            "Thanh toán", "Trạng thái vận chuyển"
+        };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    worksheet.Cells[1, i + 1].Value = headers[i];
+                    worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+                }
+
+                // Data
+                int row = 2;
+                foreach (var dh in donHangs)
+                {
+                    worksheet.Cells[row, 1].Value = dh.MaDonHang;
+                    worksheet.Cells[row, 2].Value = dh.KhachHang?.HoTen;
+                    worksheet.Cells[row, 3].Value = dh.NhanVien?.HoTen;
+                    worksheet.Cells[row, 4].Value = dh.TenNguoiNhan;
+                    worksheet.Cells[row, 5].Value = dh.SoDienThoaiNhan;
+                    worksheet.Cells[row, 6].Value = $"{dh.DiaChiChiTiet}, {dh.PhuongXa}, {dh.QuanHuyen}, {dh.TinhThanh}";
+                    worksheet.Cells[row, 7].Value = dh.Total;
+                    worksheet.Cells[row, 8].Value = dh.NgayTao.ToString("dd/MM/yyyy HH:mm");
+                    worksheet.Cells[row, 9].Value = dh.DaThanhToan ? "Đã thanh toán" : "Chờ thanh toán";
+                    worksheet.Cells[row, 10].Value = dh.VanChuyen?.TrangThaiGiaoHang.ToString() ?? "Chưa xử lý";
+
+                    row++;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                var fileBytes = package.GetAsByteArray();
+
+                return File(
+                    fileBytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    $"DanhSachDonHang_{DateTime.Now:yyyyMMddHHmmss}.xlsx"
+                );
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi khi xuất Excel: " + ex.Message });
+            }
+        }
+
+
     }
 }

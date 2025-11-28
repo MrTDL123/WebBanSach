@@ -2,541 +2,572 @@
 @{
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
     ViewBag.Title = "Quản lý Sach";
+
+    // Thêm biến phân trang
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    int totalBooks = ViewBag.TotalBooks ?? 0;
+    int availableBooks = ViewBag.AvailableBooks ?? 0;
+    int totalQuantity = ViewBag.TotalQuantity ?? 0;
+    decimal totalValue = ViewBag.TotalValue ?? 0;
+    int pageSize = 10;
+    int startBook = ((currentPage - 1) * pageSize) + 1;
+    int endBook = Math.Min(currentPage * pageSize, totalBooks);
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewBag.Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        /* 🔥 FIX FOCUS cho Bootstrap */
-        .btn:focus,
-        .btn:active:focus,
-        .btn.active:focus,
-        .btn.focus,
-        .btn:active.focus,
-        .btn.active.focus {
-            outline: none !important;
-            box-shadow: none !important;
-        }
+<div class="min-h-screen bg-gradient-to-br from-gray-50/50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        /* Fix cho tất cả button và link có class btn */
-        .btn {
-            outline: none !important;
-        }
-
-        /* Fix riêng cho các nút trong action-buttons */
-        .action-buttons .btn:focus {
-            background-color: transparent !important;
-            border-color: currentColor !important;
-        }
-
-        /* Giữ nguyên các style cũ */
-        .book-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            border: none;
-            border-radius: 12px;
-        }
-
-            .book-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            }
-
-        .book-image {
-            height: 180px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .price-tag {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .quantity-badge {
-            background: #6c757d;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-        }
-
-        .action-buttons .btn {
-            border-radius: 8px;
-            padding: 6px 12px;
-        }
-
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-        }
-
-        .table-image {
-            height: 60px;
-            width: 45px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .table th {
-            border-bottom: 2px solid #dee2e6;
-            font-weight: 600;
-        }
-
-        .category-management {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .category-card {
-            transition: all 0.3s ease;
-            border: none;
-            border-radius: 10px;
-        }
-
-            .category-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            }
-
-        /* Style mới cho tìm kiếm */
-        .search-container {
-            position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
-
-        .search-input {
-            padding-left: 40px;
-        }
-
-        .search-results-info {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid py-4">
         <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 fw-bold text-primary mb-1">
-                            <i class="fas fa-book me-2"></i>Quản lý sách
-                        </h1>
-                        <p class="text-muted mb-0">Quản lý toàn bộ sách và danh mục trong hệ thống</p>
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl">
+                        <i class='bx bx-book text-2xl text-white'></i>
                     </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Quản Lý Sách
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Quản lý và theo dõi toàn bộ sách trong hệ thống</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                   
                 </div>
             </div>
         </div>
 
         <!-- Quản lý danh mục -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="category-management">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0 text-dark">
-                            <i class="fas fa-tags me-2"></i>Quản lý danh mục
-                        </h4>
-                    </div>
-                    <div class="row g-3">
-                        <!-- Quản lý Thể loại -->
-                        <div class="col-md-4">
-                            <div class="card category-card h-100">
-                                <div class="card-header bg-info text-white">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-bookmark me-2"></i>Thể loại
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <p class="text-muted mb-3">Quản lý các thể loại sách</p>
-                                    <div class="d-grid gap-2">
-                                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-outline-info">
-                                            <i class="fas fa-list me-2"></i>Danh sách thể loại
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quản lý Tác giả -->
-                        <div class="col-md-4">
-                            <div class="card category-card h-100">
-                                <div class="card-header bg-warning text-dark">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-user-edit me-2"></i>Tác giả
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <p class="text-muted mb-3">Quản lý thông tin tác giả</p>
-                                    <div class="d-grid gap-2">
-                                        <a href="@Url.Action("QuanLyTacGia", "Author", new { area = "Admin" })" class="btn btn-outline-warning">
-                                            <i class="fas fa-list me-2"></i>Danh sách tác giả
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quản lý NXB -->
-                        <div class="col-md-4">
-                            <div class="card category-card h-100">
-                                <div class="card-header bg-success text-white">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-building me-2"></i>Nhà xuất bản
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <p class="text-muted mb-3">Quản lý nhà xuất bản</p>
-                                    <div class="d-grid gap-2">
-                                        <a href="@Url.Action("QuanLyNXB", "NXB", new { area = "Admin" })" class="btn btn-outline-success">
-                                            <i class="fas fa-list me-2"></i>Danh sách NXB
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl shadow-xl border border-blue-100/50 dark:border-blue-800/30 p-6 mb-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl">
+                    <i class='bx bx-category text-xl text-white'></i>
                 </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quản lý danh mục</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Thể loại -->
+                <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })"
+                   class="group bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl shadow-lg border border-blue-200/50 dark:border-blue-700/50 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl mb-3">
+                                <i class='bx bx-bookmark text-2xl text-blue-600 dark:text-blue-400'></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Thể loại</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Quản lý các thể loại sách</p>
+                        </div>
+                        <i class='bx bx-chevron-right text-2xl text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transform group-hover:translate-x-1 transition-all'></i>
+                    </div>
+                </a>
+
+                <!-- Tác giả -->
+                <a href="@Url.Action("QuanLyTacGia", "Author", new { area = "Admin" })"
+                   class="group bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-amber-900/20 rounded-2xl shadow-lg border border-amber-200/50 dark:border-amber-700/50 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl mb-3">
+                                <i class='bx bx-user-circle text-2xl text-amber-600 dark:text-amber-400'></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Tác giả</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Quản lý thông tin tác giả</p>
+                        </div>
+                        <i class='bx bx-chevron-right text-2xl text-gray-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transform group-hover:translate-x-1 transition-all'></i>
+                    </div>
+                </a>
+
+                <!-- NXB -->
+                <a href="@Url.Action("QuanLyNXB", "NXB", new { area = "Admin" })"
+                   class="group bg-gradient-to-br from-white to-emerald-50 dark:from-gray-800 dark:to-emerald-900/20 rounded-2xl shadow-lg border border-emerald-200/50 dark:border-emerald-700/50 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl mb-3">
+                                <i class='bx bx-building text-2xl text-emerald-600 dark:text-emerald-400'></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Nhà xuất bản</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Quản lý nhà xuất bản</p>
+                        </div>
+                        <i class='bx bx-chevron-right text-2xl text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transform group-hover:translate-x-1 transition-all'></i>
+                    </div>
+                </a>
             </div>
         </div>
 
         <!-- Thống kê -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card stats-card border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-8">
-                                <h6 class="text-white-50 mb-1">Tổng số sách</h6>
-                                <h3 class="text-white mb-0">@Model.Count()</h3>
-                            </div>
-                            <div class="col-4 text-end">
-                                <i class="fas fa-book fa-2x text-white-50"></i>
-                            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Books - TỔNG SỐ ĐẦU SÁCH -->
+            <div class="group bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl shadow-xl border border-blue-100/50 dark:border-blue-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Tổng số sách</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@totalBooks</p>
+                        <div class="flex items-center mt-2">
+                            <i class='bx bx-book text-blue-500 mr-1'></i>
+                            <span class="text-sm text-blue-600 dark:text-blue-400 font-medium">@totalBooks đầu sách</span>
                         </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-book text-2xl text-white'></i>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-8">
-                                <h6 class="text-muted mb-1">Tổng số lượng</h6>
-                                <h3 class="text-dark mb-0">@Model.Sum(s => s.SoLuong)</h3>
-                            </div>
-                            <div class="col-4 text-end">
-                                <i class="fas fa-copy fa-2x text-warning"></i>
-                            </div>
+
+            <!-- Available Books - SÁCH CÒN HÀNG -->
+            <div class="group bg-gradient-to-br from-white to-green-50 dark:from-gray-800 dark:to-green-900/20 rounded-3xl shadow-xl border border-green-100/50 dark:border-green-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Sách có sẵn</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@availableBooks</p>
+                        <div class="flex items-center mt-2">
+                            @if (availableBooks == totalBooks)
+                            {
+                                <i class='bx bx-check-circle text-green-500 mr-1'></i>
+                                <span class="text-sm text-green-600 dark:text-green-400 font-medium">Tất cả đều có sẵn</span>
+                            }
+                            else
+                            {
+                                <i class='bx bx-time-five text-amber-500 mr-1'></i>
+                                <span class="text-sm text-amber-600 dark:text-amber-400 font-medium">@(totalBooks - availableBooks) sách hết hàng</span>
+                            }
                         </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-check-circle text-2xl text-white'></i>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-8">
-                                <h6 class="text-muted mb-1">Tổng giá trị</h6>
-                                <h3 class="text-dark mb-0">@String.Format("{0:N0} ₫", Model.Sum(s => s.GiaBan * (decimal)s.SoLuong))</h3>
-                            </div>
-                            <div class="col-4 text-end">
-                                <i class="fas fa-money-bill-wave fa-2x text-success"></i>
-                            </div>
+
+            <!-- Total Quantity - TỔNG SỐ LƯỢNG TỒN KHO -->
+            <div class="group bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-amber-900/20 rounded-3xl shadow-xl border border-amber-100/50 dark:border-amber-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Tổng số lượng</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@totalQuantity</p>
+                        <div class="flex items-center mt-2">
+                            <i class='bx bx-package text-amber-500 mr-1'></i>
+                            <span class="text-sm text-amber-600 dark:text-amber-400 font-medium">@availableBooks/@totalBooks sách còn hàng</span>
                         </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-cube text-2xl text-white'></i>
                     </div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-8">
-                                <h6 class="text-muted mb-1">Sách có sẵn</h6>
-                                <h3 class="text-dark mb-0">@Model.Count(s => s.SoLuong > 0)</h3>
-                            </div>
-                            <div class="col-4 text-end">
-                                <i class="fas fa-check-circle fa-2x text-info"></i>
-                            </div>
+
+            <!-- Total Value - TỔNG GIÁ TRỊ TỒN KHO -->
+            <div class="group bg-gradient-to-br from-white to-emerald-50 dark:from-gray-800 dark:to-emerald-900/20 rounded-3xl shadow-xl border border-emerald-100/50 dark:border-emerald-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Tổng giá trị</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@totalValue.ToString("N0") ₫</p>
+                        <div class="flex items-center mt-2">
+                            <i class='bx bx-trending-up text-emerald-500 mr-1'></i>
+                            <span class="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Giá trị tồn kho</span>
                         </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-dollar-circle text-2xl text-white'></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bảng danh sách sách -->
-        <div class="card border-0 shadow-lg">
-            <div class="card-header bg-white py-3 border-bottom">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 text-dark">
-                        <i class="fas fa-list me-2 text-primary"></i>Danh sách sách
-                    </h5>
-                    <div class="d-flex align-items-center">
-                        <!-- Thanh tìm kiếm -->
-                        <div class="search-container me-3">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Tìm kiếm sách..." />
+        <!-- Search and Actions -->
+        <div class="bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 rounded-3xl shadow-xl border border-purple-100/50 dark:border-purple-800/30 p-6 mb-6">
+            <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <div class="flex flex-col sm:flex-row gap-4 flex-1 w-full">
+                    <!-- Search -->
+                    <div class="relative flex-1 max-w-md">
+                        <i class='bx bx-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl'></i>
+                        <input type="text"
+                               id="searchInput"
+                               placeholder="Tìm kiếm sách, tác giả, NXB..."
+                               class="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all duration-300">
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <a href="@Url.Action("ThemSach", "Book", new { area = "Admin" })"
+                       class="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center">
+                        <i class='bx bx-plus mr-2'></i>
+                        Thêm Sách
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl shadow-2xl border border-blue-100/50 dark:border-blue-800/30 overflow-hidden">
+            <!-- Card Header -->
+            <div class="px-8 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-list-ul text-2xl text-white'></i>
                         </div>
-                        <div class="btn-group">
-                            <a href="@Url.Action("ThemSach", "Book", new { area = "Admin" })" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus me-2"></i>Thêm sách
-                            </a>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Danh Sách Sách</h2>
+                            <p class="text-blue-100 text-sm mt-1">Hiển thị @startBook-@endBook trong tổng số @totalBooks sách</p>
                         </div>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex items-center gap-3">
+                        <span class="bg-white/20 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-sort-alt-2 mr-2'></i>
+                            Sắp xếp
+                        </span>
                     </div>
                 </div>
             </div>
-            <div class="card-body p-0">
-                <!-- Thông tin kết quả tìm kiếm -->
-                <div class="px-4 py-2 border-bottom bg-light d-none" id="searchResultsInfo">
-                    <span class="search-results-info" id="searchResultsText"></span>
-                    <button class="btn btn-sm btn-outline-secondary ms-2" id="clearSearchBtn">
-                        <i class="fas fa-times me-1"></i>Xóa tìm kiếm
+
+            <!-- Search Results Info -->
+            <div class="px-8 py-3 border-b border-gray-200/30 dark:border-gray-700/30 bg-yellow-50 dark:bg-yellow-900/20 d-none" id="searchResultsInfo">
+                <div class="flex items-center justify-between">
+                    <span class="text-yellow-800 dark:text-yellow-200 text-sm" id="searchResultsText"></span>
+                    <button class="text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-200 text-sm flex items-center gap-1" id="clearSearchBtn">
+                        <i class='bx bx-x'></i>
+                        Xóa tìm kiếm
                     </button>
                 </div>
+            </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="booksTable">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4">#</th>
-                                <th>Ảnh bìa</th>
-                                <th>Tên sách</th>
-                                <th>Chủ đề</th>
-                                <th>Tác giả</th>
-                                <th>NXB</th>
-                                <th>Giá bán</th>
-                                <th>Số lượng</th>
-                                <th>Trạng thái</th>
-                                <th class="text-center pe-4">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="booksTableBody">
-                            @if (Model != null && Model.Any())
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full" id="booksTable">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 border-b-2 border-gray-200/50 dark:border-gray-700/50">
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">#</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Ảnh bìa</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Tên sách</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Chủ đề</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Tác giả</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">NXB</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Giá bán</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Số lượng</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Trạng thái</th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200/30 dark:divide-gray-700/30" id="booksTableBody">
+                        @if (Model != null && Model.Any())
+                        {
+                            int stt = startBook;
+                            foreach (var sach in Model)
                             {
-                                int stt = 1;
-                                foreach (var sach in Model)
-                                {
-                                    <tr class="book-card" data-search="@sach.TenSach.ToLower() @(sach.TacGia?.TenTG?.ToLower() ?? "") @(sach.NhaXuatBan?.TenNXB?.ToLower() ?? "") @(sach.ChuDe?.TenChuDe?.ToLower() ?? "")">
-                                        <td class="ps-4 fw-semibold">@stt</td>
-                                        <td>
+                                <tr class="group hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/10 dark:hover:to-purple-900/10 transition-all duration-300 transform hover:scale-[1.02]"
+                                    data-search="@sach.TenSach.ToLower() @(sach.TacGia?.TenTG?.ToLower() ?? "") @(sach.NhaXuatBan?.TenNXB?.ToLower() ?? "") @(sach.ChuDe?.TenChuDe?.ToLower() ?? "")">
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <div class="text-lg font-bold text-gray-900 dark:text-white">@stt</div>
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <div class="flex-shrink-0 w-16 h-20 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 overflow-hidden">
                                             @if (!string.IsNullOrEmpty(sach.AnhBiaChinh))
                                             {
-                                                <img src="~/uploads/@sach.AnhBiaChinh"
-                                                     alt="Ảnh bìa"
-                                                     class="table-image"
-                                                     onerror="this.src='https://via.placeholder.com/45x60?text=No+Image'" />
+                                                <img src="~/img/product/@sach.AnhBiaChinh"
+                                                     alt="Ảnh bìa @sach.TenSach"
+                                                     class="w-full h-full object-cover"
+                                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/64x80?text=No+Image';" />
                                             }
                                             else
                                             {
-                                                <img src="https://via.placeholder.com/45x60?text=No+Image"
-                                                     alt="No Image"
-                                                     class="table-image" />
+                                                <i class='bx bx-book text-2xl text-gray-400'></i>
                                             }
-                                        </td>
-                                        <td>
-                                            <div class="fw-bold text-dark">@sach.TenSach</div>
-                                            @if (!string.IsNullOrEmpty(sach.NhaCungCap))
-                                            {
-                                                <small class="text-muted">@sach.NhaCungCap</small>
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (sach.ChuDe != null)
-                                            {
-                                                <span class="badge bg-light text-dark border">@sach.ChuDe.TenChuDe</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-secondary">Chưa có</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (sach.TacGia != null)
-                                            {
-                                                <span class="text-dark">@sach.TacGia.TenTG</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">Chưa có</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            @if (sach.NhaXuatBan != null)
-                                            {
-                                                <span class="text-dark">@sach.NhaXuatBan.TenNXB</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="text-muted">Chưa có</span>
-                                            }
-                                        </td>
-                                        <td>
-                                            <span class="price-tag">@String.Format("{0:N0} ₫", sach.GiaBan)</span>
-                                        </td>
-                                        <td>
-                                            <span class="quantity-badge">@sach.SoLuong</span>
-                                        </td>
-                                        <td>
-                                            @if (sach.SoLuong > 0)
-                                            {
-                                                <span class="badge bg-success">
-                                                    <i class="fas fa-check me-1"></i>Còn hàng
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-danger">
-                                                    <i class="fas fa-times me-1"></i>Hết hàng
-                                                </span>
-                                            }
-                                        </td>
-                                        <td class="text-center pe-4 action-buttons">
-                                            <div class="btn-group" role="group">
-                                                <a class="btn btn-outline-primary btn-sm"
-                                                   href="@Url.Action("SuaSach", "Book", new { area = "Admin", id = sach.MaSach })"
-                                                   data-bs-toggle="tooltip"
-                                                   title="Sửa thông tin">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a class="btn btn-outline-danger btn-sm"
-                                                   href="@Url.Action("XoaSach", "Book", new { area = "Admin", id = sach.MaSach })"
-                                                   onclick="return confirm('Bạn có chắc muốn xóa sách \'@sach.TenSach\'?');"
-                                                   data-bs-toggle="tooltip"
-                                                   title="Xóa sách">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6">
+                                        <div class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                            @sach.TenSach
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(sach.NhaCungCap))
+                                        {
+                                            <div class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+                                                <i class='bx bx-store'></i>
+                                                @sach.NhaCungCap
                                             </div>
-                                        </td>
-                                    </tr>
-                                    stt++;
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="10" class="text-center py-5">
-                                        <div class="text-muted">
-                                            <i class="fas fa-book fa-3x mb-3"></i>
-                                            <h5>Chưa có sách nào trong hệ thống</h5>
-                                            <p class="mb-0">Hãy thêm sách mới để bắt đầu quản lý</p>
-                                            <a href="@Url.Action("ThemSach", "Book", new { area = "Admin" })" class="btn btn-primary mt-3">
-                                                <i class="fas fa-plus me-2"></i>Thêm sách đầu tiên
+                                        }
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        @if (sach.ChuDe != null)
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
+                                                @sach.ChuDe.TenChuDe
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                                                Chưa có
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <div class="text-base font-semibold text-gray-900 dark:text-white">
+                                            @(sach.TacGia?.TenTG ?? "Chưa có")
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <div class="text-base font-semibold text-gray-900 dark:text-white">
+                                            @(sach.NhaXuatBan?.TenNXB ?? "Chưa có")
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <div class="text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                            @String.Format("{0:N0} ₫", sach.GiaBan)
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
+                                            @sach.SoLuong
+                                        </span>
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        @if (sach.SoLuong > 0)
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg">
+                                                <i class='bx bx-check-circle mr-1'></i>
+                                                Còn hàng
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg">
+                                                <i class='bx bx-x-circle mr-1'></i>
+                                                Hết hàng
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+                                            <!-- Edit -->
+                                            <a href="@Url.Action("SuaSach", "Book", new { area = "Admin", id = sach.MaSach })"
+                                               class="inline-flex items-center p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-2xl transition-all duration-300 hover:scale-110 hover:shadow-lg group/action"
+                                               title="Sửa thông tin">
+                                                <i class='bx bx-edit text-xl group-hover/action:scale-110 transition-transform'></i>
+                                            </a>
+
+                                            <!-- Delete -->
+                                            <a href="@Url.Action("XoaSach", "Book", new { area = "Admin", id = sach.MaSach })"
+                                               class="inline-flex items-center p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all duration-300 hover:scale-110 hover:shadow-lg group/action"
+                                               title="Xóa sách"
+                                               onclick="return confirm('Bạn có chắc muốn xóa sách \'@sach.TenSach\'?');">
+                                                <i class='bx bx-trash text-xl group-hover/action:scale-110 transition-transform'></i>
+                                            </a>
+
+                                            <!-- Details -->
+                                            <a href="@Url.Action("ChiTietSach", "Book", new { area = "Admin", id = sach.MaSach })"
+                                               class="inline-flex items-center p-3 text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-2xl transition-all duration-300 hover:scale-110 hover:shadow-lg group/action"
+                                               title="Xem chi tiết">
+                                                <i class='bx bx-show text-xl group-hover/action:scale-110 transition-transform'></i>
                                             </a>
                                         </div>
                                     </td>
                                 </tr>
+                                stt++;
                             }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="10" class="px-8 py-12 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class='bx bx-book text-6xl text-gray-400 mb-4'></i>
+                                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Không có sách nào</h3>
+                                        <p class="text-gray-500 dark:text-gray-400 mb-4">Hãy thêm sách mới để bắt đầu quản lý</p>
+                                        <a href="@Url.Action("ThemSach", "Book", new { area = "Admin" })"
+                                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                                            <i class='bx bx-plus mr-2'></i>
+                                            Thêm sách đầu tiên
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-        </div>
 
-        <!-- Footer thông tin -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="text-center text-muted">
-                    <small>
-                        <i class="fas fa-info-circle me-1"></i>
-                        Hiển thị @Model.Count() sách •
-                        Cập nhật lúc: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
-                    </small>
+            <!-- Phân trang -->
+            @if (totalPages > 1)
+            {
+                <div class="px-8 py-6 border-t-2 border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/10">
+                    <div class="flex flex-col sm:flex-row items-center justify-between">
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-0">
+                            Hiển thị <span class="font-bold text-gray-900 dark:text-white">@startBook-@endBook</span> trong tổng số <span class="font-bold text-gray-900 dark:text-white">@totalBooks</span> sách
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <!-- Nút Previous -->
+                            @if (currentPage > 1)
+                            {
+                                <a href="@Url.Action("QuanLySach", new { page = currentPage - 1 })"
+                                   class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center group">
+                                    <i class='bx bx-chevron-left text-xl group-hover:-translate-x-1 transition-transform'></i>
+                                    <span class="ml-2">Trước</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 rounded-2xl flex items-center cursor-not-allowed">
+                                    <i class='bx bx-chevron-left text-xl'></i>
+                                    <span class="ml-2">Trước</span>
+                                </span>
+                            }
+
+                            <!-- Các nút trang -->
+                            @{
+                                int startPage = Math.Max(1, currentPage - 2);
+                                int endPage = Math.Min(totalPages, currentPage + 2);
+                            }
+
+                            <!-- Trang đầu -->
+                            @if (startPage > 1)
+                            {
+                                <a href="@Url.Action("QuanLySach", new { page = 1 })"
+                                   class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                                    1
+                                </a>
+                                @if (startPage > 2)
+                                {
+                                    <span class="px-2 text-gray-500">...</span>
+                                }
+                            }
+
+                            <!-- Các trang giữa -->
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                if (i == currentPage)
+                                {
+                                    <span class="px-4 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl font-bold shadow-lg">@i</span>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("QuanLySach", new { page = i })"
+                                       class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">@i</a>
+                                }
+                            }
+
+                            <!-- Trang cuối -->
+                            @if (endPage < totalPages)
+                            {
+                                @if (endPage < totalPages - 1)
+                                {
+                                    <span class="px-2 text-gray-500">...</span>
+                                }
+                                <a href="@Url.Action("QuanLySach", new { page = totalPages })"
+                                   class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">@totalPages</a>
+                            }
+
+                            <!-- Nút Next -->
+                            @if (currentPage < totalPages)
+                            {
+                                <a href="@Url.Action("QuanLySach", new { page = currentPage + 1 })"
+                                   class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center group">
+                                    <span class="mr-2">Tiếp</span>
+                                    <i class='bx bx-chevron-right text-xl group-hover:translate-x-1 transition-transform'></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500 rounded-2xl flex items-center cursor-not-allowed">
+                                    <span class="mr-2">Tiếp</span>
+                                    <i class='bx bx-chevron-right text-xl'></i>
+                                </span>
+                            }
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Khởi tạo tooltip
-        document.addEventListener('DOMContentLoaded', function () {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
+<script>
+    // Khởi tạo tooltip
+    document.addEventListener('DOMContentLoaded', function () {
+        // Tìm kiếm sách
+        const searchInput = document.getElementById('searchInput');
+        const booksTableBody = document.getElementById('booksTableBody');
+        const searchResultsInfo = document.getElementById('searchResultsInfo');
+        const searchResultsText = document.getElementById('searchResultsText');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const originalRows = Array.from(booksTableBody.querySelectorAll('tr'));
 
-            // Tìm kiếm sách
-            const searchInput = document.getElementById('searchInput');
-            const booksTableBody = document.getElementById('booksTableBody');
-            const searchResultsInfo = document.getElementById('searchResultsInfo');
-            const searchResultsText = document.getElementById('searchResultsText');
-            const clearSearchBtn = document.getElementById('clearSearchBtn');
-            const originalRows = Array.from(booksTableBody.querySelectorAll('tr'));
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
 
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-
-                if (searchTerm === '') {
-                    // Hiển thị tất cả sách
-                    originalRows.forEach(row => {
-                        row.style.display = '';
-                    });
-                    searchResultsInfo.classList.add('d-none');
-                    updateRowNumbers();
-                    return;
-                }
-
-                // Lọc sách theo từ khóa
-                let matchCount = 0;
+            if (searchTerm === '') {
+                // Hiển thị tất cả sách
                 originalRows.forEach(row => {
-                    const searchData = row.getAttribute('data-search');
-                    if (searchData && searchData.includes(searchTerm)) {
-                        row.style.display = '';
-                        matchCount++;
-                    } else {
-                        row.style.display = 'none';
-                    }
+                    row.style.display = '';
                 });
-
-                // Hiển thị thông tin kết quả tìm kiếm
-                if (matchCount > 0) {
-                    searchResultsText.textContent = `Tìm thấy ${matchCount} kết quả cho "${searchTerm}"`;
-                    searchResultsInfo.classList.remove('d-none');
-                } else {
-                    searchResultsText.textContent = `Không tìm thấy kết quả nào cho "${searchTerm}"`;
-                    searchResultsInfo.classList.remove('d-none');
-                }
-
+                searchResultsInfo.classList.add('d-none');
                 updateRowNumbers();
-            });
-
-            // Xóa tìm kiếm
-            clearSearchBtn.addEventListener('click', function() {
-                searchInput.value = '';
-                searchInput.dispatchEvent(new Event('input'));
-            });
-
-            // Cập nhật số thứ tự
-            function updateRowNumbers() {
-                const visibleRows = Array.from(booksTableBody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
-                visibleRows.forEach((row, index) => {
-                    const td = row.querySelector('td:first-child');
-                    if (td) {
-                        td.textContent = index + 1;
-                    }
-                });
+                return;
             }
+
+            // Lọc sách theo từ khóa
+            let matchCount = 0;
+            originalRows.forEach(row => {
+                const searchData = row.getAttribute('data-search');
+                if (searchData && searchData.includes(searchTerm)) {
+                    row.style.display = '';
+                    matchCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Hiển thị thông tin kết quả tìm kiếm
+            if (matchCount > 0) {
+                searchResultsText.textContent = `Tìm thấy ${matchCount} kết quả cho "${searchTerm}"`;
+                searchResultsInfo.classList.remove('d-none');
+            } else {
+                searchResultsText.textContent = `Không tìm thấy kết quả nào cho "${searchTerm}"`;
+                searchResultsInfo.classList.remove('d-none');
+            }
+
+            updateRowNumbers();
         });
-    </script>
-</body>
-</html>
+
+        // Xóa tìm kiếm
+        clearSearchBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+        });
+
+        // Cập nhật số thứ tự
+        function updateRowNumbers() {
+            const visibleRows = Array.from(booksTableBody.querySelectorAll('tr')).filter(row => row.style.display !== 'none');
+            visibleRows.forEach((row, index) => {
+                const td = row.querySelector('td:first-child');
+                if (td) {
+                    td.textContent = index + 1;
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .d-none {
+        display: none !important;
+    }
+
+    /* Custom scrollbar */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        border-radius: 10px;
+    }
+
+        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+        }
+</style>

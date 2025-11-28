@@ -4,512 +4,243 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewBag.Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        /* 🔥 FIX FOCUS cho Bootstrap */
-        .btn:focus,
-        .btn:active:focus,
-        .btn.active:focus,
-        .btn.focus,
-        .btn:active.focus,
-        .btn.active.focus {
-            outline: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Fix cho tất cả button và link có class btn */
-        .btn {
-            outline: none !important;
-        }
-
-        /* Main styles */
-        .edit-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            border: none;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-        }
-
-            .edit-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            }
-
-        .header-gradient {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            color: white;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .avatar-circle {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: 3px solid rgba(255,255,255,0.3);
-        }
-
-        .section-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .form-control, .form-select {
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-            .form-control:focus, .form-select:focus {
-                border-color: #667eea;
-                box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.1);
-                transform: translateY(-2px);
-            }
-
-        .form-control-lg {
-            padding: 1rem 1.25rem;
-            font-size: 1.1rem;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .required-star {
-            color: #e53e3e;
-            font-weight: bold;
-        }
-
-        .input-group-icon {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #667eea;
-            z-index: 5;
-        }
-
-        .input-group-icon .form-control {
-            padding-left: 45px;
-        }
-
-        .btn {
-            border-radius: 12px;
-            padding: 0.875rem 1.75rem;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-            .btn::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                transition: left 0.5s;
-            }
-
-            .btn:hover::before {
-                left: 100%;
-            }
-
-            .btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            color: #2d3748;
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            color: #2d3748;
-        }
-
-        .btn-outline-secondary {
-            border: 2px solid #cbd5e0;
-            color: #4a5568;
-            background: transparent;
-        }
-
-            .btn-outline-secondary:hover {
-                background: #4a5568;
-                color: white;
-                border-color: #4a5568;
-            }
-
-        .floating-label {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .floating-input {
-            padding-top: 1.5rem;
-        }
-
-        .floating-label .form-label {
-            position: absolute;
-            top: 0.5rem;
-            left: 1rem;
-            font-size: 0.8rem;
-            color: #667eea;
-            font-weight: 600;
-            background: white;
-            padding: 0 0.5rem;
-            z-index: 2;
-        }
-
-        .stats-badge {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .progress-ring {
-            width: 60px;
-            height: 60px;
-        }
-
-        .progress-ring-circle {
-            stroke: #667eea;
-            stroke-width: 4;
-            fill: transparent;
-            stroke-linecap: round;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-        }
-
-        .feature-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            margin-right: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .info-box {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-        }
-
-        .tooltip-custom {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid py-4">
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10 col-xl-8">
-                <!-- Header -->
-                <div class="card border-0 shadow-lg edit-card mb-4">
-                    <div class="card-header header-gradient py-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-4">
-                                        <i class="fas fa-user-edit"></i>
-                                    </div>
-                                    <div>
-                                        <h2 class="fw-bold mb-2">Chỉnh Sửa Nhân Viên</h2>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="stats-badge">NV@(Model.MaNhanVien.ToString("D4"))</span>
-                                            <span class="text-white-80">@Model.HoTen</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <div class="progress-ring">
-                                    <svg class="progress-ring" width="60" height="60">
-                                        <circle class="progress-ring-circle" stroke="#fff" stroke-width="3" fill="transparent" r="25" cx="30" cy="30" stroke-dasharray="157" stroke-dashoffset="78.5"></circle>
-                                    </svg>
-                                    <div class="text-white text-center mt-1">
-                                        <small>Đang chỉnh sửa</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Form Container -->
-                <div class="card border-0 shadow-lg edit-card">
-                    <div class="card-body p-4">
-                        <form asp-action="SuaNhanVien" method="post" id="editStaffForm">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" asp-for="MaNhanVien" />
-
-                            <!-- Thông tin cá nhân -->
-                            <div class="mb-5">
-                                <div class="section-header">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-user me-2"></i>Thông tin cá nhân
-                                    </h5>
-                                </div>
-                                <div class="row g-4">
-                                    <div class="col-12">
-                                        <div class="floating-label">
-                                            <label asp-for="HoTen" class="form-label">Họ và tên <span class="required-star">*</span></label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-signature input-icon"></i>
-                                                <input asp-for="HoTen" class="form-control form-control-lg floating-input" placeholder="Nhập họ và tên đầy đủ">
-                                            </div>
-                                            <span asp-validation-for="HoTen" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="floating-label">
-                                            <label asp-for="NgaySinh" class="form-label">Ngày sinh</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-calendar-day input-icon"></i>
-                                                <input asp-for="NgaySinh" type="date" class="form-control floating-input">
-                                            </div>
-                                            <span asp-validation-for="NgaySinh" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="floating-label">
-                                            <label asp-for="CCCD" class="form-label">CCCD</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-id-card input-icon"></i>
-                                                <input asp-for="CCCD" class="form-control floating-input" placeholder="Nhập số CCCD">
-                                            </div>
-                                            <span asp-validation-for="CCCD" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Thông tin liên hệ -->
-                            <div class="mb-5">
-                                <div class="section-header">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-address-card me-2"></i>Thông tin liên hệ
-                                    </h5>
-                                </div>
-                                <div class="row g-4">
-                                    <div class="col-12">
-                                        <div class="floating-label">
-                                            <label asp-for="DiaChi" class="form-label">Địa chỉ</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-map-marker-alt input-icon"></i>
-                                                <textarea asp-for="DiaChi" class="form-control floating-input" rows="3" placeholder="Nhập địa chỉ đầy đủ"></textarea>
-                                            </div>
-                                            <span asp-validation-for="DiaChi" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <div class="floating-label">
-                                            <label asp-for="QueQuan" class="form-label">Quê quán</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-home input-icon"></i>
-                                                <input asp-for="QueQuan" class="form-control floating-input" placeholder="Nhập quê quán">
-                                            </div>
-                                            <span asp-validation-for="QueQuan" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Thông tin công việc -->
-                            <div class="mb-5">
-                                <div class="section-header">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-briefcase me-2"></i>Thông tin công việc
-                                    </h5>
-                                </div>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <div class="floating-label">
-                                            <label asp-for="NgayVaoLam" class="form-label">Ngày vào làm</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-calendar-check input-icon"></i>
-                                                <input asp-for="NgayVaoLam" type="date" class="form-control floating-input">
-                                            </div>
-                                            <span asp-validation-for="NgayVaoLam" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="floating-label">
-                                            <label asp-for="BacLuong" class="form-label">Bậc lương</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-chart-line input-icon"></i>
-                                                <input asp-for="BacLuong" type="number" class="form-control floating-input" placeholder="Nhập bậc lương">
-                                            </div>
-                                            <span asp-validation-for="BacLuong" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-12">
-                                        <div class="floating-label">
-                                            <label asp-for="Luong" class="form-label">Lương cơ bản (VNĐ)</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-money-bill-wave input-icon"></i>
-                                                <input asp-for="Luong" type="number" step="100000" class="form-control floating-input" placeholder="Nhập mức lương">
-                                            </div>
-                                            <span asp-validation-for="Luong" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Info Box -->
-                            <div class="info-box">
-                                <div class="d-flex align-items-center">
-                                    <div class="feature-icon">
-                                        <i class="fas fa-lightbulb"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">Mẹo chỉnh sửa</h6>
-                                        <p class="mb-0 small opacity-90">Đảm bảo thông tin được cập nhật chính xác và đầy đủ trước khi lưu thay đổi.</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="d-flex gap-3 pt-4 border-top">
-                                <button type="submit" class="btn btn-warning flex-fill">
-                                    <i class="fas fa-save me-2"></i>Cập nhật thông tin
-                                </button>
-                                <a href="@Url.Action("QuanLyNguoiDung")" class="btn btn-outline-secondary flex-fill">
-                                    <i class="fas fa-times me-2"></i>Hủy bỏ
-                                </a>
-                                <a href="@Url.Action("ChiTietNhanVien", new { id = Model.MaNhanVien })" class="btn btn-info flex-fill">
-                                    <i class="fas fa-eye me-2"></i>Xem chi tiết
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Footer Info -->
-                <div class="text-center mt-4">
-                    <small class="text-muted">
-                        <i class="fas fa-info-circle me-1"></i>
-                        Chỉnh sửa thông tin nhân viên • Mã: NV@(Model.MaNhanVien.ToString("D4")) •
-                        Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
-                    </small>
-                </div>
-            </div>
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="space-y-2">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Chỉnh Sửa Nhân Viên
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 text-lg">Cập nhật thông tin nhân viên trong hệ thống</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-full text-sm font-bold">
+                NV@(Model.MaNhanVien.ToString("D4"))
+            </span>
+            <span class="text-gray-600 dark:text-gray-400">•</span>
+            <span class="text-gray-900 dark:text-white font-medium">@Model.HoTen</span>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('editStaffForm');
-            const submitBtn = form.querySelector('button[type="submit"]');
+    <!-- Alert Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="p-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl shadow-lg">
+            <div class="flex items-center gap-3">
+                <i class='bx bx-check-circle text-xl'></i>
+                <div class="flex-1">
+                    <strong>Thành công!</strong> @TempData["Success"]
+                </div>
+                <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-white/80 hover:text-white">
+                    <i class='bx bx-x text-xl'></i>
+                </button>
+            </div>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="p-4 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-2xl shadow-lg">
+            <div class="flex items-center gap-3">
+                <i class='bx bx-error text-xl'></i>
+                <div class="flex-1">
+                    <strong>Lỗi!</strong> @TempData["Error"]
+                </div>
+                <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-white/80 hover:text-white">
+                    <i class='bx bx-x text-xl'></i>
+                </button>
+            </div>
+        </div>
+    }
 
-            // Add floating label functionality
-            const floatingInputs = document.querySelectorAll('.floating-input');
-            floatingInputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.parentElement.classList.add('focused');
-                });
+    <!-- Main Form -->
+    <div class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl shadow-2xl border border-blue-100/50 dark:border-blue-800/30 overflow-hidden">
+        <!-- Form Header -->
+        <div class="px-6 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
+                    <i class='bx bx-edit text-xl text-white'></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Thông Tin Nhân Viên</h2>
+                    <p class="text-blue-100 text-sm">Cập nhật thông tin chi tiết nhân viên</p>
+                </div>
+            </div>
+        </div>
 
-                input.addEventListener('blur', function() {
-                    if (!this.value) {
-                        this.parentElement.parentElement.classList.remove('focused');
-                    }
-                });
+        <form asp-action="SuaNhanVien" method="post" id="editStaffForm" class="p-6 space-y-6">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="MaNhanVien" />
 
-                // Initialize on load
-                if (input.value) {
-                    input.parentElement.parentElement.classList.add('focused');
-                }
+            <!-- Thông tin cá nhân -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                    <i class='bx bx-user text-blue-500 text-xl'></i>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Thông tin cá nhân</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Họ tên -->
+                    <div class="space-y-2">
+                        <label asp-for="HoTen" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Họ và tên <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class='bx bx-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                            <input asp-for="HoTen" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300" placeholder="Nhập họ và tên đầy đủ">
+                        </div>
+                        <span asp-validation-for="HoTen" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <!-- Ngày sinh -->
+                    <div class="space-y-2">
+                        <label asp-for="NgaySinh" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ngày sinh</label>
+                        <div class="relative">
+                            <i class='bx bx-calendar absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                            <input asp-for="NgaySinh" type="date" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300">
+                        </div>
+                        <span asp-validation-for="NgaySinh" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <!-- CCCD -->
+                    <div class="space-y-2">
+                        <label asp-for="CCCD" class="block text-sm font-medium text-gray-700 dark:text-gray-300">CCCD</label>
+                        <div class="relative">
+                            <i class='bx bx-id-card absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                            <input asp-for="CCCD" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300" placeholder="Nhập số CCCD">
+                        </div>
+                        <span asp-validation-for="CCCD" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <!-- Địa chỉ -->
+                    <div class="space-y-2">
+                        <label asp-for="DiaChi" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Địa chỉ</label>
+                        <div class="relative">
+                            <i class='bx bx-map absolute left-3 top-3 text-gray-400'></i>
+                            <textarea asp-for="DiaChi" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300" rows="3" placeholder="Nhập địa chỉ đầy đủ"></textarea>
+                        </div>
+                        <span asp-validation-for="DiaChi" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <!-- Quê quán -->
+                    <div class="space-y-2">
+                        <label asp-for="QueQuan" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Quê quán</label>
+                        <div class="relative">
+                            <i class='bx bx-home absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                            <input asp-for="QueQuan" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300" placeholder="Nhập quê quán">
+                        </div>
+                        <span asp-validation-for="QueQuan" class="text-red-500 text-sm"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin công việc -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                    <i class='bx bx-briefcase text-amber-500 text-xl'></i>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Thông tin công việc</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Ngày vào làm -->
+                    <div class="space-y-2">
+                        <label asp-for="NgayVaoLam" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ngày vào làm</label>
+                        <div class="relative">
+                            <i class='bx bx-calendar-check absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                            <input asp-for="NgayVaoLam" type="date" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300">
+                        </div>
+                        <span asp-validation-for="NgayVaoLam" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <!-- Bậc lương -->
+                    <div class="space-y-2">
+                        <label asp-for="BacLuong" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Bậc lương</label>
+                        <div class="relative">
+                            <i class='bx bx-trending-up absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                            <input asp-for="BacLuong" type="number" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300" placeholder="Nhập bậc lương">
+                        </div>
+                        <span asp-validation-for="BacLuong" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <!-- Lương -->
+                    <div class="space-y-2 md:col-span-2">
+                        <label asp-for="Luong" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Lương cơ bản (VNĐ)</label>
+                        <div class="relative">
+                            <i class='bx bx-money absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                            <input asp-for="Luong" type="number" step="100000" class="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-600 dark:focus:border-blue-600 transition-all duration-300" placeholder="Nhập mức lương">
+                        </div>
+                        <span asp-validation-for="Luong" class="text-red-500 text-sm"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 rounded-xl border border-blue-200/50 dark:border-blue-700/30">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <i class='bx bx-info-circle text-white text-xl'></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 dark:text-white">Mẹo chỉnh sửa</h4>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm">Đảm bảo thông tin được cập nhật chính xác và đầy đủ trước khi lưu thay đổi.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <button type="submit" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+                    <i class='bx bx-save'></i>
+                    Cập nhật thông tin
+                </button>
+                <a href="@Url.Action("QuanLyNguoiDung")" class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+                    <i class='bx bx-x'></i>
+                    Hủy bỏ
+                </a>
+                <a href="@Url.Action("ChiTietNhanVien", new { id = Model.MaNhanVien })" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+                    <i class='bx bx-show'></i>
+                    Xem chi tiết
+                </a>
+            </div>
+        </form>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/10">
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+                <i class='bx bx-info-circle mr-2'></i>
+                Chỉnh sửa thông tin nhân viên • Mã: NV@(Model.MaNhanVien.ToString("D4")) • Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('editStaffForm');
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', function(e) {
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="bx bx-loader-circle bx-spin"></i> Đang cập nhật...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 3000);
+        });
+
+        // Add input animations
+        const inputs = document.querySelectorAll('input, textarea, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.15)';
             });
 
-            form.addEventListener('submit', function(e) {
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang cập nhật...';
-                submitBtn.disabled = true;
-
-                // Animate progress ring
-                const progressCircle = document.querySelector('.progress-ring-circle');
-                progressCircle.style.strokeDashoffset = '0';
-                progressCircle.style.stroke = '#10b981';
-
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    progressCircle.style.strokeDashoffset = '78.5';
-                    progressCircle.style.stroke = '#fff';
-                }, 5000);
-            });
-
-            // Add input animations
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.style.transform = 'translateY(-2px)';
-                });
-
-                input.addEventListener('blur', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl, {
-                    template: '<div class="tooltip tooltip-custom" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
-                });
+            input.addEventListener('blur', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
             });
         });
-    </script>
-</body>
-</html>
+    });
+</script>

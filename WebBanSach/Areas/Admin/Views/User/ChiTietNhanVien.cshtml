@@ -4,309 +4,150 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewBag.Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <style>
-        /* 🔥 FIX FOCUS cho Bootstrap */
-        .btn:focus,
-        .btn:active:focus,
-        .btn.active:focus,
-        .btn.focus,
-        .btn:active.focus,
-        .btn.active.focus {
-            outline: none !important;
-            box-shadow: none !important;
-        }
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="space-y-2">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Chi Tiết Nhân Viên
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 text-lg">Thông tin chi tiết và quản lý nhân viên</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="@Url.Action("QuanLyNguoiDung")" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center gap-2">
+                <i class='bx bx-arrow-back'></i>
+                Quay lại
+            </a>
+            <a href="@Url.Action("SuaNhanVien", new { id = Model.MaNhanVien })" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center gap-2">
+                <i class='bx bx-edit'></i>
+                Chỉnh sửa
+            </a>
+        </div>
+    </div>
 
-        /* Fix cho tất cả button và link có class btn */
-        .btn {
-            outline: none !important;
-        }
-
-        /* Card styles */
-        .staff-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            border: none;
-            border-radius: 12px;
-        }
-
-            .staff-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            }
-
-        .staff-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .info-badge {
-            background: #6c757d;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .salary-badge {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-        }
-
-        .action-buttons .btn {
-            border-radius: 8px;
-            padding: 8px 16px;
-        }
-
-        .info-row {
-            border-bottom: 1px solid #f1f3f4;
-            padding: 12px 0;
-            display: flex;
-            align-items: center;
-            min-height: 48px;
-        }
-
-            .info-row:last-child {
-                border-bottom: none;
-            }
-
-        .info-label {
-            font-weight: 600;
-            color: #5f6368;
-            min-width: 150px;
-            flex-shrink: 0;
-        }
-
-        .info-value {
-            font-weight: 500;
-            color: #202124;
-            flex: 1;
-            text-align: left;
-            word-break: break-word;
-        }
-
-        .table th {
-            border-bottom: 2px solid #dee2e6;
-            font-weight: 600;
-        }
-
-        .category-management {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-        }
-
-        .category-card {
-            transition: all 0.3s ease;
-            border: none;
-            border-radius: 10px;
-        }
-
-            .category-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            }
-
-        .status-active {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-        }
-
-        .status-inactive {
-            background: #6c757d;
-            color: white;
-        }
-
-        /* Email và tài khoản styling */
-        .email-account-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 10px;
-            padding: 1.5rem;
-            margin: 1rem 0;
-        }
-
-        .email-account-row {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-            .email-account-row:last-child {
-                border-bottom: none;
-            }
-
-        .email-account-label {
-            font-weight: 600;
-            color: #495057;
-            min-width: 120px;
-            margin-right: 1rem;
-        }
-
-        .email-account-value {
-            font-weight: 500;
-            color: #212529;
-            flex: 1;
-        }
-
-        .icon-wrapper {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-
-        .icon-email {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .icon-account {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid py-4">
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 fw-bold text-primary mb-1">
-                            <i class="fas fa-user-tie me-2"></i>Chi tiết nhân viên
-                        </h1>
-                        <p class="text-muted mb-0">Thông tin chi tiết và quản lý nhân viên</p>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Information -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Personal Information -->
+            <div class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-2xl shadow-2xl border border-blue-100/50 dark:border-blue-800/30 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-user text-xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Thông Tin Cá Nhân</h2>
+                            <p class="text-blue-100 text-sm">Thông tin chi tiết nhân viên</p>
+                        </div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <a href="@Url.Action("QuanLyNguoiDung")" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>Quay lại
-                        </a>
-                        <a href="@Url.Action("SuaNhanVien", new { id = Model.MaNhanVien })" class="btn btn-warning">
-                            <i class="fas fa-edit me-2"></i>Chỉnh sửa
-                        </a>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <i class='bx bx-user text-3xl text-white'></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">@Model.HoTen</h3>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 rounded-full text-sm font-bold">
+                                    NV@(Model.MaNhanVien.ToString("D4"))
+                                </span>
+                                <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-full text-sm font-bold">
+                                    Đang hoạt động
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <i class='bx bx-id-card text-blue-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">CCCD</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.CCCD ?? "Chưa cập nhật")</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <i class='bx bx-calendar text-blue-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Ngày sinh</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.NgaySinh?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <i class='bx bx-map text-blue-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Địa chỉ</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.DiaChi ?? "Chưa cập nhật")</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                                <i class='bx bx-home text-blue-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Quê quán</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.QueQuan ?? "Chưa cập nhật")</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email và Tài khoản -->
+                    <div class="mt-6 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 rounded-xl border border-blue-200/50 dark:border-blue-700/30">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                    <i class='bx bx-envelope text-white text-xl'></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Email</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.TaiKhoan?.Email ?? "Chưa cập nhật")</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                                    <i class='bx bx-user-circle text-white text-xl'></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Tài khoản</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.TaiKhoan?.UserName ?? "Chưa có")</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Thông tin chính -->
-        <div class="row mb-4">
-            <!-- Thông tin cá nhân -->
-            <div class="col-lg-8">
-                <div class="card staff-card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 border-bottom">
-                        <h5 class="card-title mb-0 text-primary">
-                            <i class="fas fa-id-card me-2"></i>Thông tin cá nhân
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row align-items-center mb-4">
-                            <div class="col-auto">
-                                <div class="staff-avatar bg-primary text-white d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-user-tie fa-3x"></i>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <h3 class="fw-bold text-dark mb-2">@Model.HoTen</h3>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <span class="info-badge bg-primary">NV@(Model.MaNhanVien.ToString("D4"))</span>
-                                    <span class="info-badge status-active">Đang hoạt động</span>
-                                    <span class="info-badge bg-info">Nhân viên</span>
-                                </div>
-                            </div>
+            <!-- Work Information -->
+            <div class="bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-amber-900/20 rounded-2xl shadow-2xl border border-amber-100/50 dark:border-amber-800/30 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-amber-500 to-orange-500">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-briefcase text-xl text-white'></i>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="info-row">
-                                    <span class="info-label">CCCD:</span>
-                                    <span class="info-value">@(Model.CCCD ?? "Chưa cập nhật")</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Ngày sinh:</span>
-                                    <span class="info-value">@(Model.NgaySinh?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-row">
-                                    <span class="info-label">Địa chỉ:</span>
-                                    <span class="info-value">@(Model.DiaChi ?? "Chưa cập nhật")</span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Quê quán:</span>
-                                    <span class="info-value">@(Model.QueQuan ?? "Chưa cập nhật")</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Phần Email và Tài khoản được sửa lại -->
-                        <div class="email-account-section mt-4">
-                            <div class="email-account-row">
-                                <div class="icon-wrapper icon-email">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
-                                <div class="d-flex align-items-center w-100">
-                                    <span class="email-account-label">Email:</span>
-                                    <span class="email-account-value">@(Model.TaiKhoan?.Email ?? "Chưa cập nhật")</span>
-                                </div>
-                            </div>
-                            <div class="email-account-row">
-                                <div class="icon-wrapper icon-account">
-                                    <i class="fas fa-user-circle"></i>
-                                </div>
-                                <div class="d-flex align-items-center w-100">
-                                    <span class="email-account-label">Tài khoản:</span>
-                                    <span class="email-account-value">@(Model.TaiKhoan?.UserName ?? "Chưa có")</span>
-                                </div>
-                            </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Thông Tin Công Việc</h2>
+                            <p class="text-amber-100 text-sm">Thông tin làm việc và lương</p>
                         </div>
                     </div>
                 </div>
-
-                <!-- Thông tin công việc -->
-                <div class="card staff-card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3 border-bottom">
-                        <h5 class="card-title mb-0 text-success">
-                            <i class="fas fa-briefcase me-2"></i>Thông tin công việc
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="info-row">
-                                    <span class="info-label">Ngày vào làm:</span>
-                                    <span class="info-value">@(Model.NgayVaoLam?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</span>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                                <i class='bx bx-calendar-check text-amber-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Ngày vào làm</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.NgayVaoLam?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</p>
                                 </div>
-                                <div class="info-row">
-                                    <span class="info-label">Thâm niên:</span>
-                                    <span class="info-value">
+                            </div>
+                            <div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                                <i class='bx bx-time-five text-amber-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Thâm niên</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">
                                         @{
                                             var ngayVaoLam = Model.NgayVaoLam;
                                             if (ngayVaoLam.HasValue)
@@ -319,166 +160,165 @@
                                                 <text>0 năm</text>
                                             }
                                         }
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-row">
-                                    <span class="info-label">Lương cơ bản:</span>
-                                    <span class="info-value">
-                                        <span class="salary-badge">@(Model.Luong?.ToString("N0") ?? "0") VNĐ</span>
-                                    </span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">Bậc lương:</span>
-                                    <span class="info-value">@(Model.BacLuong?.ToString() ?? "Chưa cập nhật")</span>
+                                    </p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar thống kê và hành động -->
-            <div class="col-lg-4">
-                <!-- Thống kê công việc -->
-                <div class="card staff-card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3 border-bottom">
-                        <h5 class="card-title mb-0 text-info">
-                            <i class="fas fa-chart-bar me-2"></i>Thống kê công việc
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3 text-center">
-                            <div class="col-6">
-                                <div class="p-3 border rounded-3">
-                                    <div class="text-primary mb-2">
-                                        <i class="fas fa-shopping-cart fa-2x"></i>
-                                    </div>
-                                    <h4 class="fw-bold text-dark mb-1">@ViewBag.TongDonHang</h4>
-                                    <small class="text-muted">Đơn hàng</small>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                                <i class='bx bx-money text-amber-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Lương cơ bản</p>
+                                    <p class="font-semibold text-green-600 dark:text-green-400">@(Model.Luong?.ToString("N0") ?? "0") VNĐ</p>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="p-3 border rounded-3">
-                                    <div class="text-success mb-2">
-                                        <i class="fas fa-exchange-alt fa-2x"></i>
-                                    </div>
-                                    <h4 class="fw-bold text-dark mb-1">@ViewBag.TongPhieuTra</h4>
-                                    <small class="text-muted">Phiếu trả</small>
+                            <div class="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                                <i class='bx bx-trending-up text-amber-500 text-xl'></i>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Bậc lương</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@(Model.BacLuong?.ToString() ?? "Chưa cập nhật")</p>
                                 </div>
                             </div>
-                            <div class="col-6">
-                                <div class="p-3 border rounded-3">
-                                    <div class="text-warning mb-2">
-                                        <i class="fas fa-headset fa-2x"></i>
-                                    </div>
-                                    <h4 class="fw-bold text-dark mb-1">@ViewBag.TongChamSoc</h4>
-                                    <small class="text-muted">Chăm sóc</small>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="p-3 border rounded-3">
-                                    <div class="text-info mb-2">
-                                        <i class="fas fa-clock fa-2x"></i>
-                                    </div>
-                                    <h4 class="fw-bold text-dark mb-1">
-                                        @{
-                                            if (ngayVaoLam.HasValue)
-                                            {
-                                                var years = DateTime.Now.Year - ngayVaoLam.Value.Year;
-                                                <text>@years</text>
-                                            }
-                                            else
-                                            {
-                                                <text>0</text>
-                                            }
-                                        }
-                                    </h4>
-                                    <small class="text-muted">Năm kinh nghiệm</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Hành động -->
-                <div class="card staff-card border-0 shadow-sm">
-                    <div class="card-header bg-white py-3 border-bottom">
-                        <h5 class="card-title mb-0 text-danger">
-                            <i class="fas fa-cogs me-2"></i>Thao tác
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-grid gap-2">
-                            <a href="@Url.Action("SuaNhanVien", new { id = Model.MaNhanVien })" class="btn btn-warning">
-                                <i class="fas fa-edit me-2"></i>Chỉnh sửa thông tin
-                            </a>
-                            <a href="@Url.Action("QuanLyNguoiDung")" class="btn btn-outline-primary">
-                                <i class="fas fa-list me-2"></i>Danh sách nhân viên
-                            </a>
-                            <button onclick="deleteStaff(@Model.MaNhanVien, '@Model.HoTen')" class="btn btn-outline-danger">
-                                <i class="fas fa-trash me-2"></i>Xóa nhân viên
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Trạng thái hệ thống -->
-                <div class="card staff-card border-0 shadow-sm mt-4">
-                    <div class="card-header bg-white py-3 border-bottom">
-                        <h5 class="card-title mb-0 text-dark">
-                            <i class="fas fa-info-circle me-2"></i>Thông tin hệ thống
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="info-row">
-                            <span class="info-label">Ngày tạo:</span>
-                            <span class="info-value">@DateTime.Now.ToString("dd/MM/yyyy")</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Cập nhật:</span>
-                            <span class="info-value">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Trạng thái:</span>
-                            <span class="info-badge status-active">Hoạt động</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer thông tin -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="text-center text-muted">
-                    <small>
-                        <i class="fas fa-info-circle me-1"></i>
-                        Chi tiết nhân viên •
-                        Mã: NV@(Model.MaNhanVien.ToString("D4")) •
-                        Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
-                    </small>
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Statistics -->
+            <div class="bg-gradient-to-br from-white to-green-50 dark:from-gray-800 dark:to-green-900/20 rounded-2xl shadow-2xl border border-green-100/50 dark:border-green-800/30 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-stats text-xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Thống Kê</h2>
+                            <p class="text-green-100 text-sm">Hiệu suất công việc</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-lg">
+                            <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                                <i class='bx bx-cart text-white text-xl'></i>
+                            </div>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@ViewBag.TongDonHang</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Đơn hàng</p>
+                        </div>
+                        <div class="text-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-lg">
+                            <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                                <i class='bx bx-refresh text-white text-xl'></i>
+                            </div>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@ViewBag.TongPhieuTra</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Phiếu trả</p>
+                        </div>
+                        <div class="text-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-lg">
+                            <div class="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                                <i class='bx bx-support text-white text-xl'></i>
+                            </div>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@ViewBag.TongChamSoc</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Chăm sóc</p>
+                        </div>
+                        <div class="text-center p-4 bg-white dark:bg-gray-700 rounded-xl shadow-lg">
+                            <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-2">
+                                <i class='bx bx-time-five text-white text-xl'></i>
+                            </div>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                @{
+                                    if (ngayVaoLam.HasValue)
+                                    {
+                                        var years = DateTime.Now.Year - ngayVaoLam.Value.Year;
+                                        <text>@years</text>
+                                    }
+                                    else
+                                    {
+                                        <text>0</text>
+                                    }
+                                }
+                            </p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Năm KN</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-gradient-to-br from-white to-red-50 dark:from-gray-800 dark:to-red-900/20 rounded-2xl shadow-2xl border border-red-100/50 dark:border-red-800/30 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-red-500 to-rose-600">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-cog text-xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Thao Tác</h2>
+                            <p class="text-red-100 text-sm">Quản lý nhân viên</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 space-y-3">
+                    <a href="@Url.Action("SuaNhanVien", new { id = Model.MaNhanVien })" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+                        <i class='bx bx-edit'></i>
+                        Chỉnh sửa
+                    </a>
+                    <a href="@Url.Action("QuanLyNguoiDung")" class="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+                        <i class='bx bx-list-ul'></i>
+                        Danh sách NV
+                    </a>
+                    <button onclick="deleteStaff(@Model.MaNhanVien, '@Model.HoTen')" class="w-full bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 transform flex items-center justify-center gap-2">
+                        <i class='bx bx-trash'></i>
+                        Xóa nhân viên
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900/20 rounded-2xl shadow-2xl border border-gray-100/50 dark:border-gray-700/30 overflow-hidden">
+                <div class="px-6 py-4 bg-gradient-to-r from-gray-500 to-gray-700">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white/20 rounded-xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-info-circle text-xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Thông Tin</h2>
+                            <p class="text-gray-100 text-sm">Hệ thống</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Ngày tạo:</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">@DateTime.Now.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Cập nhật:</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">@DateTime.Now.ToString("HH:mm dd/MM/yyyy")</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Trạng thái:</span>
+                        <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 rounded-full text-xs font-bold">Hoạt động</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function deleteStaff(id, name) {
-            if (confirm('Bạn có chắc muốn xóa nhân viên "' + name + '"?')) {
-                window.location.href = '@Url.Action("XoaNhanVien", "User")/' + id;
-            }
-        }
+    <!-- Footer -->
+    <div class="text-center">
+        <small class="text-gray-500 dark:text-gray-400">
+            <i class='bx bx-info-circle mr-1'></i>
+            Chi tiết nhân viên • Mã: NV@(Model.MaNhanVien.ToString("D4")) • Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+        </small>
+    </div>
+</div>
 
-        // Khởi tạo tooltip
-        document.addEventListener('DOMContentLoaded', function () {
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
-        });
-    </script>
-</body>
-</html>
+<script>
+    function deleteStaff(id, name) {
+        if (confirm('Bạn có chắc muốn xóa nhân viên "' + name + '"?')) {
+            window.location.href = '@Url.Action("XoaNhanVien", "User")/' + id;
+        }
+    }
+</script>

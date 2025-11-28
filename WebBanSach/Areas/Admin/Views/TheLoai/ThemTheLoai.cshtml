@@ -5,546 +5,359 @@
 }
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewBag.Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f4ff',
+                            100: '#e0e8ff',
+                            500: '#667eea',
+                            600: '#5a67d8',
+                            700: '#4c51bf',
+                        },
+                        dark: {
+                            800: '#1a202c',
+                            900: '#0f1419',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* 🔥 FIX FOCUS cho Bootstrap */
-        .btn:focus,
-        .btn:active:focus,
-        .btn.active:focus,
-        .btn.focus,
-        .btn:active.focus,
-        .btn.active.focus {
-            outline: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Fix cho tất cả button và link có class btn */
-        .btn {
-            outline: none !important;
-        }
-
-        /* Main styles */
-        .create-card {
-            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            border: none;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fe 100%);
-        }
-
-            .create-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-            }
-
-        .header-gradient {
+        .gradient-bg {
             background: linear-gradient(135deg, #06d6a0 0%, #04a777 100%);
-            color: white;
-            border-radius: 20px 20px 0 0;
         }
 
-        .avatar-circle {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            border: 3px solid rgba(255,255,255,0.3);
-        }
-
-        .section-header {
+        .gradient-bg-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .info-card {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            border: none;
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-control, .form-select {
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            padding: 0.75rem 1rem;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: #fff;
-        }
-
-            .form-control:focus, .form-select:focus {
-                border-color: #06d6a0;
-                box-shadow: 0 0 0 0.3rem rgba(6, 214, 160, 0.1);
-                transform: translateY(-2px);
-            }
-
-        .form-control-lg {
-            padding: 1rem 1.25rem;
-            font-size: 1.1rem;
-        }
-
-        .form-label {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-        }
-
-        .required-star {
-            color: #e53e3e;
-            font-weight: bold;
-        }
-
-        .input-group-icon {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #06d6a0;
-            z-index: 5;
-        }
-
-        .input-group-icon .form-control {
-            padding-left: 45px;
-        }
-
-        .btn {
-            border-radius: 12px;
-            padding: 0.875rem 1.75rem;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-            .btn::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-                transition: left 0.5s;
-            }
-
-            .btn:hover::before {
-                left: 100%;
-            }
-
-            .btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            }
-
-        .btn-success-custom {
-            background: linear-gradient(135deg, #06d6a0 0%, #04a777 100%);
-            color: white;
-        }
-
-        .btn-primary-custom {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-outline-custom {
-            border: 2px solid #cbd5e0;
-            color: #4a5568;
-            background: transparent;
-        }
-
-            .btn-outline-custom:hover {
-                background: #4a5568;
-                color: white;
-                border-color: #4a5568;
-            }
-
-        .floating-label {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .floating-input {
-            padding-top: 1.5rem;
-        }
-
-        .floating-label .form-label {
-            position: absolute;
-            top: 0.5rem;
-            left: 1rem;
-            font-size: 0.8rem;
-            color: #06d6a0;
-            font-weight: 600;
-            background: white;
-            padding: 0 0.5rem;
-            z-index: 2;
-        }
-
-        .stats-badge {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .info-box {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            color: #2d3748;
-            padding: 1.5rem;
-            border-radius: 15px;
-            margin-bottom: 1.5rem;
-            border: none;
-        }
-
-        .system-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-        }
-
-        .system-info-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-
-            .system-info-item:last-child {
-                border-bottom: none;
-            }
-
-        .tooltip-custom {
-            background: linear-gradient(135deg, #06d6a0 0%, #04a777 100%);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-        }
-
-        .help-text {
-            font-size: 0.8rem;
-            color: #718096;
-            margin-top: 0.25rem;
-            font-style: italic;
-        }
-
-        .category-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            background: linear-gradient(135deg, #06d6a0 0%, #04a777 100%);
-            color: white;
-        }
-
-        .progress-ring {
-            width: 60px;
-            height: 60px;
-        }
-
-        .progress-ring-circle {
-            stroke: #fff;
-            stroke-width: 4;
-            fill: transparent;
-            stroke-linecap: round;
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-            stroke-dasharray: 157;
-            stroke-dashoffset: 157;
-        }
-
-        .feature-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            background: rgba(6, 214, 160, 0.1);
-            color: #06d6a0;
         }
     </style>
 </head>
-<body>
-    <div class="container-fluid py-4">
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10 col-xl-8">
-                <!-- Header -->
-                <div class="card border-0 shadow-lg create-card mb-4">
-                    <div class="card-header header-gradient py-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-circle me-4">
-                                        <i class="fas fa-plus"></i>
-                                    </div>
-                                    <div>
-                                        <h2 class="fw-bold mb-2">Tạo Thể Loại Mới</h2>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <span class="stats-badge">Thêm mới</span>
-                                            <span class="text-white-80">Mở rộng hệ thống thể loại</span>
-                                        </div>
-                                    </div>
-                                </div>
+<body class="min-h-full bg-gradient-to-br from-gray-50/50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-2xl">
+                        <i class='bx bx-plus text-2xl text-white'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                            Tạo Thể Loại Mới
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Thêm thể loại mới vào hệ thống</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-sm px-4 py-2 rounded-full font-semibold">
+                        Thêm mới
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl shadow-2xl border border-blue-100/50 dark:border-blue-800/30 overflow-hidden">
+                <!-- Card Header -->
+                <div class="px-8 py-6 gradient-bg">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30">
+                                <i class='bx bx-category text-2xl text-white'></i>
                             </div>
-                            <div class="col-md-4 text-end">
-                                <div class="progress-ring">
-                                    <svg class="progress-ring" width="60" height="60">
-                                        <circle class="progress-ring-circle" stroke="#fff" stroke-width="3" fill="transparent" r="25" cx="30" cy="30"></circle>
-                                    </svg>
-                                    <div class="text-white text-center mt-1">
-                                        <small>Sẵn sàng</small>
-                                    </div>
-                                </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-white">Thông Tin Thể Loại Mới</h2>
+                                <p class="text-green-100 text-sm mt-1">Mở rộng hệ thống thể loại</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 sm:mt-0">
+                            <div class="flex items-center gap-2 text-white/80">
+                                <i class='bx bx-time'></i>
+                                <span class="text-sm">Ngày tạo: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Form Container -->
-                <div class="card border-0 shadow-lg create-card">
-                    <div class="card-body p-4">
-                        <form asp-action="ThemTheLoai" method="post" id="createCategoryForm">
-                            @Html.AntiForgeryToken()
+                <!-- Form Content -->
+                <div class="p-8">
+                    <form asp-action="ThemTheLoai" method="post" id="createCategoryForm" class="space-y-6">
+                        @Html.AntiForgeryToken()
 
-                            <!-- Thông tin thể loại -->
-                            <div class="mb-5">
-                                <div class="section-header">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-info-circle me-2"></i>Thông tin thể loại
-                                    </h5>
+                        <!-- Thông tin thể loại -->
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-3 p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 rounded-2xl border border-green-200/50 dark:border-green-700/30">
+                                <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl">
+                                    <i class='bx bx-info-circle text-xl text-white'></i>
                                 </div>
-                                <div class="row g-4">
-                                    <div class="col-12">
-                                        <div class="floating-label">
-                                            <label asp-for="TenChuDe" class="form-label">Tên thể loại <span class="required-star">*</span></label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-heading input-icon"></i>
-                                                <input asp-for="TenChuDe" class="form-control form-control-lg floating-input" placeholder="Nhập tên thể loại" required>
-                                            </div>
-                                            <span asp-validation-for="TenChuDe" class="text-danger small mt-1 d-block"></span>
-                                            @if (ViewData.ModelState["TenChuDe"]?.Errors?.Count > 0)
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Thông tin thể loại</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Nhập thông tin cơ bản của thể loại mới</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Tên thể loại -->
+                                <div class="space-y-2">
+                                    <label asp-for="TenChuDe" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        Tên thể loại <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <i class='bx bx-text absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl'></i>
+                                        <input asp-for="TenChuDe"
+                                               class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-green-500 dark:focus:border-green-400 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 transition-all duration-300"
+                                               placeholder="Nhập tên thể loại"
+                                               required />
+                                    </div>
+                                    <span asp-validation-for="TenChuDe" class="text-red-500 text-sm"></span>
+                                    @if (ViewData.ModelState["TenChuDe"]?.Errors?.Count > 0)
+                                    {
+                                        <span class="text-red-500 text-sm">@ViewData.ModelState["TenChuDe"].Errors[0].ErrorMessage</span>
+                                    }
+                                </div>
+
+                                <!-- Slug -->
+                                <div class="space-y-2">
+                                    <label asp-for="Slug" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        Slug
+                                    </label>
+                                    <div class="relative">
+                                        <i class='bx bx-link absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl'></i>
+                                        <input asp-for="Slug"
+                                               class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-green-500 dark:focus:border-green-400 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 transition-all duration-300"
+                                               placeholder="VD: tieu-thuyet, sach-giao-khoa" />
+                                    </div>
+                                    <p class="text-gray-500 dark:text-gray-400 text-sm">Slug sẽ được tự động tạo nếu để trống</p>
+                                    <span asp-validation-for="Slug" class="text-red-500 text-sm"></span>
+                                </div>
+
+                                <!-- Full Path -->
+                                <div class="space-y-2 md:col-span-2">
+                                    <label asp-for="FullPath" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        Đường dẫn đầy đủ
+                                    </label>
+                                    <div class="relative">
+                                        <i class='bx bx-map absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl'></i>
+                                        <input asp-for="FullPath"
+                                               class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-green-500 dark:focus:border-green-400 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 transition-all duration-300"
+                                               placeholder="VD: /sach-van-hoc/tieu-thuyet" />
+                                    </div>
+                                    <span asp-validation-for="FullPath" class="text-red-500 text-sm"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phân cấp thể loại -->
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-3 p-4 bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:from-amber-500/20 dark:to-orange-500/20 rounded-2xl border border-amber-200/50 dark:border-amber-700/30">
+                                <div class="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl">
+                                    <i class='bx bx-sitemap text-xl text-white'></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">Phân cấp thể loại</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 text-sm">Thiết lập phân cấp cho thể loại mới</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label asp-for="ParentId" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                    Thể loại cha
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-category absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl z-10'></i>
+                                    <select asp-for="ParentId"
+                                            class="w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white focus:border-green-500 dark:focus:border-green-400 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 transition-all duration-300 appearance-none">
+                                        <option value="">-- Thể loại chính (không có cha) --</option>
+                                        @if (ViewBag.ParentCategories != null)
+                                        {
+                                            foreach (var category in ViewBag.ParentCategories as List<Media.Models.ChuDe>)
                                             {
-                                                <span class="text-danger small">@ViewData.ModelState["TenChuDe"].Errors[0].ErrorMessage</span>
+                                                <option value="@category.MaChuDe">
+                                                    @category.TenChuDe
+                                                </option>
                                             }
-                                        </div>
-                                    </div>
+                                        }
+                                    </select>
+                                    <i class='bx bx-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl'></i>
+                                </div>
+                                <span asp-validation-for="ParentId" class="text-red-500 text-sm"></span>
+                            </div>
+                        </div>
 
-                                    <div class="col-md-6">
-                                        <div class="floating-label">
-                                            <label asp-for="Slug" class="form-label">Slug</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-link input-icon"></i>
-                                                <input asp-for="Slug" class="form-control floating-input" placeholder="VD: tieu-thuyet, sach-giao-khoa">
-                                            </div>
-                                            <div class="help-text">Slug sẽ được tự động tạo nếu để trống</div>
-                                            <span asp-validation-for="Slug" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="floating-label">
-                                            <label asp-for="FullPath" class="form-label">Đường dẫn đầy đủ</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-route input-icon"></i>
-                                                <input asp-for="FullPath" class="form-control floating-input" placeholder="VD: /sach-van-hoc/tieu-thuyet">
-                                            </div>
-                                            <span asp-validation-for="FullPath" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
+                        <!-- Mẹo tạo thể loại -->
+                        <div class="p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-200/50 dark:border-green-700/30">
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl">
+                                    <i class='bx bx-bulb text-xl text-white'></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 dark:text-white mb-2">Mẹo tạo thể loại</h4>
+                                    <ul class="text-gray-600 dark:text-gray-400 text-sm space-y-1">
+                                        <li>• Tên thể loại nên ngắn gọn và dễ hiểu</li>
+                                        <li>• Slug sẽ được dùng trong URL</li>
+                                        <li>• Chọn thể loại cha để tạo phân cấp</li>
+                                    </ul>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Thể loại cha -->
-                            <div class="mb-5">
-                                <div class="section-header">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-sitemap me-2"></i>Phân cấp thể loại
-                                    </h5>
-                                </div>
-                                <div class="row g-4">
-                                    <div class="col-12">
-                                        <div class="floating-label">
-                                            <label asp-for="ParentId" class="form-label">Thể loại cha</label>
-                                            <div class="input-group-icon">
-                                                <i class="fas fa-level-up-alt input-icon"></i>
-                                                <select asp-for="ParentId" class="form-select floating-input">
-                                                    <option value="">-- Thể loại chính (không có cha) --</option>
-                                                    @if (ViewBag.ParentCategories != null)
-                                                    {
-                                                        foreach (var category in ViewBag.ParentCategories as List<Media.Models.ChuDe>)
-                                                        {
-                                                            <option value="@category.MaChuDe">
-                                                                @category.TenChuDe
-                                                            </option>
-                                                        }
-                                                    }
-                                                </select>
-                                            </div>
-                                            <span asp-validation-for="ParentId" class="text-danger small mt-1 d-block"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Info Box -->
-                            <div class="info-box">
-                                <div class="d-flex align-items-center">
-                                    <div class="category-icon">
-                                        <i class="fas fa-lightbulb"></i>
+                        <!-- Features Section -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-2xl border border-blue-200/50 dark:border-blue-700/30">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-blue-500/10 rounded-xl">
+                                        <i class='bx bx-bolt text-blue-500 text-xl'></i>
                                     </div>
                                     <div>
-                                        <h6 class="mb-1 fw-bold">Mẹo tạo thể loại</h6>
-                                        <p class="mb-0 small opacity-90">
-                                            • Tên thể loại nên ngắn gọn và dễ hiểu<br>
-                                            • Slug sẽ được dùng trong URL<br>
-                                            • Chọn thể loại cha để tạo phân cấp
-                                        </p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Tạo nhanh</p>
+                                        <p class="font-semibold text-gray-900 dark:text-white">Dễ dàng</p>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Features Section -->
-                            <div class="row mb-4">
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
-                                        <div class="feature-icon">
-                                            <i class="fas fa-bolt"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block">Tạo nhanh</small>
-                                            <strong>Dễ dàng</strong>
-                                        </div>
+                            <div class="p-4 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-2xl border border-purple-200/50 dark:border-purple-700/30">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-purple-500/10 rounded-xl">
+                                        <i class='bx bx-share-alt text-purple-500 text-xl'></i>
                                     </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
-                                        <div class="feature-icon">
-                                            <i class="fas fa-share-alt"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block">Phân cấp</small>
-                                            <strong>Linh hoạt</strong>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="d-flex align-items-center p-3 bg-light rounded-3">
-                                        <div class="feature-icon">
-                                            <i class="fas fa-cogs"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block">Tự động</small>
-                                            <strong>Thông minh</strong>
-                                        </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Phân cấp</p>
+                                        <p class="font-semibold text-gray-900 dark:text-white">Linh hoạt</p>
                                     </div>
                                 </div>
                             </div>
+                            <div class="p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl border border-green-200/50 dark:border-green-700/30">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-green-500/10 rounded-xl">
+                                        <i class='bx bx-cog text-green-500 text-xl'></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Tự động</p>
+                                        <p class="font-semibold text-gray-900 dark:text-white">Thông minh</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                            <!-- Sidebar Information -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="system-info">
-                                        <h6 class="fw-bold mb-3">
-                                            <i class="fas fa-database me-2"></i>Thông tin hệ thống
-                                        </h6>
-                                        <div class="system-info-item">
-                                            <span>Trạng thái:</span>
-                                            <span class="badge bg-success">Sẵn sàng</span>
+                        <!-- Action Buttons & System Info -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- System Info -->
+                            <div class="space-y-4">
+                                <div class="p-6 bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl text-white">
+                                    <h4 class="font-bold mb-4 flex items-center gap-2">
+                                        <i class='bx bx-info-circle'></i>
+                                        Thông tin hệ thống
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center pb-2 border-b border-gray-700">
+                                            <span class="text-gray-300">Trạng thái:</span>
+                                            <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold">Sẵn sàng</span>
                                         </div>
-                                        <div class="system-info-item">
-                                            <span>Ngày tạo:</span>
+                                        <div class="flex justify-between items-center pb-2 border-b border-gray-700">
+                                            <span class="text-gray-300">Ngày tạo:</span>
                                             <span>@DateTime.Now.ToString("dd/MM/yyyy")</span>
                                         </div>
-                                        <div class="system-info-item">
-                                            <span>Loại:</span>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-300">Loại:</span>
                                             <span>Thể loại mới</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <!-- Action Buttons -->
-                                    <div class="d-grid gap-3">
-                                        <button type="submit" class="btn btn-success-custom btn-lg">
-                                            <i class="fas fa-plus me-2"></i>Tạo thể loại
-                                        </button>
-                                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })" class="btn btn-outline-custom btn-lg">
-                                            <i class="fas fa-times me-2"></i>Hủy bỏ
-                                        </a>
-                                        <button type="reset" class="btn btn-primary-custom btn-lg">
-                                            <i class="fas fa-redo me-2"></i>Làm mới
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
 
-                <!-- Footer Info -->
-                <div class="text-center mt-4">
-                    <small class="text-muted">
-                        <i class="fas fa-info-circle me-1"></i>
-                        Tạo thể loại mới • Hệ thống quản lý •
-                        Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
-                    </small>
+                            <!-- Action Buttons -->
+                            <div class="space-y-4">
+                                <button type="submit"
+                                        class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                                    <i class='bx bx-plus text-xl'></i>
+                                    Tạo thể loại
+                                </button>
+
+                                <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })"
+                                   class="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                                    <i class='bx bx-x text-xl'></i>
+                                    Hủy bỏ
+                                </a>
+
+                                <button type="reset"
+                                        class="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                                    <i class='bx bx-reset text-xl'></i>
+                                    Làm mới
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="text-center mt-8">
+            <div class="text-gray-500 dark:text-gray-400 text-sm flex flex-wrap justify-center items-center gap-2">
+                <span class="flex items-center">
+                    <i class='bx bx-info-circle mr-2'></i>
+                    Tạo thể loại mới
+                </span>
+                <span>•</span>
+                <span>Hệ thống quản lý</span>
+                <span>•</span>
+                <span>Cập nhật: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")</span>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle" class="fixed bottom-6 right-6 bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-10 border border-gray-200 dark:border-gray-700">
+        <i class="bx bx-moon dark:hidden"></i>
+        <i class="bx bx-sun hidden dark:block"></i>
+    </button>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('createCategoryForm');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const progressCircle = document.querySelector('.progress-ring-circle');
+        // Khởi tạo dark mode
+        document.addEventListener('DOMContentLoaded', function () {
+            const darkModeToggle = document.getElementById('darkModeToggle');
 
-            // Add floating label functionality
-            const floatingInputs = document.querySelectorAll('.floating-input');
-            floatingInputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.parentElement.classList.add('focused');
-                });
+            // Kiểm tra cài đặt dark mode từ localStorage
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+            } else if (localStorage.getItem('darkMode') === 'false') {
+                document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                // Nếu không có cài đặt, sử dụng cài đặt hệ thống
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            }
 
-                input.addEventListener('blur', function() {
-                    if (!this.value) {
-                        this.parentElement.parentElement.classList.remove('focused');
-                    }
-                });
-
-                // Initialize on load
-                if (input.value) {
-                    input.parentElement.parentElement.classList.add('focused');
-                }
+            // Xử lý sự kiện toggle dark mode
+            darkModeToggle.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
             });
 
             // Tự động tạo slug từ tên thể loại
@@ -569,59 +382,39 @@
                 });
             }
 
-            // Animate progress ring on focus
-            tenChuDeInput.addEventListener('focus', function() {
-                progressCircle.style.strokeDashoffset = '78.5';
-            });
-
-            form.addEventListener('submit', function(e) {
-                const originalText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang tạo...';
-                submitBtn.disabled = true;
-
-                // Animate progress ring
-                progressCircle.style.strokeDashoffset = '0';
-                progressCircle.style.stroke = '#10b981';
-
-                setTimeout(() => {
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    progressCircle.style.strokeDashoffset = '157';
-                    progressCircle.style.stroke = '#fff';
-                }, 5000);
-            });
-
-            // Add input animations
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.style.transform = 'translateY(-2px)';
-                });
-
-                input.addEventListener('blur', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-
-            // Reset form animation
-            const resetBtn = form.querySelector('button[type="reset"]');
-            resetBtn.addEventListener('click', function() {
-                setTimeout(() => {
-                    floatingInputs.forEach(input => {
-                        input.parentElement.parentElement.classList.remove('focused');
-                    });
-                    progressCircle.style.strokeDashoffset = '157';
-                }, 100);
-            });
-
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl, {
-                    template: '<div class="tooltip tooltip-custom" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'
-                });
-            });
+            // Hiển thị thông báo từ TempData
+            @if (TempData["Success"] != null)
+            {
+                    <text>showNotification('@TempData["Success"]', 'success');</text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                    <text>showNotification('@TempData["Error"]', 'error');</text>
+            }
         });
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-2xl shadow-2xl z-50 transform transition-all duration-500 ${
+                type === 'success'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                    : 'bg-gradient-to-r from-red-500 to-rose-600 text-white'
+            }`;
+
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error'} text-xl'></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
     </script>
 </body>
 </html>

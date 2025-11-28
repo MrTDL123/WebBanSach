@@ -7,12 +7,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation; // THÊM USING NÀY
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Media.Models
 {
     public class DonHang
     {
+        public DonHang()
+        {
+            // KHỞI TẠO CÁC COLLECTION TRONG CONSTRUCTOR
+            ChiTietDonHangs = new HashSet<ChiTietDonHang>();
+            PhieuTraHangs = new HashSet<PhieuTraHang>();
+        }
+
         [Key]
         public int MaDonHang { get; set; }
         [Required]
@@ -59,7 +66,7 @@ namespace Media.Models
         [DisplayName("Hình thức thanh toán")]
         public HinhThucThanhToan HinhThucThanhToan { get; set; } = HinhThucThanhToan.TienMatKhiNhanHang;
 
-        //NAVIGATION PROPERTIES - THÊM [ValidateNever]
+        //NAVIGATION PROPERTIES
         [ValidateNever]
         [ForeignKey("MaKhachHang")]
         public KhachHang KhachHang { get; set; }
@@ -83,6 +90,5 @@ namespace Media.Models
 
         [ValidateNever]
         public HoaDon HoaDon { get; set; }
-
     }
 }
