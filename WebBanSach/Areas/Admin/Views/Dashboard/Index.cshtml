@@ -1,188 +1,180 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<style>
-    .stat-card {
-        background: white;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-    }
+<div class="min-h-screen bg-gray-50/50 dark:bg-gray-900/50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-        }
-
-    .chart-card {
-        background: white;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        height: 100%;
-    }
-
-    .chart-container {
-        height: 300px;
-        width: 100%;
-    }
-
-    .text-success {
-        color: #10b981 !important;
-    }
-
-    .text-primary {
-        color: #3b82f6 !important;
-    }
-
-    .text-warning {
-        color: #f59e0b !important;
-    }
-
-    .text-info {
-        color: #06b6d4 !important;
-    }
-</style>
-
-<div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h4 class="fw-bold text-dark mb-1">Dashboard Overview</h4>
-                    <p class="text-muted mb-0">Summary of your business performance</p>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">OVER VIEW </h1>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Tổng quan hiệu suất và thống kê hệ thống</p>
                 </div>
-                <select id="filterRange" class="form-select w-auto">
-                    <option value="7">7 Days</option>
-                    <option value="30" selected>30 Days</option>
-                    <option value="90">90 Days</option>
-                </select>
+                <div class="flex items-center gap-3">
+                    <select id="filterRange" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="7">7 Ngày</option>
+                        <option value="30" selected>30 Ngày</option>
+                        
+                    </select>
+                    <button id="refreshBtn" class="p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                        <i class='bx bx-refresh text-gray-600 dark:text-gray-400'></i>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- KPI Stats -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Total Revenue</h6>
-                            <h4 class="fw-bold text-dark mb-0" id="revenueCount">0₫</h4>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i>12.5%
-                            </small>
+        <!-- KPI Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Revenue Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Tổng Doanh Thu</p>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="revenueCount">0₫</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="text-green-500 text-sm font-medium flex items-center">
+                                <i class='bx bx-up-arrow-alt mr-1'></i>
+                                12.5%
+                            </span>
+                            <span class="text-gray-500 text-sm ml-2">so với tháng trước</span>
                         </div>
-                        <div class="bg-primary bg-opacity-10 rounded p-3">
-                            <i class="fas fa-money-bill-wave fa-lg text-primary"></i>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+                        <i class='bx bx-dollar-circle text-2xl text-white'></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Tổng Đơn Hàng</p>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="orderCount">0</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="text-blue-500 text-sm font-medium flex items-center">
+                                <i class='bx bx-up-arrow-alt mr-1'></i>
+                                8.3%
+                            </span>
+                            <span class="text-gray-500 text-sm ml-2">so với tháng trước</span>
                         </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl">
+                        <i class='bx bx-cart-alt text-2xl text-white'></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Books Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Tổng Sách </p>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="bookCount">0</h3>
+                        <p class="text-gray-500 text-sm mt-2">Trong kho</p>
+                        <p class="text-gray-500 text-sm mt-2">( dựa vào các tiêu đề )</p>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+                        <i class='bx bx-book-bookmark text-2xl text-white'></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Card -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Người Dùng</p>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mt-1" id="userCount">0</h3>
+                        <div class="flex items-center mt-2">
+                            <span class="text-orange-500 text-sm font-medium flex items-center">
+                                <i class='bx bx-up-arrow-alt mr-1'></i>
+                                15.7%
+                            </span>
+                            <span class="text-gray-500 text-sm ml-2">so với tháng trước</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
+                        <i class='bx bx-user-circle text-2xl text-white'></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Total Orders</h6>
-                            <h4 class="fw-bold text-dark mb-0" id="orderCount">0</h4>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i>8.3%
-                            </small>
-                        </div>
-                        <div class="bg-warning bg-opacity-10 rounded p-3">
-                            <i class="fas fa-shopping-cart fa-lg text-warning"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Total Books</h6>
-                            <h4 class="fw-bold text-dark mb-0" id="bookCount">0</h4>
-                            <small class="text-muted">In inventory</small>
-                        </div>
-                        <div class="bg-success bg-opacity-10 rounded p-3">
-                            <i class="fas fa-book fa-lg text-success"></i>
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Revenue Chart -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Doanh Thu Theo Thời Gian</h3>
+                        <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full mr-1"></div>
+                                Doanh thu
+                            </span>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <h6 class="text-muted mb-1">Active Users</h6>
-                            <h4 class="fw-bold text-dark mb-0" id="userCount">0</h4>
-                            <small class="text-success">
-                                <i class="fas fa-arrow-up me-1"></i>15.7%
-                            </small>
-                        </div>
-                        <div class="bg-info bg-opacity-10 rounded p-3">
-                            <i class="fas fa-users fa-lg text-info"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts -->
-    <div class="row">
-        <!-- Revenue Chart -->
-        <div class="col-xl-8 mb-4">
-            <div class="card chart-card">
-                <div class="card-header bg-white border-0">
-                    <h6 class="fw-bold mb-0">Revenue Over Time</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
+                    <div class="h-80">
                         <canvas id="revenueChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Category Chart -->
-        <div class="col-xl-4 mb-4">
-            <div class="card chart-card">
-                <div class="card-header bg-white border-0">
-                    <h6 class="fw-bold mb-0">Popular Categories</h6>
-                </div>
-                <div class="card-body">
-                    <div class="chart-container">
+            <!-- Category Chart -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 h-full">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Thể Loại Phổ Biến</h3>
+                    <div class="h-64">
                         <canvas id="categoryChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Bestselling Books -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card chart-card">
-                <div class="card-header bg-white border-0">
-                    <h6 class="fw-bold mb-0">Bestselling Books</h6>
+        <!-- Bottom Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Bestselling Books -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Sách Bán Chạy Nhất</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-0">Top 5 sản phẩm</span>
                 </div>
-                <div class="card-body">
-                    <div class="chart-container">
-                        <canvas id="bestsellerChart"></canvas>
-                    </div>
+                <div class="h-64">
+                    <canvas id="bestsellerChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Top Authors -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Tác Giả Bán Chạy</h3>
+                    <span class="text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-0">Top 5 tác giả</span>
+                </div>
+                <div class="h-64">
+                    <canvas id="authorChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Order Status -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Trạng Thái Đơn Hàng</h3>
+                <div class="h-48">
+                    <canvas id="orderStatusChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Hình Thức Thanh Toán</h3>
+                <div class="h-48">
+                    <canvas id="paymentMethodChart"></canvas>
                 </div>
             </div>
         </div>
@@ -193,87 +185,143 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let currentDays = 30;
-        let revenueChart, categoryChart, bestsellerChart;
+        let revenueChart, categoryChart, bestsellerChart, authorChart, orderStatusChart, paymentMethodChart;
 
-        // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             updateDashboard(currentDays);
 
-            // Event listener for filter
             document.getElementById('filterRange').addEventListener('change', function(e) {
                 currentDays = parseInt(e.target.value);
                 updateDashboard(currentDays);
+            });
+
+            document.getElementById('refreshBtn').addEventListener('click', function() {
+                updateDashboard(currentDays);
+                this.classList.add('animate-spin');
+                setTimeout(() => this.classList.remove('animate-spin'), 1000);
             });
         });
 
         async function updateDashboard(days) {
             try {
-                const data = await fetchDashboardData(days);
+                showLoadingState();
+                const response = await fetch(`/Admin/Dashboard/GetData?days=${days}`);
+                if (!response.ok) throw new Error('Network error');
+                const data = await response.json();
 
-                if (data) {
-                    updateKPI(data);
-                    renderCharts(data);
-                } else {
-                    renderSampleData();
-                }
+                updateKPI(data);
+                renderCharts(data);
             } catch (error) {
                 console.error('Error:', error);
                 renderSampleData();
+            } finally {
+                hideLoadingState();
             }
         }
 
-        async function fetchDashboardData(days) {
-            const response = await fetch(`/Admin/Dashboard/GetData?days=${days}`);
-            if (!response.ok) throw new Error('Network error');
-            return await response.json();
+        function showLoadingState() {
+            document.querySelectorAll('#revenueCount, #orderCount, #bookCount, #userCount').forEach(el => {
+                el.innerHTML = '<div class="inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>';
+            });
+        }
+
+        function hideLoadingState() {
+            // Có thể thêm hiệu ứng tắt loading nếu cần
         }
 
         function updateKPI(data) {
-            const kpi = data.kpi || {};
+            const kpi = data.kpi;
 
-            document.getElementById('bookCount').textContent = kpi.sach?.toLocaleString() || '0';
-            document.getElementById('userCount').textContent = kpi.user?.toLocaleString() || '0';
-            document.getElementById('revenueCount').textContent = (kpi.revenue || 0).toLocaleString('vi-VN') + '₫';
-            document.getElementById('orderCount').textContent = kpi.order?.toLocaleString() || '0';
+            document.getElementById('bookCount').textContent = kpi.sach.toLocaleString();
+            document.getElementById('userCount').textContent = kpi.user.toLocaleString();
+            document.getElementById('revenueCount').textContent = formatCurrency(kpi.revenue);
+            document.getElementById('orderCount').textContent = kpi.order.toLocaleString();
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND',
+                minimumFractionDigits: 0
+            }).format(amount);
         }
 
         function renderCharts(data) {
             renderRevenueChart(data);
             renderCategoryChart(data);
             renderBestsellerChart(data);
+            renderAuthorChart(data);
+            renderOrderStatusChart(data);
+            renderPaymentMethodChart(data);
         }
 
         function renderRevenueChart(data) {
             const ctx = document.getElementById('revenueChart').getContext('2d');
-
             if (revenueChart) revenueChart.destroy();
 
             revenueChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: data.labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: data.labels,
                     datasets: [{
-                        label: 'Revenue',
-                        data: data.doanhThu || [1200000, 1900000, 1500000, 2500000, 2200000, 3000000, 2800000],
+                        label: 'Doanh thu',
+                        data: data.doanhThu,
                         borderColor: '#3b82f6',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        borderWidth: 2,
+                        borderWidth: 3,
                         tension: 0.4,
-                        fill: true
+                        fill: true,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
                     scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                maxRotation: 0
+                            }
+                        },
                         y: {
                             beginAtZero: true,
                             ticks: {
                                 callback: function(value) {
-                                    return (value / 1000000).toFixed(0) + 'M₫';
+                                    if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(0) + 'M';
+                                    } else if (value >= 1000) {
+                                        return (value / 1000).toFixed(0) + 'K';
+                                    }
+                                    return value;
                                 }
                             }
                         }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
                     }
                 }
             });
@@ -281,56 +329,198 @@
 
         function renderCategoryChart(data) {
             const ctx = document.getElementById('categoryChart').getContext('2d');
-
             if (categoryChart) categoryChart.destroy();
+
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#f97316'];
 
             categoryChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: data.theLoaiLabels || ['Fiction', 'Science', 'Business', 'History', 'Other'],
+                    labels: data.theLoaiLabels,
                     datasets: [{
-                        data: data.theLoai || [25, 20, 18, 15, 12],
-                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+                        data: data.theLoai,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
                 }
             });
         }
 
         function renderBestsellerChart(data) {
             const ctx = document.getElementById('bestsellerChart').getContext('2d');
-
             if (bestsellerChart) bestsellerChart.destroy();
 
             bestsellerChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: data.topSachLabels || ['Book 1', 'Book 2', 'Book 3', 'Book 4', 'Book 5'],
+                    labels: data.topSachLabels,
                     datasets: [{
-                        label: 'Sold',
-                        data: data.topSach || [45, 32, 28, 25, 18],
-                        backgroundColor: '#10b981'
+                        label: 'Số lượng bán',
+                        data: data.topSach,
+                        backgroundColor: '#10b981',
+                        borderRadius: 8,
+                        borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderAuthorChart(data) {
+            const ctx = document.getElementById('authorChart').getContext('2d');
+            if (authorChart) authorChart.destroy();
+
+            authorChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.topTacGiaLabels,
+                    datasets: [{
+                        label: 'Số lượng bán',
+                        data: data.topTacGia,
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderOrderStatusChart(data) {
+            const ctx = document.getElementById('orderStatusChart').getContext('2d');
+            if (orderStatusChart) orderStatusChart.destroy();
+
+            orderStatusChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.trangThaiLabels,
+                    datasets: [{
+                        data: data.trangThai,
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPaymentMethodChart(data) {
+            const ctx = document.getElementById('paymentMethodChart').getContext('2d');
+            if (paymentMethodChart) paymentMethodChart.destroy();
+
+            paymentMethodChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.hinhThucThanhToanLabels,
+                    datasets: [{
+                        data: data.hinhThucThanhToan,
+                        backgroundColor: ['#3b82f6', '#06b6d4', '#8b5cf6'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
             });
         }
 
         function renderSampleData() {
+            // Fallback data nếu API fail
             const sampleData = {
-                kpi: { sach: 156, user: 89, revenue: 12500000, order: 45 },
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                doanhThu: [1200000, 1900000, 1500000, 2500000, 2200000, 3000000, 2800000],
-                theLoai: [25, 20, 18, 15, 12],
-                theLoaiLabels: ['Fiction', 'Science', 'Business', 'History', 'Other'],
-                topSach: [45, 32, 28, 25, 18],
-                topSachLabels: ['Book One', 'Book Two', 'Book Three', 'Book Four', 'Book Five']
+                kpi: {
+                    sach: 0,
+                    user: 0,
+                    revenue: 0,
+                    order: 0
+                },
+                labels: [],
+                doanhThu: [],
+                theLoai: [],
+                theLoaiLabels: [],
+                topSach: [],
+                topSachLabels: [],
+                topTacGia: [],
+                topTacGiaLabels: [],
+                trangThai: [],
+                trangThaiLabels: [],
+                hinhThucThanhToan: [],
+                hinhThucThanhToanLabels: []
             };
 
             updateKPI(sampleData);

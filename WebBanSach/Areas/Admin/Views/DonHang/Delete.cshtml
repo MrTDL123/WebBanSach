@@ -2,30 +2,201 @@
 
 @{
     ViewData["Title"] = "Xóa Đơn Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Xóa Đơn Hàng</h1>
+<div class="min-h-screen bg-gradient-to-br from-gray-50/50 via-red-50/30 to-rose-50/30 dark:from-gray-900 dark:via-red-900/10 dark:to-rose-900/10 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-<h3>Bạn có chắc chắn muốn xóa đơn hàng này?</h3>
-<div>
-    <h4>Đơn Hàng #@Model.MaDonHang</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Mã Đơn Hàng:</dt>
-        <dd class="col-sm-10">@Model.MaDonHang</dd>
-        <dt class="col-sm-2">Khách Hàng:</dt>
-        <dd class="col-sm-10">@Model.KhachHang?.HoTen</dd>
-        <dt class="col-sm-2">Nhân Viên:</dt>
-        <dd class="col-sm-10">@Model.NhanVien?.HoTen</dd>
-        <dt class="col-sm-2">Tổng Tiền:</dt>
-        <dd class="col-sm-10">@Model.Total.ToString("N0") ₫</dd>
-        <dt class="col-sm-2">Ngày Tạo:</dt>
-        <dd class="col-sm-10">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
-    </dl>
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl shadow-2xl">
+                        <i class='bx bx-trash text-2xl text-white'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-red-600 to-rose-600 bg-clip-text text-transparent">
+                            Xóa Đơn Hàng
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Xác nhận xóa đơn hàng #@Model.MaDonHang</p>
+                    </div>
+                </div>
+                <a asp-action="Index" class="group inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                    <i class='bx bx-arrow-back mr-2 group-hover:-translate-x-1 transition-transform'></i>
+                    Quay lại danh sách
+                </a>
+            </div>
+        </div>
 
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="MaDonHang" />
-        <input type="submit" value="Xóa" class="btn btn-danger" />
-        <a asp-action="Index" class="btn btn-secondary">Quay lại danh sách</a>
-    </form>
+        <!-- Main Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-red-600 via-rose-600 to-pink-600">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-error-circle text-2xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Xác nhận xóa</h2>
+                            <p class="text-red-100 text-sm mt-1">Thao tác này không thể hoàn tác</p>
+                        </div>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="bg-white/20 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm border border-white/30">Cảnh báo</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <!-- Icon cảnh báo -->
+                <div class="text-center mb-8">
+                    <div class="mx-auto w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
+                        <i class='bx bx-error text-3xl text-red-600 dark:text-red-400'></i>
+                    </div>
+
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Bạn có chắc chắn muốn xóa?</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-lg">Thao tác này sẽ xóa vĩnh viễn đơn hàng và không thể khôi phục.</p>
+                </div>
+
+                <!-- Thông tin đơn hàng -->
+                <div class="bg-gradient-to-br from-gray-50 to-red-50 dark:from-gray-900 dark:to-red-900/20 rounded-2xl p-6 mb-6 border border-red-200/50 dark:border-red-800/30">
+                    <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                        <i class='bx bx-info-circle text-red-500'></i>
+                        Thông tin đơn hàng sẽ bị xóa
+                    </h4>
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <dt class="text-gray-600 dark:text-gray-400 font-semibold">Mã đơn hàng:</dt>
+                            <dd class="text-gray-900 dark:text-white font-bold">#@Model.MaDonHang</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-600 dark:text-gray-400 font-semibold">Khách hàng:</dt>
+                            <dd class="text-gray-900 dark:text-white font-bold">@Model.KhachHang?.HoTen</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-600 dark:text-gray-400 font-semibold">Nhân viên:</dt>
+                            <dd class="text-gray-900 dark:text-white font-bold">@Model.NhanVien?.HoTen</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-600 dark:text-gray-400 font-semibold">Tổng tiền:</dt>
+                            <dd class="text-gray-900 dark:text-white font-bold text-red-600 dark:text-red-400">@Model.Total.ToString("N0") ₫</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-600 dark:text-gray-400 font-semibold">Ngày tạo:</dt>
+                            <dd class="text-gray-900 dark:text-white font-bold">@Model.NgayTao.ToString("dd/MM/yyyy")</dd>
+                        </div>
+                        <div>
+                            <dt class="text-gray-600 dark:text-gray-400 font-semibold">Tình trạng thanh toán:</dt>
+                            <dd class="text-gray-900 dark:text-white font-bold">
+                                @if (Model.DaThanhToan)
+                                {
+                                    <span class="text-green-600 dark:text-green-400">Đã thanh toán</span>
+                                }
+                                else
+                                {
+                                    <span class="text-amber-600 dark:text-amber-400">Chờ thanh toán</span>
+                                }
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Cảnh báo quan trọng -->
+                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 mb-8">
+                    <div class="flex items-start gap-4">
+                        <i class='bx bx-error text-red-500 text-2xl mt-0.5'></i>
+                        <div>
+                            <h4 class="font-bold text-red-800 dark:text-red-300 mb-3 text-lg">Cảnh báo quan trọng</h4>
+                            <ul class="text-red-700 dark:text-red-400 text-sm space-y-2">
+                                <li class="flex items-center gap-2">
+                                    <i class='bx bx-x-circle'></i>
+                                    <span>Thao tác này không thể hoàn tác</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class='bx bx-x-circle'></i>
+                                    <span>Tất cả thông tin về đơn hàng sẽ bị xóa vĩnh viễn</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class='bx bx-x-circle'></i>
+                                    <span>Các chi tiết đơn hàng liên quan cũng sẽ bị xóa</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class='bx bx-x-circle'></i>
+                                    <span>Đảm bảo bạn đã sao lưu dữ liệu cần thiết</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form xóa -->
+                <form asp-action="Delete" method="post" class="space-y-6">
+                    <input type="hidden" asp-for="MaDonHang" />
+
+                    <!-- Xác nhận an toàn -->
+                    <div class="flex items-center justify-center gap-3 p-6 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                        <input type="checkbox" id="confirmDelete" class="w-6 h-6 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <label for="confirmDelete" class="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            Tôi hiểu hậu quả và muốn xóa đơn hàng này
+                        </label>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                        <button type="submit"
+                                id="submitBtn"
+                                class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-bold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transform hover:-translate-y-1"
+                                disabled>
+                            <i class='bx bx-trash text-xl mr-3'></i>
+                            <span class="btn-text">Xác Nhận Xóa</span>
+                            <i class='bx bx-loader-alt ml-3 hidden animate-spin'></i>
+                        </button>
+
+                        <a asp-action="Index"
+                           class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600 text-center transform hover:-translate-y-1">
+                            <i class='bx bx-x text-xl mr-3'></i>
+                            Hủy Bỏ
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const confirmCheckbox = document.getElementById('confirmDelete');
+            const submitButton = document.getElementById('submitBtn');
+            const btnText = submitButton.querySelector('.btn-text');
+            const loaderIcon = submitButton.querySelector('.bx-loader-alt');
+
+            // Khi checkbox thay đổi
+            confirmCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    submitButton.disabled = true;
+                    submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
+
+            // Xác nhận lần cuối khi submit
+            form.addEventListener('submit', function(e) {
+                if (!confirm('Bạn có CHẮC CHẮN muốn xóa đơn hàng này vĩnh viễn?\n\nThao tác này sẽ ảnh hưởng đến tất cả dữ liệu liên quan.')) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Hiển thị loading
+                submitButton.disabled = true;
+                btnText.textContent = 'Đang xóa...';
+                loaderIcon.classList.remove('hidden');
+            });
+        });
+    </script>
+}

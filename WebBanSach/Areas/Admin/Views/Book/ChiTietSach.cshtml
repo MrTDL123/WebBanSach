@@ -1,0 +1,350 @@
+﻿@model Media.Models.Sach
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Chi tiết sách";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-gray-50/50 via-blue-50/30 to-purple-50/30 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl">
+                        <i class='bx bx-book text-2xl text-white'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Chi Tiết Sách
+                        </h1>
+                        <p class="text-gray-600 mt-2 text-lg">Thông tin chi tiết về sách trong hệ thống</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a href="@Url.Action("QuanLySach", "Book", new { area = "Admin" })"
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                        <i class='bx bx-arrow-back mr-2'></i>
+                        Quay lại
+                    </a>
+                    <a href="@Url.Action("SuaSach", "Book", new { area = "Admin", id = Model.MaSach })"
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                        <i class='bx bx-edit mr-2'></i>
+                        Sửa sách
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Cột hình ảnh -->
+            <div class="space-y-6">
+                <!-- Ảnh bìa chính -->
+                <div class="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl border border-blue-100/50 overflow-hidden">
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class='bx bx-image mr-2'></i>
+                            Ảnh bìa chính
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center min-h-[400px]">
+                            @if (!string.IsNullOrEmpty(Model.AnhBiaChinh))
+                            {
+                                <img src="@Url.Content("~/img/product/" + Model.AnhBiaChinh)"
+                                     alt="Ảnh bìa chính"
+                                     id="mainImage"
+                                     class="w-full h-full object-cover transition-all duration-500 ease-in-out"
+                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/400x500?text=Không+có+ảnh'" />
+                            }
+                            else
+                            {
+                                <div class="text-center p-8">
+                                    <i class='bx bx-image text-6xl text-gray-400 mb-4'></i>
+                                    <p class="text-gray-500 text-lg">Không có ảnh bìa</p>
+                                </div>
+                            }
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                                    <i class='bx bx-star mr-1'></i>Ảnh chính
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ảnh bìa phụ -->
+                @{
+                    var anhBiaPhuList = new List<string?>
+                                {
+                                Model.AnhBiaPhu1,
+                                Model.AnhBiaPhu2,
+                                Model.AnhBiaPhu3,
+                                Model.AnhBiaPhu4
+                                }.Where(img => !string.IsNullOrEmpty(img)).ToList();
+                }
+
+                @if (anhBiaPhuList.Any())
+                {
+                    <div class="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl border border-blue-100/50 overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600">
+                            <h2 class="text-xl font-bold text-white flex items-center">
+                                <i class='bx bx-images mr-2'></i>
+                                Ảnh bìa phụ (@anhBiaPhuList.Count)
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="thumbnailGallery">
+                                @for (int i = 0; i < anhBiaPhuList.Count; i++)
+                                {
+                                    <div class="relative group cursor-pointer">
+                                        <img src="@Url.Content("~/img/product/" + anhBiaPhuList[i])"
+                                             alt="Ảnh bìa phụ @(i + 1)"
+                                             class="w-full h-24 object-cover rounded-xl shadow-lg transition-all duration-300 group-hover:scale-105 group-hover:shadow-2xl border-2 border-transparent group-hover:border-blue-500 thumbnail-image"
+                                             data-image="@Url.Content("~/img/product/" + anhBiaPhuList[i])"
+                                             onerror="this.onerror=null; this.src='https://via.placeholder.com/100x100?text=Không+có+ảnh'" />
+                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-xl transition-all duration-300 flex items-center justify-center">
+                                            <i class='bx bx-zoom-in text-white text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300'></i>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Cột thông tin chi tiết -->
+            <div class="space-y-6">
+                <!-- Thông tin cơ bản -->
+                <div class="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl border border-blue-100/50 overflow-hidden">
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class='bx bx-info-circle mr-2'></i>
+                            Thông tin cơ bản
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-4 border border-blue-100/50">
+                                <label class="text-sm font-semibold text-gray-600 mb-2">Mã sách</label>
+                                <div class="text-lg font-bold text-gray-900">@Model.MaSach</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-4 border border-blue-100/50">
+                                <label class="text-sm font-semibold text-gray-600 mb-2">Tên sách</label>
+                                <div class="text-xl font-bold text-gray-900">@Model.TenSach</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-4 border border-blue-100/50">
+                                <label class="text-sm font-semibold text-gray-600 mb-2">Nhà cung cấp</label>
+                                <div class="text-lg font-semibold text-gray-900">@Model.NhaCungCap</div>
+                            </div>
+                            <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-4 border border-blue-100/50">
+                                <label class="text-sm font-semibold text-gray-600 mb-2">Ngày cập nhật</label>
+                                <div class="text-lg font-semibold text-gray-900">@Model.NgayCapNhat.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin giá và số lượng -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Thông tin giá -->
+                    <div class="bg-gradient-to-br from-white to-green-50 rounded-3xl shadow-2xl border border-green-100/50 overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600">
+                            <h2 class="text-xl font-bold text-white flex items-center">
+                                <i class='bx bx-dollar-circle mr-2'></i>
+                                Thông tin giá
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Giá gốc:</span>
+                                    <span class="text-2xl font-bold text-gray-900">@String.Format("{0:N0} ₫", Model.GiaBan)</span>
+                                </div>
+                                @if (Model.PhanTramGiamGia > 0)
+                                {
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">Giảm giá:</span>
+                                        <span class="text-lg font-bold text-red-600">@Model.PhanTramGiamGia%</span>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                                        <span class="text-gray-600">Giá sau giảm:</span>
+                                        <span class="text-3xl font-bold text-green-600">@String.Format("{0:N0} ₫", Model.GiaSauGiam)</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tồn kho -->
+                    <div class="bg-gradient-to-br from-white to-amber-50 rounded-3xl shadow-2xl border border-amber-100/50 overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-amber-600 via-orange-600 to-red-600">
+                            <h2 class="text-xl font-bold text-white flex items-center">
+                                <i class='bx bx-package mr-2'></i>
+                                Tồn kho
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-center">
+                                <div class="text-5xl font-bold @(Model.SoLuong > 0 ? "text-green-600" : "text-red-600") mb-4">
+                                    @Model.SoLuong
+                                </div>
+                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold @(Model.SoLuong > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800")">
+                                    <i class='bx @(Model.SoLuong > 0 ? "bx-check" : "bx-x") mr-2'></i>
+                                    @(Model.SoLuong > 0 ? "Còn hàng" : "Hết hàng")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin danh mục -->
+                <div class="bg-gradient-to-br from-white to-purple-50 rounded-3xl shadow-2xl border border-purple-100/50 overflow-hidden">
+                    <div class="px-6 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600">
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class='bx bx-category mr-2'></i>
+                            Thông tin danh mục
+                        </h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Thể loại -->
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 text-center border border-blue-200/50">
+                                <div class="bg-blue-500 rounded-2xl p-3 inline-flex mb-4">
+                                    <i class='bx bx-bookmark text-2xl text-white'></i>
+                                </div>
+                                <label class="text-sm font-semibold text-gray-600 mb-2">Thể loại</label>
+                                <div class="text-lg font-bold text-gray-900">
+                                    @(Model.ChuDe?.TenChuDe ?? "Chưa có thông tin")
+                                </div>
+                            </div>
+
+                            <!-- Tác giả -->
+                            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-6 text-center border border-amber-200/50">
+                                <div class="bg-amber-500 rounded-2xl p-3 inline-flex mb-4">
+                                    <i class='bx bx-user-circle text-2xl text-white'></i>
+                                </div>
+                                <label class="text-sm font-semibold text-gray-600 mb-2">Tác giả</label>
+                                <div class="text-lg font-bold text-gray-900">
+                                    @(Model.TacGia?.TenTG ?? "Chưa có thông tin")
+                                </div>
+                            </div>
+
+                            <!-- Nhà xuất bản -->
+                            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center border border-green-200/50">
+                                <div class="bg-green-500 rounded-2xl p-3 inline-flex mb-4">
+                                    <i class='bx bx-building text-2xl text-white'></i>
+                                </div>
+                                <label class="text-sm font-semibold text-gray-600 mb-2">Nhà xuất bản</label>
+                                <div class="text-lg font-bold text-gray-900">
+                                    @(Model.NhaXuatBan?.TenNXB ?? "Chưa có thông tin")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mô tả sách -->
+                @if (!string.IsNullOrEmpty(Model.MoTa))
+                {
+                    <div class="bg-gradient-to-br from-white to-indigo-50 rounded-3xl shadow-2xl border border-indigo-100/50 overflow-hidden">
+                        <div class="px-6 py-4 bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-600">
+                            <h2 class="text-xl font-bold text-white flex items-center">
+                                <i class='bx bx-text mr-2'></i>
+                                Mô tả sách
+                            </h2>
+                        </div>
+                        <div class="p-6">
+                            <div class="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 border border-blue-100/50">
+                                <p class="text-gray-800 leading-relaxed whitespace-pre-line">@Model.MoTa</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="mt-8 bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl border border-gray-100/50 p-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-gray-500 text-sm flex items-center">
+                    <i class='bx bx-time mr-2'></i>
+                    Xem lần cuối: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                </div>
+                <div class="flex gap-3">
+                    <a href="@Url.Action("QuanLySach", "Book", new { area = "Admin" })"
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                        <i class='bx bx-arrow-back mr-2'></i>
+                        Quay lại
+                    </a>
+                    <a href="@Url.Action("SuaSach", "Book", new { area = "Admin", id = Model.MaSach })"
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                        <i class='bx bx-edit mr-2'></i>
+                        Sửa sách
+                    </a>
+                    <a href="@Url.Action("XoaSach", "Book", new { area = "Admin", id = Model.MaSach })"
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105"
+                       onclick="return confirm('Bạn có chắc muốn xóa sách \'@Model.TenSach\'?');">
+                        <i class='bx bx-trash mr-2'></i>
+                        Xóa sách
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const mainImage = document.getElementById('mainImage');
+        const thumbnailImages = document.querySelectorAll('.thumbnail-image');
+
+        // Xử lý click vào thumbnail
+        thumbnailImages.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                const imageUrl = this.getAttribute('data-image');
+
+                // Thêm hiệu ứng fade out
+                mainImage.style.opacity = '0.7';
+                mainImage.style.transform = 'scale(0.95)';
+
+                setTimeout(() => {
+                    mainImage.src = imageUrl;
+                    // Fade in và scale về bình thường
+                    mainImage.style.opacity = '1';
+                    mainImage.style.transform = 'scale(1)';
+                }, 200);
+
+                // Highlight thumbnail được chọn
+                thumbnailImages.forEach(t => {
+                    t.classList.remove('border-blue-500', 'border-2');
+                    t.classList.add('border-transparent');
+                });
+                this.classList.remove('border-transparent');
+                this.classList.add('border-blue-500', 'border-2');
+            });
+        });
+
+        // Khởi tạo thumbnail đầu tiên là active (nếu có)
+        if (thumbnailImages.length > 0) {
+            thumbnailImages[0].classList.remove('border-transparent');
+            thumbnailImages[0].classList.add('border-blue-500', 'border-2');
+        }
+    });
+</script>
+
+<style>
+    .thumbnail-image {
+        transition: all 0.3s ease;
+    }
+
+        .thumbnail-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+    #mainImage {
+        transition: all 0.5s ease-in-out;
+    }
+</style>

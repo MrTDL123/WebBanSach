@@ -1,0 +1,252 @@
+﻿@model Media.Models.TacGia
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Chi tiết Tác Giả";
+    var saches = ViewBag.Saches as List<Media.Models.Sach> ?? new List<Media.Models.Sach>();
+}
+
+<div class="min-h-screen bg-gray-50/50 dark:bg-gray-900/50 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                        <i class='bx bx-user-circle text-2xl text-blue-600 dark:text-blue-400'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Chi Tiết Tác Giả</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Thông tin chi tiết và danh sách sách của tác giả</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="@Url.Action("SuaTacGia", "Author", new { id = Model.MaTacGia })"
+                       class="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors">
+                        <i class='bx bx-edit mr-2'></i>
+                        Sửa Thông Tin
+                    </a>
+                    <a href="@Url.Action("QuanLyTacGia", "Author")"
+                       class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors">
+                        <i class='bx bx-arrow-back mr-2'></i>
+                        Quay Lại
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Thông tin tác giả -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+
+                    <!-- Card Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700">
+                        <h2 class="text-lg font-bold text-white flex items-center">
+                            <i class='bx bx-info-circle mr-2'></i>
+                            Thông Tin Tác Giả
+                        </h2>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-6">
+                        <!-- Avatar -->
+                        <div class="text-center mb-6">
+                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-2xl">
+                                <i class='bx bx-user-voice'></i>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin chi tiết -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Mã tác giả</span>
+                                <span class="font-mono text-sm font-bold text-gray-900 dark:text-white">#@Model.MaTacGia</span>
+                            </div>
+
+                            <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Tên tác giả</span>
+                                <span class="text-lg font-bold text-gray-900 dark:text-white">@Model.TenTG</span>
+                            </div>
+
+                            <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Quốc tịch</span>
+                                <span class="text-sm">
+                                    @if (!string.IsNullOrEmpty(Model.QuocTich))
+                                    {
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                            <i class='bx bx-flag mr-1'></i>
+                                            @Model.QuocTich
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-400 dark:text-gray-500 text-sm">Chưa cập nhật</span>
+                                    }
+                                </span>
+                            </div>
+
+                            <div class="flex justify-between items-center pb-3 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Tổng số sách</span>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                    <i class='bx bx-book mr-1'></i>
+                                    @ViewBag.SoLuongSach sách
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Tiểu sử -->
+                        @if (!string.IsNullOrEmpty(Model.TieuSu))
+                        {
+                            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+                                    <i class='bx bx-book-open mr-2'></i>
+                                    Tiểu sử
+                                </h3>
+                                <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">@Model.TieuSu</p>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Action Buttons -->
+                        <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-col gap-2">
+                            <a href="@Url.Action("SuaTacGia", "Author", new { id = Model.MaTacGia })"
+                               class="inline-flex items-center justify-center px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors">
+                                <i class='bx bx-edit mr-2'></i>
+                                Chỉnh Sửa
+                            </a>
+                            <a href="@Url.Action("QuanLyTacGia", "Author")"
+                               class="inline-flex items-center justify-center px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors">
+                                <i class='bx bx-arrow-back mr-2'></i>
+                                Danh Sách Tác Giả
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách sách -->
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+
+                    <!-- Card Header -->
+                    <div class="px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                            <h2 class="text-lg font-bold text-white flex items-center">
+                                <i class='bx bx-book-alt mr-2'></i>
+                                Danh Sách Sách
+                                <span class="ml-2 bg-white/20 text-white text-xs px-2 py-1 rounded-full">@saches.Count sách</span>
+                            </h2>
+                            <div class="flex items-center gap-2 text-green-100 text-sm">
+                                <i class='bx bx-stats'></i>
+                                <span>Tổng: @saches.Count quyển</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Body -->
+                    <div class="p-6">
+                        @if (saches.Any())
+                        {
+                            <div class="overflow-hidden">
+                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Mã sách
+                                            </th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Tên sách
+                                            </th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Giá bán
+                                            </th>
+                                            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                                Số lượng
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                        @foreach (var sach in saches)
+                                        {
+                                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    <span class="text-sm font-mono text-gray-900 dark:text-white">#@sach.MaSach</span>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <div class="text-sm font-medium text-gray-900 dark:text-white">@sach.TenSach</div>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                        @sach.GiaBan.ToString("N0") ₫
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-3 whitespace-nowrap">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                        @sach.SoLuong quyển
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Summary -->
+                            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+                                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">@saches.Count</div>
+                                        <div class="text-sm text-blue-600 dark:text-blue-400">Tổng sách</div>
+                                    </div>
+                                    <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+                                        <div class="text-2xl font-bold text-green-600 dark:text-green-400">
+                                            @saches.Sum(s => s.SoLuong)
+                                        </div>
+                                        <div class="text-sm text-green-600 dark:text-green-400">Tổng số lượng</div>
+                                    </div>
+                                    <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
+                                        <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                                            @saches.Sum(s => s.GiaBan * s.SoLuong).ToString("N0") ₫
+                                        </div>
+                                        <div class="text-sm text-purple-600 dark:text-purple-400">Tổng giá trị</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Empty State -->
+                            <div class="text-center py-12">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full mb-4">
+                                    <i class='bx bx-book-open text-2xl text-gray-400'></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Chưa có sách nào</h3>
+                                <p class="text-gray-500 dark:text-gray-400 mb-6">Tác giả này chưa có sách nào trong hệ thống</p>
+                                <a href="@Url.Action("QuanLySach", "Book")"
+                                   class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors">
+                                    <i class='bx bx-plus mr-2'></i>
+                                    Thêm Sách Mới
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    @@media (max-width: 768px) {
+        .table-responsive table {
+            min-width: 600px;
+        }
+    }
+</style>

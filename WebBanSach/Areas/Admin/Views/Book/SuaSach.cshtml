@@ -1,6 +1,7 @@
 ﻿@model Media.Models.Sach
 @{
     ViewBag.Title = "Sửa sách";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -24,8 +25,22 @@
                 </div>
             }
 
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             <form asp-action="SuaSach" method="post" enctype="multipart/form-data" id="formSuaSach">
                 <input type="hidden" asp-for="MaSach" />
+                <!-- Thêm các trường ẩn để giữ giá trị ảnh cũ -->
+                <input type="hidden" asp-for="AnhBiaChinh" />
+                <input type="hidden" asp-for="AnhBiaPhu1" />
+                <input type="hidden" asp-for="AnhBiaPhu2" />
+                <input type="hidden" asp-for="AnhBiaPhu3" />
+                <input type="hidden" asp-for="AnhBiaPhu4" />
 
                 <div class="row g-4">
                     <!-- Thông tin cơ bản -->
@@ -45,15 +60,43 @@
                     <!-- Giá bán -->
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">Giá bán (VNĐ) <span class="text-danger">*</span></label>
-                        <input asp-for="GiaBan" class="form-control" type="number" min="0" placeholder="0" />
+                        <input asp-for="GiaBan" class="form-control" type="number" min="0" step="1000" placeholder="0" />
                         <span asp-validation-for="GiaBan" class="text-danger small"></span>
                     </div>
 
-                    <!-- Số lượng -->
+                    <!-- Phần trăm giảm giá -->
                     <div class="col-md-3">
+                        <label class="form-label fw-semibold">Phần trăm giảm giá (%)</label>
+                        <input asp-for="PhanTramGiamGia" class="form-control" type="number" min="0" max="100" step="1" placeholder="0" />
+                        <span asp-validation-for="PhanTramGiamGia" class="text-danger small"></span>
+                        @if (Model.PhanTramGiamGia > 0)
+                        {
+                            <small class="text-success">
+                                Giá sau giảm: <strong>@((Model.GiaBan * (100 - Model.PhanTramGiamGia) / 100).ToString("N0")) VNĐ</strong>
+                            </small>
+                        }
+                    </div>
+
+                    <!-- Số lượng -->
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">Số lượng <span class="text-danger">*</span></label>
                         <input asp-for="SoLuong" class="form-control" type="number" min="0" placeholder="0" />
                         <span asp-validation-for="SoLuong" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Nhà cung cấp -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Nhà cung cấp <span class="text-danger">*</span></label>
+                        <input asp-for="NhaCungCap" class="form-control" placeholder="Nhập nhà cung cấp..." />
+                        <span asp-validation-for="NhaCungCap" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Ngày cập nhật -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Ngày cập nhật</label>
+                        <input asp-for="NgayCapNhat" class="form-control" type="datetime-local"
+                               value="@Model.NgayCapNhat.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="NgayCapNhat" class="text-danger small"></span>
                     </div>
 
                     <!-- Danh mục liên quan -->
@@ -65,14 +108,14 @@
 
                     <!-- Chủ đề -->
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Chủ đề</label>
-                        <select asp-for="MaChuDe" class="form-select">
+                        <label class="form-label fw-semibold">Chủ đề <span class="text-danger">*</span></label>
+                        <select asp-for="MaChuDe" class="form-select" required>
                             <option value="">-- Chọn Chủ đề --</option>
                             @if (ViewBag.ChuDes != null)
                             {
                                 foreach (var item in ViewBag.ChuDes)
                                 {
-                                    <option value="@item.MaChuDe" selected="@(item.MaChuDe == Model.MaChuDe ? "selected" : null)">@item.TenChuDe</option>
+                                    <option value="@item.MaChuDe" selected="@(item.MaChuDe == Model.MaChuDe)">@item.TenChuDe</option>
                                 }
                             }
                         </select>
@@ -81,14 +124,14 @@
 
                     <!-- Tác giả -->
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Tác giả</label>
-                        <select asp-for="MaTacGia" class="form-select">
+                        <label class="form-label fw-semibold">Tác giả <span class="text-danger">*</span></label>
+                        <select asp-for="MaTacGia" class="form-select" required>
                             <option value="">-- Chọn Tác giả --</option>
                             @if (ViewBag.TacGias != null)
                             {
                                 foreach (var item in ViewBag.TacGias)
                                 {
-                                    <option value="@item.MaTacGia" selected="@(item.MaTacGia == Model.MaTacGia ? "selected" : null)">@item.TenTG</option>
+                                    <option value="@item.MaTacGia" selected="@(item.MaTacGia == Model.MaTacGia)">@item.TenTG</option>
                                 }
                             }
                         </select>
@@ -97,14 +140,14 @@
 
                     <!-- Nhà xuất bản -->
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Nhà xuất bản</label>
-                        <select asp-for="MaNhaXuatBan" class="form-select">
+                        <label class="form-label fw-semibold">Nhà xuất bản <span class="text-danger">*</span></label>
+                        <select asp-for="MaNhaXuatBan" class="form-select" required>
                             <option value="">-- Chọn NXB --</option>
                             @if (ViewBag.NhaXuatBans != null)
                             {
                                 foreach (var item in ViewBag.NhaXuatBans)
                                 {
-                                    <option value="@item.MaNhaXuatBan" selected="@(item.MaNhaXuatBan == Model.MaNhaXuatBan ? "selected" : null)">@item.TenNXB</option>
+                                    <option value="@item.MaNhaXuatBan" selected="@(item.MaNhaXuatBan == Model.MaNhaXuatBan)">@item.TenNXB</option>
                                 }
                             }
                         </select>
@@ -118,37 +161,108 @@
                         </h5>
                     </div>
 
-                    <!-- Nhà cung cấp -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Nhà cung cấp</label>
-                        <input asp-for="NhaCungCap" class="form-control" placeholder="Nhập nhà cung cấp..." />
-                    </div>
-
                     <!-- Mô tả -->
                     <div class="col-12">
-                        <label class="form-label fw-semibold">Mô tả</label>
-                        <textarea asp-for="MoTa" class="form-control" rows="5" placeholder="Nhập mô tả chi tiết về sách..."></textarea>
+                        <label class="form-label fw-semibold">Mô tả sản phẩm</label>
+                        <textarea asp-for="MoTa" class="form-control" rows="5" placeholder="Nhập mô tả chi tiết về sách...">@Model.MoTa</textarea>
+                        <span asp-validation-for="MoTa" class="text-danger small"></span>
                     </div>
 
                     <!-- Ảnh bìa -->
                     <div class="col-12 mt-4">
                         <h5 class="text-primary mb-3 border-bottom pb-2">
-                            <i class="fas fa-image me-2"></i>Hình ảnh
+                            <i class="fas fa-image me-2"></i>Hình ảnh sản phẩm
                         </h5>
 
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Ảnh bìa</label>
-                                <input class="form-control" type="file" name="fileAnhBia" id="fileAnhBia" accept="image/*" />
-                                <div class="form-text">Chọn ảnh mới để thay thế ảnh hiện tại</div>
+                        <div class="row">
+                            <!-- Ảnh bìa chính -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Ảnh bìa chính</label>
+                                <input class="form-control" type="file" name="fileAnhBiaChinh" id="fileAnhBiaChinh" accept="image/*" />
+                                <div class="form-text">Chọn ảnh mới để thay thế ảnh hiện tại (JPEG, PNG, JPG - Tối đa 5MB)</div>
+
+                                <!-- Hiển thị ảnh bìa chính hiện tại -->
+                                <div class="mt-3">
+                                    <p class="fw-semibold mb-2">Ảnh bìa chính hiện tại:</p>
+                                    <div class="text-center border rounded p-3 bg-light">
+                                        @if (!string.IsNullOrEmpty(Model.AnhBiaChinh))
+                                        {
+                                            <img src="@Url.Content("~/img/product/" + Model.AnhBiaChinh)"
+                                                 alt="Ảnh bìa chính hiện tại"
+                                                 class="img-fluid rounded shadow"
+                                                 style="max-height: 250px; max-width: 100%;"
+                                                 id="currentMainImage"
+                                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/250x300?text=Không+có+ảnh';" />
+                                        }
+                                        else
+                                        {
+                                            <div id="noMainImage">
+                                                <i class="fas fa-image fa-3x text-muted mb-2"></i>
+                                                <p class="text-muted">Không có ảnh bìa chính</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Preview ảnh mới (nếu chọn) -->
+                                <div class="mt-3 d-none" id="newMainImagePreview">
+                                    <p class="fw-semibold mb-2">Ảnh bìa chính mới:</p>
+                                    <div class="text-center border rounded p-3 bg-light">
+                                        <img id="previewAnhBiaChinh" src="" alt="Ảnh bìa chính mới"
+                                             class="img-fluid rounded shadow" style="max-height: 250px; max-width: 100%;" />
+                                    </div>
+                                </div>
                             </div>
 
+                            <!-- Ảnh bìa phụ -->
                             <div class="col-md-6">
-                                <div class="border rounded p-3 text-center bg-light">
-                                    <p class="fw-semibold mb-2">Xem trước ảnh</p>
-                                    <img id="previewImg" src="~/uploads/@Model.AnhBiaChinh" alt="Ảnh bìa sách"
-                                         class="img-fluid rounded shadow-sm" style="max-height: 200px; max-width: 100%;"
-                                         onerror="this.src='https://via.placeholder.com/200x250?text=No+Image'" />
+                                <label class="form-label fw-semibold">Ảnh bìa phụ (tối đa 4 ảnh)</label>
+                                <input class="form-control" type="file" name="filesAnhBiaPhu" id="filesAnhBiaPhu" accept="image/*" multiple />
+                                <div class="form-text">Có thể chọn nhiều ảnh cùng lúc để thay thế ảnh hiện tại</div>
+
+                                <!-- Hiển thị ảnh bìa phụ hiện tại -->
+                                <div class="mt-3">
+                                    <p class="fw-semibold mb-2">Ảnh bìa phụ hiện tại:</p>
+                                    <div class="row">
+                                        @{
+                                            var anhBiaPhuList = new List<string> { Model.AnhBiaPhu1, Model.AnhBiaPhu2, Model.AnhBiaPhu3, Model.AnhBiaPhu4 };
+                                            var anhBiaPhuCount = 0;
+                                        }
+                                        @for (int i = 0; i < anhBiaPhuList.Count; i++)
+                                        {
+                                            if (!string.IsNullOrEmpty(anhBiaPhuList[i]))
+                                            {
+                                                anhBiaPhuCount++;
+                                                <div class="col-6 mb-3">
+                                                    <div class="border rounded p-2 text-center bg-light">
+                                                        <p class="small mb-1">Ảnh phụ @anhBiaPhuCount</p>
+                                                        <img src="@Url.Content("~/img/product/" + anhBiaPhuList[i])"
+                                                             alt="Ảnh phụ @anhBiaPhuCount"
+                                                             class="img-fluid rounded"
+                                                             style="max-height: 120px; max-width: 100%;"
+                                                             onerror="this.onerror=null; this.src='https://via.placeholder.com/120x150?text=Không+có+ảnh';" />
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        @if (anhBiaPhuCount == 0)
+                                        {
+                                            <div class="col-12">
+                                                <div class="text-center border rounded p-3 bg-light">
+                                                    <i class="fas fa-images fa-2x text-muted mb-2"></i>
+                                                    <p class="text-muted">Không có ảnh bìa phụ</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+
+                                <!-- Preview ảnh bìa phụ mới (nếu chọn) -->
+                                <div class="mt-3 d-none" id="newSubImagesPreview">
+                                    <p class="fw-semibold mb-2">Ảnh bìa phụ mới:</p>
+                                    <div class="row" id="subImagesPreviewContainer">
+                                        <!-- JavaScript sẽ thêm preview ảnh phụ ở đây -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -162,7 +276,7 @@
                             <a href="@Url.Action("QuanLySach")" class="btn btn-outline-secondary px-4">
                                 <i class="fas fa-times me-2"></i>Hủy bỏ
                             </a>
-                            <button type="submit" class="btn btn-success px-4">
+                            <button type="submit" class="btn btn-success px-4" id="submitBtn">
                                 <i class="fas fa-save me-2"></i>Cập nhật sách
                             </button>
                         </div>
@@ -176,53 +290,188 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('fileAnhBia');
-            const preview = document.getElementById('previewImg');
+            const fileAnhBiaChinh = document.getElementById('fileAnhBiaChinh');
+            const filesAnhBiaPhu = document.getElementById('filesAnhBiaPhu');
+            const newMainImagePreview = document.getElementById('newMainImagePreview');
+            const previewAnhBiaChinh = document.getElementById('previewAnhBiaChinh');
+            const newSubImagesPreview = document.getElementById('newSubImagesPreview');
+            const subImagesPreviewContainer = document.getElementById('subImagesPreviewContainer');
+            const submitBtn = document.getElementById('submitBtn');
 
-            // Xử lý thay đổi ảnh
-            fileInput.addEventListener('change', function() {
+            // Xử lý thay đổi ảnh bìa chính
+            fileAnhBiaChinh.addEventListener('change', function() {
                 const file = this.files[0];
                 if (file) {
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('Kích thước ảnh không được vượt quá 5MB');
+                    if (validateImage(file)) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewAnhBiaChinh.src = e.target.result;
+                            newMainImagePreview.classList.remove('d-none');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
                         this.value = '';
-                        return;
+                        newMainImagePreview.classList.add('d-none');
                     }
-
-                    if (!file.type.startsWith('image/')) {
-                        alert('Vui lòng chọn file ảnh');
-                        this.value = '';
-                        return;
-                    }
-
-                    preview.src = URL.createObjectURL(file);
+                } else {
+                    newMainImagePreview.classList.add('d-none');
                 }
             });
+
+            // Xử lý thay đổi ảnh bìa phụ
+            filesAnhBiaPhu.addEventListener('change', function() {
+                const files = this.files;
+
+                // Xóa preview cũ
+                subImagesPreviewContainer.innerHTML = '';
+                newSubImagesPreview.classList.add('d-none');
+
+                if (files.length > 0) {
+                    if (files.length > 4) {
+                        alert('Chỉ được chọn tối đa 4 ảnh bìa phụ');
+                        this.value = '';
+                        return;
+                    }
+
+                    let validFiles = true;
+                    for (let i = 0; i < files.length; i++) {
+                        if (!validateImage(files[i])) {
+                            validFiles = false;
+                            break;
+                        }
+                    }
+
+                    if (validFiles) {
+                        newSubImagesPreview.classList.remove('d-none');
+                        for (let i = 0; i < files.length; i++) {
+                            const file = files[i];
+                            const reader = new FileReader();
+
+                            reader.onload = function(e) {
+                                const colDiv = document.createElement('div');
+                                colDiv.className = 'col-6 mb-3';
+
+                                const previewDiv = document.createElement('div');
+                                previewDiv.className = 'border rounded p-2 text-center bg-light';
+
+                                const title = document.createElement('p');
+                                title.className = 'small mb-1';
+                                title.textContent = `Ảnh phụ ${i + 1}`;
+
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.className = 'img-fluid rounded';
+                                img.style.maxHeight = '120px';
+                                img.style.maxWidth = '100%';
+                                img.alt = `Ảnh phụ ${i + 1}`;
+
+                                previewDiv.appendChild(title);
+                                previewDiv.appendChild(img);
+                                colDiv.appendChild(previewDiv);
+                                subImagesPreviewContainer.appendChild(colDiv);
+                            };
+
+                            reader.readAsDataURL(file);
+                        }
+                    } else {
+                        this.value = '';
+                    }
+                }
+            });
+
+            // Validate image
+            function validateImage(file) {
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Chỉ chấp nhận file ảnh (JPEG, JPG, PNG, GIF, WEBP)');
+                    return false;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Kích thước ảnh không được vượt quá 5MB');
+                    return false;
+                }
+
+                return true;
+            }
 
             // Xử lý form submit
             document.getElementById('formSuaSach').addEventListener('submit', function(e) {
+                // Hiển thị loading
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang cập nhật...';
+
                 const tenSach = document.querySelector('[name="TenSach"]').value.trim();
                 const giaBan = document.querySelector('[name="GiaBan"]').value;
                 const soLuong = document.querySelector('[name="SoLuong"]').value;
+                const nhaCungCap = document.querySelector('[name="NhaCungCap"]').value.trim();
+                const maChuDe = document.querySelector('[name="MaChuDe"]').value;
+                const maTacGia = document.querySelector('[name="MaTacGia"]').value;
+                const maNhaXuatBan = document.querySelector('[name="MaNhaXuatBan"]').value;
+
+                let isValid = true;
+                let errorMessage = '';
 
                 if (!tenSach) {
-                    e.preventDefault();
-                    alert('Vui lòng nhập tên sách');
-                    return;
+                    errorMessage = 'Vui lòng nhập tên sách';
+                    isValid = false;
+                } else if (!giaBan || giaBan <= 0) {
+                    errorMessage = 'Vui lòng nhập giá bán hợp lệ';
+                    isValid = false;
+                } else if (!soLuong || soLuong < 0) {
+                    errorMessage = 'Vui lòng nhập số lượng hợp lệ';
+                    isValid = false;
+                } else if (!nhaCungCap) {
+                    errorMessage = 'Vui lòng nhập nhà cung cấp';
+                    isValid = false;
+                } else if (!maChuDe) {
+                    errorMessage = 'Vui lòng chọn chủ đề';
+                    isValid = false;
+                } else if (!maTacGia) {
+                    errorMessage = 'Vui lòng chọn tác giả';
+                    isValid = false;
+                } else if (!maNhaXuatBan) {
+                    errorMessage = 'Vui lòng chọn nhà xuất bản';
+                    isValid = false;
                 }
 
-                if (!giaBan || giaBan <= 0) {
+                if (!isValid) {
                     e.preventDefault();
-                    alert('Vui lòng nhập giá bán hợp lệ');
-                    return;
-                }
-
-                if (!soLuong || soLuong < 0) {
-                    e.preventDefault();
-                    alert('Vui lòng nhập số lượng hợp lệ');
-                    return;
+                    alert(errorMessage);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Cập nhật sách';
                 }
             });
+
+            // Format giá bán khi nhập
+            const giaBanInput = document.querySelector('[name="GiaBan"]');
+            if (giaBanInput) {
+                giaBanInput.addEventListener('blur', function() {
+                    if (this.value) {
+                        this.value = Math.round(this.value / 1000) * 1000;
+                    }
+                });
+            }
         });
     </script>
+
+    <style>
+        .img-fluid {
+            object-fit: contain;
+        }
+
+        .border {
+            border-color: #dee2e6 !important;
+        }
+
+        .bg-light {
+            background-color: #f8f9fa !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
 }

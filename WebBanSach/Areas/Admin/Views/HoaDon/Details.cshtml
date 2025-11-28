@@ -1,0 +1,339 @@
+﻿@model Media.Models.HoaDon
+
+@{
+    ViewData["Title"] = "Chi Tiết Hóa Đơn";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="min-h-screen bg-gradient-to-br from-gray-50/50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-2xl">
+                        <i class='bx bx-receipt text-2xl text-white'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                            Chi Tiết Hóa Đơn
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Thông tin chi tiết hóa đơn #@Model.MaHoaDon</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a asp-controller="DonHang" asp-action="Details" asp-route-id="@Model.MaDonHang"
+                       class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1">
+                        <i class='bx bx-arrow-back mr-2 group-hover:-translate-x-1 transition-transform'></i>
+                        Quay lại Đơn Hàng
+                    </a>
+                    <button onclick="window.print()"
+                            class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1">
+                        <i class='bx bx-printer mr-2 group-hover:scale-110 transition-transform'></i>
+                        Xuất hóa đơn 
+                        (file PDF)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-receipt text-2xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Hóa Đơn #@Model.MaHoaDon</h2>
+                            <p class="text-green-100 text-sm mt-1">Đơn hàng #@Model.MaDonHang</p>
+                        </div>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="bg-white/20 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-calendar mr-2'></i>
+                            @Model.NgayLap?.ToString("dd/MM/yyyy")
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Thông tin hóa đơn -->
+                    <div class="space-y-6">
+                        <!-- Thông tin chung -->
+                        <div class="bg-gradient-to-br from-gray-50 to-green-50 dark:from-gray-900 dark:to-green-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                    <i class='bx bx-receipt text-green-600 dark:text-green-400'></i>
+                                </div>
+                                Thông tin Hóa Đơn
+                            </h3>
+                            <dl class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Mã hóa đơn</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.MaHoaDon</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Mã đơn hàng</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.MaDonHang</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Ngày lập</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.NgayLap?.ToString("dd/MM/yyyy HH:mm")</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">VAT</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.VAT%</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Trạng thái</dt>
+                                    <dd>
+                                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg">
+                                            <i class='bx bx-check-circle mr-2'></i>
+                                            @Model.TrangThai
+                                        </span>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <!-- Thông tin khách hàng -->
+                        <div class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                    <i class='bx bx-user-circle text-blue-600 dark:text-blue-400'></i>
+                                </div>
+                                Thông tin Khách Hàng
+                            </h3>
+                            <dl class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Khách hàng</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.KhachHang?.HoTen</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Người nhận</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.TenNguoiNhan</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">SĐT nhận</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.SoDienThoaiNhan</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Địa chỉ</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        @Model.DonHang.DiaChiChiTiet, @Model.DonHang.PhuongXa, @Model.DonHang.QuanHuyen, @Model.DonHang.TinhThanh
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin thanh toán & vận chuyển -->
+                    <div class="space-y-6">
+                        <!-- Thông tin thanh toán -->
+                        <div class="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-purple-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                    <i class='bx bx-credit-card text-purple-600 dark:text-purple-400'></i>
+                                </div>
+                                Thông tin Thanh Toán
+                            </h3>
+                            <dl class="space-y-4">
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Hình thức thanh toán</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.HinhThucThanhToan</dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Tình trạng thanh toán</dt>
+                                    <dd>
+                                        @if (Model.DonHang.DaThanhToan)
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg">
+                                                <i class='bx bx-check-circle mr-2'></i>
+                                                Đã thanh toán
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg">
+                                                <i class='bx bx-time mr-2'></i>
+                                                Chờ thanh toán
+                                            </span>
+                                        }
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Nhân viên xử lý</dt>
+                                    <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.NhanVien?.HoTen</dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <!-- Thông tin vận chuyển -->
+                        @if (Model.DonHang.VanChuyen != null)
+                        {
+                            <div class="bg-gradient-to-br from-gray-50 to-amber-50 dark:from-gray-900 dark:to-amber-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
+                                    <div class="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                                        <i class='bx bx-truck text-amber-600 dark:text-amber-400'></i>
+                                    </div>
+                                    Thông tin Vận Chuyển
+                                </h3>
+                                <dl class="space-y-4">
+                                    <div>
+                                        <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Đơn vị vận chuyển</dt>
+                                        <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.VanChuyen.DonViVanChuyen</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Mã vận đơn</dt>
+                                        <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.VanChuyen.MaVanDon</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Trạng thái giao hàng</dt>
+                                        <dd>
+                                            @if (Model.DonHang.VanChuyen.TrangThaiGiaoHang == TrangThaiGiaoHang.GiaoHangThanhCong)
+                                            {
+                                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg">
+                                                    <i class='bx bx-check-double mr-2'></i>
+                                                    Giao hàng thành công
+                                                </span>
+                                            }
+                                            else if (Model.DonHang.VanChuyen.TrangThaiGiaoHang == TrangThaiGiaoHang.DangGiaoHang)
+                                            {
+                                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg">
+                                                    <i class='bx bx-truck mr-2'></i>
+                                                    Đang giao hàng
+                                                </span>
+                                            }
+                                            else if (Model.DonHang.VanChuyen.TrangThaiGiaoHang == TrangThaiGiaoHang.GiaoThatBai)
+                                            {
+                                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg">
+                                                    <i class='bx bx-x-circle mr-2'></i>
+                                                    Giao thất bại
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg">
+                                                    <i class='bx bx-time-five mr-2'></i>
+                                                    Chờ xử lý
+                                                </span>
+                                            }
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-sm font-semibold text-gray-600 dark:text-gray-400">Phí vận chuyển</dt>
+                                        <dd class="text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.VanChuyen.PhiVanChuyen.ToString("N0") ₫</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Chi tiết sản phẩm -->
+                <div class="mt-8 bg-gradient-to-br from-gray-50 to-indigo-50 dark:from-gray-900 dark:to-indigo-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                        <div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                            <i class='bx bx-list-ul text-indigo-600 dark:text-indigo-400'></i>
+                        </div>
+                        Chi Tiết Sản Phẩm
+                    </h3>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gradient-to-r from-gray-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900/30 border-b-2 border-gray-200/50 dark:border-gray-700/50">
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Sản phẩm</th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Số lượng</th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Đơn giá</th>
+                                    <th class="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200/30 dark:divide-gray-700/30">
+                                @foreach (var chiTiet in Model.DonHang.ChiTietDonHangs)
+                                {
+                                    <tr class="hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors duration-150">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                                    <i class='bx bx-book text-white'></i>
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-semibold text-gray-900 dark:text-white">@chiTiet.Sach?.TenSach</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">Mã: @chiTiet.MaSach</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">@chiTiet.SoLuong</td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">@chiTiet.DonGia.ToString("N0") ₫</td>
+                                        <td class="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                            @chiTiet.ThanhTien.ToString("N0") ₫
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-gradient-to-r from-gray-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900/30 border-t-2 border-gray-200/50 dark:border-gray-700/50">
+                                    <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-gray-700 dark:text-gray-300">Tổng tiền hàng:</td>
+                                    <td class="px-6 py-4 text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.Total.ToString("N0") ₫</td>
+                                </tr>
+                                @if (Model.DonHang.VanChuyen != null)
+                                {
+                                    <tr class="bg-gradient-to-r from-gray-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900/30">
+                                        <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-gray-700 dark:text-gray-300">Phí vận chuyển:</td>
+                                        <td class="px-6 py-4 text-lg font-bold text-gray-900 dark:text-white">@Model.DonHang.VanChuyen.PhiVanChuyen.ToString("N0") ₫</td>
+                                    </tr>
+                                }
+                                @if (Model.VAT > 0)
+                                {
+                                    <tr class="bg-gradient-to-r from-gray-100 to-indigo-100 dark:from-gray-800 dark:to-indigo-900/30">
+                                        <td colspan="3" class="px-6 py-4 text-right text-sm font-bold text-gray-700 dark:text-gray-300">VAT (@Model.VAT%):</td>
+                                        <td class="px-6 py-4 text-lg font-bold text-gray-900 dark:text-white">@((Model.DonHang.Total * Model.VAT / 100).ToString("N0")) ₫</td>
+                                    </tr>
+                                }
+                                <tr class="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border-t-2 border-green-200/50 dark:border-green-700/50">
+                                    <td colspan="3" class="px-6 py-4 text-right text-lg font-bold text-gray-900 dark:text-white">Tổng thanh toán:</td>
+                                    <td class="px-6 py-4 text-xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                                        @{
+                                            var tongTien = Model.DonHang.Total;
+                                            if (Model.DonHang.VanChuyen != null)
+                                            {
+                                                tongTien += Model.DonHang.VanChuyen.PhiVanChuyen;
+                                            }
+                                            if (Model.VAT > 0)
+                                            {
+                                                tongTien += Model.DonHang.Total * Model.VAT / 100;
+                                            }
+                                        }
+                                        @tongTien.ToString("N0") ₫
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        .no-print {
+            display: none !important;
+        }
+
+        body {
+            background: white !important;
+        }
+
+        .bg-gradient-to-br {
+            background: white !important;
+        }
+    }
+</style>

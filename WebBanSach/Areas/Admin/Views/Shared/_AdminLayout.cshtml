@@ -21,29 +21,243 @@
 
     <!-- ✅ FIX CSS cho menu -->
     <style>
-        /* 🔥 FIX HOÀN TOÀN: Loại bỏ mọi focus state */
-        aside a:focus,
-        aside a:active,
-        aside a:focus-visible {
-            outline: none !important;
-            box-shadow: none !important;
-            background-color: transparent !important;
-            color: inherit !important;
-        }
-
-        /* Đảm bảo không có background khi focus */
-        aside a:hover {
-            background-color: #f3f4f6 !important;
-        }
-
-        .dark aside a:hover {
-            background-color: #1f2937 !important;
-        }
-
-        /* Thêm transition mượt mà */
+        /* 🔥 XÓA GẠCH CHÂN VÀ FOCUS CHO MENU */
         aside a {
-            transition: all 0.2s ease-in-out;
+            outline: none !important;
+            text-decoration: none !important;
         }
+
+            aside a:focus,
+            aside a:active,
+            aside a:hover {
+                outline: none !important;
+                box-shadow: none !important;
+                text-decoration: none !important;
+            }
+
+        /* Search results dropdown */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .dark .search-results {
+            background: #1f2937;
+            border-color: #374151;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dark .search-result-item {
+            border-bottom-color: #374151;
+        }
+
+        .search-result-item:hover {
+            background-color: #f9fafb;
+        }
+
+        .dark .search-result-item:hover {
+            background-color: #374151;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-type {
+            font-size: 0.75rem;
+            color: #6b7280;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .dark .search-result-type {
+            background: #4b5563;
+            color: #d1d5db;
+        }
+
+        .search-loading {
+            padding: 16px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .dark .search-loading {
+            color: #9ca3af;
+        }
+
+        /* Dark mode cho body */
+        html.dark body {
+            background-color: #0b0b0b;
+            color: #f5f5f5;
+        }
+
+        /* Card chính */
+        html.dark .card {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            border-color: #333;
+        }
+
+        /* Card header màu cố định */
+        html.dark .card-header.bg-white {
+            background-color: #111 !important;
+            color: #f5f5f5 !important;
+        }
+
+        html.dark .card-header.bg-info {
+            background-color: #0d6efd !important;
+            color: #fff !important;
+        }
+
+        html.dark .card-header.bg-warning {
+            background-color: #ffc107 !important;
+            color: #111 !important;
+        }
+
+        html.dark .card-header.bg-success {
+            background-color: #198754 !important;
+            color: #fff !important;
+        }
+
+        /* Table header */
+        html.dark .table thead {
+            background-color: #222 !important;
+            color: #f5f5f5;
+        }
+
+        /* Table row hover */
+        html.dark .table-hover tbody tr:hover {
+            background-color: #2a2a2a !important;
+        }
+
+        /* Badge màu */
+        html.dark .badge.bg-success {
+            background-color: #28a745 !important;
+            color: #fff !important;
+        }
+
+        html.dark .badge.bg-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+        }
+
+        html.dark .badge.bg-secondary {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        /* Price tag */
+        html.dark .price-tag {
+            background: linear-gradient(135deg, #20c997, #28a745);
+            color: #fff;
+        }
+
+        /* Quantity badge */
+        html.dark .quantity-badge {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        /* Card thống kê */
+        html.dark .stats-card {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            color: #fff;
+        }
+
+        /* Category card */
+        html.dark .category-card {
+            background-color: #1a1a1a;
+            color: #f5f5f5;
+            border-color: #333;
+        }
+
+        /* Search input */
+        html.dark .search-input {
+            background-color: #222;
+            color: #f5f5f5;
+            border-color: #444;
+        }
+
+            html.dark .search-input::placeholder {
+                color: #bbb;
+            }
+
+        /* Buttons */
+        html.dark .btn-outline-primary {
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+            html.dark .btn-outline-primary:hover {
+                background-color: #0d6efd;
+                color: #fff;
+            }
+
+        html.dark .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+            html.dark .btn-outline-danger:hover {
+                background-color: #dc3545;
+                color: #fff;
+            }
+
+        html.dark .btn-outline-warning {
+            color: #ffc107;
+            border-color: #ffc107;
+        }
+
+            html.dark .btn-outline-warning:hover {
+                background-color: #ffc107;
+                color: #111;
+            }
+
+        html.dark .btn-outline-info {
+            color: #0dcaf0;
+            border-color: #0dcaf0;
+        }
+
+            html.dark .btn-outline-info:hover {
+                background-color: #0dcaf0;
+                color: #111;
+            }
+
+        /* 🔥 CSS cho menu active */
+        aside a.bg-blue-100 {
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+            font-weight: 600;
+        }
+
+        html.dark aside a.dark\:bg-blue-900 {
+            background-color: #1e3a8a !important;
+            color: #93c5fd !important;
+        }
+
+            /* Đảm bảo icon cũng đổi màu theo */
+            aside a.bg-blue-100 i,
+            html.dark aside a.dark\:bg-blue-900 i {
+                color: inherit !important;
+            }
     </style>
 </head>
 
@@ -54,7 +268,7 @@
         <aside class="w-72 bg-white border-r border-gray-200 dark:bg-[#111] dark:border-gray-800 flex-col hidden md:flex sticky top-0 h-screen">
             <div class="px-6 py-5 flex items-center gap-3 border-b border-gray-200 dark:border-gray-800">
                 <div class="w-9 h-9 rounded-lg bg-black dark:bg-white"></div>
-                <span class="font-semibold text-gray-900 dark:text-gray-100">TailAdmin</span>
+                <span class="font-semibold text-gray-900 dark:text-gray-100"> ADMIN - Quản trị hệ thống  </span>
             </div>
 
             <nav class="flex-1 overflow-y-auto py-4">
@@ -63,7 +277,7 @@
                 <ul class="px-2 space-y-1">
                     <li>
                         <a asp-controller="Dashboard" asp-action="Index"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-home text-lg'></i>
                             Thống kê tổng quan
                         </a>
@@ -71,15 +285,15 @@
 
                     <li>
                         <a asp-controller="Book" asp-action="QuanLySach"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-book text-lg'></i>
-                            Quản lý book
+                            Quản lý sách
                         </a>
                     </li>
 
                     <li>
                         <a asp-controller="DonHang" asp-action="QuanLyDonHang"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-cart text-lg'></i>
                             Quản lý đơn hàng
                         </a>
@@ -87,31 +301,23 @@
 
                     <li>
                         <a asp-controller="User" asp-action="QuanLyNguoiDung"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-user text-lg'></i>
                             Quản lý người dùng
                         </a>
                     </li>
 
                     <li>
-                        <a asp-controller="Book" asp-action="BaoCaoThongKe"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
-                            <i class='bx bx-bar-chart text-lg'></i>
-                            Báo cáo & Thống kê
-                        </a>
-                    </li>
-
-                    <li>
                         <a asp-controller="System" asp-action="CauHinh"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-cog text-lg'></i>
-                            Cấu hình hệ thống
+                            Chăm sóc khách hàng
                         </a>
                     </li>
 
                     <li>
                         <a asp-controller="Auth" asp-action="Logout"
-                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 text-red-600 dark:text-red-400 transition-colors">
+                           class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-900 text-red-600 dark:text-red-400 transition-colors outline-none focus:outline-none focus:ring-0 no-underline">
                             <i class='bx bx-log-out text-lg'></i>
                             Đăng xuất
                         </a>
@@ -127,22 +333,36 @@
             <header class="bg-white border-b border-gray-200 dark:bg-[#111] dark:border-gray-800 sticky top-0 z-10">
                 <div class="px-4 md:px-6 h-16 flex items-center justify-between">
 
-                    <!-- 🔍 Search -->
-                    <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-xl px-3 py-2 w-full max-w-md">
-                        <i class='bx bx-search text-gray-500 dark:text-gray-400'></i>
-                        <input placeholder="Tìm kiếm..."
-                               class="bg-transparent outline-none w-full text-sm text-gray-700 dark:text-gray-200" />
+                    <!-- 🔍 Search với chức năng thực sự -->
+                    <div class="relative flex-1 max-w-2xl">
+                        <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-xl px-3 py-2 w-full">
+                            <i class='bx bx-search text-gray-500 dark:text-gray-400'></i>
+                            <input id="searchInput"
+                                   placeholder="Tìm kiếm sách, đơn hàng, người dùng..."
+                                   class="bg-transparent outline-none w-full text-sm text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400"
+                                   autocomplete="off" />
+                            <!-- Phím tắt hint -->
+                            <div class="hidden sm:flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+                                <kbd class="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs">NTH</kbd>
+                                <kbd class="px-1.5 py-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded text-xs">dvJaca</kbd>
+                            </div>
+                        </div>
+
+                        <!-- Kết quả tìm kiếm dropdown -->
+                        <div id="searchResults" class="search-results mt-1">
+                            <!-- Kết quả sẽ được hiển thị ở đây -->
+                        </div>
                     </div>
 
                     <!-- 👤 Admin area -->
                     <div class="flex items-center gap-3">
                         <!-- ☀️🌙 Toggle -->
                         <button id="modeToggle" title="Chuyển chế độ sáng/tối"
-                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors">
+                                class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-900 dark:hover:bg-gray-800 transition-colors outline-none focus:outline-none focus:ring-0">
                             <i id="modeIcon" class='bx bx-moon text-lg'></i>
                         </button>
 
-                        <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="focus:outline-none">
+                        <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="focus:outline-none outline-none">
                             <img src="https://i.pravatar.cc/40" class="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-700 cursor-pointer" />
                         </a>
 
@@ -161,12 +381,16 @@
         </div>
     </div>
 
-    <!-- 🔁 Toggle Dark/Light Mode -->
+    <!-- 🔁 Toggle Dark/Light Mode & Search Functionality -->
     <script>
+        // Theme Management
         const htmlEl = document.documentElement;
         const modeToggle = document.getElementById('modeToggle');
         const modeIcon = document.getElementById('modeIcon');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
 
+        // Khởi tạo theme
         if (localStorage.getItem('theme') === 'dark') {
             htmlEl.classList.add('dark');
             modeIcon.classList.replace('bx-moon', 'bx-sun');
@@ -179,22 +403,286 @@
             modeIcon.classList.toggle('bx-moon', !isDark);
         });
 
-        // ✅ Thêm: Highlight menu item đang active
+        // 🔍 SEARCH FUNCTIONALITY
+        let searchTimeout;
+        let currentSearchTerm = '';
+
+        // Hàm tìm kiếm
+        async function performSearch(searchTerm) {
+            if (!searchTerm.trim()) {
+                hideSearchResults();
+                return;
+            }
+
+            currentSearchTerm = searchTerm;
+            showLoadingResults();
+
+            try {
+                // Gọi API tìm kiếm - bạn cần tạo endpoint này trong backend
+                const response = await fetch(`/Admin/Search/GlobalSearch?term=${encodeURIComponent(searchTerm)}`);
+
+                if (!response.ok) throw new Error('Search failed');
+
+                const data = await response.json();
+                displaySearchResults(data, searchTerm);
+            } catch (error) {
+                console.error('Search error:', error);
+                displaySearchError();
+            }
+        }
+
+        // Hiển thị kết quả tìm kiếm
+        function displaySearchResults(results, searchTerm) {
+            if (!searchResults || currentSearchTerm !== searchTerm) return;
+
+            if (!results || results.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="search-result-item">
+                        <div class="text-center text-gray-500 dark:text-gray-400 py-4">
+                            <i class='bx bx-search text-2xl mb-2'></i>
+                            <div>Không tìm thấy kết quả cho "<strong>${searchTerm}</strong>"</div>
+                        </div>
+                    </div>
+                `;
+                searchResults.style.display = 'block';
+                return;
+            }
+
+            let html = '';
+
+            // Nhóm kết quả theo loại
+            const groupedResults = groupResultsByType(results);
+
+            Object.keys(groupedResults).forEach(type => {
+                const items = groupedResults[type];
+                items.forEach(item => {
+                    html += `
+                        <div class="search-result-item" onclick="navigateToSearchResult('${item.type}', ${item.id})">
+                            <div class="flex justify-between items-center">
+                                <div class="flex-1">
+                                    <div class="font-medium">${highlightText(item.title, searchTerm)}</div>
+                                    ${item.description ? `<div class="text-sm text-gray-600 dark:text-gray-400 mt-1">${item.description}</div>` : ''}
+                                </div>
+                                <span class="search-result-type">${getTypeLabel(item.type)}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            searchResults.innerHTML = html;
+            searchResults.style.display = 'block';
+        }
+
+        // Nhóm kết quả theo loại
+        function groupResultsByType(results) {
+            return results.reduce((groups, item) => {
+                if (!groups[item.type]) {
+                    groups[item.type] = [];
+                }
+                groups[item.type].push(item);
+                return groups;
+            }, {});
+        }
+
+        // Highlight text tìm kiếm
+        function highlightText(text, searchTerm) {
+            if (!searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600">$1</mark>');
+        }
+
+        // Lấy nhãn cho loại kết quả
+        function getTypeLabel(type) {
+            const labels = {
+                'book': 'Sách',
+                'order': 'Đơn hàng',
+                'user': 'Người dùng',
+                'author': 'Tác giả',
+                'category': 'Thể loại'
+            };
+            return labels[type] || type;
+        }
+
+        // Hiển thị loading
+        function showLoadingResults() {
+            if (!searchResults) return;
+            searchResults.innerHTML = `
+                <div class="search-loading">
+                    <div class="flex items-center justify-center gap-2">
+                        <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Đang tìm kiếm...</span>
+                    </div>
+                </div>
+            `;
+            searchResults.style.display = 'block';
+        }
+
+        // Hiển thị lỗi
+        function displaySearchError() {
+            if (!searchResults) return;
+            searchResults.innerHTML = `
+                <div class="search-result-item">
+                    <div class="text-center text-red-500 py-4">
+                        <i class='bx bx-error text-2xl mb-2'></i>
+                        <div>Lỗi tìm kiếm. Vui lòng thử lại.</div>
+                    </div>
+                </div>
+            `;
+            searchResults.style.display = 'block';
+        }
+
+        // Ẩn kết quả tìm kiếm
+        function hideSearchResults() {
+            if (searchResults) {
+                searchResults.style.display = 'none';
+            }
+        }
+
+        // Điều hướng đến kết quả
+        function navigateToSearchResult(type, id) {
+            const routes = {
+                'book': `/Admin/Book/ChiTietSach/${id}`,
+                'order': `/Admin/DonHang/Details/${id}`,
+                'user': `/Admin/User/ChiTietKhachHang/${id}`,
+                'author': `/Admin/Author/ChiTietTacGia/${id}`,
+                'user': `/Admin/User/ChiTietNhanVien/${id}`
+            };
+
+            if (routes[type]) {
+                window.location.href = routes[type];
+            }
+            hideSearchResults();
+        }
+
+        // Event listeners cho tìm kiếm
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const term = e.target.value.trim();
+
+            if (term.length >= 2) {
+                searchTimeout = setTimeout(() => performSearch(term), 300);
+            } else {
+                hideSearchResults();
+            }
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (currentSearchTerm) {
+                searchResults.style.display = 'block';
+            }
+        });
+
+        // Ẩn kết quả khi click ra ngoài
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.relative')) {
+                hideSearchResults();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+K để focus search
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                searchInput.focus();
+            }
+
+            // Escape để ẩn kết quả
+            if (e.key === 'Escape') {
+                hideSearchResults();
+                searchInput.blur();
+            }
+        });
+
+        // ✅ Highlight menu item đang active
         document.addEventListener('DOMContentLoaded', function() {
-            const currentUrl = window.location.href;
+            const currentUrl = window.location.href.toLowerCase();
             const menuItems = document.querySelectorAll('aside a');
 
+            const isBookManagement = currentUrl.includes('/book') ||
+                                    currentUrl.includes('/sach') ||
+                                    currentUrl.includes('quanlysach');
+
             menuItems.forEach(item => {
-                if (currentUrl.includes(item.getAttribute('href'))) {
+                const itemHref = item.getAttribute('href')?.toLowerCase() || '';
+                const itemText = item.textContent?.toLowerCase() || '';
+
+                if (currentUrl.includes(itemHref) ||
+                    (isBookManagement && itemText.includes('quản lý book'))) {
+
                     item.classList.add('bg-blue-100', 'text-blue-600', 'dark:bg-blue-900', 'dark:text-blue-300');
+                    item.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-900');
                 }
 
-                // 🔥 THÊM: Remove focus khi click
-                item.addEventListener('click', function() {
+                item.addEventListener('click', function(e) {
                     this.blur();
+                    setTimeout(() => this.blur(), 100);
+                });
+
+                item.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
                 });
             });
         });
+
+        // 🔥 MOCK DATA FOR DEMO - XÓA KHI CÓ BACKEND
+                // 🔥 SỬA LẠI - GỌI API THẬT TỪ DATABASE
+        async function performSearch(searchTerm) {
+            if (!searchTerm.trim()) {
+                hideSearchResults();
+                return;
+            }
+
+            currentSearchTerm = searchTerm;
+            showLoadingResults();
+
+            try {
+                // ✅ GỌI API THẬT - không dùng mock data nữa
+                const response = await fetch(`/Admin/Search/GlobalSearch?term=${encodeURIComponent(searchTerm)}`);
+
+                if (!response.ok) throw new Error('Search failed');
+
+                const data = await response.json();
+                displaySearchResults(data, searchTerm);
+            } catch (error) {
+                console.error('Search error:', error);
+                // Nếu API chưa có, hiển thị thông báo
+                displaySearchError('Tính năng tìm kiếm đang được cập nhật. Vui lòng thử lại sau.');
+            }
+        }
+
+        // 🔥 XÓA HOÀN TOÀN MOCK DATA FUNCTION
+        // function mockSearch(searchTerm) { ... } // XÓA CÁI NÀY ĐI
+
+        // Hiển thị loading
+        function showLoadingResults() {
+            if (!searchResults) return;
+            searchResults.innerHTML = `
+                <div class="search-loading">
+                    <div class="flex items-center justify-center gap-2">
+                        <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span>Đang tìm kiếm trong database...</span>
+                    </div>
+                </div>
+            `;
+            searchResults.style.display = 'block';
+        }
+
+        // Hiển thị lỗi
+        function displaySearchError(message) {
+            if (!searchResults) return;
+            searchResults.innerHTML = `
+                <div class="search-result-item">
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-4">
+                        <i class='bx bx-data text-2xl mb-2'></i>
+                        <div>${message}</div>
+                        <div class="text-sm mt-1">Liên hệ developer để triển khai API tìm kiếm</div>
+                    </div>
+                </div>
+            `;
+            searchResults.style.display = 'block';
+        }
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)

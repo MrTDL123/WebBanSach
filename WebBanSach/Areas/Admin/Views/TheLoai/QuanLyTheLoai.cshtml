@@ -1,0 +1,529 @@
+﻿@model IEnumerable<Media.Models.ChuDe>
+@{
+    ViewData["Title"] = "Quản lý Thể loại";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f4ff',
+                            100: '#e0e8ff',
+                            500: '#667eea',
+                            600: '#5a67d8',
+                            700: '#4c51bf',
+                        },
+                        dark: {
+                            800: '#1a202c',
+                            900: '#0f1419',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 10px;
+        }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #2563eb, #7c3aed);
+            }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4c51bf, #6b46c1);
+        }
+
+            .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #434190, #553c9a);
+            }
+    </style>
+</head>
+<body class="min-h-full bg-gradient-to-br from-gray-50/50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="p-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl">
+                        <i class='bx bx-category text-2xl text-white'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Quản Lý Thể Loại
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Quản lý và theo dõi toàn bộ thể loại trong hệ thống</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a href="@Url.Action("ThemTheLoai", "TheLoai", new { area = "Admin" })" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 transform hover:-translate-y-1">
+                        <i class='bx bx-plus mr-2 group-hover:scale-110 transition-transform'></i>
+                        Thêm Thể Loại
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form tìm kiếm -->
+        <div class="bg-gradient-to-br from-white to-purple-50 dark:from-gray-800 dark:to-purple-900/20 rounded-3xl shadow-xl border border-purple-100/50 dark:border-purple-800/30 p-6 mb-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl">
+                    <i class='bx bx-search text-xl text-white'></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Tìm kiếm Thể loại</h2>
+            </div>
+            <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <div class="flex flex-col sm:flex-row gap-4 flex-1 w-full">
+                    <div class="relative flex-1 max-w-2xl">
+                        <i class='bx bx-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl'></i>
+                        <input type="text"
+                               id="searchInput"
+                               class="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all duration-300"
+                               placeholder="Tìm kiếm theo tên thể loại, slug hoặc đường dẫn..." />
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button type="button" id="searchBtn" class="px-6 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center">
+                        <i class='bx bx-search mr-2'></i>
+                        Tìm kiếm
+                    </button>
+                    <button type="button" id="resetBtn" class="px-6 py-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 flex items-center">
+                        <i class='bx bx-reset mr-2'></i>
+                        Đặt lại
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thống kê -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Categories -->
+            <div class="group bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl shadow-xl border border-blue-100/50 dark:border-blue-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Tổng số thể loại</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@Model.Count()</p>
+                        <div class="flex items-center mt-2">
+                            <i class='bx bx-category text-blue-500 mr-1'></i>
+                            <span class="text-sm text-blue-600 dark:text-blue-400 font-medium">Thể loại hệ thống</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-category text-2xl text-white'></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parent Categories -->
+            <div class="group bg-gradient-to-br from-white to-green-50 dark:from-gray-800 dark:to-green-900/20 rounded-3xl shadow-xl border border-green-100/50 dark:border-green-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Thể loại cha</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@Model.Count(c => c.ParentId == null)</p>
+                        <div class="flex items-center mt-2">
+                            <i class='bx bx-folder text-green-500 mr-1'></i>
+                            <span class="text-sm text-green-600 dark:text-green-400 font-medium">Thể loại gốc</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-folder text-2xl text-white'></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Child Categories -->
+            <div class="group bg-gradient-to-br from-white to-amber-50 dark:from-gray-800 dark:to-amber-900/20 rounded-3xl shadow-xl border border-amber-100/50 dark:border-amber-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Thể loại con</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@Model.Count(c => c.ParentId != null)</p>
+                        <div class="flex items-center mt-2">
+                            <i class='bx bx-folder-open text-amber-500 mr-1'></i>
+                            <span class="text-sm text-amber-600 dark:text-amber-400 font-medium">Thể loại con</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-folder-open text-2xl text-white'></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories with Children -->
+            <div class="group bg-gradient-to-br from-white to-red-50 dark:from-gray-800 dark:to-red-900/20 rounded-3xl shadow-xl border border-red-100/50 dark:border-red-800/30 p-6 hover:shadow-2xl transition-all duration-300 hover:scale-105 transform hover:-translate-y-1 cursor-pointer">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">Có thể loại con</p>
+                        <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">@Model.Count(c => c.Children != null && c.Children.Any())</p>
+                        <div class="flex items-center mt-2">
+                            <i class='bx bx-category-alt text-red-500 mr-1'></i>
+                            <span class="text-sm text-red-600 dark:text-red-400 font-medium">Có phân cấp</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl group-hover:scale-110 transition-transform duration-300">
+                        <i class='bx bx-category-alt text-2xl text-white'></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 rounded-3xl shadow-2xl border border-blue-100/50 dark:border-blue-800/30 overflow-hidden">
+            <!-- Card Header -->
+            <div class="px-8 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-list-ul text-2xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Danh Sách Thể Loại</h2>
+                            <p class="text-blue-100 text-sm mt-1">@Model.Count() thể loại được tìm thấy trong hệ thống</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 sm:mt-0 flex items-center gap-3">
+                        <span class="bg-white/20 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-sort-alt-2 mr-2'></i>
+                            Sắp xếp
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thông tin kết quả tìm kiếm -->
+            <div id="searchResultsInfo" class="hidden px-6 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <span id="searchResultsText" class="text-blue-500 font-medium"></span>
+                    <button id="clearSearchBtn" class="text-sm bg-white dark:bg-gray-600 border border-blue-500 text-blue-500 hover:bg-blue-50 dark:hover:bg-gray-500 px-3 py-1 rounded-lg transition-colors duration-200 flex items-center">
+                        <i class='bx bx-x mr-1'></i>
+                        Xóa tìm kiếm
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/20 border-b-2 border-gray-200/50 dark:border-gray-700/50">
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <i class='bx bx-category'></i>
+                                    Tên thể loại
+                                </div>
+                            </th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <i class='bx bx-link'></i>
+                                    Slug
+                                </div>
+                            </th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <i class='bx bx-layer'></i>
+                                    Loại
+                                </div>
+                            </th>
+                            <th class="px-8 py-6 text-left text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                <div class="flex items-center gap-2">
+                                    <i class='bx bx-cog'></i>
+                                    Thao tác
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoriesTableBody" class="divide-y divide-gray-200/30 dark:divide-gray-700/30">
+                        @if (Model != null && Model.Any())
+                        {
+                            int stt = 1;
+                            foreach (var item in Model)
+                            {
+                                <tr class="group hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 dark:hover:from-blue-900/10 dark:hover:to-purple-900/10 transition-all duration-300 transform hover:scale-[1.02] animate-fade-in"
+                                    data-search="@item.TenChuDe.ToLower() @item.FullPath?.ToLower() @item.Slug?.ToLower()">
+                                    <td class="px-8 py-6">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                <i class='bx @(item.ParentId == null ? "bx-folder" : "bx-folder-open") text-xl text-white'></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    @item.TenChuDe
+                                                </div>
+                                                @if (!string.IsNullOrEmpty(item.FullPath))
+                                                {
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                        <i class='bx bx-link mr-1'></i>@item.FullPath
+                                                    </div>
+                                                }
+                                            </div>
+                                            @if (item.Children != null && item.Children.Any())
+                                            {
+                                                <span class="bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 text-xs font-medium px-3 py-1 rounded-full border border-blue-200 dark:border-gray-600 ml-3 flex items-center">
+                                                    <i class='bx bx-category-alt mr-1'></i>@item.Children.Count()
+                                                </span>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        @if (!string.IsNullOrEmpty(item.Slug))
+                                        {
+                                            <code class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-lg text-sm font-mono border border-gray-200 dark:border-gray-600">
+                                                @item.Slug
+                                            </code>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
+                                                <i class='bx bx-question-mark mr-2'></i>
+                                                Chưa có slug
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        @if (item.ParentId == null)
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-700">
+                                                <i class='bx bx-folder mr-2'></i>
+                                                Thể loại cha
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-700">
+                                                <i class='bx bx-folder-open mr-2'></i>
+                                                Thể loại con
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="px-8 py-6 whitespace-nowrap">
+                                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+                                            <!-- Edit -->
+                                            <a href="@Url.Action("SuaTheLoai", "TheLoai", new { area = "Admin", id = item.MaChuDe })"
+                                               class="inline-flex items-center p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-2xl transition-all duration-300 hover:scale-110 hover:shadow-lg group/action"
+                                               title="Sửa thông tin">
+                                                <i class='bx bx-edit text-xl group-hover/action:scale-110 transition-transform'></i>
+                                            </a>
+
+                                            <!-- Delete -->
+                                            <a href="@Url.Action("XoaTheLoai", "TheLoai", new { area = "Admin", id = item.MaChuDe })"
+                                               class="inline-flex items-center p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-2xl transition-all duration-300 hover:scale-110 hover:shadow-lg group/action"
+                                               title="Xóa"
+                                               onclick="return confirm('Bạn có chắc muốn xóa thể loại \'@item.TenChuDe\'?');">
+                                                <i class='bx bx-trash text-xl group-hover/action:scale-110 transition-transform'></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                stt++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="py-12 px-6 text-center">
+                                    <div class="max-w-md mx-auto">
+                                        <div class="text-6xl text-blue-500 mb-4">
+                                            <i class='bx bx-category'></i>
+                                        </div>
+                                        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Chưa có thể loại nào</h3>
+                                        <p class="text-gray-600 dark:text-gray-400 mb-6">Hãy thêm thể loại mới để bắt đầu quản lý hệ thống</p>
+                                        <a href="@Url.Action("ThemTheLoai", "TheLoai", new { area = "Admin" })"
+                                           class="inline-flex items-center bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                                            <i class='bx bx-plus mr-2'></i>
+                                            Thêm thể loại đầu tiên
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="px-8 py-4 border-t-2 border-gray-200/30 dark:border-gray-700/30 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-blue-900/10">
+                <div class="flex flex-col sm:flex-row items-center justify-between">
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-0">
+                        <i class='bx bx-info-circle mr-2'></i>
+                        Hiển thị @Model.Count() thể loại • Cập nhật lúc: @DateTime.Now.ToString("HH:mm dd/MM/yyyy")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle" class="fixed bottom-6 right-6 bg-white dark:bg-gray-800 text-gray-800 dark:text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-10 border border-gray-200 dark:border-gray-700">
+        <i class="bx bx-moon dark:hidden"></i>
+        <i class="bx bx-sun hidden dark:block"></i>
+    </button>
+
+    <script>
+        // Khởi tạo dark mode
+        document.addEventListener('DOMContentLoaded', function () {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+
+            // Kiểm tra cài đặt dark mode từ localStorage
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.documentElement.classList.add('dark');
+            } else if (localStorage.getItem('darkMode') === 'false') {
+                document.documentElement.classList.remove('dark');
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                // Nếu không có cài đặt, sử dụng cài đặt hệ thống
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('darkMode', 'true');
+            }
+
+            // Xử lý sự kiện toggle dark mode
+            darkModeToggle.addEventListener('click', function() {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+            });
+
+            // Tìm kiếm thể loại
+            const searchInput = document.getElementById('searchInput');
+            const searchBtn = document.getElementById('searchBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const categoriesTableBody = document.getElementById('categoriesTableBody');
+            const searchResultsInfo = document.getElementById('searchResultsInfo');
+            const searchResultsText = document.getElementById('searchResultsText');
+            const clearSearchBtn = document.getElementById('clearSearchBtn');
+            const originalRows = Array.from(categoriesTableBody.querySelectorAll('tr'));
+
+            // Hàm thực hiện tìm kiếm
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+
+                if (searchTerm === '') {
+                    // Hiển thị tất cả thể loại
+                    originalRows.forEach(row => {
+                        row.style.display = '';
+                    });
+                    searchResultsInfo.classList.add('hidden');
+                    return;
+                }
+
+                // Lọc thể loại theo từ khóa
+                let matchCount = 0;
+                originalRows.forEach(row => {
+                    const searchData = row.getAttribute('data-search');
+                    if (searchData && searchData.includes(searchTerm)) {
+                        row.style.display = '';
+                        matchCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                // Hiển thị thông tin kết quả tìm kiếm
+                if (matchCount > 0) {
+                    searchResultsText.textContent = `Tìm thấy ${matchCount} kết quả cho "${searchTerm}"`;
+                    searchResultsInfo.classList.remove('hidden');
+                } else {
+                    searchResultsText.textContent = `Không tìm thấy kết quả nào cho "${searchTerm}"`;
+                    searchResultsInfo.classList.remove('hidden');
+                }
+            }
+
+            // Sự kiện tìm kiếm khi nhập
+            searchInput.addEventListener('input', performSearch);
+
+            // Sự kiện nút tìm kiếm
+            searchBtn.addEventListener('click', performSearch);
+
+            // Sự kiện nút đặt lại
+            resetBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                performSearch();
+            });
+
+            // Xóa tìm kiếm
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                performSearch();
+            });
+
+            // Hiển thị thông báo từ TempData
+            @if (TempData["Success"] != null)
+            {
+                    <text>showNotification('@TempData["Success"]', 'success');</text>
+            }
+            @if (TempData["Error"] != null)
+            {
+                    <text>showNotification('@TempData["Error"]', 'error');</text>
+            }
+        });
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-2xl shadow-2xl z-50 transform transition-all duration-500 ${
+                type === 'success'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                    : 'bg-gradient-to-r from-red-500 to-rose-600 text-white'
+            }`;
+
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class='bx ${type === 'success' ? 'bx-check-circle' : 'bx-error'} text-xl'></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            // Tự động ẩn sau 5 giây
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

@@ -46,6 +46,10 @@ namespace Media.Models
         [DisplayName("Ngày nhận hàng thực tế")]
         public DateTime? NgayNhanHangThucTe { get; set; }
 
+       
+
         public DonHang DonHang { get; set; }
+
+        
     }
 }

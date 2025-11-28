@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +12,9 @@ namespace Media.Models
     {
         [Key]
         public int MaNhanVien { get; set; }
+
         [Required]
+        [ValidateNever] // THÊM DÒNG NÀY - QUAN TRỌNG!
         public string MaTaiKhoan { get; set; }
 
         [Required]
@@ -46,14 +49,18 @@ namespace Media.Models
         [DisplayName("Quê quán")]
         public string QueQuan { get; set; }
 
-
-        //NAVIGATION PROPERTIES
-
+        // NAVIGATION PROPERTIES
+        [ValidateNever]
         [ForeignKey("MaTaiKhoan")]
         public TaiKhoan TaiKhoan { get; set; }
 
+        [ValidateNever]
         public ICollection<DonHang> DonHangs { get; set; }
+
+        [ValidateNever]
         public ICollection<PhieuTraHang> PhieuTraHangs { get; set; }
+
+        [ValidateNever]
         public ICollection<ChamSocKhachHang> ChamSocKhachHangs { get; set; }
     }
 }

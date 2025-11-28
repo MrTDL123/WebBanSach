@@ -1,0 +1,184 @@
+﻿@model Media.Models.ChuDe
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Xóa thể loại";
+}
+
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- Card chính -->
+            <div class="card border-0 shadow-xl rounded-2xl overflow-hidden">
+                <!-- Header với gradient đỏ -->
+                <div class="card-header bg-gradient-to-r from-red-500 to-rose-600 text-white py-6 px-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="bg-white bg-opacity-20 rounded-2xl p-3 backdrop-blur-sm">
+                                <i class="fas fa-exclamation-triangle text-xl text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-1">Xóa thể loại</h4>
+                                <p class="text-red-100 text-sm opacity-90">Hành động này không thể hoàn tác</p>
+                            </div>
+                        </div>
+                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })"
+                           class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-xl transition-all duration-200 backdrop-blur-sm">
+                            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-6 bg-white dark:bg-gray-800">
+                    <!-- Thông báo cảnh báo -->
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 dark:bg-amber-900/20 dark:border-amber-800">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-circle text-2xl text-amber-500 mt-1"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h5 class="font-semibold text-amber-800 mb-3 dark:text-amber-200">Cảnh báo quan trọng!</h5>
+                                <p class="text-amber-700 mb-3 dark:text-amber-300">Bạn đang chuẩn bị xóa vĩnh viễn thể loại này. Hành động này sẽ:</p>
+                                <ul class="text-amber-700 space-y-1 dark:text-amber-300">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-circle text-xs mr-3"></i>
+                                        Xóa hoàn toàn thể loại khỏi hệ thống
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-circle text-xs mr-3"></i>
+                                        Không thể khôi phục sau khi xóa
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-circle text-xs mr-3"></i>
+                                        Ảnh hưởng đến các sách thuộc thể loại này
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (ViewBag.CoSach == true)
+                    {
+                        <!-- Không thể xóa vì có sách liên quan -->
+                        <div class="text-center py-4">
+                            <div class="bg-red-50 border border-red-200 rounded-2xl p-6 mb-6 dark:bg-red-900/20 dark:border-red-800">
+                                <div class="flex items-center justify-center space-x-4">
+                                    <i class="fas fa-ban text-3xl text-red-500"></i>
+                                    <div class="text-left">
+                                        <h5 class="font-semibold text-red-800 mb-1 dark:text-red-200">Không thể xóa thể loại!</h5>
+                                        <p class="text-red-700 dark:text-red-300">Thể loại này đang được sử dụng bởi một hoặc nhiều sách trong hệ thống.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })"
+                               class="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                                <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Có thể xóa -->
+                        <div class="text-center">
+                            <!-- Thông tin thể loại -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-6 dark:bg-gray-700/50 dark:border-gray-600">
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <i class="fas fa-info-circle text-blue-500 text-lg"></i>
+                                    <h6 class="font-semibold text-gray-800 dark:text-gray-200">Thông tin thể loại sẽ bị xóa</h6>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                                    <div class="bg-white dark:bg-gray-600 rounded-xl p-4 shadow-sm">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Mã thể loại:</span>
+                                            <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium dark:bg-blue-900 dark:text-blue-200">
+                                                @Model.MaChuDe
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white dark:bg-gray-600 rounded-xl p-4 shadow-sm">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Tên thể loại:</span>
+                                            <span class="text-gray-900 font-semibold dark:text-white">@Model.TenChuDe</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white dark:bg-gray-600 rounded-xl p-4 shadow-sm md:col-span-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Slug:</span>
+                                            <span class="text-gray-600 dark:text-gray-400">@(Model.Slug ?? "Chưa có slug")</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white dark:bg-gray-600 rounded-xl p-4 shadow-sm md:col-span-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-medium text-gray-700 dark:text-gray-300">Đường dẫn:</span>
+                                            <span class="text-gray-600 dark:text-gray-400 truncate max-w-xs">@(Model.FullPath ?? "Chưa có đường dẫn")</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Xác nhận cuối cùng -->
+                            <div class="border-t border-gray-200 pt-6 dark:border-gray-600">
+                                <div class="mb-6">
+                                    <div class="w-20 h-20 bg-gradient-to-r from-red-500 to-rose-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                        <i class="fas fa-shield-alt text-2xl text-white"></i>
+                                    </div>
+                                    <h5 class="text-red-600 font-bold text-lg mb-2 dark:text-red-400">Xác nhận xóa vĩnh viễn</h5>
+                                    <p class="text-gray-600 dark:text-gray-400">
+                                        Bạn có chắc chắn muốn xóa thể loại
+                                        <span class="font-semibold text-gray-900 dark:text-white">"@Model.TenChuDe"</span> không?
+                                    </p>
+                                </div>
+
+                                <form method="post" action="@Url.Action("XoaTheLoaiConfirmed", "TheLoai", new { area = "Admin" })" class="inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.MaChuDe" />
+
+                                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                                        <button type="submit"
+                                                class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                            <i class="fas fa-trash mr-3"></i>
+                                            XÓA VĨNH VIỄN
+                                        </button>
+                                        <a href="@Url.Action("QuanLyTheLoai", "TheLoai", new { area = "Admin" })"
+                                           class="inline-flex items-center px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+                                            <i class="fas fa-times mr-3"></i>
+                                            Hủy bỏ
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .rounded-2xl {
+        border-radius: 1rem;
+    }
+
+    .shadow-xl {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .backdrop-blur-sm {
+        backdrop-filter: blur(4px);
+    }
+
+    .transform {
+        transform: translateY(0);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .hover\:-translate-y-1:hover {
+        transform: translateY(-0.25rem);
+    }
+</style>

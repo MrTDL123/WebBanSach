@@ -1,0 +1,268 @@
+﻿@model Media.Models.TacGia
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Xóa Tác Giả";
+}
+
+<div class="min-h-screen bg-gray-50/50 dark:bg-gray-900/50 py-6">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                        <i class='bx bx-trash text-2xl text-red-600 dark:text-red-400'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Xóa Tác Giả</h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Xác nhận xóa tác giả khỏi hệ thống</p>
+                    </div>
+                </div>
+                <a href="@Url.Action("QuanLyTacGia", "Author")"
+                   class="inline-flex items-center px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl transition-all duration-200 hover:shadow-md">
+                    <i class='bx bx-arrow-back mr-2'></i>
+                    Quay lại danh sách
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+
+            <!-- Card Header -->
+            <div class="px-8 py-6 bg-gradient-to-r from-red-500 to-rose-600 dark:from-red-600 dark:to-rose-700">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                            <i class='bx bx-trash text-2xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Xác nhận xóa</h2>
+                            <p class="text-red-100 text-sm mt-1">Thao tác này không thể hoàn tác</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8">
+                @if (ViewBag.CoSach)
+                {
+                    <!-- Không thể xóa vì có sách -->
+                    <div class="text-center">
+                        <div class="mx-auto w-20 h-20 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mb-6">
+                            <i class='bx bx-error text-3xl text-yellow-600 dark:text-yellow-400'></i>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Không thể xóa tác giả</h3>
+
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 mb-6">
+                            <div class="flex items-start gap-3">
+                                <i class='bx bx-info-circle text-yellow-500 text-xl mt-0.5'></i>
+                                <div class="text-left">
+                                    <p class="text-yellow-800 dark:text-yellow-300 font-medium mb-2">
+                                        Tác giả <span class="font-bold">@Model.TenTG</span> đang có sách trong hệ thống
+                                    </p>
+                                    <p class="text-yellow-700 dark:text-yellow-400 text-sm">
+                                        Vui lòng xóa hoặc chuyển các sách của tác giả này trước khi tiến hành xóa.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin tác giả -->
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 mb-6">
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Mã tác giả:</span>
+                                    <p class="font-semibold text-gray-900 dark:text-white">#@Model.MaTacGia</p>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Tên tác giả:</span>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@Model.TenTG</p>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Quốc tịch:</span>
+                                    <p class="font-semibold text-gray-900 dark:text-white">
+                                        @(string.IsNullOrEmpty(Model.QuocTich) ? "Chưa cập nhật" : Model.QuocTich)
+                                    </p>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Trạng thái:</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                        Có sách liên quan
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <a href="@Url.Action("QuanLyTacGia", "Author")"
+                               class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900/30">
+                                <i class='bx bx-arrow-back mr-2'></i>
+                                Quay lại danh sách
+                            </a>
+                            <a href="@Url.Action("ChiTietTacGia", "Author", new { id = Model.MaTacGia })"
+                               class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-200 dark:focus:ring-green-900/30">
+                                <i class='bx bx-show mr-2'></i>
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Có thể xóa -->
+                    <div class="text-center">
+                        <div class="mx-auto w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-6">
+                            <i class='bx bx-error-alt text-3xl text-red-600 dark:text-red-400'></i>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3">Bạn có chắc chắn muốn xóa?</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">Thao tác này sẽ xóa vĩnh viễn tác giả và không thể khôi phục.</p>
+
+                        <!-- Thông tin tác giả sẽ xóa -->
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Mã tác giả:</span>
+                                    <p class="font-semibold text-gray-900 dark:text-white">#@Model.MaTacGia</p>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Tên tác giả:</span>
+                                    <p class="font-semibold text-gray-900 dark:text-white">@Model.TenTG</p>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Quốc tịch:</span>
+                                    <p class="font-semibold text-gray-900 dark:text-white">
+                                        @(string.IsNullOrEmpty(Model.QuocTich) ? "Chưa cập nhật" : Model.QuocTich)
+                                    </p>
+                                </div>
+                                <div class="text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Trạng thái:</span>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                        Có thể xóa
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.TieuSu))
+                            {
+                                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-left">
+                                    <span class="text-gray-500 dark:text-gray-400">Tiểu sử:</span>
+                                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-1 line-clamp-3">@Model.TieuSu</p>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Cảnh báo quan trọng -->
+                        <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
+                            <div class="flex items-start gap-3">
+                                <i class='bx bx-error text-red-500 text-xl mt-0.5'></i>
+                                <div class="text-left">
+                                    <h4 class="font-semibold text-red-800 dark:text-red-300 mb-1">Cảnh báo quan trọng</h4>
+                                    <ul class="text-red-700 dark:text-red-400 text-sm space-y-1">
+                                        <li>• Thao tác này không thể hoàn tác</li>
+                                        <li>• Tất cả thông tin về tác giả sẽ bị xóa vĩnh viễn</li>
+                                        <li>• Đảm bảo bạn đã sao lưu dữ liệu cần thiết</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form xóa -->
+                        <form asp-action="XoaTacGiaConfirmed" method="post" class="space-y-4">
+                            <input type="hidden" asp-for="MaTacGia" />
+
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button type="submit"
+                                        class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-200 dark:focus:ring-red-900/30">
+                                    <i class='bx bx-trash mr-2'></i>
+                                    Xác nhận xóa
+                                </button>
+                                <a href="@Url.Action("QuanLyTacGia", "Author")"
+                                   class="flex-1 inline-flex items-center justify-center px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600">
+                                    <i class='bx bx-x mr-2'></i>
+                                    Hủy bỏ
+                                </a>
+                            </div>
+
+                            <!-- Xác nhận an toàn -->
+                            <div class="flex items-center justify-center gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                                <input type="checkbox" id="confirmDelete" class="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <label for="confirmDelete" class="text-sm text-gray-700 dark:text-gray-300">
+                                    Tôi hiểu hậu quả và muốn xóa tác giả này
+                                </label>
+                            </div>
+                        </form>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6">
+            <div class="flex items-start gap-3">
+                <i class='bx bx-info-circle text-blue-500 text-xl mt-0.5'></i>
+                <div>
+                    <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">Thông tin bổ sung</h3>
+                    <ul class="text-blue-700 dark:text-blue-400 text-sm space-y-1">
+                        <li>• Mã tác giả: <span class="font-mono">#@Model.MaTacGia</span></li>
+                        <li>• Tác giả sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu</li>
+                        <li>• Thao tác này ảnh hưởng đến tính toàn vẹn dữ liệu</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const confirmCheckbox = document.getElementById('confirmDelete');
+            const submitButton = form?.querySelector('button[type="submit"]');
+
+            // Nếu có form xóa
+            if (form && submitButton && confirmCheckbox) {
+                // Ban đầu disable nút xóa
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+                // Khi checkbox thay đổi
+                confirmCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        submitButton.disabled = false;
+                        submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        submitButton.disabled = true;
+                        submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+                    }
+                });
+
+                // Xác nhận lần cuối khi submit
+                form.addEventListener('submit', function(e) {
+                    if (!confirm('Bạn có CHẮC CHẮN muốn xóa tác giả này vĩnh viễn?')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    // Hiển thị loading
+                    submitButton.innerHTML = '<i class="bx bx-loader-alt animate-spin mr-2"></i> Đang xóa...';
+                    submitButton.disabled = true;
+                });
+            }
+        });
+    </script>
+
+    <style>
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+}

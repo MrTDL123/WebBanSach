@@ -1,171 +1,465 @@
 ﻿@model Media.Models.Sach
 @{
-    ViewBag.Title = "Thêm sách";
+    ViewData["Title"] = "Thêm Sách Mới";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<div class="min-h-screen bg-gray-50/50 dark:bg-gray-900/50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-<div class="container mt-4">
-    <div class="card shadow-lg">
-        <div class="card-header bg-success text-white py-3">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-plus-circle me-2 fs-4"></i>
-                <h2 class="mb-0 fs-4">Thêm sách mới</h2>
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg">
+                        <i class='bx bx-book-add text-2xl text-white'></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Thêm Sách Mới
+                        </h1>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2 text-lg">Thêm sách mới vào hệ thống thư viện</p>
+                    </div>
+                </div>
+                <a href="@Url.Action("QuanLySach", "Book", new { area = "Admin" })"
+                   class="group inline-flex items-center px-6 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105">
+                    <i class='bx bx-arrow-back mr-2 group-hover:-translate-x-1 transition-transform'></i>
+                    Quay lại danh sách
+                </a>
             </div>
         </div>
 
-        <div class="card-body p-4">
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <!-- Thông báo -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="mb-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-2xl p-4 shadow-lg transform transition-all duration-300 hover:scale-[1.02]">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class='bx bx-check-circle text-2xl'></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="font-semibold">@TempData["Success"]</p>
+                    </div>
                 </div>
-            }
+            </div>
+        }
 
-            <form asp-action="ThemSach" method="post" enctype="multipart/form-data" id="formThemSach">
-                <div class="row g-4">
+        @if (TempData["Error"] != null)
+        {
+            <div class="mb-6 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-2xl p-4 shadow-lg transform transition-all duration-300 hover:scale-[1.02]">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class='bx bx-error-circle text-2xl'></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="font-semibold">@TempData["Error"]</p>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Main Form -->
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden backdrop-blur-sm">
+
+            <!-- Card Header -->
+            <div class="px-8 py-6 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm border border-white/30">
+                            <i class='bx bx-book-add text-2xl text-white'></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Thông tin sách mới</h2>
+                            <p class="text-blue-100 text-sm mt-1">Nhập đầy đủ thông tin sách mới vào hệ thống</p>
+                        </div>
+                    </div>
+                    <div class="hidden sm:block">
+                        <span class="bg-white/20 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm border border-white/30">Bắt buộc *</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-8">
+                <form method="post" asp-action="ThemSach" asp-controller="Book" asp-area="Admin" enctype="multipart/form-data" id="addBookForm" class="space-y-8">
+                    @Html.AntiForgeryToken()
+
                     <!-- Thông tin cơ bản -->
-                    <div class="col-12">
-                        <h5 class="text-success mb-3 border-bottom pb-2">
-                            <i class="fas fa-info-circle me-2"></i>Thông tin cơ bản
-                        </h5>
-                    </div>
+                    <div class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                <i class='bx bx-info-circle text-blue-600 dark:text-blue-400'></i>
+                            </div>
+                            Thông tin cơ bản
+                        </h3>
 
-                    <!-- Tên sách -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Tên sách <span class="text-danger">*</span></label>
-                        <input asp-for="TenSach" class="form-control" placeholder="Nhập tên sách..." />
-                        <span asp-validation-for="TenSach" class="text-danger small"></span>
-                    </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Tên sách -->
+                            <div class="group">
+                                <label asp-for="TenSach" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Tên sách <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-book absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500'></i>
+                                    <input asp-for="TenSach"
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all duration-300"
+                                           placeholder="Nhập tên sách..." />
+                                </div>
+                                <span asp-validation-for="TenSach" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                            </div>
 
-                    <!-- Giá bán -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Giá bán (VNĐ) <span class="text-danger">*</span></label>
-                        <input asp-for="GiaBan" class="form-control" type="number" min="0" placeholder="0" />
-                        <span asp-validation-for="GiaBan" class="text-danger small"></span>
-                    </div>
+                            <!-- Nhà cung cấp -->
+                            <div class="group">
+                                <label asp-for="NhaCungCap" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Nhà cung cấp <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-building absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500'></i>
+                                    <input asp-for="NhaCungCap"
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all duration-300"
+                                           placeholder="Nhập nhà cung cấp..." />
+                                </div>
+                                <span asp-validation-for="NhaCungCap" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                            </div>
 
-                    <!-- Số lượng -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Số lượng <span class="text-danger">*</span></label>
-                        <input asp-for="SoLuong" class="form-control" type="number" min="0" placeholder="0" />
-                        <span asp-validation-for="SoLuong" class="text-danger small"></span>
+                            <!-- Giá bán -->
+                            <div class="group">
+                                <label asp-for="GiaBan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Giá bán (VNĐ) <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-dollar absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-green-500'></i>
+                                    <input asp-for="GiaBan"
+                                           type="number"
+                                           min="0"
+                                           step="1000"
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-green-500 dark:focus:border-green-400 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 transition-all duration-300"
+                                           placeholder="0" />
+                                </div>
+                                <span asp-validation-for="GiaBan" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                            </div>
+
+                            <!-- Số lượng -->
+                            <div class="group">
+                                <label asp-for="SoLuong" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Số lượng <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-package absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-green-500'></i>
+                                    <input asp-for="SoLuong"
+                                           type="number"
+                                           min="0"
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-green-500 dark:focus:border-green-400 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 transition-all duration-300"
+                                           placeholder="0" />
+                                </div>
+                                <span asp-validation-for="SoLuong" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                            </div>
+
+                            <!-- Phần trăm giảm giá -->
+                            <div class="group">
+                                <label asp-for="PhanTramGiamGia" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Phần trăm giảm giá (%)
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-discount absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500'></i>
+                                    <input asp-for="PhanTramGiamGia"
+                                           type="number"
+                                           min="0"
+                                           max="100"
+                                           step="1"
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all duration-300"
+                                           placeholder="0" />
+                                </div>
+                                <span asp-validation-for="PhanTramGiamGia" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                            </div>
+
+                            <!-- Giá sau giảm (readonly) -->
+                            <div class="group">
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Giá sau giảm (VNĐ)
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-calculator absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                                    <input type="text"
+                                           id="giaSauGiam"
+                                           readonly
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-semibold transition-all duration-300"
+                                           value="0 ₫" />
+                                </div>
+                                <span class="text-gray-500 dark:text-gray-400 text-sm mt-2 block">Tự động tính toán dựa trên giá và % giảm</span>
+                            </div>
+                        </div>
+
+                        <!-- Mô tả -->
+                        <div class="mt-6 group">
+                            <label asp-for="MoTa" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                Mô tả sách
+                            </label>
+                            <div class="relative">
+                                <i class='bx bx-edit absolute left-4 top-4 text-gray-400 group-focus-within:text-blue-500'></i>
+                                <textarea asp-for="MoTa"
+                                          rows="4"
+                                          class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all duration-300 resize-vertical"
+                                          placeholder="Nhập mô tả chi tiết về sách..."></textarea>
+                            </div>
+                            <span asp-validation-for="MoTa" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                        </div>
                     </div>
 
                     <!-- Danh mục liên quan -->
-                    <div class="col-12 mt-4">
-                        <h5 class="text-success mb-3 border-bottom pb-2">
-                            <i class="fas fa-tags me-2"></i>Danh mục liên quan
-                        </h5>
-                    </div>
+                    <div class="bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-purple-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                            <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                <i class='bx bx-category text-purple-600 dark:text-purple-400'></i>
+                            </div>
+                            Danh mục liên quan
+                        </h3>
 
-                    <!-- Chủ đề -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Chủ đề</label>
-                        <select asp-for="MaChuDe" class="form-select">
-                            <option value="">-- Chọn Chủ đề --</option>
-                            @if (ViewBag.ChuDes != null)
-                            {
-                                foreach (var item in ViewBag.ChuDes)
-                                {
-                                    <option value="@item.MaChuDe">@item.TenChuDe</option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="MaChuDe" class="text-danger small"></span>
-                    </div>
-
-                    <!-- Tác giả -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Tác giả</label>
-                        <select asp-for="MaTacGia" class="form-select">
-                            <option value="">-- Chọn Tác giả --</option>
-                            @if (ViewBag.TacGias != null)
-                            {
-                                foreach (var item in ViewBag.TacGias)
-                                {
-                                    <option value="@item.MaTacGia">@item.TenTG</option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="MaTacGia" class="text-danger small"></span>
-                    </div>
-
-                    <!-- Nhà xuất bản -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Nhà xuất bản</label>
-                        <select asp-for="MaNhaXuatBan" class="form-select">
-                            <option value="">-- Chọn NXB --</option>
-                            @if (ViewBag.NhaXuatBans != null)
-                            {
-                                foreach (var item in ViewBag.NhaXuatBans)
-                                {
-                                    <option value="@item.MaNhaXuatBan">@item.TenNXB</option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="MaNhaXuatBan" class="text-danger small"></span>
-                    </div>
-
-                    <!-- Thông tin bổ sung -->
-                    <div class="col-12 mt-4">
-                        <h5 class="text-success mb-3 border-bottom pb-2">
-                            <i class="fas fa-file-alt me-2"></i>Thông tin bổ sung
-                        </h5>
-                    </div>
-
-                    <!-- Nhà cung cấp -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">Nhà cung cấp</label>
-                        <input asp-for="NhaCungCap" class="form-control" placeholder="Nhập nhà cung cấp..." />
-                    </div>
-
-                    <!-- Mô tả -->
-                    <div class="col-12">
-                        <label class="form-label fw-semibold">Mô tả</label>
-                        <textarea asp-for="MoTa" class="form-control" rows="5" placeholder="Nhập mô tả chi tiết về sách..."></textarea>
-                    </div>
-
-                    <!-- Ảnh bìa -->
-                    <div class="col-12 mt-4">
-                        <h5 class="text-success mb-3 border-bottom pb-2">
-                            <i class="fas fa-image me-2"></i>Hình ảnh
-                        </h5>
-
-                        <div class="row align-items-center">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Ảnh bìa</label>
-                                <input class="form-control" type="file" name="fileAnhBia" id="fileAnhBia" accept="image/*" />
-                                <div class="form-text">Chọn ảnh bìa cho sách</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Chủ đề -->
+                            <div class="group">
+                                <label asp-for="MaChuDe" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Chủ đề <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-category absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 z-10'></i>
+                                    <select asp-for="MaChuDe"
+                                            class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:border-purple-500 dark:focus:border-purple-400 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all duration-300 appearance-none cursor-pointer">
+                                        <option value="">-- Chọn Chủ đề --</option>
+                                        @if (ViewBag.ChuDes != null)
+                                        {
+                                            foreach (var item in ViewBag.ChuDes)
+                                            {
+                                                <option value="@item.MaChuDe">@item.TenChuDe</option>
+                                            }
+                                        }
+                                    </select>
+                                    <i class='bx bx-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                                </div>
+                                <span asp-validation-for="MaChuDe" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="border rounded p-3 text-center bg-light">
-                                    <p class="fw-semibold mb-2">Xem trước ảnh</p>
-                                    <img id="previewImg" src="https://via.placeholder.com/200x250?text=No+Image" alt="Ảnh bìa sách"
-                                         class="img-fluid rounded shadow-sm" style="max-height: 200px; max-width: 100%;" />
+                            <!-- Tác giả -->
+                            <div class="group">
+                                <label asp-for="MaTacGia" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Tác giả <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-user absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 z-10'></i>
+                                    <select asp-for="MaTacGia"
+                                            class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:border-purple-500 dark:focus:border-purple-400 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all duration-300 appearance-none cursor-pointer">
+                                        <option value="">-- Chọn Tác giả --</option>
+                                        @if (ViewBag.TacGias != null)
+                                        {
+                                            foreach (var item in ViewBag.TacGias)
+                                            {
+                                                <option value="@item.MaTacGia">@item.TenTG</option>
+                                            }
+                                        }
+                                    </select>
+                                    <i class='bx bx-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                                </div>
+                                <span asp-validation-for="MaTacGia" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                            </div>
+
+                            <!-- Nhà xuất bản -->
+                            <div class="group">
+                                <label asp-for="MaNhaXuatBan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Nhà xuất bản <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class='bx bx-building-house absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-purple-500 z-10'></i>
+                                    <select asp-for="MaNhaXuatBan"
+                                            class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:border-purple-500 dark:focus:border-purple-400 focus:ring-4 focus:ring-purple-100 dark:focus:ring-purple-900/30 transition-all duration-300 appearance-none cursor-pointer">
+                                        <option value="">-- Chọn NXB --</option>
+                                        @if (ViewBag.NhaXuatBans != null)
+                                        {
+                                            foreach (var item in ViewBag.NhaXuatBans)
+                                            {
+                                                <option value="@item.MaNhaXuatBan">@item.TenNXB</option>
+                                            }
+                                        }
+                                    </select>
+                                    <i class='bx bx-chevron-down absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400'></i>
+                                </div>
+                                <span asp-validation-for="MaNhaXuatBan" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hình ảnh -->
+                    <div class="bg-gradient-to-br from-gray-50 to-orange-50 dark:from-gray-900 dark:to-orange-900/20 rounded-2xl p-6 border border-gray-200/50 dark:border-gray-700/50">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
+                            <div class="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                                <i class='bx bx-images text-orange-600 dark:text-orange-400'></i>
+                            </div>
+                            Hình ảnh sách
+                        </h3>
+
+                        <!-- Ảnh bìa chính -->
+                        <div class="mb-8 group">
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                                Ảnh bìa chính <span class="text-red-500">*</span>
+                                <span class="text-xs text-orange-600 font-normal ml-2">(Hiển thị chính)</span>
+                            </label>
+                            <div class="flex flex-col lg:flex-row gap-6 items-start">
+                                <div class="flex-1">
+                                    <div class="relative">
+                                        <i class='bx bx-cloud-upload absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500'></i>
+                                        <input type="file"
+                                               name="fileAnhBiaChinh"
+                                               id="fileAnhBiaChinh"
+                                               accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
+                                               class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:border-orange-500 dark:focus:border-orange-400 focus:ring-4 focus:ring-orange-100 dark:focus:ring-orange-900/30 transition-all duration-300 cursor-pointer"
+                                               required />
+                                    </div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 mt-3 flex items-center gap-2">
+                                        <i class='bx bx-info-circle'></i>
+                                        <span>Chọn ảnh bìa chính (jpg, jpeg, png, gif, bmp, webp - tối đa 5MB)</span>
+                                    </div>
+                                    <span id="fileErrorMain" class="text-red-600 dark:text-red-400 text-sm mt-2 block"></span>
+                                </div>
+                                <div class="w-48 h-48 border-2 border-dashed border-orange-300 dark:border-orange-600 rounded-2xl flex items-center justify-center bg-orange-50 dark:bg-orange-900/20 group-hover:border-orange-400 transition-all duration-300 overflow-hidden">
+                                    <div id="imagePreviewMain" class="text-center p-4 w-full h-full flex flex-col items-center justify-center">
+                                        <i class='bx bx-image text-4xl text-orange-400 mb-2'></i>
+                                        <p class="text-xs text-orange-600 dark:text-orange-400 font-medium">Ảnh chính</p>
+                                        <p class="text-xs text-orange-500 dark:text-orange-300 mt-1">Kéo thả hoặc click để chọn</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Nút hành động -->
-                <div class="row mt-5">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="@Url.Action("QuanLySach")" class="btn btn-outline-secondary px-4">
-                                <i class="fas fa-times me-2"></i>Hủy bỏ
-                            </a>
-                            <button type="submit" class="btn btn-success px-4">
-                                <i class="fas fa-save me-2"></i>Thêm sách
-                            </button>
+                        <!-- 4 Ảnh bìa phụ - SỬA LẠI ĐỂ PHÙ HỢP VỚI CONTROLLER -->
+                        <div class="group">
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                                Ảnh bìa phụ
+                                <span class="text-xs text-blue-600 font-normal ml-2">(Tối đa 4 ảnh - không bắt buộc)</span>
+                            </label>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <!-- Ảnh phụ 1 -->
+                                <div class="group/item">
+                                    <div class="relative">
+                                        <input type="file"
+                                               name="filesAnhBiaPhu"
+                                               accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
+                                               class="hidden sub-image-input"
+                                               data-preview="previewPhu1" />
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
+                                            <div id="previewPhu1" class="w-full h-full flex flex-col items-center justify-center p-4">
+                                                <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
+                                                <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 1</p>
+                                                <p class="text-xs text-blue-500 dark:text-blue-300 mt-1 text-center">Click để chọn</p>
+                                            </div>
+                                        </label>
+                                        <button type="button"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
+                                                data-preview="previewPhu1">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Ảnh phụ 2 -->
+                                <div class="group/item">
+                                    <div class="relative">
+                                        <input type="file"
+                                               name="filesAnhBiaPhu"
+                                               accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
+                                               class="hidden sub-image-input"
+                                               data-preview="previewPhu2" />
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
+                                            <div id="previewPhu2" class="w-full h-full flex flex-col items-center justify-center p-4">
+                                                <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
+                                                <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 2</p>
+                                                <p class="text-xs text-blue-500 dark:text-blue-300 mt-1 text-center">Click để chọn</p>
+                                            </div>
+                                        </label>
+                                        <button type="button"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
+                                                data-preview="previewPhu2">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Ảnh phụ 3 -->
+                                <div class="group/item">
+                                    <div class="relative">
+                                        <input type="file"
+                                               name="filesAnhBiaPhu"
+                                               accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
+                                               class="hidden sub-image-input"
+                                               data-preview="previewPhu3" />
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
+                                            <div id="previewPhu3" class="w-full h-full flex flex-col items-center justify-center p-4">
+                                                <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
+                                                <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 3</p>
+                                                <p class="text-xs text-blue-500 dark:text-blue-300 mt-1 text-center">Click để chọn</p>
+                                            </div>
+                                        </label>
+                                        <button type="button"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
+                                                data-preview="previewPhu3">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Ảnh phụ 4 -->
+                                <div class="group/item">
+                                    <div class="relative">
+                                        <input type="file"
+                                               name="filesAnhBiaPhu"
+                                               accept=".jpg,.jpeg,.png,.gif,.bmp,.webp"
+                                               class="hidden sub-image-input"
+                                               data-preview="previewPhu4" />
+                                        <label class="block w-full h-40 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-2xl cursor-pointer bg-blue-50 dark:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-400 transition-all duration-300 group-hover/item:scale-105 overflow-hidden sub-image-label">
+                                            <div id="previewPhu4" class="w-full h-full flex flex-col items-center justify-center p-4">
+                                                <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
+                                                <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">Ảnh phụ 4</p>
+                                                <p class="text-xs text-blue-500 dark:text-blue-300 mt-1 text-center">Click để chọn</p>
+                                            </div>
+                                        </label>
+                                        <button type="button"
+                                                class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 hover:scale-110 remove-sub-image"
+                                                data-preview="previewPhu4">
+                                            <i class='bx bx-x'></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                                <i class='bx bx-info-circle'></i>
+                                <span>Mỗi ảnh phụ tối đa 5MB. Định dạng: jpg, jpeg, png, gif, bmp, webp</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-8 border-t border-gray-200 dark:border-gray-700">
+                        <button type="submit"
+                                id="btnSubmit"
+                                class="flex-1 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900/30 transform hover:-translate-y-1">
+                            <i class='bx bx-save text-xl mr-3'></i>
+                            <span class="btn-text">Thêm Sách Mới</span>
+                            <i class='bx bx-loader-alt ml-3 hidden animate-spin'></i>
+                        </button>
+
+                        <button type="reset"
+                                class="px-8 py-4 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white font-bold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600 transform hover:-translate-y-1">
+                            <i class='bx bx-reset mr-2'></i>
+                            Nhập Lại
+                        </button>
+
+                        <a href="@Url.Action("QuanLySach", "Book", new { area = "Admin" })"
+                           class="px-8 py-4 bg-transparent border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 text-gray-700 dark:text-gray-300 font-bold rounded-2xl transition-all duration-300 hover:shadow-lg hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600 text-center transform hover:-translate-y-1">
+                            <i class='bx bx-x mr-2'></i>
+                            Hủy Bỏ
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -173,51 +467,291 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('fileAnhBia');
-            const preview = document.getElementById('previewImg');
+            const form = document.getElementById('addBookForm');
+            const btnSubmit = document.getElementById('btnSubmit');
+            const btnText = btnSubmit.querySelector('.btn-text');
+            const loaderIcon = btnSubmit.querySelector('.bx-loader-alt');
+            const giaBanInput = document.getElementById('GiaBan');
+            const phanTramGiamGiaInput = document.getElementById('PhanTramGiamGia');
+            const giaSauGiamInput = document.getElementById('giaSauGiam');
 
-            // Xử lý thay đổi ảnh
-            fileInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('Kích thước ảnh không được vượt quá 5MB');
-                        this.value = '';
-                        return;
+            // Tính toán giá sau giảm
+            function calculateDiscountedPrice() {
+                const giaBan = parseFloat(giaBanInput.value) || 0;
+                const phanTramGiam = parseFloat(phanTramGiamGiaInput.value) || 0;
+                const giaSauGiam = giaBan * (1 - phanTramGiam / 100);
+
+                giaSauGiamInput.value = new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).format(giaSauGiam);
+            }
+
+            // Event listeners for price calculation
+            if (giaBanInput && phanTramGiamGiaInput) {
+                giaBanInput.addEventListener('input', calculateDiscountedPrice);
+                phanTramGiamGiaInput.addEventListener('input', calculateDiscountedPrice);
+                calculateDiscountedPrice();
+            }
+
+            // Image preview function for main image
+            function setupMainImagePreview() {
+                const input = document.getElementById('fileAnhBiaChinh');
+                const preview = document.getElementById('imagePreviewMain');
+                const errorSpan = document.getElementById('fileErrorMain');
+
+                if (input && preview) {
+                    input.addEventListener('change', function() {
+                        const file = this.files[0];
+                        if (errorSpan) errorSpan.textContent = '';
+
+                        if (file) {
+                            // Kiểm tra loại file
+                            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+                            if (!allowedTypes.includes(file.type)) {
+                                if (errorSpan) errorSpan.textContent = 'Chỉ chấp nhận file ảnh (jpg, jpeg, png, gif, bmp, webp)';
+                                this.value = '';
+                                resetImagePreview(preview, 'Ảnh chính');
+                                return;
+                            }
+
+                            // Kiểm tra kích thước file (5MB)
+                            if (file.size > 5 * 1024 * 1024) {
+                                if (errorSpan) errorSpan.textContent = 'Kích thước file không được vượt quá 5MB';
+                                this.value = '';
+                                resetImagePreview(preview, 'Ảnh chính');
+                                return;
+                            }
+
+                            // Hiển thị preview với hiệu ứng
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                preview.style.opacity = '0';
+                                setTimeout(() => {
+                                    preview.innerHTML = `
+                                        <img src="${e.target.result}" class="w-full h-full object-cover rounded-xl shadow-lg" alt="Preview">
+                                        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                            ${file.name}
+                                        </div>
+                                    `;
+                                    preview.style.opacity = '1';
+                                }, 200);
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            resetImagePreview(preview, 'Ảnh chính');
+                        }
+                    });
+                }
+            }
+
+            // Image preview function for sub images
+            function setupSubImagePreview(input, previewId) {
+                const preview = document.getElementById(previewId);
+
+                if (input && preview) {
+                    input.addEventListener('change', function() {
+                        const file = this.files[0];
+
+                        if (file) {
+                            // Kiểm tra loại file
+                            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+                            if (!allowedTypes.includes(file.type)) {
+                                alert('Chỉ chấp nhận file ảnh (jpg, jpeg, png, gif, bmp, webp)');
+                                this.value = '';
+                                resetImagePreview(preview, 'Ảnh phụ');
+                                return;
+                            }
+
+                            // Kiểm tra kích thước file (5MB)
+                            if (file.size > 5 * 1024 * 1024) {
+                                alert('Kích thước file không được vượt quá 5MB');
+                                this.value = '';
+                                resetImagePreview(preview, 'Ảnh phụ');
+                                return;
+                            }
+
+                            // Hiển thị preview với hiệu ứng
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                preview.style.opacity = '0';
+                                setTimeout(() => {
+                                    preview.innerHTML = `
+                                        <img src="${e.target.result}" class="w-full h-full object-cover rounded-xl shadow-lg" alt="Preview">
+                                        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                            ${file.name}
+                                        </div>
+                                    `;
+                                    preview.style.opacity = '1';
+                                }, 200);
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            resetImagePreview(preview, 'Ảnh phụ');
+                        }
+                    });
+                }
+            }
+
+            // Setup preview for main image
+            setupMainImagePreview();
+
+            // Setup preview for additional images
+            const subImageInputs = document.querySelectorAll('.sub-image-input');
+            subImageInputs.forEach((input, index) => {
+                setupSubImagePreview(input, `previewPhu${index + 1}`);
+            });
+
+            // Setup click events for sub image labels
+            const subImageLabels = document.querySelectorAll('.sub-image-label');
+            subImageLabels.forEach((label, index) => {
+                label.addEventListener('click', function() {
+                    const input = this.previousElementSibling;
+                    if (input) {
+                        input.click();
+                    }
+                });
+            });
+
+            function resetImagePreview(previewElement, type = 'Ảnh phụ') {
+                previewElement.style.opacity = '0';
+                setTimeout(() => {
+                    if (previewElement.id === 'imagePreviewMain') {
+                        previewElement.innerHTML = `
+                            <i class='bx bx-image text-4xl text-orange-400 mb-2'></i>
+                            <p class="text-xs text-orange-600 dark:text-orange-400 font-medium">${type}</p>
+                            <p class="text-xs text-orange-500 dark:text-orange-300 mt-1">Kéo thả hoặc click để chọn</p>
+                        `;
+                    } else {
+                        previewElement.innerHTML = `
+                            <i class='bx bx-image-add text-2xl text-blue-400 mb-2 group-hover/item:text-blue-500 transition-colors'></i>
+                            <p class="text-xs text-blue-600 dark:text-blue-400 font-medium text-center">${type}</p>
+                            <p class="text-xs text-blue-500 dark:text-blue-300 mt-1 text-center">Click để chọn</p>
+                        `;
+                    }
+                    previewElement.style.opacity = '1';
+                }, 200);
+            }
+
+            // Remove image functionality for sub images
+            document.querySelectorAll('.remove-sub-image').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    const previewId = this.getAttribute('data-preview');
+                    const preview = document.getElementById(previewId);
+                    const input = preview.closest('.relative').querySelector('.sub-image-input');
+
+                    if (input) {
+                        input.value = '';
                     }
 
-                    if (!file.type.startsWith('image/')) {
-                        alert('Vui lòng chọn file ảnh');
-                        this.value = '';
-                        return;
-                    }
+                    const type = previewId === 'imagePreviewMain' ? 'Ảnh chính' : 'Ảnh phụ';
+                    resetImagePreview(preview, type);
+                });
+            });
 
-                    preview.src = URL.createObjectURL(file);
+            // Auto-focus vào trường tên sách với hiệu ứng
+            setTimeout(() => {
+                const tenSachInput = document.getElementById('TenSach');
+                if (tenSachInput) {
+                    tenSachInput.focus();
+                    tenSachInput.parentElement.classList.add('ring-2', 'ring-blue-500');
+                    setTimeout(() => {
+                        tenSachInput.parentElement.classList.remove('ring-2', 'ring-blue-500');
+                    }, 1000);
+                }
+            }, 500);
+
+            // Form submission handler
+            form.addEventListener('submit', function(e) {
+                const fileAnhBiaChinh = document.getElementById('fileAnhBiaChinh')?.files[0];
+
+                if (!fileAnhBiaChinh) {
+                    e.preventDefault();
+                    document.getElementById('fileErrorMain').textContent = 'Vui lòng chọn ảnh bìa chính';
+                    document.getElementById('fileAnhBiaChinh').focus();
+                    document.getElementById('fileAnhBiaChinh').parentElement.classList.add('ring-2', 'ring-red-500');
+                    return;
+                }
+
+                // Hiển thị loading với hiệu ứng
+                btnSubmit.disabled = true;
+                btnText.textContent = 'Đang thêm sách...';
+                loaderIcon.classList.remove('hidden');
+                btnSubmit.classList.remove('hover:scale-105', 'hover:-translate-y-1');
+            });
+
+            // Confirm reset form
+            form.addEventListener('reset', function(e) {
+                if (!confirm('Bạn có chắc muốn xóa toàn bộ thông tin đã nhập?')) {
+                    e.preventDefault();
+                } else {
+                    // Reset all image previews
+                    resetImagePreview(document.getElementById('imagePreviewMain'), 'Ảnh chính');
+                    for (let i = 1; i <= 4; i++) {
+                        resetImagePreview(document.getElementById(`previewPhu${i}`), `Ảnh phụ ${i}`);
+                    }
+                    setTimeout(calculateDiscountedPrice, 100);
+
+                    // Hiệu ứng reset
+                    form.classList.add('opacity-50');
+                    setTimeout(() => {
+                        form.classList.remove('opacity-50');
+                    }, 300);
                 }
             });
 
-            // Xử lý form submit
-            document.getElementById('formThemSach').addEventListener('submit', function(e) {
-                const tenSach = document.querySelector('[name="TenSach"]').value.trim();
-                const giaBan = document.querySelector('[name="GiaBan"]').value;
-                const soLuong = document.querySelector('[name="SoLuong"]').value;
+            // Hiệu ứng hover cho các card
+            const cards = document.querySelectorAll('[class*="bg-gradient-to-br"]');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.classList.add('shadow-lg', 'scale-[1.02]');
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.classList.remove('shadow-lg', 'scale-[1.02]');
+                });
+            });
 
-                if (!tenSach) {
+            // Drag and drop functionality
+            function setupDragAndDrop(dropZone, input) {
+                dropZone.addEventListener('dragover', function(e) {
                     e.preventDefault();
-                    alert('Vui lòng nhập tên sách');
-                    return;
-                }
+                    this.classList.add('border-blue-500', 'bg-blue-100');
+                });
 
-                if (!giaBan || giaBan <= 0) {
+                dropZone.addEventListener('dragleave', function(e) {
                     e.preventDefault();
-                    alert('Vui lòng nhập giá bán hợp lệ');
-                    return;
-                }
+                    this.classList.remove('border-blue-500', 'bg-blue-100');
+                });
 
-                if (!soLuong || soLuong < 0) {
+                dropZone.addEventListener('drop', function(e) {
                     e.preventDefault();
-                    alert('Vui lòng nhập số lượng hợp lệ');
-                    return;
+                    this.classList.remove('border-blue-500', 'bg-blue-100');
+
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        input.files = files;
+                        const event = new Event('change', { bubbles: true });
+                        input.dispatchEvent(event);
+                    }
+                });
+            }
+
+            // Setup drag and drop for main image
+            const mainDropZone = document.getElementById('imagePreviewMain').closest('div');
+            const mainInput = document.getElementById('fileAnhBiaChinh');
+            if (mainDropZone && mainInput) {
+                setupDragAndDrop(mainDropZone, mainInput);
+            }
+
+            // Setup drag and drop for additional images
+            const subDropZones = document.querySelectorAll('.sub-image-label');
+            subDropZones.forEach((dropZone, index) => {
+                const input = dropZone.previousElementSibling;
+                if (dropZone && input) {
+                    setupDragAndDrop(dropZone, input);
                 }
             });
         });

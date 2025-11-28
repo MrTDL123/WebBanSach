@@ -10,188 +10,352 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
     public class UserController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(ApplicationDbContext db)
+        public UserController(ApplicationDbContext db, ILogger<UserController> logger)
         {
             _db = db;
+            _logger = logger;
         }
 
-        // 📚 Danh sách người dùng
+        // 📚 DANH SÁCH NGƯỜI DÙNG
         public IActionResult QuanLyNguoiDung()
         {
-            var dsKhachHang = _db.KhachHangs
-                .Include(k => k.TaiKhoan)
-                .ToList();
+            try
+            {
+                var dsKhachHang = _db.KhachHangs
+                    .Include(k => k.TaiKhoan)
+                    .OrderBy(k => k.HoTen)
+                    .ToList();
 
-            var dsNhanVien = _db.NhanViens
-                .Include(n => n.TaiKhoan)
-                .ToList();
+                var dsNhanVien = _db.NhanViens
+                    .Include(n => n.TaiKhoan)
+                    .OrderBy(n => n.HoTen)
+                    .ToList();
 
-            ViewBag.KhachHangs = dsKhachHang;
-            ViewBag.NhanViens = dsNhanVien;
+                ViewBag.KhachHangs = dsKhachHang;
+                ViewBag.NhanViens = dsNhanVien;
 
-            return View();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi tải danh sách người dùng");
+                TempData["Error"] = "Lỗi khi tải dữ liệu người dùng";
+                return View();
+            }
         }
 
-        // ❌ XÓA action Thêm khách hàng - KHÔNG CHO PHÉP THÊM KHÁCH HÀNG
-
-        // ➕ GET: Thêm nhân viên
+        // ➕ THÊM NHÂN VIÊN - GET
         [HttpGet]
         public IActionResult ThemNhanVien()
         {
-            return View(new NhanVien());
+            return View(new NhanVien
+            {
+                NgayVaoLam = DateTime.Today,
+                NgaySinh = DateTime.Today.AddYears(-25)
+            });
         }
 
-        // ➕ POST: Thêm nhân viên
+        // ➕ THÊM NHÂN VIÊN - POST (DEBUG VERSION)
         [HttpPost]
-        public IActionResult ThemNhanVien(NhanVien model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ThemNhanVien(NhanVien model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            // Kiểm tra email đã tồn tại chưa
-            if (_db.Users.Any(u => u.Email == model.TaiKhoan.Email))
-            {
-                ModelState.AddModelError("TaiKhoan.Email", "Email đã tồn tại trong hệ thống");
-                return View(model);
-            }
-
             try
             {
-                // Tạo tài khoản Identity
-                var user = new TaiKhoan
+                Console.WriteLine("=== DEBUG START ===");
+                Console.WriteLine($"Model received - HoTen: {model.HoTen}, NgayVaoLam: {model.NgayVaoLam}");
+
+                // TẮT VALIDATION CHO TẤT CẢ NAVIGATION PROPERTIES
+                ModelState.Remove("TaiKhoan");
+                ModelState.Remove("DonHangs");
+                ModelState.Remove("PhieuTraHangs");
+                ModelState.Remove("ChamSocKhachHangs");
+                ModelState.Remove("MaTaiKhoan");
+
+                // DEBUG: Log tất cả ModelState errors
+                foreach (var key in ModelState.Keys)
                 {
-                    UserName = model.TaiKhoan.Email,
-                    Email = model.TaiKhoan.Email,
-                    PhoneNumber = model.TaiKhoan.PhoneNumber,
-                    EmailConfirmed = true
+                    var state = ModelState[key];
+                    foreach (var error in state.Errors)
+                    {
+                        Console.WriteLine($"ModelState Error - Key: {key}, Error: {error.ErrorMessage}");
+                    }
+                }
+
+                Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
+                Console.WriteLine("=== DEBUG END ===");
+
+                // Kiểm tra validation thủ công
+                if (string.IsNullOrEmpty(model.HoTen))
+                {
+                    TempData["Error"] = "Họ tên là bắt buộc";
+                    return View(model);
+                }
+
+                if (model.NgayVaoLam == null)
+                {
+                    TempData["Error"] = "Ngày vào làm là bắt buộc";
+                    return View(model);
+                }
+
+                // Kiểm tra CCCD đã tồn tại chưa
+                if (!string.IsNullOrEmpty(model.CCCD) && await _db.NhanViens.AnyAsync(n => n.CCCD == model.CCCD))
+                {
+                    TempData["Error"] = "CCCD đã tồn tại trong hệ thống";
+                    return View(model);
+                }
+
+                // Tạo username và email tự động
+                var username = $"nv{DateTime.Now:yyyyMMddHHmmss}";
+                var email = $"{username}@company.com";
+
+                // Kiểm tra email đã tồn tại chưa
+                if (await _db.Users.AnyAsync(u => u.Email == email))
+                {
+                    TempData["Error"] = "Email đã tồn tại, vui lòng thử lại";
+                    return View(model);
+                }
+
+                // Tạo tài khoản mặc định
+                var taiKhoan = new TaiKhoan
+                {
+                    UserName = username,
+                    Email = email,
+                    PhoneNumber = null,
+                    EmailConfirmed = true,
+                    LockoutEnabled = false,
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    ConcurrencyStamp = Guid.NewGuid().ToString(),
+                    NormalizedUserName = username.ToUpper(),
+                    NormalizedEmail = email.ToUpper()
                 };
 
-                _db.Users.Add(user);
-                _db.SaveChanges();
+                Console.WriteLine($"Creating TaiKhoan: {taiKhoan.UserName}, Email: {taiKhoan.Email}");
 
-                // Tạo nhân viên
+                _db.Users.Add(taiKhoan);
+                await _db.SaveChangesAsync();
+
+                Console.WriteLine($"TaiKhoan created with ID: {taiKhoan.Id}");
+
+                // Tạo nhân viên với MaTaiKhoan đã được tạo
                 var nhanVien = new NhanVien
                 {
-                    MaTaiKhoan = user.Id,
-                    HoTen = model.HoTen,
-                    DiaChi = model.DiaChi,
+                    MaTaiKhoan = taiKhoan.Id, // Gán MaTaiKhoan từ tài khoản vừa tạo
+                    HoTen = model.HoTen?.Trim(),
+                    DiaChi = model.DiaChi?.Trim(),
                     NgaySinh = model.NgaySinh,
-                    CCCD = model.CCCD,
+                    CCCD = model.CCCD?.Trim(),
                     Luong = model.Luong,
                     BacLuong = model.BacLuong,
-                    NgayVaoLam = model.NgayVaoLam ?? DateTime.Now,
-                    QueQuan = model.QueQuan
+                    NgayVaoLam = model.NgayVaoLam ?? DateTime.Today,
+                    QueQuan = model.QueQuan?.Trim()
                 };
 
-                _db.NhanViens.Add(nhanVien);
-                _db.SaveChanges();
+                Console.WriteLine($"Creating NhanVien: {nhanVien.HoTen}, MaTaiKhoan: {nhanVien.MaTaiKhoan}");
 
-                TempData["Success"] = "Thêm nhân viên thành công!";
-                return RedirectToAction("QuanLyNguoiDung");
+                _db.NhanViens.Add(nhanVien);
+                await _db.SaveChangesAsync();
+
+                Console.WriteLine("NhanVien created successfully");
+
+                TempData["Success"] = $"Thêm nhân viên {nhanVien.HoTen} thành công!";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Có lỗi xảy ra khi thêm nhân viên: " + ex.Message);
+                _logger.LogError(ex, "Lỗi khi thêm nhân viên");
+                Console.WriteLine($"EXCEPTION: {ex.Message}");
+                Console.WriteLine($"INNER EXCEPTION: {ex.InnerException?.Message}");
+
+                var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                TempData["Error"] = $"Có lỗi xảy ra khi thêm nhân viên: {errorMessage}";
+
                 return View(model);
             }
         }
 
-        // ✏ GET: Sửa thông tin khách hàng - CHỈ CHO XEM, KHÔNG CHO SỬA
-        [HttpGet]
-        public IActionResult SuaThongTin(int id)
-        {
-            var khachHang = _db.KhachHangs
-                .Include(k => k.TaiKhoan)
-                .FirstOrDefault(k => k.MaKhachHang == id);
-
-            if (khachHang == null) return NotFound();
-
-            // Chỉ trả về view xem, không cho phép chỉnh sửa
-            ViewBag.IsReadOnly = true;
-            return View("ChiTietKhachHang", khachHang); // Chuyển hướng đến view chi tiết
-        }
-
-        // ❌ XÓA action POST Sửa thông tin khách hàng - KHÔNG CHO PHÉP SỬA
-
-        // ✏ GET: Sửa thông tin nhân viên
+        // ✏ SỬA NHÂN VIÊN - GET
         [HttpGet]
         public IActionResult SuaNhanVien(int id)
         {
-            var nhanVien = _db.NhanViens
-                .Include(n => n.TaiKhoan)
-                .FirstOrDefault(n => n.MaNhanVien == id);
-
-            if (nhanVien == null) return NotFound();
-
-            return View(nhanVien);
-        }
-
-        // ✏ POST: Sửa thông tin nhân viên
-        [HttpPost]
-        public IActionResult SuaNhanVien(NhanVien model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var nhanVien = _db.NhanViens
-                .Include(n => n.TaiKhoan)
-                .FirstOrDefault(n => n.MaNhanVien == model.MaNhanVien);
-
-            if (nhanVien == null) return NotFound();
-
             try
             {
-                // Cập nhật thông tin nhân viên
-                nhanVien.HoTen = model.HoTen;
-                nhanVien.DiaChi = model.DiaChi;
-                nhanVien.NgaySinh = model.NgaySinh;
-                nhanVien.CCCD = model.CCCD;
-                nhanVien.Luong = model.Luong;
-                nhanVien.BacLuong = model.BacLuong;
-                nhanVien.NgayVaoLam = model.NgayVaoLam;
-                nhanVien.QueQuan = model.QueQuan;
+                var nhanVien = _db.NhanViens
+                    .Include(n => n.TaiKhoan)
+                    .FirstOrDefault(n => n.MaNhanVien == id);
 
-                _db.NhanViens.Update(nhanVien);
-                _db.SaveChanges();
+                if (nhanVien == null)
+                {
+                    TempData["Error"] = "Không tìm thấy nhân viên";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
 
-                TempData["Success"] = "Cập nhật thông tin nhân viên thành công!";
-                return RedirectToAction("QuanLyNguoiDung");
+                return View(nhanVien);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật: " + ex.Message);
+                _logger.LogError(ex, "Lỗi khi tải form sửa nhân viên");
+                TempData["Error"] = "Lỗi khi tải thông tin nhân viên";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
+            }
+        }
+
+        // ✏ SỬA NHÂN VIÊN - POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SuaNhanVien(NhanVien model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var nhanVien = await _db.NhanViens
+                    .Include(n => n.TaiKhoan)
+                    .FirstOrDefaultAsync(n => n.MaNhanVien == model.MaNhanVien);
+
+                if (nhanVien == null)
+                {
+                    TempData["Error"] = "Không tìm thấy nhân viên";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
+
+                // Kiểm tra CCCD trùng (trừ chính nó)
+                if (!string.IsNullOrEmpty(model.CCCD) &&
+                    _db.NhanViens.Any(n => n.CCCD == model.CCCD && n.MaNhanVien != model.MaNhanVien))
+                {
+                    ModelState.AddModelError("CCCD", "CCCD đã tồn tại trong hệ thống");
+                    return View(model);
+                }
+
+                // Cập nhật thông tin
+                nhanVien.HoTen = model.HoTen.Trim();
+                nhanVien.DiaChi = model.DiaChi?.Trim();
+                nhanVien.NgaySinh = model.NgaySinh;
+                nhanVien.CCCD = model.CCCD?.Trim();
+                nhanVien.Luong = model.Luong;
+                nhanVien.BacLuong = model.BacLuong;
+                nhanVien.NgayVaoLam = model.NgayVaoLam;
+                nhanVien.QueQuan = model.QueQuan?.Trim();
+
+                _db.NhanViens.Update(nhanVien);
+                await _db.SaveChangesAsync();
+
+                TempData["Success"] = $"Cập nhật thông tin nhân viên {nhanVien.HoTen} thành công!";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi cập nhật nhân viên");
+                ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật thông tin. Vui lòng thử lại.");
                 return View(model);
             }
         }
 
-        // ❌ Xóa khách hàng
-        public IActionResult XoaUser(int id)
+        // 👁 CHI TIẾT KHÁCH HÀNG
+        public IActionResult ChiTietKhachHang(int id)
         {
-            var khachHang = _db.KhachHangs
-                .Include(k => k.TaiKhoan)
-                .Include(k => k.DonHangs)
-                .Include(k => k.PhanHoiKhachHangs)
-                .Include(k => k.ChamSocKhachHangs)
-                .Include(k => k.DiaChiNhanHangs)
-                .FirstOrDefault(k => k.MaKhachHang == id);
-
-            if (khachHang == null) return NotFound();
-
-            // Kiểm tra xem khách hàng có đơn hàng không
-            if (khachHang.DonHangs?.Any() == true)
-            {
-                TempData["Error"] = $"Không thể xóa khách hàng '{khachHang.HoTen}' vì có đơn hàng liên quan!";
-                return RedirectToAction("QuanLyNguoiDung");
-            }
-
             try
             {
-                // Xóa các dữ liệu liên quan
+                var khachHang = _db.KhachHangs
+     .Include(k => k.TaiKhoan)
+     .Include(k => k.DonHangs)
+         .ThenInclude(d => d.ChiTietDonHangs) // Lấy chi tiết sản phẩm của từng đơn  
+     .Include(k => k.PhanHoiKhachHangs)
+     .Include(k => k.DanhGiaSanPhams)
+     .Include(k => k.DiaChiNhanHangs)
+     .FirstOrDefault(k => k.MaKhachHang == id);
+
+
+                if (khachHang == null)
+                {
+                    TempData["Error"] = "Không tìm thấy khách hàng";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
+
+                ViewBag.TongDonHang = khachHang.DonHangs?.Count ?? 0;
+                ViewBag.TongPhanHoi = khachHang.PhanHoiKhachHangs?.Count ?? 0;
+                ViewBag.TongDanhGia = khachHang.DanhGiaSanPhams?.Count ?? 0;
+                ViewBag.TongDiaChi = khachHang.DiaChiNhanHangs?.Count ?? 0;
+
+                return View(khachHang);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi xem chi tiết khách hàng");
+                TempData["Error"] = "Lỗi khi tải thông tin khách hàng";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
+            }
+        }
+
+        // 👁 CHI TIẾT NHÂN VIÊN
+        public IActionResult ChiTietNhanVien(int id)
+        {
+            try
+            {
+                var nhanVien = _db.NhanViens
+                    .Include(n => n.TaiKhoan)
+                    .Include(n => n.DonHangs)
+                    .Include(n => n.PhieuTraHangs)
+                    .Include(n => n.ChamSocKhachHangs)
+                    .FirstOrDefault(n => n.MaNhanVien == id);
+
+                if (nhanVien == null)
+                {
+                    TempData["Error"] = "Không tìm thấy nhân viên";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
+
+                ViewBag.TongDonHang = nhanVien.DonHangs?.Count ?? 0;
+                ViewBag.TongPhieuTra = nhanVien.PhieuTraHangs?.Count ?? 0;
+                ViewBag.TongChamSoc = nhanVien.ChamSocKhachHangs?.Count ?? 0;
+
+                return View(nhanVien);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi xem chi tiết nhân viên");
+                TempData["Error"] = "Lỗi khi tải thông tin nhân viên";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
+            }
+        }
+
+        // ❌ XÓA KHÁCH HÀNG
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaKhachHang(int id)
+        {
+            try
+            {
+                var khachHang = await _db.KhachHangs
+                    .Include(k => k.TaiKhoan)
+                    .Include(k => k.DonHangs)
+                    .Include(k => k.PhanHoiKhachHangs)
+                    .Include(k => k.ChamSocKhachHangs)
+                    .Include(k => k.DiaChiNhanHangs)
+                    .Include(k => k.DanhGiaSanPhams)
+                    .Include(k => k.LuotThichDanhGiaSanPhams)
+                    .Include(k => k.GioHang)
+                    .FirstOrDefaultAsync(k => k.MaKhachHang == id);
+
+                if (khachHang == null)
+                {
+                    TempData["Error"] = "Không tìm thấy khách hàng";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
+
+                // Kiểm tra ràng buộc
+                if (khachHang.DonHangs?.Any() == true)
+                {
+                    TempData["Error"] = $"Không thể xóa khách hàng '{khachHang.HoTen}' vì có {khachHang.DonHangs.Count} đơn hàng liên quan";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
+
+                // Xóa dữ liệu liên quan
                 if (khachHang.PhanHoiKhachHangs?.Any() == true)
                 {
                     _db.PhanHoiKhachHangs.RemoveRange(khachHang.PhanHoiKhachHangs);
@@ -207,110 +371,123 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     _db.DiaChiNhanHangs.RemoveRange(khachHang.DiaChiNhanHangs);
                 }
 
-                // Xóa giỏ hàng nếu có
-                var gioHang = _db.GioHangs.FirstOrDefault(g => g.MaKhachHang == id);
-                if (gioHang != null)
+                if (khachHang.DanhGiaSanPhams?.Any() == true)
                 {
-                    _db.GioHangs.Remove(gioHang);
+                    _db.DanhGiaSanPhams.RemoveRange(khachHang.DanhGiaSanPhams);
                 }
 
-                // Xóa khách hàng
+                if (khachHang.LuotThichDanhGiaSanPhams?.Any() == true)
+                {
+                    _db.LuotThichDanhGiaSanPhams.RemoveRange(khachHang.LuotThichDanhGiaSanPhams);
+                }
+
+                if (khachHang.GioHang != null)
+                {
+                    _db.GioHangs.Remove(khachHang.GioHang);
+                }
+
+                // Xóa khách hàng và tài khoản
                 _db.KhachHangs.Remove(khachHang);
 
-                // Xóa tài khoản Identity
                 if (khachHang.TaiKhoan != null)
                 {
                     _db.Users.Remove(khachHang.TaiKhoan);
                 }
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
-                TempData["Success"] = "Xóa khách hàng thành công!";
-                return RedirectToAction("QuanLyNguoiDung");
+                TempData["Success"] = $"Đã xóa khách hàng {khachHang.HoTen} thành công!";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Có lỗi xảy ra khi xóa khách hàng: {ex.Message}";
-                return RedirectToAction("QuanLyNguoiDung");
+                _logger.LogError(ex, "Lỗi khi xóa khách hàng");
+                TempData["Error"] = "Có lỗi xảy ra khi xóa khách hàng. Vui lòng thử lại.";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
             }
         }
 
-        // ❌ Xóa nhân viên
-        public IActionResult XoaNhanVien(int id)
+        // ❌ XÓA NHÂN VIÊN
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> XoaNhanVien(int id)
         {
-            var nhanVien = _db.NhanViens
-                .Include(n => n.TaiKhoan)
-                .Include(n => n.DonHangs)
-                .Include(n => n.PhieuTraHangs)
-                .Include(n => n.ChamSocKhachHangs)
-                .FirstOrDefault(n => n.MaNhanVien == id);
-
-            if (nhanVien == null) return NotFound();
-
-            // Kiểm tra xem nhân viên có dữ liệu liên quan không
-            if (nhanVien.DonHangs?.Any() == true || nhanVien.PhieuTraHangs?.Any() == true)
-            {
-                TempData["Error"] = $"Không thể xóa nhân viên '{nhanVien.HoTen}' vì có dữ liệu liên quan!";
-                return RedirectToAction("QuanLyNguoiDung");
-            }
-
             try
             {
-                // Xóa dữ liệu chăm sóc khách hàng liên quan
+                var nhanVien = await _db.NhanViens
+                    .Include(n => n.TaiKhoan)
+                    .Include(n => n.DonHangs)
+                    .Include(n => n.PhieuTraHangs)
+                    .Include(n => n.ChamSocKhachHangs)
+                    .FirstOrDefaultAsync(n => n.MaNhanVien == id);
+
+                if (nhanVien == null)
+                {
+                    TempData["Error"] = "Không tìm thấy nhân viên";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
+
+                // Kiểm tra ràng buộc
+                if (nhanVien.DonHangs?.Any() == true || nhanVien.PhieuTraHangs?.Any() == true)
+                {
+                    var donHangCount = nhanVien.DonHangs?.Count ?? 0;
+                    var phieuTraCount = nhanVien.PhieuTraHangs?.Count ?? 0;
+                    TempData["Error"] = $"Không thể xóa nhân viên '{nhanVien.HoTen}' vì có {donHangCount} đơn hàng và {phieuTraCount} phiếu trả liên quan";
+                    return RedirectToAction(nameof(QuanLyNguoiDung));
+                }
+
+                // Xóa dữ liệu liên quan
                 if (nhanVien.ChamSocKhachHangs?.Any() == true)
                 {
                     _db.ChamSocKhachHangs.RemoveRange(nhanVien.ChamSocKhachHangs);
                 }
 
-                // Xóa nhân viên
+                // Xóa nhân viên và tài khoản
                 _db.NhanViens.Remove(nhanVien);
 
-                // Xóa tài khoản Identity
                 if (nhanVien.TaiKhoan != null)
                 {
                     _db.Users.Remove(nhanVien.TaiKhoan);
                 }
 
-                _db.SaveChanges();
+                await _db.SaveChangesAsync();
 
-                TempData["Success"] = "Xóa nhân viên thành công!";
-                return RedirectToAction("QuanLyNguoiDung");
+                TempData["Success"] = $"Đã xóa nhân viên {nhanVien.HoTen} thành công!";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
             }
             catch (Exception ex)
             {
-                TempData["Error"] = $"Có lỗi xảy ra khi xóa nhân viên: {ex.Message}";
-                return RedirectToAction("QuanLyNguoiDung");
+                _logger.LogError(ex, "Lỗi khi xóa nhân viên");
+                TempData["Error"] = "Có lỗi xảy ra khi xóa nhân viên. Vui lòng thử lại.";
+                return RedirectToAction(nameof(QuanLyNguoiDung));
             }
         }
 
-        // 👁 Chi tiết khách hàng - CHỈ XEM
-        public IActionResult ChiTietKhachHang(int id)
+        // 🔄 CẬP NHẬT TRẠNG THÁI NHÂN VIÊN
+        [HttpPost]
+        public async Task<IActionResult> CapNhatTrangThaiNhanVien(int id, bool trangThai)
         {
-            var khachHang = _db.KhachHangs
-                .Include(k => k.TaiKhoan)
-                .Include(k => k.DonHangs)
-                .Include(k => k.PhanHoiKhachHangs)
-                .Include(k => k.DiaChiNhanHangs)
-                .FirstOrDefault(k => k.MaKhachHang == id);
+            try
+            {
+                var nhanVien = await _db.NhanViens.FindAsync(id);
+                if (nhanVien == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy nhân viên" });
+                }
 
-            if (khachHang == null) return NotFound();
+                // Nếu model có property TrangThai, bạn có thể thêm vào
+                // nhanVien.TrangThai = trangThai;
 
-            ViewBag.IsReadOnly = true; // Đánh dấu là chỉ xem
-            return View(khachHang);
-        }
+                _db.NhanViens.Update(nhanVien);
+                await _db.SaveChangesAsync();
 
-        // 👁 Chi tiết nhân viên
-        public IActionResult ChiTietNhanVien(int id)
-        {
-            var nhanVien = _db.NhanViens
-                .Include(n => n.TaiKhoan)
-                .Include(n => n.DonHangs)
-                .Include(n => n.PhieuTraHangs)
-                .FirstOrDefault(n => n.MaNhanVien == id);
-
-            if (nhanVien == null) return NotFound();
-
-            return View(nhanVien);
+                return Json(new { success = true, message = "Cập nhật trạng thái thành công" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi khi cập nhật trạng thái nhân viên");
+                return Json(new { success = false, message = "Lỗi khi cập nhật trạng thái" });
+            }
         }
     }
 }
