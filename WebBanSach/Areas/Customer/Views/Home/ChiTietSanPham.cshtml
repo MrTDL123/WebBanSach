@@ -714,32 +714,6 @@
           document.getElementById("popupModal").style.display = "none";
         }
 
-        // // Tab switching
-        // document.querySelectorAll('.tab').forEach(tab => {
-        //     tab.addEventListener('click', function() {
-        //         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        //         this.classList.add('active');
-        //     });
-        // });
-
-        // // Like button toggle
-        // document.querySelectorAll('.action-btn').forEach(btn => {
-        //     if (btn.textContent.includes('Thích')) {
-        //         btn.addEventListener('click', function() {
-        //             const currentCount = parseInt(this.textContent.match(/\d+/)[0]);
-        //             if (this.style.color === 'rgb(201, 33, 39)') {
-        //                 this.style.color = '';
-        //                 this.style.borderColor = '';
-        //                 this.innerHTML = `<span class="action-icon">👍</span>Thích (${currentCount - 1})`;
-        //             } else {
-        //                 this.style.color = '#C92127';
-        //                 this.style.borderColor = '#C92127';
-        //                 this.innerHTML = `<span class="action-icon">👍</span>Thích (${currentCount + 1})`;
-        //             }
-        //         });
-        //     }
-        // });
-
         // Show more review content
         document.querySelectorAll('.show-more-link').forEach(link => {
             link.addEventListener('click', function(e) {

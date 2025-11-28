@@ -6,9 +6,8 @@
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
-            height: 100vh;
+            min-height: 100vh;
         }
-
     </style>
     <link rel="stylesheet" href="~/css/pages/index.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/partialview/tusachmienphi.css" asp-append-version="true" />
@@ -49,7 +48,7 @@
                 </div>
 
                 <div class="button">
-                    <a class="montserrat-bold" asp-action="Shop">Hãy mua ngay</a>
+                    <a class="montserrat-bold" asp-area="Customer" asp-controller="Home" asp-action="LayTatCaSach">Hãy mua ngay</a>
                 </div>
             </div>
 
@@ -135,7 +134,7 @@
                 </div>
 
                 <div class="button">
-                    <a class="montserrat-bold" asp-action="Shop">
+                    <a class="montserrat-bold" asp-area="Customer" asp-controller="Home" asp-action="LayTatCaSach">
                         Hãy mua ngay
                     </a>
                 </div>
@@ -202,7 +201,7 @@
                 <div class="danh_muc_item">
                     <a asp-controller="Home" asp-action="SachTheoChuDe" asp-route-path="@chuDe.ChuDeFullPath">
                         <img src="@chuDe.DuongDanHinhAnh" alt="Ảnh @chuDe.TenChuDe" />
-                        <span>@chuDe.TenChuDe</span>
+                        <span class="montserrat-medium">@chuDe.TenChuDe</span>
                     </a>
                 </div>
             }
@@ -214,7 +213,7 @@
 
 @await Html.PartialAsync("_TacGiaNoiTieng", Model.TacGiaNoiTieng)
 
-@await Html.PartialAsync("_SachGiamGia", Model.SachBanChay)
+@await Html.PartialAsync("_SachGiamGia", Model.SachGiamGia)
 @section Scripts {
     <script src="~/js/index.js"></script>
     <script>

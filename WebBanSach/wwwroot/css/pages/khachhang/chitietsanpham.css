@@ -348,6 +348,7 @@ body {
 /* REVIEW SECTION - KHỐI ĐỘC LẬP  */
 .review-section {
     padding: 0 70px;
+    padding-bottom: 2rem;
 }
 
 .review-wrapper {

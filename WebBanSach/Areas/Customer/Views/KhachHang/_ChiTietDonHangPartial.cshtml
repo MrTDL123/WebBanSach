@@ -1,0 +1,179 @@
+﻿@model ChiTietDonHangVM
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.MaDonHang;
+
+    // Hàm xác định màu chủ đạo dựa trên trạng thái
+    string GetStatusColorClass(TrangThaiGiaoHang status)
+    {
+        return status switch
+        {
+            TrangThaiGiaoHang.ChoXuLy => "status-warning",      // Vàng cam
+            TrangThaiGiaoHang.DangGiaoHang => "status-info",    // Xanh dương
+            TrangThaiGiaoHang.GiaoHangThanhCong => "status-success", // Xanh lá
+            TrangThaiGiaoHang.GiaoThatBai => "status-danger",   // Đỏ
+            // case TrangThaiGiaoHang.DaHuy:
+            _ => "status-danger"
+        };
+    }
+
+    var statusClass = GetStatusColorClass(Model.TrangThai);
+    var isCancelled = Model.TrangThai == TrangThaiGiaoHang.DaHuy || Model.TrangThai == TrangThaiGiaoHang.GiaoThatBai;
+}
+
+
+
+    <div class="order-detail-container">
+        <div class="detail-header">
+            <div class="detail-title">
+                CHI TIẾT ĐƠN HÀNG #@Model.MaDonHang
+                <div style="font-size: 14px; font-weight: normal; color: #777; margin-top: 5px;">
+                    Ngày đặt: @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+            <div class="detail-status-label @statusClass">
+                @Model.TrangThai.GetDescription()
+            </div>
+        </div>
+
+        @if (!isCancelled)
+        {
+            var progressWidth = "0%";
+            var step1Class = ""; var step2Class = ""; var step3Class = "";
+
+            if (Model.TrangThai == TrangThaiGiaoHang.ChoXuLy)
+            {
+                progressWidth = "15%"; step1Class = "active";
+            }
+            else if (Model.TrangThai == TrangThaiGiaoHang.DangGiaoHang)
+            {
+                progressWidth = "65%"; step1Class = "active"; step2Class = "active";
+            }
+            else if (Model.TrangThai == TrangThaiGiaoHang.GiaoHangThanhCong)
+            {
+                progressWidth = "100%"; step1Class = "active"; step2Class = "active"; step3Class = "active";
+            }
+
+            <div class="stepper-wrapper">
+                <div class="progress-line-active" style="width: @progressWidth"></div>
+
+                <div class="stepper-item @step1Class">
+                    <div class="step-counter">1</div>
+                    <div class="step-name">Chờ xử lý</div>
+                </div>
+                <div class="stepper-item @step2Class">
+                    <div class="step-counter">2</div>
+                    <div class="step-name">Đang vận chuyển</div>
+                </div>
+                <div class="stepper-item @step3Class">
+                    <div class="step-counter">✔</div>
+                    <div class="step-name">Giao thành công</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="stepper-wrapper cancelled">
+                <div class="progress-line-active"></div>
+                <div class="stepper-item active">
+                    <div class="step-counter">✕</div>
+                    <div class="step-name">Đơn hàng đã hủy</div>
+                </div>
+            </div>
+        }
+
+        <div class="info-grid">
+            <div class="info-box">
+                <div class="info-title">Địa chỉ người nhận</div>
+                <div class="info-content">
+                    <p><strong>@Model.NguoiNhan</strong></p>
+                    <p>Địa chỉ: @Model.DiaChiGiaoHang</p>
+                    <p>Điện thoại: @Model.SoDienThoai</p>
+                </div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Hình thức giao hàng</div>
+                <div class="info-content">
+                    <p>Giao hàng tiêu chuẩn</p>
+                    <p>Phí vận chuyển: @(Model.PhiVanChuyen == 0 ? "Miễn phí" : Model.PhiVanChuyen.ToString("N0") + "đ")</p>
+                </div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">Hình thức thanh toán</div>
+                <div class="info-content">
+                    <p>@Model.HinhThucThanhToan</p>
+                    <p style="color: @(Model.DaThanhToan ? "green" : "orange")">
+                        @(Model.DaThanhToan ? "Đã thanh toán" : "Thanh toán khi nhận hàng")
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th>Sách</th>
+                    <th class="text-center">Giá</th>
+                    <th class="text-center">SL</th>
+                    <th class="text-right">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sach in Model.ChiTietSachs)
+                {
+                    <tr>
+                        <td>
+                            <div class="prod-info">
+                                <img src="~/img/product/@sach.HinhAnh" class="prod-img" onerror="this.src='/img/web_img/no-image.jpg'" />
+                                <div style="font-weight: 500;">@sach.TenSach</div>
+                            </div>
+                        </td>
+                        <td class="text-center">@sach.DonGia.ToString("N0")đ</td>
+                        <td class="text-center">x @sach.SoLuong</td>
+                        <td class="text-right">@sach.ThanhTien.ToString("N0")đ</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="summary-section">
+            <div class="total-box">
+                <div class="total-row">
+                    <span>Phí vận chuyển:</span>
+                    <span>@(Model.PhiVanChuyen == 0 ? "Miễn phí" : Model.PhiVanChuyen.ToString("N0") + "đ")</span>
+                </div>
+                <div class="total-row final">
+                    <span>Tổng cộng:</span>
+                    <span>@Model.Total.ToString("N0")đ</span>
+                </div>
+
+                <div class="action-buttons">
+                    @if (Model.TrangThai == TrangThaiGiaoHang.ChoXuLy)
+                    {
+                        <button class="btn-act btn-cancel" onclick="huyDonHang(@Model.MaDonHang, this)">Hủy đơn hàng</button>
+                    }
+                    else if (Model.TrangThai == TrangThaiGiaoHang.DangGiaoHang)
+                    {
+                        <button class="btn-act btn-track" onclick="theoDoiDonHang('@Model.MaDonHang')">Theo dõi đơn</button>
+                    }
+
+                @if (Model.TrangThai == TrangThaiGiaoHang.GiaoHangThanhCong || Model.TrangThai == TrangThaiGiaoHang.GiaoThatBai)
+                    {
+                        <a class="btn-act btn-rebuy" asp-controller="GioHang" asp-action="MuaLaiGioHang" asp-route-id="@Model.MaDonHang">Mua lại</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="order-detail-container fade-in">
+    <div class="summary-section">
+        <a href="javascript:void(0)" onclick="quayLaiDanhSach()" class="back-link">
+            ← Quay lại danh sách đơn hàng
+        </a>
+
+        <div class="total-box">
+        </div>
+    </div>
+</div>

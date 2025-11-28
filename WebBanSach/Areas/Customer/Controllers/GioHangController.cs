@@ -4,6 +4,8 @@ using Media.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Media.Utility;
+using Media.Models;
+using System.Threading.Tasks;
 
 namespace WebBanSach.Areas.Customer.Controllers
 {
@@ -80,12 +82,65 @@ namespace WebBanSach.Areas.Customer.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                // Bạn nên viết 1 hàm riêng để làm việc này
                 // Hàm này sẽ xóa giỏ hàng cũ của user và thêm lại giỏ hàng mới từ biến 'gioHang'
                 _gioHangService.LuuGioHangVaoDb(userId, gioHang);
             }
 
             return Json(new { success = true, count = gioHang.Count() });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MuaLaiGioHang(int id)
+        {
+            DonHang donHangCu = _unit.DonHangs.Get(dh => dh.MaDonHang == id, includeProperties: "ChiTietDonHangs");
+            if (donHangCu == null)
+            {
+                return NotFound();
+            }
+
+            var gioHang = HttpContext.Session.GetObjectFromJson<List<GioHangVM>>("GioHang") ?? new List<GioHangVM>();
+
+            foreach (ChiTietDonHang chitietcu in donHangCu.ChiTietDonHangs)
+            {
+                var sachHienTai = _unit.Saches.Get(s => s.MaSach == chitietcu.MaSach);
+
+                if(sachHienTai == null || sachHienTai.SoLuong == 0)
+                {
+                    continue;
+                }
+
+                var sachTrongGio = gioHang.FirstOrDefault(s => s.MaSach == sachHienTai.MaSach);
+
+                if(sachTrongGio != null)
+                {
+                    sachTrongGio.SoLuong += chitietcu.SoLuong;
+                }
+                else
+                {
+                    gioHang.Add(new GioHangVM
+                    {
+                        MaSach = sachHienTai.MaSach,
+                        TenSach = sachHienTai.TenSach,
+                        GiaBan = sachHienTai.GiaBan,
+                        GiaSauGiam = sachHienTai.GiaSauGiam,
+                        AnhBiaChinh = sachHienTai.AnhBiaChinh,
+                        SoLuong = chitietcu.SoLuong
+                    });
+                }
+            }
+
+            HttpContext.Session.SetObjectAsJson("GioHang", gioHang);
+
+            // ✅ NẾU ĐÃ ĐĂNG NHẬP -> LƯU XUỐNG DB
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                // Hàm này sẽ xóa giỏ hàng cũ của user và thêm lại giỏ hàng mới từ biến 'gioHang'
+                _gioHangService.LuuGioHangVaoDb(userId, gioHang);
+            }
+
+            return RedirectToAction("GioHang");
         }
 
         [HttpPost]

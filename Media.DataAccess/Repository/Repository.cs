@@ -28,7 +28,7 @@ namespace Media.DataAccess.Repository
         public T? Get(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
-            query = dbSet.Where(filter);
+            
             if (!string.IsNullOrEmpty(includeProperties))
             {
                 foreach (var includeProp in includeProperties
@@ -37,6 +37,8 @@ namespace Media.DataAccess.Repository
                     query = query.Include(includeProp);
                 }
             }
+
+            query = query.Where(filter);
             return query.FirstOrDefault();
         }
 

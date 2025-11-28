@@ -971,6 +971,61 @@ namespace Media.Areas.Customer.Controllers
             return Json(new { success = true, message = "Đã hủy đơn hàng thành công." });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetChiTietDonHangPartial(int id) // Model dùng int
+        {
+            // 1. Truy vấn Model DonHang của bạn
+            var donHang = _unit.DonHangs.Get(dh => dh.MaDonHang == id, includeProperties: "VanChuyen,ChiTietDonHangs.Sach");
+
+            if (donHang == null) return NotFound();
+
+            // 2. Xử lý Trạng thái (Logic giả định vì Model DonHang thiếu field này)
+            // Nếu bảng VanChuyen có field TrangThai thì dùng: donHang.VanChuyen.TrangThai
+            // Nếu không, bạn phải thêm field TrangThaiGiaoHang vào class DonHang.
+            // Ở đây tôi giả sử Status lấy từ VanChuyen, nếu null thì default ChoXuLy
+            var trangThaiHienTai = donHang.VanChuyen != null
+                                   ? donHang.VanChuyen.TrangThaiGiaoHang // Giả định VanChuyen có field này
+                                   : TrangThaiGiaoHang.ChoXuLy;
+
+            // 3. Map sang ViewModel
+            var viewModel = new ChiTietDonHangVM
+            {
+                MaDonHang = donHang.MaDonHang,
+                NgayDat = donHang.NgayTao, // Model là NgayTao
+                TrangThai = trangThaiHienTai,
+
+                // Map thông tin người nhận
+                NguoiNhan = donHang.TenNguoiNhan,
+                SoDienThoai = donHang.SoDienThoaiNhan, // Model là SoDienThoaiNhan
+
+                // Nối chuỗi địa chỉ từ 4 trường trong DB
+                DiaChiGiaoHang = $"{donHang.DiaChiChiTiet}, {donHang.PhuongXa}, {donHang.QuanHuyen}, {donHang.TinhThanh}",
+
+                // Thanh toán
+                HinhThucThanhToan = donHang.HinhThucThanhToan.GetDescription(), // Convert Enum sang String
+                DaThanhToan = donHang.DaThanhToan,
+
+                // Tài chính
+                Total = donHang.Total,
+                PhiVanChuyen = donHang.VanChuyen.PhiVanChuyen, // Cần lấy từ bảng VanChuyen nếu có (vd: donHang.VanChuyen.PhiShip)
+
+                // Map danh sách Sách
+                ChiTietSachs = donHang.ChiTietDonHangs.Select(ct => new ChiTietSachVM
+                {
+                    // Lưu ý: Check null nếu Sach bị xóa
+                    TenSach = ct.Sach != null ? ct.Sach.TenSach : "Sách không tồn tại",
+                    // Giả định model Sach có thuộc tính HinhAnh
+                    HinhAnh = ct.Sach != null ? ct.Sach.AnhBiaChinh : "no-image.jpg",
+
+                    SoLuong = ct.SoLuong,
+                    DonGia = ct.DonGia,
+                    ThanhTien = ct.ThanhTien
+                }).ToList()
+            };
+
+            return PartialView("_ChiTietDonHangPartial", viewModel);
+        }
+
         // ⭐ MỚI: Action [HttpGet] để tải riêng danh sách địa chỉ
         [HttpGet]
         public IActionResult DanhSachDiaChi()

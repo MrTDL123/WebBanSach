@@ -29,7 +29,7 @@
 <body>
 
     <header>
-        <div id="top_header">
+        <div id="top_header" class="co_dinh_header">
             @*Top header left*@
             <!-- Logo và tên -->
             <a asp-area="Customer" asp-controller="Home" asp-action="TrangChu">
@@ -53,26 +53,6 @@
                 @await Component.InvokeAsync("GioHang")
             </div>
         </div>
-        <div id="bottom_header">
-            <!-- Nav items -->
-            <ul id="bottom_header_right">
-                @if (User.IsInRole(SD.Role_Admin))
-                {
-                    <li>
-                        <div class="dropdown">
-                            <a class="dropbtn montserrat-bold" style="text-transform: uppercase;">Các mục khác</a>
-
-                            <div class="dropdown-content">
-                                <a class="dropdown-item montserrat-regular" asp-area="Admin" asp-controller="Category" asp-action="Index">Thể loại</a>
-                                <hr class="dropdown-divider">
-                                <a class="dropdown-item montserrat-regular" asp-area="Admin" asp-controller="Product" asp-action="Index">Sản phẩm</a>
-                                <hr class="dropdown-divider">
-                            </div>
-                        </div>
-                    </li>
-                }
-            </ul>
-        </div>
 
         @RenderSection("SliderMenu", required: false)
 
@@ -92,79 +72,57 @@
 
     <footer>
         <div id="logo_footer">
-            <img src="~/img/web_img/logo.png" alt="logo" />
-            <p class="montserrat-bold">CỬA HÀNG SÁCH ĐIỆN TỬ</p>
-        </div>
-
-        <div id="social_media">
-            <ul>
-                <li>
-                    <a href="https://www.facebook.com/long.tranduy.106" id="fb">
-                        <i class="bi bi-facebook bi-3x"></i>
-                    </a>
-                </li>
-                <li >
-                    <a href="https://www.youtube.com/" id="yt">
-                        <i class="bi bi-youtube"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="" id="x">
-                        <i class="bi bi-twitter-x"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.instagram.com/tranduylong2k5/" id="ins">
-                        <i class="bi bi-instagram"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/MrTDL123" id="github">
-                        <i class="bi bi-github"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div>
-            <p>Bản quyền thuộc về <a asp-controller="#" asp-action="#">Trần Duy Long</a></p>
+            <img style="padding-top: 1.5rem;" src="~/img/web_img/logo.png" alt="logo" />
+            <p style="margin-bottom: unset;" class="montserrat-bold">CỬA HÀNG SÁCH ONLINE TRUYỀN THỐNG</p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.datatables.net/2.1.4/js/dataTables.js" asp-append-version="true"></script>
     <script src="https://cdn.tiny.cloud/1/yfm2tzcw10n183a3sq1ddo8j7btx6a161wqkyashxwwo4l45/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
-    @* <script src="~/js/site.js" asp-append-version="true"></script> *@
     <script>
         $(document).ready(function () {
-            $('#backtop_container').click(function () {
-                $('html, body').animate(
-                    {
-                        scrollTop: 0
-                    }, 500);
+
+            // --- XỬ LÝ NÚT BACK TO TOP ---
+            // Bắt sự kiện click
+            $('#backtop_container').click(function (e) {
+                e.preventDefault();
+                // Dùng animate của jQuery hoặc window.scrollTo native đều được
+                $('html, body').animate({ scrollTop: 0 }, 600, 'swing');
+            });
+
+            // --- XỬ LÝ SCROLL (Cả Header và Backtop) ---
+            var header = $('.co_dinh_header');
+            var backtop = $('#backtop_container');
+            var stickyThreshold = 200; // Điểm cuộn để kích hoạt header
+            var backtopThreshold = 300; // Điểm cuộn để hiện nút backtop
+
+            $(window).scroll(function () {
+                var scrollPos = $(this).scrollTop();
+
+                // 1. Xử lý Header Sticky
+                if (scrollPos >= stickyThreshold) {
+                    if (!header.hasClass('sticky')) {
+                        header.addClass('sticky');
+                    }
+                } else {
+                    if (header.hasClass('sticky')) {
+                        header.removeClass('sticky');
+                    }
+                }
+
+                // 2. Xử lý ẩn/hiện nút Backtop
+                if (scrollPos > backtopThreshold) {
+                    backtop.addClass('show');
+                } else {
+                    backtop.removeClass('show');
+                }
             });
         });
     </script>
-    <script>
-        $(document).ready(function () {
-            $(window).scroll(function () {
-                var scrollPosition = $(this).scrollTop()
-                var threshold = 200
-                if (scrollPosition >= 200) {
-                    $('#co_dinh_header').css({
-                        "position": "fixed",
-                        "width": "100%"
-                    }).addClass('sticky')
-                }
-                else {
-                    $('#co_dinh_header').css({
-                        "position": "relative",
-                        "width": "100%"
-                    }).removeClass('sticky')
-                }
-            })
-        })
-    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

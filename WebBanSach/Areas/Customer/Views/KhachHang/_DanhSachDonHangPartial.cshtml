@@ -11,7 +11,7 @@
                 return "status-shipping"; // (CSS Xanh dương)
             case TrangThaiGiaoHang.GiaoHangThanhCong:
                 return "status-completed"; // (CSS Xanh lá)
-            case TrangThaiGiaoHang.GiaoThatBai:
+            case TrangThaiGiaoHang.GiaoThatBai or TrangThaiGiaoHang.DaHuy:
                 // case TrangThaiGiaoHang.DaHuy:
                 return "status-cancelled"; // (CSS Đỏ/Xám)
             default:
@@ -73,7 +73,9 @@ else
                         case TrangThaiGiaoHang.GiaoHangThanhCong:
                             // case TrangThaiGiaoHang.DaHuy:
                             // case TrangThaiGiaoHang.GiaoThatBai:
-                            <button class="btn-order btn-order-primary" onclick="muaLai(@donHang.MaDonHang)">Mua lại</button>
+                            <a class="btn-order btn-order-primary" asp-controller="GioHang" asp-action="MuaLaiGioHang" asp-route-id="@donHang.MaDonHang">
+                                Mua lại
+                            </a>
                             break;
 
                         case TrangThaiGiaoHang.DangGiaoHang:

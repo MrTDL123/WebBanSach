@@ -1,5 +1,4 @@
-﻿/* Site.css hoặc tạo file MegaMenu.css */
-
+﻿﻿ /* Site.css hoặc tạo file MegaMenu.css */
 /* Mega Dropdown */
 .mega-dropdown {
     position: static !important;
@@ -7,16 +6,20 @@
     z-index: 3;
 }
 
+.dropdown_icon {
+    margin-right: 1rem;
+}
+
 .mega-dropdown-menu {
-    
     width: 90%;
     box-shadow: 0 6px 12px rgba(0,0,0,.175);
     border: 1px solid #ddd;
     border-radius: 0.5rem;
     background: #fff;
     left: 5%;
-
+    z-index: 90;
 }
+
 
 /* Ẩn menu ban đầu */
 .mega-dropdown-menu {
@@ -97,10 +100,10 @@
     padding: 5px 10px;
 }
 
-            .watch_all_chude:hover {
-                background: #a5a5a5;
-                padding-left: 15px;
-            }
+    .watch_all_chude:hover {
+        background: #a5a5a5;
+        padding-left: 15px;
+    }
 
 .mega-dropdown-menu .active {
     color: #e74c3c;

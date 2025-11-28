@@ -14,12 +14,15 @@ header a:hover {
 
 #top_header {
     position: relative;
-    z-index: 2;
+    z-index: 1000;
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
-    align-items: baseline;
     padding: 1rem 5%;
+}
+
+#logo{
+    width: 2.5rem;
 }
 
 #top_header a {
@@ -108,78 +111,16 @@ header a:hover {
 }
 
 
-/*BOTTOM HEADER*/
-/*#bottom_header {
-    position: relative;
-    z-index: 100;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 1rem 5%;
-}
-
-#bottom_header_right {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    list-style-type: none;
-    gap: 2rem;
-}
-
-#bottom_header_right a {
-    color: #ffde3c;
-    text-transform: uppercase;
-}
-
-#bottom_header_right li > a:hover {
-    color: aqua;
-}
-
-.dropbtn {
-    cursor: pointer;
-    text-transform: uppercase;
-}
-
-
-.dropdown {
-    position: relative;
-}
-
-.dropdown:hover .dropbtn {
-    color: white !important ;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 200px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-}
-
-.dropdown-content a {
-    color: black !important;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-
-.dropdown-content a:hover {
-    background-color: #f1f1f1;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}*/
 /*FOOTER*/
 footer {
     width: 100%;
     line-height: 4.5vw;
     background-color: #041721;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
     padding: 2vw;
+    flex-shrink: 0;
 }
 
 footer p {
@@ -192,47 +133,6 @@ footer p {
     align-items: center;
 }
 
-#social_media {
-    display: flex;
-    justify-content: center;
+#logo_footer img{
+    padding-top: 1rem;
 }
-
-#social_media ul {
-    padding-left: unset;
-    display: flex;
-    flex-direction: row;
-    list-style: none;
-    gap: 2vw;
-    height: 3.5vw;
-}
-
-
-#social_media ul li a {
-    padding: 1vw;
-    font-size: 1.3vw;
-    border-radius: 8px;
-}
-
-#social_media ul li a i {
-    color: white;
-}
-
-#fb {
-    background-color: #3b5999;
-}
-
-#yt {
-    background-color: #cd201f;
-}
-
-#x {
-    background-color: #14171a;
-}
-
-#ins {
-    background-color: #e4405f;
-}
-
-#github {
-    background-color: #171515;
-}              
