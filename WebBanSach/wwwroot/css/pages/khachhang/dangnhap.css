@@ -22,3 +22,95 @@
 .forgot:hover {
     color: #d70018;
 }
+
+/* --- Style cho nút Google --- */
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc; /* Viền xám nhạt */
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #555;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none; /* Bỏ gạch chân vì đây là thẻ <a> */
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+}
+
+    .google-btn:hover {
+        background-color: #f7f7f7;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+/* --- Đường kẻ phân cách (Hoặc) --- */
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #999;
+    margin: 1rem 0;
+    font-size: 14px;
+}
+
+    .separator::before,
+    .separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .separator:not(:empty)::before {
+        margin-right: .25em;
+    }
+
+    .separator:not(:empty)::after {
+        margin-left: .25em;
+    }
+
+
+.facebook-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #1877f2; /* Viền màu xanh FB */
+    border-radius: 4px;
+    background-color: #1877f2; /* Nền màu xanh FB */
+    color: #ffffff; /* Chữ màu trắng */
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+    margin-top: 10px; /* Khoảng cách với nút Google */
+}
+
+    .facebook-btn:hover {
+        background-color: #166fe5; /* Màu đậm hơn khi hover */
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+/* Icon Facebook (Màu trắng để nổi trên nền xanh) */
+.facebook-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    /* Filter để biến icon SVG màu đen thành trắng (nếu icon nguồn là đen) */
+    /* Tuy nhiên ta sẽ dùng icon gốc màu trắng hoặc logo tròn */
+    background-color: white;
+    border-radius: 50%;
+    padding: 1px; /* Tạo viền trắng nhỏ quanh logo f */
+}

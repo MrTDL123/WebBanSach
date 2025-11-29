@@ -1,4 +1,5 @@
-﻿using Media.Models;
+﻿using Media.Areas.Admin.Controllers;
+using Media.Models;
 using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectCuoiKi.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class HoaDonController : Controller
+    public class HoaDonController : AdminController
     {
         private readonly ApplicationDbContext _context;
 

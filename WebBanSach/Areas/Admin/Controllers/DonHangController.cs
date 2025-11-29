@@ -11,11 +11,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using OfficeOpenXml;
+using Media.Areas.Admin.Controllers;
 
 namespace ProjectCuoiKi.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class DonHangController : Controller
+    public class DonHangController : AdminController
     {
         private readonly ApplicationDbContext _context;
 

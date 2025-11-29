@@ -218,11 +218,20 @@ namespace Media.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        public IActionResult DangNhap() => View();
+        public IActionResult DangNhap()
+        {
+            var clientId = "1014329012170-ume2bb5oet96l1mvv9cd7rsj82k8f4p8.apps.googleusercontent.com";
+            var url = $"{Request.Scheme}://{Request.Host}{Url.Action("LoginGoogle", "KhachHang")}";
+
+            string response = GenerateGoogleOAuthUrl(clientId, url);
+
+            ViewBag.response = response;
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DangNhap(DangNhapVM model)
+        public async Task<IActionResult> DangNhap(DangNhapCustomerVM model)
         {
             // (Code Đăng nhập giữ nguyên)
             if (!ModelState.IsValid)
@@ -276,6 +285,372 @@ namespace Media.Areas.Customer.Controllers
             ModelState.AddModelError("MatKhau", "Mật khẩu không đúng.");
             return View(model);
         }
+
+
+        #region Đăng Nhập Google
+        private string GenerateGoogleOAuthUrl(string clientId, string redirectUri)
+        {
+            // Base URL of Google OAuth
+            string googleOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+
+            // Create query string
+            var queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("response_type", "code"),
+                new KeyValuePair<string, string>("client_id", clientId),
+                new KeyValuePair<string, string>("redirect_uri", redirectUri),
+                new KeyValuePair<string, string>("scope", "openid email profile"),
+                new KeyValuePair<string, string>("access_type", "online")
+            };
+
+            // Create URL by concatenating parameters
+            string queryString = string.Join("&", queryParams.Select(q => $"{q.Key}={Uri.EscapeDataString(q.Value)}"));
+            return $"{googleOAuthUrl}?{queryString}";
+        }
+
+        private async Task<string> ExchangeCodeToTokenAsync(string code, string clientId, string redirectUri, string clientSecret)
+        {
+            string tokenEndpoint = "https://oauth2.googleapis.com/token";
+            using (var client = new HttpClient())
+            {
+                var content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("code", code),
+                    new KeyValuePair<string, string>("client_id", clientId),
+                    new KeyValuePair<string, string>("client_secret", clientSecret),
+                    new KeyValuePair<string, string>("redirect_uri", redirectUri),
+                    new KeyValuePair<string, string>("grant_type", "authorization_code"),
+                });
+
+                var response = await client.PostAsync(tokenEndpoint, content);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonResponse);
+
+                if (json.error != null)
+                {
+                    throw new Exception($"Error exchanging code: {json.error.description}");
+                }
+
+                return json.access_token;
+            }
+        }
+
+        private async Task<dynamic> GetGoogleUserInfoAsync(string accessToken)
+        {
+            string userInfoEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await client.GetAsync(userInfoEndpoint);
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                dynamic userInfo = Newtonsoft.Json.JsonConvert.DeserializeObject(responseString);
+
+                if (userInfo.error != null)
+                {
+                    throw new Exception($"Error fetching user info: {userInfo.error.message}");
+                }
+
+                return userInfo;
+            }
+        }
+
+        public async Task<ActionResult> LoginGoogle(string code, string scope, string authuser, string prompt)
+        {
+            string redirectUri = $"{Request.Scheme}://{Request.Host}{Url.Action("LoginGoogle", "KhachHang")}";
+            var clientId = "1014329012170-ume2bb5oet96l1mvv9cd7rsj82k8f4p8.apps.googleusercontent.com";
+            var clientSecret = "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";
+            if (string.IsNullOrEmpty(code))
+            {
+                TempData["ErrorMessage"] = "Không thể lấy nội dung từ email";
+                return RedirectToAction("DangNhap", "KhachHang");
+            }
+            try
+            {
+                // 1. Trao đổi để lấy Access Token
+                var accessToken = await ExchangeCodeToTokenAsync(code, clientId, redirectUri, clientSecret);
+
+                // 2. Lấy thông tin người dùng từ Access Token
+                var userInfo = await GetGoogleUserInfoAsync(accessToken);
+                string email = (string)userInfo.email;
+                string name = (string)userInfo.name;
+
+                if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(name))
+                {
+                    TempData["ErrorMessage"] = "Không thể xác thực thông tin người dùng từ Google.";
+                    return RedirectToAction("DangNhap");
+                }
+
+                // 3. Kiểm tra người dùng đã tồn tại trong hệ thống chưa
+                KhachHang? existingUser = _unit.KhachHangs.Get(u => u.Email == email);
+
+                if (existingUser == null)
+                {
+                    string pass = Guid.NewGuid().ToString("N").Substring(0, 10);
+                    var user = new TaiKhoan
+                    {
+                        UserName = email.Length > 15 ? email.Substring(0, 15) : email, // Nên dùng Email làm UserName vì nó duy nhất
+                        Email = email,
+                        PhoneNumber = "0000",
+                        PhoneNumberConfirmed = true
+                    };
+
+                    var result = await _userManager.CreateAsync(user, pass);
+
+                    if (result.Succeeded)
+                    {
+                        // 4. Nếu chưa tồn tại, tạo mới người dùng
+                        KhachHang newUser = new KhachHang
+                        {
+                            HoTen = string.IsNullOrEmpty(name) ? email : name,
+                            Email = email,
+                            MaTaiKhoan = user.Id,
+                            DienThoai = "0000",
+                            NgaySinh = DateTime.Now
+                        };
+
+                        _unit.KhachHangs.Add(newUser);
+                        await _unit.SaveAsync();
+                        await _userManager.AddClaimAsync(user, new Claim("HoTen", newUser.HoTen));
+
+                        await _userManager.AddToRoleAsync(user, SD.Role_Customer);
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                            ModelState.AddModelError("", error.Description);
+
+                        return RedirectToAction("DangNhap");
+                    }
+                }
+                else
+                {
+                    var userToLogin = await _userManager.FindByEmailAsync(email);
+
+                    if (userToLogin != null)
+                    {
+                        await _signInManager.SignInAsync(userToLogin, isPersistent: false);
+                    }
+                    else
+                    {
+                        // Trường hợp hiếm: Có KhachHang nhưng không có TaiKhoan (Lỗi dữ liệu)
+                        TempData["ErrorMessage"] = "Lỗi dữ liệu: Không tìm thấy tài khoản đăng nhập.";
+                        return RedirectToAction("DangNhap");
+                    }
+                }
+
+                return RedirectToAction("TrangChu", "Home");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                // Trong EF Core, lỗi chi tiết từ SQL Server thường nằm trong InnerException
+                var errorMessage = dbEx.InnerException?.Message ?? dbEx.Message;
+
+                // Log lỗi ra console hoặc file log (nếu có logger)
+                Console.WriteLine(dbEx.ToString());
+
+                return Content($"Lỗi cập nhật Database (DbUpdateException): {errorMessage}");
+            }
+            // Bắt thêm lỗi chung
+            catch (Exception ex)
+            {
+                return Content($"Có lỗi xảy ra: {ex.Message}");
+            }
+        }
+        #endregion
+
+        #region Đăng Nhập Facebook
+        // 1. Tạo URL chuyển hướng sang Facebook
+        private string GenerateFacebookOAuthUrl(string appId, string redirectUri)
+        {
+            string fbOAuthUrl = "https://www.facebook.com/v19.0/dialog/oauth";
+
+            var queryParams = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("client_id", appId),
+                new KeyValuePair<string, string>("redirect_uri", redirectUri),
+                new KeyValuePair<string, string>("response_type", "code"),
+                new KeyValuePair<string, string>("scope", "public_profile email") // Xin quyền lấy email
+            };
+
+            string queryString = string.Join("&", queryParams.Select(q => $"{q.Key}={Uri.EscapeDataString(q.Value)}"));
+            return $"{fbOAuthUrl}?{queryString}";
+        }
+
+        // 2. Đổi Code lấy Access Token
+        private async Task<string> ExchangeFbCodeToTokenAsync(string code, string appId, string redirectUri, string appSecret)
+        {
+            // Facebook Graph API dùng GET để lấy token
+            string tokenEndpoint = "https://graph.facebook.com/v19.0/oauth/access_token";
+
+            var queryParams = new List<string>
+            {
+                $"client_id={appId}",
+                $"redirect_uri={redirectUri}",
+                $"client_secret={appSecret}",
+                $"code={code}"
+            };
+
+            string fullUrl = $"{tokenEndpoint}?{string.Join("&", queryParams)}";
+
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(fullUrl);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                dynamic json = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonResponse);
+
+                if (json.error != null)
+                {
+                    throw new Exception($"Lỗi đổi code Facebook: {json.error.message}");
+                }
+
+                return json.access_token;
+            }
+        }
+
+        // 3. Lấy thông tin User
+        private async Task<dynamic> GetFbUserInfoAsync(string accessToken)
+        {
+            // Bắt buộc phải chỉ định 'fields' để lấy email và name
+            string userInfoEndpoint = $"https://graph.facebook.com/me?fields=id,name,email,picture&access_token={accessToken}";
+
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(userInfoEndpoint);
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                dynamic userInfo = Newtonsoft.Json.JsonConvert.DeserializeObject(responseString);
+
+                if (userInfo.error != null)
+                {
+                    throw new Exception($"Lỗi lấy thông tin User Facebook: {userInfo.error.message}");
+                }
+
+                return userInfo;
+            }
+        }
+
+        public async Task<ActionResult> LoginFacebook(string code)
+        {
+            // --- CẤU HÌNH ---
+            string appId = "2595670757499848";
+            string appSecret = "d49eb165fa95713bcf206dde65bb3e68";
+
+            // Redirect URI tự động (giống Google)
+            string redirectUri = $"{Request.Scheme}://{Request.Host}{Url.Action("LoginFacebook", "KhachHang")}";
+
+            // 1. Nếu chưa có code -> Chuyển hướng sang Facebook
+            if (string.IsNullOrEmpty(code))
+            {
+                string authUrl = GenerateFacebookOAuthUrl(appId, redirectUri);
+                // Vì bạn dùng RedirectURL ở View nên trả về Url, hoặc Redirect trực tiếp cũng được
+                // Ở đây tôi Redirect trực tiếp cho gọn, hoặc bạn có thể dùng ViewBag như Google
+                return Redirect(authUrl);
+            }
+
+            try
+            {
+                // 2. Trao đổi Code lấy Token
+                var accessToken = await ExchangeFbCodeToTokenAsync(code, appId, redirectUri, appSecret);
+
+                // 3. Lấy thông tin User
+                var userInfo = await GetFbUserInfoAsync(accessToken);
+
+                string fbId = (string)userInfo.id;
+                string name = (string)userInfo.name;
+                string email = (string)userInfo.email;
+
+                // --- XỬ LÝ KHÁC BIỆT CỦA FACEBOOK ---
+                // Facebook có thể KHÔNG trả về email (nếu đk bằng sđt).
+                // Ta phải tạo email giả để Identity hoạt động.
+                if (string.IsNullOrEmpty(email))
+                {
+                    email = $"{fbId}@facebook.com"; // Email giả định
+                }
+
+                if (string.IsNullOrEmpty(name)) name = email;
+
+                // 4. Kiểm tra user trong hệ thống (Giống hệt logic Google của bạn)
+                KhachHang? existingUser = _unit.KhachHangs.Get(u => u.Email == email);
+
+                if (existingUser == null)
+                {
+                    string pass = Guid.NewGuid().ToString("N").Substring(0, 10);
+                    var user = new TaiKhoan
+                    {
+                        UserName = email.Length > 15 ? email.Substring(0, 15) : email,
+                        // Nếu trùng username thì thêm số ngẫu nhiên vào đuôi
+                        Email = email,
+                        PhoneNumber = "0000",
+                        PhoneNumberConfirmed = true
+                    };
+
+                    // Kiểm tra UserName trùng lặp (Logic bổ sung cho an toàn)
+                    if (await _userManager.FindByNameAsync(user.UserName) != null)
+                    {
+                        user.UserName += new Random().Next(1000, 9999);
+                    }
+
+                    var result = await _userManager.CreateAsync(user, pass);
+
+                    if (result.Succeeded)
+                    {
+                        KhachHang newUser = new KhachHang
+                        {
+                            HoTen = name,
+                            Email = email,
+                            MaTaiKhoan = user.Id,
+                            DienThoai = "0000",
+                            NgaySinh = DateTime.Now
+                        };
+
+                        _unit.KhachHangs.Add(newUser);
+                        await _unit.SaveAsync();
+
+                        await _userManager.AddClaimAsync(user, new Claim("HoTen", newUser.HoTen));
+                        await _userManager.AddToRoleAsync(user, SD.Role_Customer);
+
+                        // Đăng nhập ngay
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                    }
+                    else
+                    {
+                        // Xử lý lỗi tạo user Identity
+                        TempData["ErrorMessage"] = "Lỗi tạo tài khoản: " + string.Join(", ", result.Errors.Select(e => e.Description));
+                        return RedirectToAction("DangNhap");
+                    }
+                }
+                else
+                {
+                    // Đã tồn tại -> Đăng nhập
+                    var userToLogin = await _userManager.FindByEmailAsync(email);
+
+                    if (userToLogin != null)
+                    {
+                        await _signInManager.SignInAsync(userToLogin, isPersistent: false);
+                    }
+                    else
+                    {
+                        // Có KhachHang nhưng mất TaiKhoan Identity -> Case hiếm
+                        TempData["ErrorMessage"] = "Lỗi dữ liệu hệ thống.";
+                        return RedirectToAction("DangNhap");
+                    }
+                }
+
+                return RedirectToAction("TrangChu", "Home");
+            }
+            catch (Exception ex)
+            {
+                // Bắt lỗi Token hoặc API
+                return Content($"Lỗi đăng nhập Facebook: {ex.Message}");
+            }
+        }
+        #endregion
+
 
         [HttpGet]
         public async Task<IActionResult> GuiOTP(string soDienThoai, string email)

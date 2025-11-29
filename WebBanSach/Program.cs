@@ -51,6 +51,51 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;                // Tự động gia hạn nếu người dùng hoạt động
     options.Cookie.HttpOnly = true;                  // Chống truy cập cookie từ JS
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Bảo mật khi HTTPS
+
+    options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+    {
+        // Sự kiện: Khi chưa đăng nhập (401 Unauthorized)
+        OnRedirectToLogin = ctx =>
+        {
+            var adminLoginPath = "/Admin/User/DangNhap";
+            var requestPath = ctx.Request.Path;
+
+            // Kiểm tra xem URL người dùng đang vào có bắt đầu bằng "/Admin" không
+            if (requestPath.StartsWithSegments("/Admin")
+                && !requestPath.StartsWithSegments(adminLoginPath))
+            {
+                // Nếu là Admin, chuyển hướng sang trang Login của Admin
+                var returnUrl = requestPath + ctx.Request.QueryString;
+                ctx.Response.Redirect($"/Admin/User/DangNhap?ReturnUrl={Uri.EscapeDataString(returnUrl)}");
+            }
+            else
+            {
+                // Nếu là Customer (hoặc các trang khác), dùng cơ chế mặc định
+                ctx.Response.Redirect(ctx.RedirectUri);
+            }
+
+            return Task.CompletedTask;
+        },
+
+        // Sự kiện: Khi đã đăng nhập nhưng không đủ quyền (403 Forbidden)
+        OnRedirectToAccessDenied = ctx =>
+        {
+            var requestPath = ctx.Request.Path;
+
+            if (requestPath.StartsWithSegments("/Admin"))
+            {
+                // Nếu đang ở Admin mà bị cấm -> Sang trang cấm của Admin
+                ctx.Response.Redirect("/Admin/User/AccessDenied");
+            }
+            else
+            {
+                // Mặc định
+                ctx.Response.Redirect(ctx.RedirectUri);
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
 builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
 builder.Services.AddMemoryCache();
@@ -77,6 +122,12 @@ builder.Services.AddSession();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IGioHangService, GioHangService>();
 
+
+builder.Services.AddAuthentication().AddFacebook(opt =>
+{
+    opt.ClientId = "2595670757499848";
+    opt.ClientSecret = "d49eb165fa95713bcf206dde65bb3e68";
+});
 
 var app = builder.Build();
 
@@ -119,10 +170,17 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await CreateRolesAsync(services);
 }
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
 
+app.MapControllerRoute(
+    name: "AdminRoute",
+    pattern: "Admin", // Đường dẫn bạn muốn bắt
+    defaults: new { area = "Admin", controller = "Dashboard", action = "Index" }
+);
+
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+);
 
 app.MapControllerRoute(
     name: "chude",

@@ -1,5 +1,8 @@
-﻿using Media.Models;
+﻿using Media.Areas.Admin.Controllers;
+using Media.Models;
+using Media.Utility;
 using Meida.DataAccess.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,8 +11,7 @@ using System.Threading.Tasks;
 
 namespace ProjectCuoiKi.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class DashboardController : Controller
+    public class DashboardController : AdminController
     {
         private readonly ApplicationDbContext _context;
 

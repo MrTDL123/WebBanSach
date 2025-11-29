@@ -1,22 +1,103 @@
-﻿using Media.Models;
+﻿using Media.Areas.Admin.Controllers;
+using Media.Models;
+using Media.Models.ViewModels;
+using Media.Utility;
 using Meida.DataAccess.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ProjectCuoiKi.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class UserController : Controller
+    public class UserController : AdminController
     {
         private readonly ApplicationDbContext _db;
         private readonly ILogger<UserController> _logger;
+        private readonly SignInManager<TaiKhoan> _signInManager;
+        private readonly UserManager<TaiKhoan> _userManager;
 
-        public UserController(ApplicationDbContext db, ILogger<UserController> logger)
+        public UserController(ApplicationDbContext db, ILogger<UserController> logger, SignInManager<TaiKhoan> signInManager, UserManager<TaiKhoan> userManager)
         {
             _db = db;
             _logger = logger;
+            _signInManager = signInManager;
+            _userManager = userManager;
         }
+
+        #region Đăng Nhập
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult DangNhap(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DangNhap(DangNhapAdminVM model, string returnUrl = null)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var userNameToSignIn = model.UserName;
+
+            if(model.UserName.Contains("@")) 
+            {
+                TaiKhoan? userByEmail = await _userManager.FindByEmailAsync(model.UserName);
+                if (userByEmail != null)
+                {
+                    userNameToSignIn = userByEmail.UserName;
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Email sai hoặc không tồn tại.");
+                    return View(model);
+                }
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(
+                userNameToSignIn,
+                model.MatKhau,
+                model.GhiNhoDangNhap,
+                lockoutOnFailure: false
+            );
+
+            if (result.Succeeded)
+            {
+                TaiKhoan user = await _userManager.FindByNameAsync(userNameToSignIn);
+                if(await _userManager.IsInRoleAsync(user, SD.Role_Admin) ||
+                   await _userManager.IsInRoleAsync(user, SD.Role_Employee))
+                {
+
+                    if(!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    return RedirectToAction("Index", "DashBoard", new { area = "Admin" });
+                }
+
+                await _signInManager.SignOutAsync();
+                ModelState.AddModelError(string.Empty, "Tài khoản không có quyền hạn");
+                return View(model);
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Tên đăng nhập/Email hoặc mật khẩu không đúng.");
+                return View(model);
+            }
+        }
+
+        #endregion
 
         // 📚 DANH SÁCH NGƯỜI DÙNG
         public IActionResult QuanLyNguoiDung()
@@ -50,22 +131,18 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult ThemNhanVien()
         {
-            return View(new NhanVien
-            {
-                NgayVaoLam = DateTime.Today,
-                NgaySinh = DateTime.Today.AddYears(-25)
-            });
+            return View();
         }
 
         // ➕ THÊM NHÂN VIÊN - POST (DEBUG VERSION)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ThemNhanVien(NhanVien model)
+        public async Task<IActionResult> ThemNhanVien(ThemNhanVienVM model)
         {
             try
             {
                 Console.WriteLine("=== DEBUG START ===");
-                Console.WriteLine($"Model received - HoTen: {model.HoTen}, NgayVaoLam: {model.NgayVaoLam}");
+                Console.WriteLine($"Model received - HoTen: {model.NhanVienMoi.HoTen}, NgayVaoLam: {model.NhanVienMoi.NgayVaoLam}");
 
                 // TẮT VALIDATION CHO TẤT CẢ NAVIGATION PROPERTIES
                 ModelState.Remove("TaiKhoan");
@@ -88,79 +165,78 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 Console.WriteLine("=== DEBUG END ===");
 
                 // Kiểm tra validation thủ công
-                if (string.IsNullOrEmpty(model.HoTen))
+                if (string.IsNullOrEmpty(model.NhanVienMoi.HoTen))
                 {
                     TempData["Error"] = "Họ tên là bắt buộc";
                     return View(model);
                 }
 
-                if (model.NgayVaoLam == null)
+                if (model.NhanVienMoi.NgayVaoLam == null)
                 {
                     TempData["Error"] = "Ngày vào làm là bắt buộc";
                     return View(model);
                 }
 
                 // Kiểm tra CCCD đã tồn tại chưa
-                if (!string.IsNullOrEmpty(model.CCCD) && await _db.NhanViens.AnyAsync(n => n.CCCD == model.CCCD))
+                if (!string.IsNullOrEmpty(model.NhanVienMoi.CCCD) && await _db.NhanViens.AnyAsync(n => n.CCCD == model.NhanVienMoi.CCCD))
                 {
                     TempData["Error"] = "CCCD đã tồn tại trong hệ thống";
                     return View(model);
                 }
 
-                // Tạo username và email tự động
-                var username = $"nv{DateTime.Now:yyyyMMddHHmmss}";
-                var email = $"{username}@company.com";
-
-                // Kiểm tra email đã tồn tại chưa
-                if (await _db.Users.AnyAsync(u => u.Email == email))
+                var existingEmail = await _userManager.FindByEmailAsync(model.NhanVienMoi.Email);
+                if (existingEmail != null)
                 {
-                    TempData["Error"] = "Email đã tồn tại, vui lòng thử lại";
+                    TempData["Error"] = "Email này đã được đăng ký.";
                     return View(model);
                 }
+
+                var existingPhone = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == model.NhanVienMoi.DienThoai);
+                if (existingPhone != null)
+                {
+                    TempData["Error"] = "Số điện thoại này đã được sử dụng.";
+                    return View(model);
+                }
+
+
+                // Tạo username và email tự động
+                var username = model.NhanVienMoi.Email;
+                var email = model.NhanVienMoi.Email;
 
                 // Tạo tài khoản mặc định
                 var taiKhoan = new TaiKhoan
                 {
                     UserName = username,
                     Email = email,
-                    PhoneNumber = null,
-                    EmailConfirmed = true,
-                    LockoutEnabled = false,
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    ConcurrencyStamp = Guid.NewGuid().ToString(),
-                    NormalizedUserName = username.ToUpper(),
-                    NormalizedEmail = email.ToUpper()
+                    PhoneNumber = model.NhanVienMoi.DienThoai,
+                    EmailConfirmed = true
                 };
 
-                Console.WriteLine($"Creating TaiKhoan: {taiKhoan.UserName}, Email: {taiKhoan.Email}");
-
-                _db.Users.Add(taiKhoan);
-                await _db.SaveChangesAsync();
-
-                Console.WriteLine($"TaiKhoan created with ID: {taiKhoan.Id}");
-
-                // Tạo nhân viên với MaTaiKhoan đã được tạo
-                var nhanVien = new NhanVien
+                var result = await _userManager.CreateAsync(taiKhoan, model.MatKhau);
+                if (result.Succeeded)
                 {
-                    MaTaiKhoan = taiKhoan.Id, // Gán MaTaiKhoan từ tài khoản vừa tạo
-                    HoTen = model.HoTen?.Trim(),
-                    DiaChi = model.DiaChi?.Trim(),
-                    NgaySinh = model.NgaySinh,
-                    CCCD = model.CCCD?.Trim(),
-                    Luong = model.Luong,
-                    BacLuong = model.BacLuong,
-                    NgayVaoLam = model.NgayVaoLam ?? DateTime.Today,
-                    QueQuan = model.QueQuan?.Trim()
-                };
+                    var nhanVienMoi = new NhanVien
+                    {
+                        MaTaiKhoan = taiKhoan.Id,
+                        HoTen = model.NhanVienMoi.HoTen,
+                        Email = model.NhanVienMoi.Email,
+                        DienThoai = model.NhanVienMoi.DienThoai,
+                        DiaChi = model.NhanVienMoi.DiaChi?.Trim(),
+                        NgaySinh = model.NhanVienMoi.NgaySinh,
+                        CCCD = model.NhanVienMoi.CCCD?.Trim(),
+                        Luong = model.NhanVienMoi.Luong,
+                        BacLuong = model.NhanVienMoi.BacLuong,
+                        NgayVaoLam = model.NhanVienMoi.NgayVaoLam ?? DateTime.Today,
+                        QueQuan = model.NhanVienMoi.QueQuan?.Trim()
+                    };
 
-                Console.WriteLine($"Creating NhanVien: {nhanVien.HoTen}, MaTaiKhoan: {nhanVien.MaTaiKhoan}");
+                    _db.NhanViens.Add(nhanVienMoi);
+                    await _db.SaveChangesAsync();
+                    await _userManager.AddClaimAsync(taiKhoan, new Claim("HoTen", nhanVienMoi.HoTen));
 
-                _db.NhanViens.Add(nhanVien);
-                await _db.SaveChangesAsync();
-
-                Console.WriteLine("NhanVien created successfully");
-
-                TempData["Success"] = $"Thêm nhân viên {nhanVien.HoTen} thành công!";
+                    await _userManager.AddToRoleAsync(taiKhoan, SD.Role_Employee);
+                }
+                TempData["Success"] = $"Thêm nhân viên thành công!";
                 return RedirectToAction(nameof(QuanLyNguoiDung));
             }
             catch (Exception ex)
@@ -262,13 +338,13 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             try
             {
                 var khachHang = _db.KhachHangs
-     .Include(k => k.TaiKhoan)
-     .Include(k => k.DonHangs)
-         .ThenInclude(d => d.ChiTietDonHangs) // Lấy chi tiết sản phẩm của từng đơn  
-     .Include(k => k.PhanHoiKhachHangs)
-     .Include(k => k.DanhGiaSanPhams)
-     .Include(k => k.DiaChiNhanHangs)
-     .FirstOrDefault(k => k.MaKhachHang == id);
+                     .Include(k => k.TaiKhoan)
+                     .Include(k => k.DonHangs)
+                         .ThenInclude(d => d.ChiTietDonHangs) // Lấy chi tiết sản phẩm của từng đơn  
+                     .Include(k => k.PhanHoiKhachHangs)
+                     .Include(k => k.DanhGiaSanPhams)
+                     .Include(k => k.DiaChiNhanHangs)
+                     .FirstOrDefault(k => k.MaKhachHang == id);
 
 
                 if (khachHang == null)

@@ -1,4 +1,4 @@
-﻿@model Media.Models.NhanVien
+﻿@model Media.Models.ViewModels.ThemNhanVienVM
 @{
     ViewData["Title"] = "Thêm Nhân Viên";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -67,37 +67,70 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Họ tên -->
                         <div class="md:col-span-2">
-                            <label asp-for="HoTen" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.HoTen" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Họ và tên <span class="text-red-500">*</span>
                             </label>
-                            <input asp-for="HoTen"
+                            <input asp-for="NhanVienMoi.HoTen"
                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                    placeholder="Nhập họ và tên đầy đủ" required />
-                            <span asp-validation-for="HoTen" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.HoTen" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                        </div>
+
+                        <!-- Mật khẩu -->
+                        <div class="md:col-span-2">
+                            <label asp-for="MatKhau" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Mật khẩu <span class="text-red-500">*</span>
+                            </label>
+                            <input asp-for="MatKhau"
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                   placeholder="Nhập mật khẩu cho nhân viên:" required />
+                            <span asp-validation-for="MatKhau" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="md:col-span-2">
+                            <label asp-for="NhanVienMoi.Email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Email <span class="text-red-500">*</span>
+                            </label>
+                            <input asp-for="NhanVienMoi.Email"
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                   placeholder="Nhập email" required />
+                            <span asp-validation-for="NhanVienMoi.Email" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                        </div>
+
+                        <!-- Điên thoại -->
+                        <div class="md:col-span-2">
+                            <label asp-for="NhanVienMoi.DienThoai" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Số điện thoại <span class="text-red-500">*</span>
+                            </label>
+                            <input asp-for="NhanVienMoi.DienThoai"
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                   placeholder="Nhập số điện thoại" required />
+                            <span asp-validation-for="NhanVienMoi.DienThoai" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                         </div>
 
                         <!-- Ngày sinh -->
                         <div>
-                            <label asp-for="NgaySinh" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.NgaySinh" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Ngày sinh
                             </label>
-                            <input asp-for="NgaySinh" type="date"
+                            <input asp-for="NhanVienMoi.NgaySinh" type="date"
                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                    max="@DateTime.Today.ToString("yyyy-MM-dd")" />
-                            <span asp-validation-for="NgaySinh" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.NgaySinh" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                         </div>
 
                         <!-- CCCD -->
                         <div>
-                            <label asp-for="CCCD" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.CCCD" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 CCCD/CMND
                             </label>
-                            <input asp-for="CCCD"
+                            <input asp-for="NhanVienMoi.CCCD"
                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                    placeholder="Nhập 12 số CCCD"
                                    pattern="[0-9]{12}"
                                    title="CCCD phải có đúng 12 chữ số" />
-                            <span asp-validation-for="CCCD" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.CCCD" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">12 chữ số, không bao gồm ký tự đặc biệt</p>
                         </div>
                     </div>
@@ -113,24 +146,24 @@
                     <div class="space-y-4">
                         <!-- Địa chỉ -->
                         <div>
-                            <label asp-for="DiaChi" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.DiaChi" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Địa chỉ hiện tại
                             </label>
-                            <textarea asp-for="DiaChi" rows="3"
+                            <textarea asp-for="NhanVienMoi.DiaChi" rows="3"
                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
                                       placeholder="Nhập địa chỉ đầy đủ: số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
-                            <span asp-validation-for="DiaChi" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.DiaChi" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                         </div>
 
                         <!-- Quê quán -->
                         <div>
-                            <label asp-for="QueQuan" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.QueQuan" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Quê quán
                             </label>
-                            <input asp-for="QueQuan"
+                            <input asp-for="NhanVienMoi.QueQuan"
                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                    placeholder="Nhập quê quán (tỉnh/thành phố)" />
-                            <span asp-validation-for="QueQuan" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.QueQuan" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                         </div>
                     </div>
                 </div>
@@ -145,41 +178,41 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Ngày vào làm -->
                         <div>
-                            <label asp-for="NgayVaoLam" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.NgayVaoLam" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Ngày vào làm <span class="text-red-500">*</span>
                             </label>
-                            <input asp-for="NgayVaoLam" type="date"
+                            <input asp-for="NhanVienMoi.NgayVaoLam" type="date"
                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                    required />
-                            <span asp-validation-for="NgayVaoLam" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.NgayVaoLam" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                         </div>
 
                         <!-- Bậc lương -->
                         <div>
-                            <label asp-for="BacLuong" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.BacLuong" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Bậc lương
                             </label>
-                            <input asp-for="BacLuong" type="number"
+                            <input asp-for="NhanVienMoi.BacLuong" type="number"
                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                    placeholder="1-15" min="1" max="15" />
-                            <span asp-validation-for="BacLuong" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.BacLuong" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Từ bậc 1 đến 15</p>
                         </div>
 
                         <!-- Lương cơ bản -->
                         <div class="md:col-span-2">
-                            <label asp-for="Luong" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            <label asp-for="NhanVienMoi.Luong" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Lương cơ bản (VNĐ)
                             </label>
                             <div class="relative">
-                                <input asp-for="Luong" type="number" step="100000"
+                                <input asp-for="NhanVienMoi.Luong" type="number" step="100000"
                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-20"
                                        placeholder="Nhập mức lương" min="0" />
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                     <span class="text-gray-500 dark:text-gray-400">VNĐ</span>
                                 </div>
                             </div>
-                            <span asp-validation-for="Luong" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
+                            <span asp-validation-for="NhanVienMoi.Luong" class="text-red-600 dark:text-red-400 text-xs mt-1 block"></span>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Lương cơ bản hàng tháng</p>
                         </div>
                     </div>

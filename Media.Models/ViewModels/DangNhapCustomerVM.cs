@@ -2,11 +2,11 @@
 
 namespace Media.Models.ViewModels
 {
-    public class DangNhapVM
+    public class DangNhapCustomerVM
     {
-        [Required(ErrorMessage = "Vui lòng nhập email.")]
+        [Required(ErrorMessage = "Vui lòng nhập tên đăng nhập hoặc email.")]
         [Display(Name = "Email")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu.")]
         [DataType(DataType.Password)]

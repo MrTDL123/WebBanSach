@@ -1,4 +1,5 @@
-﻿using Media.Models;
+﻿using Media.Areas.Admin.Controllers;
+using Media.Models;
 using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace ProjectCuoiKi.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class BookController : Controller
+    public class BookController : AdminController
     {
         private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _environment;
@@ -191,6 +191,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                         }
                     }
 
+                    existingSach.PhanTramGiamGia /= 100;
                     _context.Saches.Update(existingSach);
                     await _context.SaveChangesAsync();
 
@@ -294,6 +295,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
                     // Đảm bảo các giá trị mặc định
                     sach.NgayCapNhat = DateTime.Now;
+                    sach.PhanTramGiamGia /= 100;
 
                     _context.Saches.Add(sach);
                     await _context.SaveChangesAsync();

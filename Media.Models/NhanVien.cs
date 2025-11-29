@@ -22,6 +22,14 @@ namespace Media.Models
         [DisplayName("Họ tên")]
         public string HoTen { get; set; }
 
+        [Required, StringLength(10)]
+        [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "So dien thoai phai co 10 chu so")]
+        [DisplayName("Số diện thoại")]
+        public string DienThoai { get; set; }
+        [EmailAddress, StringLength(200)]
+        [DisplayName("Email")]
+        public string Email { get; set; }
+
         [StringLength(300)]
         [DisplayName("Địa chỉ")]
         public string DiaChi { get; set; }

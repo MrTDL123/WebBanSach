@@ -67,12 +67,12 @@
                     <!-- Phần trăm giảm giá -->
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">Phần trăm giảm giá (%)</label>
-                        <input asp-for="PhanTramGiamGia" class="form-control" type="number" min="0" max="100" step="1" placeholder="0" />
+                        <input asp-for="PhanTramGiamGia" class="form-control" type="number" min="0" max="100" step="1" placeholder="0"/>
                         <span asp-validation-for="PhanTramGiamGia" class="text-danger small"></span>
                         @if (Model.PhanTramGiamGia > 0)
                         {
                             <small class="text-success">
-                                Giá sau giảm: <strong>@((Model.GiaBan * (100 - Model.PhanTramGiamGia) / 100).ToString("N0")) VNĐ</strong>
+                                Giá sau giảm: <strong>@((Model.GiaBan * (1 - Model.PhanTramGiamGia)).ToString("N0")) VNĐ</strong>
                             </small>
                         }
                     </div>

@@ -75,7 +75,7 @@ namespace Media.Models
 
         // SỬA: Tính toán đúng giá sau giảm
         [NotMapped]
-        public decimal GiaSauGiam => GiaBan * (1 - (PhanTramGiamGia / 100));
+        public decimal GiaSauGiam => GiaBan * (1 - PhanTramGiamGia);
 
         [ForeignKey(nameof(MaChuDe))]
         [ValidateNever]

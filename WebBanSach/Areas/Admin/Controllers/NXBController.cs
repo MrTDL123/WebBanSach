@@ -1,12 +1,12 @@
-﻿using Media.Models;
+﻿using Media.Areas.Admin.Controllers;
+using Media.Models;
 using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProjectCuoiKi.Areas.Admin.Controllers 
 {
-    [Area("Admin")]
-    public class NXBController : Controller
+    public class NXBController : AdminController
     {
         private readonly ApplicationDbContext _db;
 
