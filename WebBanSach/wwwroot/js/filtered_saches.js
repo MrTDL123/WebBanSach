@@ -13,9 +13,43 @@ $(document).ready(function () {
         $('.chude-filter').removeClass('active fw-bold');
         $(this).addClass('active fw-bold');
 
-        // Navigate đến URL mới
-        window.location.href = newUrl;
+        loadChuDe(newUrl, path);
     });
+
+    function loadChuDe(url, path) {
+        console.log('🔄 Loading chủ đề:', url);
+
+        showLoading();
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'  // ← Đánh dấu AJAX
+            },
+            success: function (response) {
+                if (response.success) {
+                    console.log('✅ Loaded successfully');
+
+                    updateContent(response);
+
+                    updateURLAndBreadcrumb(url, response, path);
+
+                    // Scroll
+                    scrollToResults();
+
+                    // Highlight chủ đề
+                    highlightCurrentChuDe(path);
+                } else {
+                    showError(response.message || 'Có lỗi xảy ra');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('❌ AJAX Error:', error);
+                showError(error, xhr.responseText);
+            }
+        });
+    }
 
     function loadSaches(page) {
         page = page || 1;
@@ -23,12 +57,12 @@ $(document).ready(function () {
         var filters = collectFilters();
         filters.page = page;
 
-        var currentPath = window.location.pathname.substring(1); // Bỏ dấu "/"
+        var currentPath = window.location.pathname;
 
         showLoading();
 
         $.ajax({
-            url: '/' + currentPath,
+            url: currentPath,
             type: 'GET',
             traditional: true,
             data: filters,
@@ -38,7 +72,7 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     updateContent(response);
-                    updateURL(currentPath, filters);
+                    updateURLWithFilters(currentPath, filters);
                     scrollToResults();
                 }
                 else
@@ -127,19 +161,40 @@ $(document).ready(function () {
         highlightCurrentChuDe();
     }
 
-    function highlightCurrentChuDe() {
-        var currentPath = $('#filterForm').data('path');
+    function highlightCurrentChuDe(path) {
         $('.chude-filter').removeClass('active fw-bold');
-        if (currentPath) {
+
+        if (path) {
+            $(`.chude-filter[data-path="${path}"]`).addClass('active fw-bold');
+        } else {
+            // Lấy từ URL hiện tại
+            var currentPath = window.location.pathname.replace('/chude/', '');
             $(`.chude-filter[data-path="${currentPath}"]`).addClass('active fw-bold');
         }
     }
 
-    function updateURL(path, filters)
-    {
+    function updateURLAndBreadcrumb(url, response, path) {
+        history.pushState({ path: path }, '', url);
+
+        if (response.breadcrumb) {
+            $('nav[aria-label="breadcrumb"]').html(response.breadcrumb);
+        }
+
+        $('#filterForm').attr('data-path', path);
+
+        if (response.pageTitle) {
+            document.title = response.pageTitle;
+        }
+
+        console.log('✅ URL updated:', url);
+    }
+
+    function updateURLWithFilters(baseUrl, filters) {
         var queryString = $.param(filters, true);
-        var newUrl = '/' + path + (queryString ? '?' + queryString : '');
-        history.pushState(filters, '', newUrl);
+        var newUrl = baseUrl + (queryString ? '?' + queryString : '');
+        history.pushState({ filters: filters }, '', newUrl);
+
+        console.log('✅ URL updated with filters:', newUrl);
     }
 
     function scrollToResults() {
@@ -225,9 +280,21 @@ $(document).ready(function () {
         }
     });
 
-    // Nút Back
-    window.addEventListener('popstate', function (e) {
-        location.reload();
+
+    // ========== XỬ LÝ NÚT BACK/FORWARD ==========
+    window.addEventListener('popstate', function (event) {
+        console.log('⬅️ Popstate event');
+
+        if (event.state && event.state.path) {
+            // User nhấn Back/Forward sau khi click chủ đề
+            loadChuDe(window.location.pathname, event.state.path);
+        } else if (event.state && event.state.filters) {
+            // User nhấn Back/Forward sau khi filter
+            location.reload(); // Hoặc load lại với filters từ state
+        } else {
+            // Fallback: reload trang
+            location.reload();
+        }
     });
 
     highlightCurrentChuDe();

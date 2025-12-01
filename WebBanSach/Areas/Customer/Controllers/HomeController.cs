@@ -181,6 +181,13 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                         "_ChuDeTuongUngPartial",
                         viewModel.ChuDeCha
                     );
+
+                    string breadcrumbHtml = await _viewRenderService.RenderToStringAsync(
+                        "_BreadcrumbPartial",
+                        viewModel.Breadcrumbs
+                    );
+
+                    response["breadcrumb"] = breadcrumbHtml;
                 }
 
                 return Json(response);
@@ -406,20 +413,6 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             return await RenderSachListView(viewModel);
         }
 
-        public async Task<IActionResult> LayTatCaSach(int? page, int? pageSize)
-        {
-            SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, page ?? 1, pageSize ?? 12, null, null, null, null, null);
-
-            viewModel.DanhSachTacGia = await _unit.TacGias.GetAllReadOnlyAsync();
-            viewModel.DanhSachNhaXuatBan = await _unit.NhaXuatBans.GetAllReadOnlyAsync();
-            viewModel.Breadcrumbs = new List<BreadcrumbItem>(){
-                new BreadcrumbItem { Text = "Trang chủ", Url = "/" },
-                new BreadcrumbItem { Text = "Tất cả chủ đề", Url = "/", IsActive = true}
-            };
-
-            return await RenderSachListView(viewModel);
-        }
-
         public async Task<IActionResult> LaySachTheoTacGia(int id)
         {
             SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, 1, 12, null, new List<int> { id }, null, null, null);
@@ -454,12 +447,14 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             string? sortBy,
             string? keyword)
         {
-            if (string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(path) || path.Contains("tat-ca-chu-de"))
             {
-                return RedirectToAction("LayTatCaSach");
+                path = string.Empty;
             }
-
-            path = Uri.UnescapeDataString(path);
+            else
+            {
+                path = Uri.UnescapeDataString(path);
+            }
 
             ChuDe? selectedChuDe = _slugService.GetChuDeByPath(path);
             
@@ -585,6 +580,11 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                                         .Select(g => g.First())
                                         .ToList();
             }
+            else
+            {
+                viewModel.DanhSachTacGia = await _unit.TacGias.GetAllReadOnlyAsync();
+                viewModel.DanhSachNhaXuatBan = await _unit.NhaXuatBans.GetAllReadOnlyAsync();
+            }
 
             viewModel.DanhSachSach = sachList.ToPagedList(page, pageSize);
             viewModel.SortBy = sortBy;
@@ -628,6 +628,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
             if(chuDe.MaChuDe == 0)
             {
+                breadcrumbs.Add(new BreadcrumbItem { Text = "Tất cả chủ đề", Url = "/", IsActive = true });
                 return breadcrumbs;
             }
 

@@ -16,27 +16,7 @@
 }
 
 <div id="sachtheochude_container">
-    <nav aria-label="breadcrumb" style="padding-top:1rem;">
-        <ol class="breadcrumb">
-            @foreach(var item in Model.Breadcrumbs)
-            {
-                if (item.IsActive)
-                {
-                    <li class="breadcrumb-item active fw-bold" aria-current="page">
-                        @item.Text
-                    </li>
-                }
-                else
-                {
-                    <li class="breadcrumb-item">
-                        <a style="color: black;" 
-                            href="@item.Url"
-                        >@item.Text</a>
-                    </li>
-                }
-            }
-        </ol>
-    </nav>
+    @await Html.PartialAsync("_BreadcrumbPartial", Model.Breadcrumbs)
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">
@@ -48,7 +28,11 @@
                 <section id="same_category_books" class="filter-section">
                     <p class="sachtheochude_left_title montserrat-bold">CHỦ ĐỀ TƯƠNG ỨNG</p>
                     <aside>
-                        <a asp-controller="Home" asp-action="LayTatCaSach">Tất cả chủ đề</a>
+                        <a class="chude-filter" 
+                           href="/chude/tat-ca-chu-de"
+                           data-path="tat-ca-chu-de">
+                            Tất cả chủ đề
+                        </a>
 
                         <ul class="chude_item_root">
                             @await Html.PartialAsync("_ChuDeTuongUngPartial", Model.ChuDeCha)
@@ -61,7 +45,7 @@
                     <p class="sachtheochude_left_title montserrat-bold" id="">GIÁ</p>
                         @foreach (var range in Model.PriceFilter.PriceRanges)
                         {
-                            <div class="form-check mb-2 filter_section">
+                            <div class="form-check mb-2">
                                 <input class="form-check-input price-filter"
                                        type="checkbox"
                                        name="priceRanges"
