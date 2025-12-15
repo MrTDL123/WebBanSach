@@ -29,6 +29,8 @@ namespace Media.DataAccess.Repository
         public IVanChuyenRepository VanChuyens { get; private set; }
         public IDanhGiaSanPhamRepository DanhGiaSanPhams { get; private set; }
         public ILuotThichDanhGiaSanPhamRepository LuotThichDanhGiaSanPhams { get; private set; }
+        public IChiTietDonHangRepository ChiTietDonHangs { get; private set; }
+        public IYeuThichRepository YeuThichs { get; private set; }
         public UnitOfwork(ApplicationDbContext db, IMemoryCache cache)
         {
             _db = db;
@@ -45,7 +47,9 @@ namespace Media.DataAccess.Repository
             HoaDons = new HoaDonRepository(_db);
             VanChuyens = new VanChuyenRepository(_db);
             DanhGiaSanPhams = new DanhGiaSanPhamRepository(_db);
-            LuotThichDanhGiaSanPhams = new LuotThichDanhGiaSanPhamRepository(db);
+            LuotThichDanhGiaSanPhams = new LuotThichDanhGiaSanPhamRepository(_db);
+            ChiTietDonHangs = new ChiTietDonHangRepository(_db);
+            YeuThichs = new YeuThichRepository(_db);
         }
         public void Save()
         {

@@ -173,7 +173,7 @@ using (var scope = app.Services.CreateScope())
 
 app.MapControllerRoute(
     name: "AdminRoute",
-    pattern: "Admin", // Đường dẫn bạn muốn bắt
+    pattern: "Admin",
     defaults: new { area = "Admin", controller = "Dashboard", action = "Index" }
 );
 

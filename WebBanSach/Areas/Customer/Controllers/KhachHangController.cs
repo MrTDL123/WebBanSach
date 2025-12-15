@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity.UI.Services; // Để sử dụng IEmailSend
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Mono.TextTemplating;
 using System;
 using System.Diagnostics; // Để Debug.WriteLine
 using System.Net.Mail; // Để bắt SmtpException
@@ -45,8 +46,6 @@ namespace Media.Areas.Customer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DangKy(DangKyVM model)
         {
-            // (Code Đăng ký POST của bạn giữ nguyên,
-            // nó đã tự kiểm tra MaOTP từ session rồi)
 
             var existingEmail = await _userManager.FindByEmailAsync(model.Email);
             if (existingEmail != null)
@@ -94,6 +93,7 @@ namespace Media.Areas.Customer.Controllers
                 await _unit.SaveAsync();
 
                 await _userManager.AddClaimAsync(user, new Claim("HoTen", khachHang.HoTen));
+                await _userManager.AddClaimAsync(user, new Claim("MaKhachHang", khachHang.MaKhachHang.ToString()));
                 // ⭐ KẾT THÚC SỬA LỖI
 
                 // ... (Code đăng nhập người dùng ngay sau khi đăng ký)
@@ -218,12 +218,14 @@ namespace Media.Areas.Customer.Controllers
         }
 
         [HttpGet]
-        public IActionResult DangNhap()
+        public IActionResult DangNhap(string returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
+
             var clientId = "1014329012170-ume2bb5oet96l1mvv9cd7rsj82k8f4p8.apps.googleusercontent.com";
             var url = $"{Request.Scheme}://{Request.Host}{Url.Action("LoginGoogle", "KhachHang")}";
 
-            string response = GenerateGoogleOAuthUrl(clientId, url);
+            string response = GenerateGoogleOAuthUrl(clientId, url, returnUrl);
 
             ViewBag.response = response;
             return View();
@@ -233,7 +235,6 @@ namespace Media.Areas.Customer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DangNhap(DangNhapCustomerVM model)
         {
-            // (Code Đăng nhập giữ nguyên)
             if (!ModelState.IsValid)
                 return View(model);
 
@@ -263,11 +264,23 @@ namespace Media.Areas.Customer.Controllers
                 {
                     await _userManager.RemoveClaimAsync(user, oldHoTenClaim);
                 }
-
                 // 3. Thêm claim "HoTen" mới
                 if (khachHang != null)
                 {
                     await _userManager.AddClaimAsync(user, new Claim("HoTen", khachHang.HoTen));
+                }
+
+                var oldMaKhacHangClaim = oldClaims.FirstOrDefault(c => c.Type == "MaKhachHang");
+                string newIdValue = khachHang.MaKhachHang.ToString();
+
+                if (oldMaKhacHangClaim == null)
+                {
+                    await _userManager.AddClaimAsync(user, new Claim("MaKhachHang", newIdValue));
+                }
+                else if (oldMaKhacHangClaim.Value != newIdValue)
+                {
+                    await _userManager.RemoveClaimAsync(user, oldMaKhacHangClaim);
+                    await _userManager.AddClaimAsync(user, new Claim("MaKhachHang", newIdValue));
                 }
 
                 // 4. (Rất quan trọng) Làm mới cookie đăng nhập để nhận claim mới
@@ -288,7 +301,7 @@ namespace Media.Areas.Customer.Controllers
 
 
         #region Đăng Nhập Google
-        private string GenerateGoogleOAuthUrl(string clientId, string redirectUri)
+        private string GenerateGoogleOAuthUrl(string clientId, string redirectUri, string returnUrl)
         {
             // Base URL of Google OAuth
             string googleOAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -302,6 +315,11 @@ namespace Media.Areas.Customer.Controllers
                 new KeyValuePair<string, string>("scope", "openid email profile"),
                 new KeyValuePair<string, string>("access_type", "online")
             };
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                queryParams.Add(new KeyValuePair<string, string>("state", returnUrl));
+            }
 
             // Create URL by concatenating parameters
             string queryString = string.Join("&", queryParams.Select(q => $"{q.Key}={Uri.EscapeDataString(q.Value)}"));
@@ -358,7 +376,7 @@ namespace Media.Areas.Customer.Controllers
             }
         }
 
-        public async Task<ActionResult> LoginGoogle(string code, string scope, string authuser, string prompt)
+        public async Task<ActionResult> LoginGoogle(string code, string scope, string authuser, string prompt, string returnUrl)
         {
             string redirectUri = $"{Request.Scheme}://{Request.Host}{Url.Action("LoginGoogle", "KhachHang")}";
             var clientId = "1014329012170-ume2bb5oet96l1mvv9cd7rsj82k8f4p8.apps.googleusercontent.com";
@@ -440,6 +458,11 @@ namespace Media.Areas.Customer.Controllers
                         TempData["ErrorMessage"] = "Lỗi dữ liệu: Không tìm thấy tài khoản đăng nhập.";
                         return RedirectToAction("DangNhap");
                     }
+                }
+
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
                 }
 
                 return RedirectToAction("TrangChu", "Home");

@@ -22,7 +22,8 @@ namespace Media.DataAccess.Repository.IRepository
         ILuotThichDanhGiaSanPhamRepository LuotThichDanhGiaSanPhams { get;}
         ITacGiaRepository TacGias { get; }
         INhaXuatBanRepository NhaXuatBans { get; }
-
+        IChiTietDonHangRepository ChiTietDonHangs { get; }
+        IYeuThichRepository YeuThichs { get; }
         void Save();
         Task SaveAsync();
     }

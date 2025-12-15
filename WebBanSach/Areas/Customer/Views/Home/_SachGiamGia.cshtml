@@ -21,26 +21,29 @@
 }
 
 
-<section id="sach_giam_gia_container">
+<section id="sach_giam_gia_container" style="position: relative;">
     <div id="sach_giam_gia_background">
-        <img src="~/img/web_img/flash-sale.png"/>
-        <img src="~/img/web_img/flash-sale.png"/>
+        <img src="~/img/web_img/flash-sale.png" />
+        <img src="~/img/web_img/flash-sale.png" />
     </div>
+
     <div id="giam_gia_title">
         <p style="color: white" class="montserrat-bold">Giảm Giá Hot</p>
     </div>
-    <div id="sach-list-section" style="z-index: 2">
+
+    <button id="btn_flashsale_prev" class="flashsale-nav-btn prev-btn">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <div id="sach-giam-gia-section" class="scroll-container" style="z-index: 2;">
         @foreach (var sach in Model)
         {
             <div class="book-item">
                 <a href="@Url.Action("ChiTietSanPham", "Home", new { MaSach = sach.MaSach })" title="@sach.TenSach">
-
                     <div class="book-image-container">
                         <img src="~/img/product/@sach.AnhBiaChinh" alt="Bìa sách @sach.TenSach">
-
                         <span class="sale-badge">@((sach.PhanTramGiamGia * 100).ToString("N0"))%</span>
                     </div>
-
                     <div class="book-info">
                         <p class="book-title montserrat-regular">@sach.TenSach</p>
                         <div class="book-price">
@@ -48,15 +51,16 @@
                             {
                                 <span class="original-price">@sach.GiaBan.ToString("N0") đ</span>
                             }
-
                             <span class="sale-price">@((sach.GiaBan * (1 - sach.PhanTramGiamGia)).ToString("N0")) đ</span>
                         </div>
-
-                        
                     </div>
                 </a>
             </div>
         }
     </div>
-</section>
 
+    <button id="btn_flashsale_next" class="flashsale-nav-btn next-btn">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+</section>

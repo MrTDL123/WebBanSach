@@ -68,6 +68,16 @@
         </div>
 
         <form asp-action="SuaNhanVien" method="post" id="editStaffForm" class="p-6 space-y-6">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div asp-validation-summary="All" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 border border-red-200 dark:border-red-900" role="alert">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class='bx bx-error-circle text-xl'></i>
+                        <span class="font-bold text-lg">Đã xảy ra lỗi:</span>
+                    </div>
+                </div>
+            }
+
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="MaNhanVien" />
 

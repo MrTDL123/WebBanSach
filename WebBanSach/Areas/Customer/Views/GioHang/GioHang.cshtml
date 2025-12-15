@@ -18,12 +18,14 @@
                 <div class="table-header">
                     <div class="col-checkbox">
                         <input type="checkbox" />
+                        <label class="col-product">Sản phẩm <span class="count-product-shoping-cart">(@Model.Count sản phẩm)</span></label>
                     </div>
-                    <label class="col-product">Sản phẩm <span class="count-product-shoping-cart">(@Model.Count sản phẩm)</span></label>
-                    <label class="col-price">Giá</label>
-                    <label class="col-quantity">Số lượng</label>
-                    <label class="col-total">Thành tiền</label>
-                    <label class="col-delete"></label>
+                    <div class="cart-info">
+                        <label class="col-price">Giá</label>
+                        <label class="col-quantity">Số lượng</label>
+                        <label class="col-total">Thành tiền</label>
+                        <label class="col-delete"></label>
+                    </div>
                 </div>
 
                 @foreach (var sanPham in Model)
@@ -31,43 +33,46 @@
                     <div class="table-row" data-masash="@sanPham.MaSach">
                         <div class="col-checkbox">
                             <input type="checkbox" />
-                        </div>
 
-                        <!-- Product Info -->
-                        <div class="product-info">
-                            <div class="product-image">
-                                <img src="~/img/product/@sanPham.AnhBiaChinh" alt="@sanPham.TenSach" />
-                            </div>
-                            <label class="product-name">@sanPham.TenSach</label>
-                        </div>
-
-                        <!-- Price -->
-                        <div class="price-column">
-                            @if (sanPham.GiaSauGiam < sanPham.GiaBan)
-                            {
-                                <label class="original-price">@sanPham.GiaBan.ToString("N0")<span class="currency-symbol">đ</span></label>
-                                <label class="discount-price">@sanPham.GiaSauGiam.ToString("N0")<span class="currency-symbol">đ</span></label>
-                            }
-                            else
-                            {
-                                <label class="discount-price">@sanPham.GiaBan.ToString("N0")<span class="currency-symbol">đ</span></label>
-                            }
-                        </div>
-
-                        <!-- Quantity -->
-                        <div class="quantity-section-shoppingcart">
-                            <div class="quantity-control-shoppingcart">
-                                <button class="btn-qty-shoppingcart decrease">-</button>
-                                <input type="text" class="qtyShoppingCart" value="@sanPham.SoLuong" maxvalue="999" readonly>
-                                <button class="btn-qty-shoppingcart increase">+</button>
+                            <!-- Product Info -->
+                            <div class="product-info">
+                                <div class="product-image">
+                                    <img src="~/img/product/@sanPham.AnhBiaChinh" alt="@sanPham.TenSach" />
+                                </div>
+                                <label class="product-name">@sanPham.TenSach</label>
                             </div>
                         </div>
 
-                        <!-- Total -->
-                        <label class="total-price">@((sanPham.GiaSauGiam * sanPham.SoLuong).ToString("N0"))<span class="currency-symbol">đ</span></label>
 
-                        <!-- Delete -->
-                        <button class="delete-btn" data-masach="@sanPham.MaSach"><i class="fi fi-rs-trash"></i></button>
+                        <div class="cart-info">
+                            <!-- Price -->
+                            <div class="price-column">
+                                @if (sanPham.GiaSauGiam < sanPham.GiaBan)
+                                {
+                                    <label class="original-price">@sanPham.GiaBan.ToString("N0")<span class="currency-symbol">đ</span></label>
+                                    <label class="discount-price">@sanPham.GiaSauGiam.ToString("N0")<span class="currency-symbol">đ</span></label>
+                                }
+                                else
+                                {
+                                    <label class="discount-price">@sanPham.GiaBan.ToString("N0")<span class="currency-symbol">đ</span></label>
+                                }
+                            </div>
+
+                            <!-- Quantity -->
+                            <div class="quantity-section-shoppingcart">
+                                <div class="quantity-control-shoppingcart">
+                                    <button class="btn-qty-shoppingcart decrease">-</button>
+                                    <input type="text" class="qtyShoppingCart" value="@sanPham.SoLuong" maxvalue="999" readonly>
+                                    <button class="btn-qty-shoppingcart increase">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Total -->
+                            <label class="total-price">@((sanPham.GiaSauGiam * sanPham.SoLuong).ToString("N0"))<span class="currency-symbol">đ</span></label>
+
+                            <!-- Delete -->
+                            <button class="delete-btn" data-masach="@sanPham.MaSach"><i class="fi fi-rs-trash"></i></button>
+                        </div>
                     </div>
                 }
             </div>

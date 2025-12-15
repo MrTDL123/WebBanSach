@@ -240,8 +240,6 @@ namespace WebBanSach.Areas.Customer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThanhToan(ThanhToan model)
         {
-            // === BƯỚC 1: KIỂM TRA PHÒNG VỆ (DEFENSIVE PROGRAMMING) ===
-
             // 1. Lấy thông tin Khách Hàng
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
@@ -322,7 +320,7 @@ namespace WebBanSach.Areas.Customer.Controllers
                 DiaChiChiTiet = model.DiaChi,
                 GhiChu = model.GhiChu,
                 Total = model.TongTien,
-                NgayTao = DateTime.UtcNow,
+                NgayTao = DateTime.Now,
                 DaThanhToan = false,
                 HinhThucThanhToan = model.HinhThucThanhToanChon,
 

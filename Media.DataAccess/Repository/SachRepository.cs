@@ -58,7 +58,7 @@ namespace Media.DataAccess.Repository
         public async Task<IEnumerable<Sach>> LaySachBanChay(int? days, int? sachCount)
         {
             int actualDays = days ?? 7;
-            int actualCount = sachCount ?? 6;
+            int actualCount = sachCount ?? 7;
             
             string cacheKey = $"TopSellers_{actualDays}_{actualCount}"; //Đảm bảo key là độc nhất
             DateTime daysAgo = DateTime.Now.AddDays(-actualDays);

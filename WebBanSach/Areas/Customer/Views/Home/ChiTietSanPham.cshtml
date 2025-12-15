@@ -16,6 +16,16 @@
     }
 }
 
+@{
+    List<string> danhSachAnhPhu = new List<string>
+    {
+        Model.Sach.AnhBiaPhu1,
+        Model.Sach.AnhBiaPhu2,
+        Model.Sach.AnhBiaPhu3,
+        Model.Sach.AnhBiaPhu4
+    }.Where(img => !string.IsNullOrEmpty(img)).ToList();
+}
+
 @Html.AntiForgeryToken()
 
 <div class="product-wrapper">
@@ -24,10 +34,10 @@
         <div class="product-images">
             <img src="~/img/product/@Model.Sach.AnhBiaChinh" alt="@Model.Sach.TenSach" class="main-image" id="mainImage">
             <div class="thumbnail-list">
-                <img src="~/img/product/@Model.Sach.AnhBiaPhu1" alt="thumb1 @Model.Sach.TenSach" class="thumbnail active" onclick="changeImage(this)">
-                <img src="~/img/product/@Model.Sach.AnhBiaPhu2" alt="thumb2 @Model.Sach.TenSach" class="thumbnail" onclick="changeImage(this)">
-                <img src="~/img/product/@Model.Sach.AnhBiaPhu3" alt="thumb3 @Model.Sach.TenSach" class="thumbnail" onclick="changeImage(this)">
-                <img src="~/img/product/@Model.Sach.AnhBiaPhu4" alt="thumb4 @Model.Sach.TenSach" class="thumbnail" onclick="changeImage(this)">
+                @foreach (var anhPhu in danhSachAnhPhu)
+                {
+                    <img src="~/img/product/@anhPhu" alt="thumb1 @Model.Sach.TenSach" class="thumbnail active" onclick="changeImage(this)">
+                }
             </div>
         </div>
 
@@ -61,14 +71,51 @@
 
             <ul class="product-meta">
                 <li class="meta-label">Nhà cung cấp: <a href="#" class="meta-value">@Model.Sach.NhaCungCap</a></li>
-                <li class="meta-label">Tác giả: <a href="#" class="meta-value">@Model.Sach.TacGia.TenTG</a></li>
-                <li class="meta-label">NXB: <a href="#" class="meta-value">@Model.Sach.ChuDe.TenChuDe</a></li>
+                <li class="meta-label">Tác giả: <a asp-action="LaySachTheoTacGia" asp-controller="Home" asp-route-id="@Model.Sach.TacGia.MaTacGia" class="meta-value">@Model.Sach.TacGia.TenTG</a></li>
+                <li class="meta-label">NXB: <a asp-controller="Home" asp-action="SachTheoChuDe" asp-route-path="@Model.Sach.ChuDe.FullPath" class="meta-value">@Model.Sach.ChuDe.TenChuDe</a></li>
                 <li class="meta-label">Hình thức bìa: <a href="#" class="meta-value">Bìa Mềm</a></li>
             </ul>
-            <div class="rating-section">
-                <a href="#" class="rating-link">@HienThiSao((int)Math.Round(Model.DiemDanhGiaSanPhamTrungBinh)) (@Model.TongSoDanhGiaSanPham đánh giá)</a>
-                <span class="sold-count">| Đã bán 444</span>
-            </div>
+
+            <div class="product-meta">
+                <div class="rating-section">
+                    <a href="#" class="rating-link">@HienThiSao((int)Math.Round(Model.DiemDanhGiaSanPhamTrungBinh)) (@Model.TongSoDanhGiaSanPham đánh giá)</a>
+                    <span class="sold-count">| Đã bán @Model.SoLuongSachBan</span>
+                </div>
+
+                @{
+                    bool userDaThich = ViewBag.UserDaThich ?? false; // Cần truyền từ Controller xuống lúc load trang
+                }
+
+                <div class="wishlist-container">
+                    <button class="btn-wishlist @(userDaThich ? "active" : "")" data-masach="@Model.Sach.MaSach">
+                        <i class="bi bi-heart icon-empty"></i>
+                        <i class="bi bi-heart-fill icon-filled"></i>
+                    </button>
+
+                    <span class="wishlist-text view-likes-trigger" data-masach="@Model.Sach.MaSach" style="cursor: pointer; text-decoration: underline;">
+                        Đã thích (<span id="count-like">@Model.Sach.YeuThichs.Count</span>)
+                    </span>
+                </div>
+
+                <div class="modal fade" id="modalNguoiThich" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Những người đã thích</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="modalNguoiThichBody">
+                                <div class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             </div>
+
 
             <div class="price-section">
                 <label class="price-main">@Model.Sach.GiaSauGiam.ToString("N0") đ</label>
@@ -399,10 +446,10 @@
             // (Kiểm tra đăng nhập bằng Razor, an toàn)
             @if (!SignInManager.IsSignedIn(User))
             {
-                    <text>
-                    showToast("Vui lòng đăng nhập để thích đánh giá.", true);
-                    return;
-                    </text>
+                        <text>
+                        showToast("Vui lòng đăng nhập để thích đánh giá.", true);
+                        return;
+                        </text>
             }
             var btn = $(element);
             btn.prop('disabled', true);
@@ -815,6 +862,67 @@
                         $('#cart-count').text(`(${res.count})`);
                     }
                 }
+            });
+        });
+
+        $(document).ready(function () {
+            $('.btn-wishlist').click(function () {
+                var btn = $(this);
+                var maSach = btn.data('masach');
+                var countSpan = $('#count-like');
+
+                $.ajax({
+                    url: '/Customer/Home/ToggleYeuThich',
+                    type: 'POST',
+                    data: { maSach: maSach },
+                    success: function (res) {
+                        if (res.success) {
+                            if (res.isLiked) {
+                                btn.addClass('active');
+                            } else {
+                                btn.removeClass('active');
+                            }
+
+                            countSpan.text(res.totalLikes);
+                        } else {
+                            var returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+                            window.location.href = '/Customer/KhachHang/DangNhap?returnUrl=' + returnUrl;
+                        }
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra, vui lòng thử lại!');
+                    }
+                });
+            });
+
+            $('.view-likes-trigger').click(function () {
+                var maSach = $(this).data('masach');
+                var soLuong = parseInt($('#count-like').text());
+
+                if (soLuong === 0) {
+                    Swal.fire('Chưa có lượt thích nào', 'Hãy là người đầu tiên thả tim!', 'info');
+                    return;
+                }
+                    
+                var myModal = new bootstrap.Modal(document.getElementById('modalNguoiThich'));
+                myModal.show();
+
+                //Hiển thị loading trong lúc chờ
+                $('#modalNguoiThichBody').html('<div class="text-center py-3"><div class="spinner-border text-danger" role="status"></div></div>');
+
+                //Gọi AJAX lấy danh sách
+                $.ajax({
+                    url: '/Customer/Home/GetDanhSachNguoiThich', // Đổi Home thành Controller của bạn
+                    type: 'GET',
+                    data: { maSach: maSach },
+                    success: function (res) {
+                        // 4. Đổ dữ liệu vào Modal Body
+                        $('#modalNguoiThichBody').html(res);
+                    },
+                    error: function () {
+                        $('#modalNguoiThichBody').html('<p class="text-danger text-center">Không thể tải danh sách.</p>');
+                    }
+                });
             });
         });
     </script>

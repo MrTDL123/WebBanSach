@@ -1,0 +1,28 @@
+﻿@model IEnumerable<KhachHang> // Hoặc namespace đúng tới model KhachHang của bạn
+
+@if (Model != null && Model.Any())
+{
+    <ul class="list-group list-group-flush">
+        @foreach (var user in Model)
+        {
+            <li class="list-group-item d-flex align-items-center">
+                <img src="https://ui-avatars.com/api/?name=@user.HoTen&background=random"
+                     alt="@user.HoTen"
+                     class="rounded-circle me-3"
+                     style="width: 40px; height: 40px; object-fit: cover;">
+
+                <div>
+                    <h6 class="mb-0">@user.HoTen</h6>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <div class="text-center py-4 text-muted">
+        <i class="bi bi-heart-break" style="font-size: 2rem;"></i>
+        <p class="mt-2">Chưa có ai thích cuốn sách này.</p>
+        <p>Hãy là người đầu tiên!</p>
+    </div>
+}

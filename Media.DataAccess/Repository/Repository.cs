@@ -198,5 +198,10 @@ namespace Media.DataAccess.Repository
             }
             return await dbSet.CountAsync();
         }
+
+        public bool Any(Expression<Func<T, bool>>? filter)
+        {
+            return dbSet.Any(filter);
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace Media.Models
 
         [DataType(DataType.Date)]
         [DisplayName("Ngày chăm sóc")]
-        public DateTime? NgayChamSoc { get; set; } = DateTime.UtcNow;
+        public DateTime? NgayChamSoc { get; set; } = DateTime.Now;
         [ForeignKey(nameof(MaNhanVien))]
         public NhanVien NhanVien { get; set; }
         [ForeignKey(nameof(MaKhachHang))]

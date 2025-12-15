@@ -157,3 +157,48 @@
     box-shadow: none;
     outline: 0; 
 }
+
+/*THÔNG BÁO KHÔNG TÌM THẤY SẢN PHẨM*/
+.empty-result-container {
+    text-align: center;
+    padding: 60px 30px;
+    margin: 40px auto; 
+    max-width: 600px; 
+
+    background-color: #f9f9f9;
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+}
+
+    .empty-result-container .empty-icon i {
+        font-size: 3.5rem;
+        color: #bbb; 
+        margin-bottom: 25px;
+    }
+
+    .empty-result-container .empty-title {
+        font-size: 1.75rem; 
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .empty-result-container .empty-message {
+        font-size: 1rem;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .empty-result-container .btn-back-to-home {
+        display: inline-block;
+        padding: 12px 28px;
+        background-color: #c92127;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.2s ease;
+    }
+
+        .empty-result-container .btn-back-to-home:hover {
+            background-color: #a01a1f;
+        }

@@ -29,12 +29,14 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         private readonly IUnitOfWork _unit;
         private readonly IGioHangService _gioHangService;
         private readonly SignInManager<TaiKhoan> _signInManager;
+        private readonly UserManager<TaiKhoan> _userManager;
         public HomeController(IUnitOfWork unit, 
                               LocationService locationService, 
                               IViewRenderService viewRenderService, 
                               ISlugService slugService,
                               IGioHangService gioHangService,
-                              SignInManager<TaiKhoan> signInManager)
+                              SignInManager<TaiKhoan> signInManager,
+                              UserManager<TaiKhoan> userManager)
         {
             _unit = unit;
             _slugService = slugService;
@@ -42,6 +44,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             _viewRenderService = viewRenderService;
             _gioHangService = gioHangService;
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         #region Trang chủ
@@ -65,12 +68,9 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         {
             TrangChuVM viewModel = new TrangChuVM();
             viewModel.SachGiamGia = await _unit.Saches.GetRangeReadOnlyAsync(s => s.PhanTramGiamGia > 0);
-            viewModel.SachBanChay = await _unit.Saches.LaySachBanChay(days: 7, sachCount: 6);
+            viewModel.SachBanChay = await _unit.Saches.LaySachBanChay(days: 30, sachCount: 6);
 
-            viewModel.TacGiaNoiTieng = (viewModel.SachBanChay).Select(s => s.TacGia)
-                    .GroupBy(tg => tg.MaTacGia)
-                    .Select(g => g.First())
-                    .ToList();
+            viewModel.TacGiaNoiTieng = _unit.TacGias.GetAll().Take(9);
 
             viewModel.TuSachMienPhi = _unit.Saches.GetRange(s => s.GiaBan == 0).Take(12);
 
@@ -100,7 +100,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                         }
                     case "Sách Thiếu Nhi":
                         {
-                            duongDanHinhAnh = "/img/product/doraemon-1.jpg";
+                            duongDanHinhAnh = "/img/product/sach-thieu-nhi.jpg";
                             break;
                         }
                     case "Fiction":
@@ -126,7 +126,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                     case "Comics & Graphic Novels":
                     default:
                         {
-                            duongDanHinhAnh = "/img/product/batman-killing-joke.jpg";
+                            duongDanHinhAnh = "/img/product/comic.jpg";
                             break;
                         }
                 }
@@ -202,24 +202,30 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             {
                 TempData["ReturnUrl"] = Url.Action("ChiTietSanPham", "Home", new { maSach = maSach });
             }
-            // ⭐ SỬA LỖI TẠI ĐÂY:
-            // Dùng GetAsync và thêm "includeProperties" để tải các bảng liên quan
+
             var sach = await _unit.Saches.GetAsync(
                 s => s.MaSach == maSach,
-                includeProperties: "ChuDe,NhaXuatBan,TacGia"
+                includeProperties: "ChuDe,NhaXuatBan,TacGia,YeuThichs"
             );
+
+            ViewBag.UserDaThich = false;
 
             if (sach == null) { return NotFound(); }
 
-            // (Code tải đánh giá để tính toán % sao)
+            // Code tải đánh giá để tính toán % sao
             var danhSachDanhGia = (await _unit.DanhGiaSanPhams.GetRangeAsync(
                             d => d.MaSach == maSach
                          )).ToList();
+            var chiTietDonHangs = await _unit.ChiTietDonHangs.GetRangeReadOnlyAsync(ct => ct.MaSach == maSach, includeProperties: "DonHang");
+            int soLuongBan = chiTietDonHangs
+                             .Where(ct => ct.DonHang.DaThanhToan == true)
+                             .Sum(ct => ct.SoLuong);
 
             var vm = new ChiTietSanPhamVM
             {
-                Sach = sach, // (Bây giờ đã chứa Tác Giả, NXB, Chủ Đề)
-                TongSoDanhGiaSanPham = danhSachDanhGia.Count
+                Sach = sach,
+                TongSoDanhGiaSanPham = danhSachDanhGia.Count,
+                SoLuongSachBan = soLuongBan
             };
 
             // Tính toán % sao và điểm trung bình
@@ -237,6 +243,21 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             else
             {
                 vm.DiemDanhGiaSanPhamTrungBinh = 5; // Mặc định
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null)
+                {
+                    var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == user.Id);
+
+                    if (khachHang != null)
+                    {
+                        bool daThich = _unit.YeuThichs.Any(x => x.MaSach == maSach && x.MaKhachHang == khachHang.MaKhachHang);
+                        ViewBag.UserDaThich = daThich;
+                    }
+                }
             }
 
             return View(vm);
@@ -382,6 +403,58 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             return Json(new { success = true, message = "Gửi đánh giá thành công!" });
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ToggleYeuThich(int maSach)
+        {
+            var maKhachHangClaim = User.FindFirstValue("MaKhachHang");
+            if (string.IsNullOrEmpty(maKhachHangClaim))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null) return Json(new { success = false, message = "Vui lòng đăng nhập!" });
+
+                var khachHang = _unit.KhachHangs.Get(k => k.MaTaiKhoan == userId);
+                if (khachHang == null) return Json(new { success = false, message = "Lỗi tài khoản." });
+
+                maKhachHangClaim = khachHang.MaKhachHang.ToString();
+            }
+
+            if (!int.TryParse(maKhachHangClaim, out int maKhachHang))
+            {
+                return Json(new { success = false, message = "Lỗi dữ liệu khách hàng." });
+            }
+
+            var yeuThich = _unit.YeuThichs
+                .Get(x => x.MaKhachHang == maKhachHang && x.MaSach == maSach);
+
+            bool isLiked = false;
+
+            if (yeuThich == null)
+            {
+                var newItem = new YeuThich { MaKhachHang = maKhachHang, MaSach = maSach };
+                _unit.YeuThichs.Add(newItem);
+                isLiked = true;
+            }
+            else
+            {
+                _unit.YeuThichs.Remove(yeuThich);
+                isLiked = false;
+            }
+
+            await _unit.SaveAsync();
+
+            int totalLikes = _unit.YeuThichs.Count(x => x.MaSach == maSach);
+
+            return Json(new { success = true, isLiked = isLiked, totalLikes = totalLikes });
+        }
+
+        [HttpGet]
+        public IActionResult GetDanhSachNguoiThich(int maSach)
+        {
+            var listNguoiThich = _unit.YeuThichs.GetRange(x => x.MaSach == maSach, includeProperties: "KhachHang").Select(x => x.KhachHang).ToList();
+
+            return PartialView("_ListNguoiThichPartial", listNguoiThich);
+        }
+
         [HttpGet]
         public IActionResult KiemTraTonKho(int maSach, int soLuongMuonTang)
         {
@@ -506,7 +579,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             else
             {
                 ChuDe? selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == chuDeId);
-                viewModel.ChuDeCha = await LayChuDeCha(selectedChuDe);
+                viewModel.ChuDeCha = await LayChuDeTuongUng(selectedChuDe.MaChuDe);
                 viewModel.ChuDeSelected = selectedChuDe;
                 query = _unit.Saches.LaySachTheoChuDe(chuDeId);
             }
@@ -604,19 +677,31 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             };
         }
 
-        private async Task<ChuDe?> LayChuDeCha(ChuDe selectedChuDe)
+        private async Task<ChuDe?> LayChuDeTuongUng(int maChuDeDuocChon)
         {
-            ChuDe? parentChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == selectedChuDe.ParentId);
+            ChuDe currentNode = await _unit.ChuDes.GetAsync(cd => cd.MaChuDe == maChuDeDuocChon);
+            if (currentNode == null) return null;
 
-            selectedChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == selectedChuDe.MaChuDe);
-            if(parentChuDe is null)
+            var children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == currentNode.MaChuDe);
+            currentNode.Children = children.ToList();
+
+            while (currentNode.ParentId != null)
             {
-                return selectedChuDe;
+                var parentNode = await _unit.ChuDes.GetAsync(cd => cd.MaChuDe == currentNode.ParentId);
+                if (parentNode == null) break;
+
+                var siblings = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == parentNode.MaChuDe);
+                parentNode.Children = siblings.ToList();
+
+                var selectedIndex = parentNode.Children.FindIndex(cd => cd.MaChuDe == currentNode.MaChuDe);
+                if(selectedIndex >= 0)
+                {
+                    parentNode.Children[selectedIndex] = currentNode;
+                }
+                currentNode = parentNode;
             }
 
-            parentChuDe.Children = new List<ChuDe>() { selectedChuDe };
-
-            return await LayChuDeCha(parentChuDe);
+            return currentNode;
         }
 
         private List<BreadcrumbItem> BuildBreadcrumbs(ChuDe chuDe)

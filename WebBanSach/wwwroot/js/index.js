@@ -1,104 +1,167 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
-
-    // ===================================
-    // PHẦN 1: SLIDESHOW
-    // ===================================
+﻿/**
+ * 1. HÀM XỬ LÝ SLIDESHOW
+ */
+function initSlideshow() {
     const slides = document.querySelectorAll("#slide_container section");
     const buttonLeft = document.querySelector("#btn_slideleft");
     const buttonRight = document.querySelector("#btn_slideright");
 
-    // Chỉ chạy code slideshow nếu tìm thấy slide
-    if (slides.length > 0) {
-        let currentIndex = 0;
-        const length = slides.length;
+    if (slides.length === 0) return;
 
-        // Xử lí trình tự xuất hiện của các slide khi web đc load
-        slides.forEach((slide, index) => {
-            if (index === 0) {
-                slide.classList.add("show");
-            } else {
-                slide.classList.remove("show");
-            }
+    let currentIndex = 0;
+    const length = slides.length;
+
+    // Set active slide đầu tiên
+    slides.forEach((slide, index) => {
+        slide.classList.toggle("show", index === 0);
+    });
+
+    const handleChangeSlide = function () {
+        slides[currentIndex].classList.remove("show");
+        currentIndex = (currentIndex + 1) % length;
+        slides[currentIndex].classList.add("show");
+    };
+
+    let autoSlideInterval = setInterval(handleChangeSlide, 6000);
+
+    const handleButtonClick = (callback) => {
+        clearInterval(autoSlideInterval);
+        callback();
+        autoSlideInterval = setInterval(handleChangeSlide, 6000);
+    };
+
+    if (buttonRight) {
+        buttonRight.addEventListener('click', () => {
+            handleButtonClick(handleChangeSlide);
         });
+    }
 
-        // NÚT CHỈNH SLIDES
-        const handleChangeSlide = function () {
-            slides[currentIndex].classList.remove("show");
-            currentIndex = (currentIndex + 1) % length;
-            slides[currentIndex].classList.add("show");
-        }
-
-        let handleEventChangeSlide = setInterval(handleChangeSlide, 6000);
-
-        // Chỉ thêm sự kiện nếu nút tồn tại
-        if (buttonRight) {
-            buttonRight.addEventListener('click', function () {
-                clearInterval(handleEventChangeSlide);
-                handleChangeSlide();
-                handleEventChangeSlide = setInterval(handleChangeSlide, 6000);
-            });
-        }
-
-        // Chỉ thêm sự kiện nếu nút tồn tại
-        if (buttonLeft) {
-            buttonLeft.addEventListener('click', function () {
-                clearInterval(handleEventChangeSlide);
+    if (buttonLeft) {
+        buttonLeft.addEventListener('click', () => {
+            handleButtonClick(() => {
                 slides[currentIndex].classList.remove("show");
                 currentIndex = (currentIndex === 0) ? length - 1 : currentIndex - 1;
                 slides[currentIndex].classList.add("show");
-                handleEventChangeSlide = setInterval(handleChangeSlide, 6000);
             });
-        }
+        });
     }
+}
 
-    // ===================================
-    // PHẦN 2: ĐỒNG HỒ ĐẾM NGƯỢC
-    // ===================================
+/**
+ * 2. HÀM XỬ LÝ SCROLL FLASH SALE
+ */
+function initFlashSaleScroll() {
+    const listContainer = document.getElementById('sach-giam-gia-section');
+    const prevBtn = document.getElementById('btn_flashsale_prev');
+    const nextBtn = document.getElementById('btn_flashsale_next');
 
-    // 1. THIẾT LẬP NGÀY KẾT THÚC CỦA SỰ KIỆN
-    const eventDate = new Date("Jan 1, 2026 00:00:00").getTime();
+    if (!listContainer || !prevBtn || !nextBtn) return;
 
-    // 2. LẤY CÁC ELEMENT TỪ HTML
-    const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-    const secondsEl = document.getElementById('seconds');
-    const countdownEl = document.getElementById('countdown');
-    const eventMessageEl = document.getElementById('event-message');
+    const getScrollAmount = () => {
+        const bookItem = listContainer.querySelector('.book-item');
+        if (!bookItem) return listContainer.clientWidth / 2;
 
-    // Hàm thêm số 0
-    const formatTime = (time) => time < 10 ? `0${time}` : time;
+        const itemWidth = bookItem.offsetWidth;
+        const gap = 15; // Phải khớp với CSS gap
+        return (itemWidth + gap) * 4; // Scroll 4 items
+    };
 
-    // 3. CẬP NHẬT ĐỒNG HỒ MỖI GIÂY
-    // Chỉ chạy nếu các element tồn tại
-    if (daysEl && hoursEl && minutesEl && secondsEl && countdownEl && eventMessageEl) {
-        const countdownInterval = setInterval(() => {
-            // Lấy thời gian hiện tại
-            const now = new Date().getTime();
+    const updateButtons = () => {
+        const maxScrollLeft = listContainer.scrollWidth - listContainer.clientWidth;
 
-            // Tính khoảng cách thời gian còn lại
-            const distance = eventDate - now;
+        // Nút Prev
+        if (listContainer.scrollLeft <= 0) {
+            prevBtn.style.opacity = '0';
+            prevBtn.style.pointerEvents = 'none';
+        } else {
+            prevBtn.style.opacity = '0.8';
+            prevBtn.style.pointerEvents = 'auto';
+        }
 
-            // Nếu thời gian đã hết
-            if (distance < 0) {
-                clearInterval(countdownInterval); // Dừng bộ đếm
-                countdownEl.classList.add('hidden'); // Ẩn đồng hồ
-                eventMessageEl.classList.remove('hidden'); // Hiện thông báo
-                return;
+        // Nút Next
+        // Dùng sai số nhỏ (-1) để tránh lỗi làm tròn pixel trên một số màn hình
+        if (listContainer.scrollLeft >= maxScrollLeft - 1) {
+            nextBtn.style.opacity = '0';
+            nextBtn.style.pointerEvents = 'none';
+        } else {
+            nextBtn.style.opacity = '0.8';
+            nextBtn.style.pointerEvents = 'auto';
+        }
+    };
+
+    listContainer.addEventListener('scroll', updateButtons);
+
+    nextBtn.addEventListener('click', () => {
+        listContainer.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+    });
+
+    prevBtn.addEventListener('click', () => {
+        listContainer.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+    });
+
+    // Init
+    updateButtons();
+    window.addEventListener('resize', updateButtons);
+}
+
+/**
+ * 3. HÀM XỬ LÝ GIỎ HÀNG (JQUERY)
+ * Đã nâng cấp dùng Event Delegation để bắt sự kiện tốt hơn
+ */
+function initAddToCart() {
+    if (typeof $ === 'undefined') return;
+
+    // Sử dụng $(document).on('click', selector, function)
+    // Giúp code vẫn chạy kể cả khi nút .add-to-cart được sinh ra sau khi trang đã load
+    $(document).on('click', '.add-to-cart', function (e) {
+        e.preventDefault(); // Ngăn chặn hành vi mặc định nếu là thẻ a
+
+        var btn = $(this);
+        var maSach = btn.data('masach');
+
+        // Hiệu ứng loading đơn giản (Optional)
+        var originalText = btn.html();
+        btn.prop('disabled', true).text('Đang thêm...');
+
+        $.ajax({
+            url: '/Customer/GioHang/ThemVaoGioHang',
+            type: 'POST',
+            data: { maSach: maSach, soLuong: 1 },
+            success: function (res) {
+                if (res.success) {
+                    $('#cart-count').text(res.count);
+                    // Có thể thêm thông báo Toast hoặc Alert ở đây nếu muốn
+                    // alert("Thêm vào giỏ thành công!");
+                }
+            },
+            error: function (err) {
+                console.error("Lỗi thêm giỏ hàng:", err);
+                alert("Có lỗi xảy ra, vui lòng thử lại.");
+            },
+            complete: function () {
+                // Trả lại trạng thái nút sau khi chạy xong
+                btn.prop('disabled', false).html(originalText);
             }
+        });
+    });
+}
 
-            // Tính toán ngày, giờ, phút, giây
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+// ===================================
+// MAIN EXECUTION
+// ===================================
+document.addEventListener("DOMContentLoaded", function () {
+    // 1. Chạy Slide
+    initSlideshow();
 
-            // Hiển thị kết quả lên giao diện
-            daysEl.innerText = formatTime(days);
-            hoursEl.innerText = formatTime(hours);
-            minutesEl.innerText = formatTime(minutes);
-            secondsEl.innerText = formatTime(seconds);
+    // 2. Chạy Flash Sale Scroll
+    initFlashSaleScroll();
 
-        }, 1000); // Cập nhật mỗi 1 giây (1000ms)
+    // 3. Chạy Giỏ hàng (Kiểm tra jQuery)
+    if (typeof $ !== 'undefined') {
+        $(document).ready(function () {
+            initAddToCart();
+        });
+    } else {
+        console.warn("jQuery chưa được load! Chức năng giỏ hàng sẽ không hoạt động.");
     }
 });

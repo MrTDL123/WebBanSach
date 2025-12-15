@@ -13,5 +13,7 @@ namespace Media.Models.ViewModels
         public double DiemDanhGiaSanPhamTrungBinh { get; set; }
         public int TongSoDanhGiaSanPham { get; set; }
         public Dictionary<int, int> PhanTramTheoSoSao { get; set; }
+        public int SoLuongSachBan {  get; set; }
+
     }
 }

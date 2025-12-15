@@ -1,4 +1,4 @@
-﻿/*SÁCH BÁN NHIỀU*/
+﻿/*SÁCH GIẢM GIÁ*/
 #sach_giam_gia_container {
     position: relative;
     display: flex;
@@ -37,7 +37,66 @@
     position: absolute;
 }
 
+#sach-giam-gia-section {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    padding: 10px 5px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE */
+}
 
+    #sach-giam-gia-section .book-item {
+        flex: 0 0 calc(18% - 15px);
+    }
+
+    #sach-giam-gia-section::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+
+.flashsale-nav-btn {
+    position: absolute;
+    top: 55%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #333;
+    font-size: 1.2rem;
+    opacity: 0.8;
+    
+    transition: all 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+    .flashsale-nav-btn:hover {
+        background-color: #fff;
+        color: #c92127;
+        opacity: 1 !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .flashsale-nav-btn[style*="opacity: 0"] {
+        pointer-events: none;
+    }
+
+.prev-btn {
+    left: 10px;
+}
+
+.next-btn {
+    right: 10px;
+}
 
 #sach_ban_nhieu_container h1 {
     font-size: 3vw;

@@ -285,6 +285,14 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         {
             try
             {
+                ModelState.Remove("TaiKhoan");
+                ModelState.Remove("TaiKhoanId"); 
+                ModelState.Remove("DonHangs");   
+                ModelState.Remove("PhieuTraHangs");
+                ModelState.Remove("ChamSocKhachHangs");
+                ModelState.Remove("Email");
+                ModelState.Remove("DienThoai");
+
                 if (!ModelState.IsValid)
                 {
                     return View(model);

@@ -22,11 +22,11 @@ namespace WebBanSach.ViewComponents
             return View(chudeTree);
         }
 
-        private IEnumerable<ChuDe> BuildChuDeTree(IEnumerable<ChuDe> list, int? parentID)
+        private List<ChuDe> BuildChuDeTree(IEnumerable<ChuDe> list, int? parentID)
         {
-            IEnumerable<ChuDe> children = list
-                                            .Where(cd => cd.ParentId == parentID)
-                                            .ToList();
+            List<ChuDe> children = list
+                                    .Where(cd => cd.ParentId == parentID)
+                                    .ToList();
 
             foreach (ChuDe child in children)
             {

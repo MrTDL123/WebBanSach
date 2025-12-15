@@ -17,10 +17,8 @@
                     @foreach (ChuDe level1ChuDe in Model)
                     {
                         <li data-target-id="chude-@level1ChuDe.MaChuDe" class="montserrat-regular">
-                            <a asp-area="Customer" 
-                               asp-action="SachTheoChuDe" 
-                               asp-controller="Home"
-                               asp-route-path="@level1ChuDe.FullPath">
+                            <a href="/chude/@level1ChuDe.FullPath"
+                               data-path="@level1ChuDe.FullPath">
                                     @level1ChuDe.TenChuDe
                             </a>
                         </li>
@@ -40,25 +38,25 @@
                             @foreach (ChuDe level2ChuDe in level1ChuDe.Children)
                             {
                                 <div class="chude">
-                                    <a asp-area="Customer" 
-                                       asp-action="SachTheoChuDe" 
-                                       asp-controller="Home"
-                                       asp-route-path="@level2ChuDe.FullPath" class="montserrat-bold chude_lv2">
+                                    <a href="/chude/@level2ChuDe.FullPath"
+                                       data-path="@level2ChuDe.FullPath" class="montserrat-bold chude_lv2">
                                             @level2ChuDe.TenChuDe
                                     </a>
                                     <ul class="mega-menu-list">
                                         @foreach (ChuDe level3ChuDe in level2ChuDe.Children)
                                         {
                                             <li class="montserrat-regular">
-                                                <a asp-area="Customer" 
-                                                   asp-action="SachTheoChuDe" 
-                                                   asp-controller="Home"
-                                                   asp-route-path="@level3ChuDe.FullPath">
+                                                <a href="/chude/@level3ChuDe.FullPath"
+                                                   data-path="@level3ChuDe.FullPath">
                                                         @level3ChuDe.TenChuDe
                                                 </a>
                                             </li>
                                         }
-                                        <a class="watch_all_chude" href="#">Xem tất cả</a>
+                                        <a class="watch_all_chude"
+                                           href="/chude/@level2ChuDe.FullPath"
+                                           data-path="@level2ChuDe.FullPath">
+                                                Xem tất cả
+                                        </a>
                                     </ul>
 
                                 </div>

@@ -18,6 +18,6 @@ namespace Media.Models
         public string Slug { get; set; }
         public string FullPath { get; set; }
 
-        public IEnumerable<ChuDe> Children { get; set; } = new List<ChuDe>();
+        public List<ChuDe> Children { get; set; } = new List<ChuDe>();
     }
 }

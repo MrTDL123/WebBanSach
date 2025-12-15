@@ -19,53 +19,6 @@
     }
 }
 
-
-<style>
-    .empty-result-container {
-        text-align: center; /* Căn giữa tất cả nội dung */
-        padding: 60px 30px; /* Tạo khoảng trống bên trong */
-        margin: 40px auto; /* Tự động căn giữa khối */
-        max-width: 600px; /* Giới hạn chiều rộng */
-
-        background-color: #f9f9f9; /* Màu nền nhạt */
-        border: 1px dashed #ddd; /* Viền nét đứt */
-        border-radius: 8px; /* Bo góc */
-    }
-
-        .empty-result-container .empty-icon i {
-            font-size: 3.5rem; /* 56px - Làm icon thật to */
-            color: #bbb; /* Màu xám nhạt cho icon */
-            margin-bottom: 25px;
-        }
-
-        .empty-result-container .empty-title {
-            font-size: 1.75rem; /* 28px */
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .empty-result-container .empty-message {
-            font-size: 1rem;
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        .empty-result-container .btn-back-to-home {
-            display: inline-block; /* Để có thể set padding */
-            padding: 12px 28px;
-            background-color: #c92127; /* Màu đỏ chủ đạo (giống Fahasa) */
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.2s ease;
-        }
-
-            .empty-result-container .btn-back-to-home:hover {
-                background-color: #a01a1f; /* Màu đỏ đậm hơn khi hover */
-            }
-</style>
-
 @if(Model.DanhSachSach.TotalItemCount != 0)
 {
     @foreach (Sach sach in Model.DanhSachSach)

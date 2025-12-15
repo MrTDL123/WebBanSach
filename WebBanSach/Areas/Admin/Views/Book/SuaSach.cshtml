@@ -67,7 +67,7 @@
                     <!-- Phần trăm giảm giá -->
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">Phần trăm giảm giá (%)</label>
-                        <input asp-for="PhanTramGiamGia" class="form-control" type="number" min="0" max="100" step="1" placeholder="0"/>
+                        <input asp-for="PhanTramGiamGia" class="form-control" type="number" min="0" max="100" step="1" placeholder="0" value="@((Model.PhanTramGiamGia * 100).ToString("0"))" />
                         <span asp-validation-for="PhanTramGiamGia" class="text-danger small"></span>
                         @if (Model.PhanTramGiamGia > 0)
                         {

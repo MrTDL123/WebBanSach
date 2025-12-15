@@ -26,5 +26,6 @@ namespace Media.DataAccess.Repository.IRepository
         T? GetById(object id);
         Task<T?> GetByIdAsync(object id);
         Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
+        bool Any(Expression<Func<T, bool>> filter);
     }
 }
