@@ -1,10 +1,11 @@
-﻿using Media.DataAccess.Repository.IRepository;
+﻿using Media.Models;
 using Media.Models.ViewModels;
 using Media.Service;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Media.Utility;
-using Media.Models;
+using Meida.DataAccess.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace WebBanSach.Areas.Customer.Controllers
@@ -12,11 +13,11 @@ namespace WebBanSach.Areas.Customer.Controllers
     [Area("Customer")]
     public class GioHangController : Controller
     {
-        private readonly IUnitOfWork _unit;
+        private readonly ApplicationDbContext _context;
         private readonly IGioHangService _gioHangService;
-        public GioHangController(IUnitOfWork unit, IGioHangService gioHangService)
+        public GioHangController(ApplicationDbContext context, IGioHangService gioHangService)
         {
-            _unit = unit;
+            _context = context;
             _gioHangService = gioHangService;
         }
 
@@ -46,7 +47,7 @@ namespace WebBanSach.Areas.Customer.Controllers
         [HttpPost]
         public IActionResult ThemVaoGioHang(int maSach, int soLuong)
         {
-            var sach = _unit.Saches.Get(s => s.MaSach == maSach);
+            var sach = _context.Saches.FirstOrDefault(s => s.MaSach == maSach);
             if (sach == null)
             {
                 return NotFound();
@@ -59,7 +60,7 @@ namespace WebBanSach.Areas.Customer.Controllers
             var sanPham = gioHang.FirstOrDefault(x => x.MaSach == maSach);
             if (sanPham != null)
             {
-                sanPham.SoLuong++;
+                sanPham.SoLuong += soLuong;
             }
             else
             {
@@ -92,7 +93,9 @@ namespace WebBanSach.Areas.Customer.Controllers
         [HttpGet]
         public async Task<IActionResult> MuaLaiGioHang(int id)
         {
-            DonHang donHangCu = _unit.DonHangs.Get(dh => dh.MaDonHang == id, includeProperties: "ChiTietDonHangs");
+            DonHang donHangCu = _context.DonHangs
+                .Include(dh => dh.ChiTietDonHangs)
+                .FirstOrDefault(dh => dh.MaDonHang == id);
             if (donHangCu == null)
             {
                 return NotFound();
@@ -102,9 +105,9 @@ namespace WebBanSach.Areas.Customer.Controllers
 
             foreach (ChiTietDonHang chitietcu in donHangCu.ChiTietDonHangs)
             {
-                var sachHienTai = _unit.Saches.Get(s => s.MaSach == chitietcu.MaSach);
+                var sachHienTai = _context.Saches.FirstOrDefault(s => s.MaSach == chitietcu.MaSach);
 
-                if(sachHienTai == null || sachHienTai.SoLuong == 0)
+                if (sachHienTai == null || sachHienTai.SoLuong == 0)
                 {
                     continue;
                 }
@@ -194,7 +197,7 @@ namespace WebBanSach.Areas.Customer.Controllers
             return Json(new
             {
                 success = true,
-                thanhTien = sanPham.ThanhTien.ToString("N0") + " đ"
+                thanhTien = sanPham?.ThanhTien.ToString("N0") + " đ"
             });
         }
     }

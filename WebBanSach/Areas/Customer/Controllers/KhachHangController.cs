@@ -3,6 +3,7 @@ using Media.Models;
 using Media.Models.ViewModels;
 using Media.Service;
 using Media.Utility;
+using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 // --- 1. THÊM CÁC USING NÀY ---
@@ -12,8 +13,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Mono.TextTemplating;
 using System;
-using System.Diagnostics; // Để Debug.WriteLine
-using System.Net.Mail; // Để bắt SmtpException
+using System.Diagnostics; 
+using System.Net.Mail; 
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -22,19 +23,19 @@ namespace Media.Areas.Customer.Controllers
     [Area("Customer")]
     public class KhachHangController : Controller
     {
-        private readonly IUnitOfWork _unit;
+        private readonly ApplicationDbContext _context;
         private readonly UserManager<TaiKhoan> _userManager;
         private readonly SignInManager<TaiKhoan> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly IGioHangService _gioHangService;
         private readonly LocationService _locationService;
 
-        public KhachHangController(UserManager<TaiKhoan> userManager, SignInManager<TaiKhoan> signInManager, IUnitOfWork unit, IEmailSender emailSender, IGioHangService gioHangService, LocationService locationService)
+        public KhachHangController(ApplicationDbContext context ,UserManager<TaiKhoan> userManager, SignInManager<TaiKhoan> signInManager, IEmailSender emailSender, IGioHangService gioHangService, LocationService locationService)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
-            _unit = unit;
-            _emailSender = emailSender; // Gán giá trị
+            _emailSender = emailSender;
             _gioHangService = gioHangService;
             _locationService = locationService;
         }
@@ -89,8 +90,8 @@ namespace Media.Areas.Customer.Controllers
                     MaTaiKhoan = user.Id
                 };
 
-                _unit.KhachHangs.Add(khachHang);
-                await _unit.SaveAsync();
+                _context.KhachHangs.Add(khachHang);
+                await _context.SaveChangesAsync();
 
                 await _userManager.AddClaimAsync(user, new Claim("HoTen", khachHang.HoTen));
                 await _userManager.AddClaimAsync(user, new Claim("MaKhachHang", khachHang.MaKhachHang.ToString()));
@@ -255,7 +256,7 @@ namespace Media.Areas.Customer.Controllers
 
             if (result.Succeeded)
             {
-                var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == user.Id);
+                var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == user.Id);
 
                 // 2. Xóa claim "HoTen" cũ (nếu có) để phòng trường hợp người dùng đổi tên
                 var oldClaims = await _userManager.GetClaimsAsync(user);
@@ -403,7 +404,7 @@ namespace Media.Areas.Customer.Controllers
                 }
 
                 // 3. Kiểm tra người dùng đã tồn tại trong hệ thống chưa
-                KhachHang? existingUser = _unit.KhachHangs.Get(u => u.Email == email);
+                KhachHang? existingUser = await _context.KhachHangs.FirstOrDefaultAsync(u => u.Email == email);
 
                 if (existingUser == null)
                 {
@@ -430,8 +431,8 @@ namespace Media.Areas.Customer.Controllers
                             NgaySinh = DateTime.Now
                         };
 
-                        _unit.KhachHangs.Add(newUser);
-                        await _unit.SaveAsync();
+                        _context.KhachHangs.Add(newUser);
+                        await _context.SaveChangesAsync();
                         await _userManager.AddClaimAsync(user, new Claim("HoTen", newUser.HoTen));
 
                         await _userManager.AddToRoleAsync(user, SD.Role_Customer);
@@ -598,7 +599,7 @@ namespace Media.Areas.Customer.Controllers
                 if (string.IsNullOrEmpty(name)) name = email;
 
                 // 4. Kiểm tra user trong hệ thống (Giống hệt logic Google của bạn)
-                KhachHang? existingUser = _unit.KhachHangs.Get(u => u.Email == email);
+                KhachHang? existingUser = await _context.KhachHangs.FirstOrDefaultAsync(u => u.Email == email);
 
                 if (existingUser == null)
                 {
@@ -631,8 +632,8 @@ namespace Media.Areas.Customer.Controllers
                             NgaySinh = DateTime.Now
                         };
 
-                        _unit.KhachHangs.Add(newUser);
-                        await _unit.SaveAsync();
+                        _context.KhachHangs.Add(newUser);
+                        await _context.SaveChangesAsync();
 
                         await _userManager.AddClaimAsync(user, new Claim("HoTen", newUser.HoTen));
                         await _userManager.AddToRoleAsync(user, SD.Role_Customer);
@@ -1023,14 +1024,14 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> ThongTinCaNhan()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
             if (khachHang == null) { return RedirectToAction("TrangChu", "Home"); }
 
-            var danhSachDiaChi = _unit.DiaChiNhanHangs
-                .GetRange(dc => dc.MaKhachHang == khachHang.MaKhachHang)
+            var danhSachDiaChi = _context.DiaChiNhanHangs
+                .Where(dc => dc.MaKhachHang == khachHang.MaKhachHang)
                 .OrderByDescending(dc => dc.LaMacDinh)
                 .ToList();
-            var donHang = _unit.DonHangs.GetRange(dh => dh.MaKhachHang == khachHang.MaKhachHang);
+            var donHang = _context.DonHangs.Where(dh => dh.MaKhachHang == khachHang.MaKhachHang);
             int soLuongDonHang = donHang.Count();
 
             var model = new ThongTinCaNhanVM
@@ -1102,7 +1103,7 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> XacNhanCapNhat(ThongTinCaNhanVM model)
         {
             var user = await _userManager.GetUserAsync(User);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == user.Id);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == user.Id);
             if (user == null || khachHang == null) { return Unauthorized(); }
 
             // 1. Kiểm tra OTP
@@ -1152,8 +1153,8 @@ namespace Media.Areas.Customer.Controllers
 
             // 5. Lưu thay đổi
             await _userManager.UpdateAsync(user);
-            _unit.KhachHangs.Update(khachHang);
-            await _unit.SaveAsync();
+            _context.KhachHangs.Update(khachHang);
+            await _context.SaveChangesAsync();
 
             if (emailChanged) { await _signInManager.RefreshSignInAsync(user); }
 
@@ -1209,7 +1210,7 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> CapNhatHoSo(ThongTinCaNhanVM model)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
             if (khachHang == null) { return Unauthorized(); }
 
             // 1. Cập nhật Database
@@ -1231,8 +1232,8 @@ namespace Media.Areas.Customer.Controllers
                 khachHang.NgaySinh = null;
             }
 
-            _unit.KhachHangs.Update(khachHang);
-            await _unit.SaveAsync();
+            _context.KhachHangs.Update(khachHang);
+            await _context.SaveChangesAsync();
 
             // 2. Cập nhật Cookie (Claim) để Header hiển thị tên mới
             var user = await _userManager.FindByIdAsync(userId);
@@ -1266,7 +1267,7 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> DanhSachDonHangPartial()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
 
             if (khachHang == null)
             {
@@ -1275,11 +1276,16 @@ namespace Media.Areas.Customer.Controllers
 
             // Lấy tất cả đơn hàng, bao gồm Vận Chuyển (để lấy trạng thái)
             // và Chi Tiết (để lấy sản phẩm)
-            var danhSachDonHang = await _unit.DonHangs.GetRangeAsync(
-                filter: dh => dh.MaKhachHang == khachHang.MaKhachHang,
-                orderBy: q => q.OrderByDescending(dh => dh.NgayTao), // Mới nhất lên đầu
-                includeProperties: "VanChuyen,ChiTietDonHangs.Sach" // Quan trọng
-            );
+            var query = _context.DonHangs.AsQueryable();
+            query = query.Where(dh => dh.MaKhachHang == khachHang.MaKhachHang)
+                         .OrderByDescending(dh => dh.NgayTao)
+                         .Include(dh => dh.VanChuyen)
+                         .Include(dh => dh.ChiTietDonHangs)
+                            .ThenInclude(ctdh => ctdh.Sach)
+                         .AsNoTracking();
+
+
+            List<DonHang> danhSachDonHang = await query.ToListAsync();
 
             // ⭐ NÂNG CẤP LOGIC PROJECT SANG VIEWMODEL
             var viewModelList = danhSachDonHang.Select(dh => {
@@ -1315,12 +1321,15 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> HuyDonHang(int maDonHang)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
 
-            var donHang = await _unit.DonHangs.GetAsync(
-                dh => dh.MaDonHang == maDonHang && dh.MaKhachHang == khachHang.MaKhachHang,
-                includeProperties: "VanChuyen,HoaDon,ChiTietDonHangs.Sach"
-            );
+            DonHang? donHang = await _context.DonHangs
+                                                .Include(dh => dh.VanChuyen)
+                                                .Include(dh => dh.HoaDon)
+                                                .Include(dh => dh.ChiTietDonHangs)
+                                                    .ThenInclude(cthd => cthd.Sach)
+                                                .AsNoTracking()
+                                                .FirstOrDefaultAsync(dh => dh.MaDonHang == maDonHang && dh.MaKhachHang == khachHang.MaKhachHang);
 
             if (donHang == null)
             {
@@ -1345,26 +1354,26 @@ namespace Media.Areas.Customer.Controllers
 
             // 4. Cập nhật trạng thái Vận Chuyển
             donHang.VanChuyen.TrangThaiGiaoHang = TrangThaiGiaoHang.DaHuy; // (Giả sử bạn có enum này)
-            _unit.VanChuyens.Update(donHang.VanChuyen); // <-- ⭐ BẮT BUỘC PHẢI GỌI UPDATE
+            _context.VanChuyens.Update(donHang.VanChuyen); // <-- ⭐ BẮT BUỘC PHẢI GỌI UPDATE
 
             // 5. Cập nhật trạng thái Hóa Đơn
             donHang.HoaDon.TrangThai = TrangThaiHoaDon.DaHuy;
             donHang.HoaDon.TongTien = 0; // Ghi đè về 0
             donHang.HoaDon.VAT = 0;      // Ghi đè về 0
-            _unit.HoaDons.Update(donHang.HoaDon); // <-- ⭐ BẮT BUỘC PHẢI GỌI UPDATE
+            _context.HoaDons.Update(donHang.HoaDon); // <-- ⭐ BẮT BUỘC PHẢI GỌI UPDATE
 
             // ⭐ Hoàn lại tồn kho
             foreach (var item in donHang.ChiTietDonHangs)
             {
-                var sanPham = _unit.Saches.GetById(item.MaSach);
+                var sanPham = await _context.Saches.FirstOrDefaultAsync(s => s.MaSach == item.MaSach);
                 if (sanPham != null)
                 {
                     sanPham.SoLuong += item.SoLuong;
-                    _unit.Saches.Update(sanPham);
+                    _context.Saches.Update(sanPham);
                 }
             }
 
-            await _unit.SaveAsync();
+            await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Đã hủy đơn hàng thành công." });
         }
@@ -1373,7 +1382,12 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> GetChiTietDonHangPartial(int id) // Model dùng int
         {
             // 1. Truy vấn Model DonHang của bạn
-            var donHang = _unit.DonHangs.Get(dh => dh.MaDonHang == id, includeProperties: "VanChuyen,ChiTietDonHangs.Sach");
+            var donHang = await _context.DonHangs
+                    .Include(dh => dh.VanChuyen)
+                    .Include(dh => dh.ChiTietDonHangs)
+                        .ThenInclude(ctdh => ctdh.Sach)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(dh => dh.MaDonHang == id);
 
             if (donHang == null) return NotFound();
 
@@ -1426,15 +1440,15 @@ namespace Media.Areas.Customer.Controllers
 
         // ⭐ MỚI: Action [HttpGet] để tải riêng danh sách địa chỉ
         [HttpGet]
-        public IActionResult DanhSachDiaChi()
+        public async Task<IActionResult> DanhSachDiaChi()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
 
-            var danhSachDiaChi = _unit.DiaChiNhanHangs
-                .GetRange(dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.LaDaXoa == false)
-                .OrderByDescending(dc => dc.LaMacDinh)
-                .ToList();
+            var danhSachDiaChi = await _context.DiaChiNhanHangs
+                                        .Where(dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.LaDaXoa == false)
+                                        .OrderByDescending(dc => dc.LaMacDinh)
+                                        .ToListAsync();
 
             return PartialView("_DanhSachDiaChiPartial", danhSachDiaChi);
         }
@@ -1446,26 +1460,26 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> LuuDiaChi(DiaChiNhanHang diaChi)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
             if (khachHang == null) { return Unauthorized(); }
 
             diaChi.MaKhachHang = khachHang.MaKhachHang;
 
             if (diaChi.LaMacDinh)
             {
-                var cacDiaChiKhac = _unit.DiaChiNhanHangs
-                    .GetRange(dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.MaDiaChi != diaChi.MaDiaChi
-                    && dc.LaDaXoa == false)
-                    .ToList();
+                var cacDiaChiKhac = await _context.DiaChiNhanHangs
+                    .Where(dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.MaDiaChi != diaChi.MaDiaChi && dc.LaDaXoa == false)
+                    .ToListAsync();
+
                 foreach (var dc in cacDiaChiKhac)
                 {
                     dc.LaMacDinh = false;
-                    _unit.DiaChiNhanHangs.Update(dc);
+                    _context.DiaChiNhanHangs.Update(dc);
                 }
             }
             else
             {
-                var soLuongDiaChi = _unit.DiaChiNhanHangs.Count(dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.LaDaXoa == false);
+                var soLuongDiaChi = await _context.DiaChiNhanHangs.CountAsync(dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.LaDaXoa == false);
                 if (soLuongDiaChi == 0 && diaChi.MaDiaChi == 0) // Thêm mới địa chỉ đầu tiên
                 {
                     diaChi.LaMacDinh = true;
@@ -1493,14 +1507,14 @@ namespace Media.Areas.Customer.Controllers
 
             if (diaChi.MaDiaChi == 0)
             {
-                _unit.DiaChiNhanHangs.Add(diaChi);
+                _context.DiaChiNhanHangs.Add(diaChi);
             }
             else
             {
-                _unit.DiaChiNhanHangs.Update(diaChi);
+                _context.DiaChiNhanHangs.Update(diaChi);
             }
 
-            await _unit.SaveAsync();
+            await _context.SaveChangesAsync();
 
             // ⭐ SỬA: Trả về JSON thành công
             return Json(new { success = true, message = "Đã lưu địa chỉ thành công!", maDiaChiMoi = diaChi.MaDiaChi, maTinhThanhMoi = diaChi.MaTinhThanh, laMacDinh = diaChi.LaMacDinh });
@@ -1519,10 +1533,10 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> SuaDiaChiPartial(int maDiaChi)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
             if (khachHang == null) { return Unauthorized(); }
 
-            var diaChi = await _unit.DiaChiNhanHangs.GetByIdAsync(maDiaChi);
+            var diaChi = await _context.DiaChiNhanHangs.FirstOrDefaultAsync(dc => dc.MaDiaChi == maDiaChi);
             if (diaChi == null || diaChi.MaKhachHang != khachHang.MaKhachHang)
             {
                 return NotFound("Không tìm thấy địa chỉ.");
@@ -1537,14 +1551,14 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> XoaDiaChi(int maDiaChi)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
-            var donHang = _unit.DonHangs.Get(dh => dh.MaKhachHang == khachHang.MaKhachHang);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
+            var donHang = await _context.DonHangs.FirstOrDefaultAsync(dh => dh.MaKhachHang == khachHang.MaKhachHang);
             if (khachHang == null)
             {
                 return Json(new { success = false, message = "Lỗi xác thực." });
             }
 
-            var diaChi = await _unit.DiaChiNhanHangs.GetAsync(dc => dc.MaDiaChi == maDiaChi && dc.MaKhachHang == khachHang.MaKhachHang);
+            var diaChi = await _context.DiaChiNhanHangs.FirstOrDefaultAsync(dc => dc.MaDiaChi == maDiaChi && dc.MaKhachHang == khachHang.MaKhachHang);
             if (diaChi == null)
             {
                 return Json(new { success = false, message = "Không tìm thấy địa chỉ." });
@@ -1553,11 +1567,10 @@ namespace Media.Areas.Customer.Controllers
             if (diaChi.LaMacDinh)
             {
                 // Lấy tất cả các địa chỉ CÒN LẠI của khách hàng
-                var cacDiaChiKhac = await _unit.DiaChiNhanHangs.GetRangeAsync(
-                    dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.MaDiaChi != maDiaChi && dc.LaDaXoa == false,
-                    orderBy: q => q.OrderBy(dc => dc.MaDiaChi) // Sắp xếp để lấy cái "tiếp theo"
-                );
-
+                var cacDiaChiKhac = _context.DiaChiNhanHangs
+                                                .Where(dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.MaDiaChi != maDiaChi && dc.LaDaXoa == false)
+                                                .OrderBy(dc => dc.MaDiaChi);
+                                                
                 // Nếu còn địa chỉ khác (không phải là cái cuối cùng)
                 if (cacDiaChiKhac.Any())
                 {
@@ -1566,7 +1579,7 @@ namespace Media.Areas.Customer.Controllers
 
                     // Gán nó làm mặc định
                     diaChiMoiMacDinh.LaMacDinh = true;
-                    _unit.DiaChiNhanHangs.Update(diaChiMoiMacDinh);
+                    _context.DiaChiNhanHangs.Update(diaChiMoiMacDinh);
                 }
                 // else: Nếu đây là địa chỉ cuối cùng, không cần làm gì.
                 // Nó sẽ bị xóa ở BƯỚC 4 và khách hàng sẽ không còn địa chỉ nào.
@@ -1574,8 +1587,8 @@ namespace Media.Areas.Customer.Controllers
 
             diaChi.LaDaXoa = true;
             diaChi.LaMacDinh = false;
-            _unit.DiaChiNhanHangs.Update(diaChi);
-            await _unit.SaveAsync();
+            _context.DiaChiNhanHangs.Update(diaChi);
+            await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Xóa địa chỉ thành công." });
         }
@@ -1586,14 +1599,14 @@ namespace Media.Areas.Customer.Controllers
         public async Task<IActionResult> DatMacDinh(int maDiaChi)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
             if (khachHang == null)
             {
                 return Json(new { success = false, message = "Lỗi xác thực." });
             }
 
-            var diaChiMoiMacDinh = await _unit.DiaChiNhanHangs.GetAsync(
-                dc => dc.MaDiaChi == maDiaChi &&
+            var diaChiMoiMacDinh = await _context.DiaChiNhanHangs.FirstOrDefaultAsync(
+                    dc => dc.MaDiaChi == maDiaChi &&
                     dc.MaKhachHang == khachHang.MaKhachHang &&
                     dc.LaDaXoa == false
             );
@@ -1602,20 +1615,20 @@ namespace Media.Areas.Customer.Controllers
                 return Json(new { success = false, message = "Không tìm thấy địa chỉ." });
             }
 
-            var diaChiCuMacDinh = _unit.DiaChiNhanHangs.Get(
+            var diaChiCuMacDinh = await _context.DiaChiNhanHangs.FirstOrDefaultAsync(
                 dc => dc.MaKhachHang == khachHang.MaKhachHang && dc.LaMacDinh
             );
 
             if (diaChiCuMacDinh != null)
             {
                 diaChiCuMacDinh.LaMacDinh = false;
-                _unit.DiaChiNhanHangs.Update(diaChiCuMacDinh);
+                _context.DiaChiNhanHangs.Update(diaChiCuMacDinh);
             }
 
             diaChiMoiMacDinh.LaMacDinh = true;
-            _unit.DiaChiNhanHangs.Update(diaChiMoiMacDinh);
+            _context.DiaChiNhanHangs.Update(diaChiMoiMacDinh);
 
-            await _unit.SaveAsync();
+            await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Đã cập nhật địa chỉ mặc định." });
         }

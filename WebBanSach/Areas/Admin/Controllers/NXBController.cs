@@ -15,7 +15,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             _db = db;
         }
 
-        // ========== QUẢN LÝ NHÀ XUẤT BẢN ==========
         public IActionResult QuanLyNXB()
         {
             var nxbList = _db.NhaXuatBans.ToList();
@@ -23,13 +22,12 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(nxbList);
         }
 
-        // GET: Thêm NXB
+
         public IActionResult ThemNXB()
         {
             return View();
         }
 
-        // POST: Thêm NXB
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemNXB(NhaXuatBan model)
@@ -55,7 +53,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(model);
         }
 
-        // GET: Sửa NXB
         public async Task<IActionResult> SuaNXB(int id)
         {
             var nxb = await _db.NhaXuatBans.FindAsync(id);
@@ -63,7 +60,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(nxb);
         }
 
-        // POST: Sửa NXB
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaNXB(int id, NhaXuatBan model)
@@ -77,7 +73,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             {
                 try
                 {
-                    // Kiểm tra tên NXB đã tồn tại chưa (trừ chính nó)
                     var existingNXB = await _db.NhaXuatBans
                         .FirstOrDefaultAsync(n => n.TenNXB.ToLower() == model.TenNXB.ToLower() && n.MaNhaXuatBan != id);
 
@@ -108,7 +103,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(model);
         }
 
-        // GET: Xóa NXB
         public async Task<IActionResult> XoaNXB(int? id)
         {
             if (id == null)
@@ -119,7 +113,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             var nxb = await _db.NhaXuatBans.FindAsync(id);
             if (nxb == null) return NotFound();
 
-            // Kiểm tra xem có sách nào thuộc NXB này không
             var coSach = await _db.Saches.AnyAsync(s => s.MaNhaXuatBan == id);
             var soSach = await _db.Saches.CountAsync(s => s.MaNhaXuatBan == id);
 
@@ -129,7 +122,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(nxb);
         }
 
-        // POST: Xóa NXB
         [HttpPost, ActionName("XoaNXB")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> XoaNXBConfirmed(int id)
@@ -139,7 +131,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 var nxb = await _db.NhaXuatBans.FindAsync(id);
                 if (nxb == null) return NotFound();
 
-                // Kiểm tra xem có sách nào thuộc NXB này không
                 var coSach = await _db.Saches.AnyAsync(s => s.MaNhaXuatBan == id);
                 var soSach = await _db.Saches.CountAsync(s => s.MaNhaXuatBan == id);
 

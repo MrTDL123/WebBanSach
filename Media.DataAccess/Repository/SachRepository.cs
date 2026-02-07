@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 
 namespace Media.DataAccess.Repository
 {
-    public class SachRepository : Repository<Sach>, ISachRepository
+    public class SachRepository : ISachRepository
     {
         private readonly ApplicationDbContext _db;
         private readonly IMemoryCache _cache;
-        public SachRepository(ApplicationDbContext db, IMemoryCache cache) : base(db)
+        public SachRepository(ApplicationDbContext db, IMemoryCache cache)
         {
             _db = db;
             _cache = cache;
@@ -38,7 +38,6 @@ namespace Media.DataAccess.Repository
                 .AsNoTracking();
         }
 
-
         private void GetChildCategoryIds(int? parentId, List<int?> dsIdChuDe)
         {
             dsIdChuDe.Add(parentId);
@@ -55,7 +54,7 @@ namespace Media.DataAccess.Repository
         }
 
 
-        public async Task<IEnumerable<Sach>> LaySachBanChay(int? days, int? sachCount)
+        public async Task<IEnumerable<Sach>?> LaySachBanChay(int? days, int? sachCount)
         {
             int actualDays = days ?? 7;
             int actualCount = sachCount ?? 7;
@@ -63,7 +62,7 @@ namespace Media.DataAccess.Repository
             string cacheKey = $"TopSellers_{actualDays}_{actualCount}"; //Đảm bảo key là độc nhất
             DateTime daysAgo = DateTime.Now.AddDays(-actualDays);
 
-            List<Sach> topSellers = await _cache.GetOrCreateAsync(cacheKey, async entry =>
+            List<Sach>? topSellers = await _cache.GetOrCreateAsync(cacheKey, async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(4);
 
@@ -93,27 +92,6 @@ namespace Media.DataAccess.Repository
 
 
             return topSellers;
-        }
-        public void Update(Sach obj)
-        {
-            var objFromDb = _db.Saches.FirstOrDefault(u => u.MaSach == obj.MaSach);
-
-            if (objFromDb != null)
-            {
-                objFromDb.TenSach = obj.TenSach;
-                objFromDb.MoTa = obj.MoTa;
-                objFromDb.GiaBan = obj.GiaBan;
-                objFromDb.NgayCapNhat = DateTime.Now;
-                objFromDb.SoLuong = obj.SoLuong;
-                objFromDb.MaChuDe = obj.MaChuDe;
-                objFromDb.MaTacGia = obj.MaTacGia;
-                objFromDb.MaNhaXuatBan = obj.MaNhaXuatBan;
-
-                if (obj.AnhBiaChinh != null)
-                {
-                    objFromDb.AnhBiaChinh = obj.AnhBiaChinh;
-                }
-            }
         }
     }
 }

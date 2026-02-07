@@ -25,7 +25,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         {
             try
             {
-                // SỬA: Dùng DateTime.UtcNow thay vì DateTime.Now
                 var startDate = DateTime.UtcNow.Date.AddDays(-days);
 
                 // =========================
@@ -44,7 +43,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 };
 
                 // =========================
-                // 2. Doanh thu theo ngày - ĐÃ SỬA
+                // 2. Doanh thu theo ngà
                 // =========================
                 var doanhThuList = await _context.DonHangs
                     .Where(x => x.DaThanhToan && x.NgayTao >= startDate)
@@ -138,9 +137,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 var hinhThucThanhToan = hinhThucRaw.Select(x => x.SoLuong).ToArray();
                 var hinhThucThanhToanLabels = hinhThucRaw.Select(x => x.Label).ToArray();
 
-                // =========================
-                // RETURN JSON
-                // =========================
                 return Json(new
                 {
                     kpi = kpiData,

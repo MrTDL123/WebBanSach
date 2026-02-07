@@ -1,7 +1,7 @@
-﻿using Media.DataAccess.Repository.IRepository;
-using Media.Models;
-using Media.Utility;
+﻿using Media.Models;
 using Media.Service.IServices;
+using Media.Utility;
+using Meida.DataAccess.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +13,11 @@ namespace Media.Service
 {
     public class SlugService : ISlugService
     {
-        private readonly IUnitOfWork _unit;
+        private readonly ApplicationDbContext _context;
 
-        public SlugService (IUnitOfWork unit)
+        public SlugService (ApplicationDbContext context)
         {
-            _unit = unit;
+            _context = context;
         }
 
         public string GenerateSlug(string text)
@@ -46,20 +46,22 @@ namespace Media.Service
             return text;
         }
 
-        public ChuDe GetChuDeByPath(string path)
+        public ChuDe? GetChuDeByPath(string path)
         {
-            return _unit.ChuDes.Get(cd => cd.FullPath == path);
+            return _context.ChuDes.FirstOrDefault(cd => cd.FullPath == path);
         }
 
         public string GetFullPath(ChuDe chuDe)
         {
+            if (chuDe == null) return string.Empty;
+
             List<string> pathSegments = new List<string>();
             ChuDe current = chuDe;
 
             while (current != null)
             {
                 pathSegments.Insert(0, current.Slug);
-                current = _unit.ChuDes.Get(cd => cd.MaChuDe == current.ParentId);
+                current = _context.ChuDes.FirstOrDefault(cd => cd.MaChuDe == current.ParentId);
             }
 
             return string.Join("/", pathSegments);

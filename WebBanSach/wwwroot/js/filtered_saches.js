@@ -177,7 +177,7 @@ $(document).ready(function () {
         history.pushState({ path: path }, '', url);
 
         if (response.breadcrumb) {
-            $('nav[aria-label="breadcrumb"]').html(response.breadcrumb);
+            $('#breadcrumb_container').html(response.breadcrumb);
         }
 
         $('#filterForm').attr('data-path', path);

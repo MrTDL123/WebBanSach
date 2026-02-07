@@ -15,21 +15,18 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             _db = db;
         }
 
-        // ========== QUẢN LÝ THỂ LOẠI ==========
         public IActionResult QuanLyTheLoai()
         {
             var theLoais = _db.ChuDes.ToList();
             return View(theLoais);
         }
 
-        // GET: Thêm thể loại
         public IActionResult ThemTheLoai()
         {
             ViewBag.ParentCategories = _db.ChuDes.Where(c => c.ParentId == null).ToList();
             return View();
         }
 
-        // POST: Thêm thể loại
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemTheLoai(ChuDe model)
@@ -58,7 +55,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(model);
         }
 
-        // GET: Sửa thể loại
         public async Task<IActionResult> SuaTheLoai(int id)
         {
             var theLoai = await _db.ChuDes
@@ -78,7 +74,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(theLoai);
         }
 
-        // POST: Sửa thể loại - ĐÃ SỬA LỖI TRACKING
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaTheLoai(int id, ChuDe model)
@@ -92,7 +87,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             {
                 try
                 {
-                    // Kiểm tra tên thể loại đã tồn tại chưa (trừ chính nó)
                     var existingCategory = await _db.ChuDes
                         .AsNoTracking()
                         .FirstOrDefaultAsync(c => c.TenChuDe.ToLower() == model.TenChuDe.ToLower() && c.MaChuDe != id);
@@ -107,11 +101,9 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                         return View(model);
                     }
 
-                    // CÁCH 1: Attach và set trạng thái Modified
                     var existingEntity = await _db.ChuDes.FindAsync(id);
                     if (existingEntity != null)
                     {
-                        // Copy values từ model vào existingEntity
                         existingEntity.TenChuDe = model.TenChuDe;
                         existingEntity.Slug = model.Slug;
                         existingEntity.FullPath = model.FullPath;
@@ -144,7 +136,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(model);
         }
 
-        // GET: Xóa thể loại
         public async Task<IActionResult> XoaTheLoai(int? id)
         {
             if (id == null)
@@ -161,7 +152,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Kiểm tra xem thể loại có sách nào không
             var coSach = await _db.Saches
                 .AsNoTracking()
                 .AnyAsync(s => s.MaChuDe == id);
@@ -170,7 +160,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(theLoai);
         }
 
-        // POST: Xóa thể loại
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> XoaTheLoaiConfirmed(int id)
@@ -183,7 +172,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return NotFound();
                 }
 
-                // Kiểm tra xem thể loại có sách nào không
                 var coSach = await _db.Saches
                     .AsNoTracking()
                     .AnyAsync(s => s.MaChuDe == id);

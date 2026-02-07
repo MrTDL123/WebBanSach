@@ -1,9 +1,11 @@
-﻿using Media.DataAccess.Repository.IRepository;
+﻿using AspNetCoreGeneratedDocument;
+using Media.DataAccess.Repository.IRepository;
 using Media.Models;
 using Media.Models.ViewModels;
 using Media.Service;
 using Media.Service.IServices;
 using Media.Utility;
+using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,23 +25,26 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
     [Area("Customer")]
     public class HomeController : Controller
     {
+        private readonly ApplicationDbContext _context;
         private readonly LocationService _locationService;
-        private ISlugService _slugService;
+        private readonly ISlugService _slugService;
+        private readonly ISachRepository _sachRepository;
         private readonly IViewRenderService _viewRenderService;
-        private readonly IUnitOfWork _unit;
         private readonly IGioHangService _gioHangService;
         private readonly SignInManager<TaiKhoan> _signInManager;
         private readonly UserManager<TaiKhoan> _userManager;
-        public HomeController(IUnitOfWork unit, 
+        public HomeController(ApplicationDbContext context,
                               LocationService locationService, 
                               IViewRenderService viewRenderService, 
                               ISlugService slugService,
+                              ISachRepository sachRepository,
                               IGioHangService gioHangService,
                               SignInManager<TaiKhoan> signInManager,
                               UserManager<TaiKhoan> userManager)
         {
-            _unit = unit;
+            _context = context;
             _slugService = slugService;
+            _sachRepository = sachRepository;
             _locationService = locationService;
             _viewRenderService = viewRenderService;
             _gioHangService = gioHangService;
@@ -55,7 +60,6 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
                 gioHang = _gioHangService.TaiGioHangTuDb(userId);
                 HttpContext.Session.SetObjectAsJson("GioHang", gioHang);
             }
@@ -67,69 +71,43 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         private async Task<TrangChuVM> GetIndexVM()
         {
             TrangChuVM viewModel = new TrangChuVM();
-            viewModel.SachGiamGia = await _unit.Saches.GetRangeReadOnlyAsync(s => s.PhanTramGiamGia > 0);
-            viewModel.SachBanChay = await _unit.Saches.LaySachBanChay(days: 30, sachCount: 6);
+            viewModel.SachGiamGia = await _context.Saches
+                .AsNoTracking()
+                .Where(s => s.PhanTramGiamGia > 0)
+                .ToListAsync();
 
-            viewModel.TacGiaNoiTieng = _unit.TacGias.GetAll().Take(9);
+            DateTime bestSellerPeriod = DateTime.Now.AddDays(-50);
+            viewModel.SachBanChay = await _sachRepository.LaySachBanChay(days: 50, sachCount: 6);
 
-            viewModel.TuSachMienPhi = _unit.Saches.GetRange(s => s.GiaBan == 0).Take(12);
+            //Để tạm thời
+            viewModel.TacGiaNoiTieng = await _context.TacGias.AsNoTracking().Take(9).ToListAsync(); 
 
-            List<ChuDe> listChuDe = _unit.ChuDes.GetRange(cd => cd.ParentId == 1).Take(4).ToList();
-            listChuDe.AddRange(_unit.ChuDes.GetRange(cd => cd.ParentId == 2).Take(5));
+            viewModel.TuSachMienPhi = await _context.Saches.AsNoTracking().Where(s => s.GiaBan == 0).Take(12).ToListAsync();
+
+            //Lấy tạm thời
+            var rawChuDes = await _context.ChuDes
+                .AsNoTracking()
+                .Where(cd => cd.ParentId == 1 || cd.ParentId == 2)
+                .ToListAsync();
+
+            var listChuDe = rawChuDes.Where(cd => cd.ParentId == 1).Take(4)
+                .Concat(rawChuDes.Where(cd => cd.ParentId == 2).Take(5));
 
             foreach (ChuDe cd in listChuDe)
             {
-                string duongDanHinhAnh;
 
-                switch (cd.TenChuDe)
+                string duongDanHinhAnh = cd.TenChuDe switch
                 {
-                    case "Văn Học":
-                        {
-                            duongDanHinhAnh = "/img/product/van_hoc.jpg";
-                            break;
-                        }
-                    case "Kinh Tế":
-                        {
-                            duongDanHinhAnh = "/img/product/kinh_te.jpg";
-                            break;
-                        }
-                    case "Tâm lý - Kĩ Năng Sống":
-                        {
-                            duongDanHinhAnh = "/img/product/tam_ly.jpg";
-                            break;
-                        }
-                    case "Sách Thiếu Nhi":
-                        {
-                            duongDanHinhAnh = "/img/product/sach-thieu-nhi.jpg";
-                            break;
-                        }
-                    case "Fiction":
-                        {
-                            duongDanHinhAnh = "/img/product/fiction.jpg";
-                            break;
-                        }
-                    case "Non-Fiction":
-                        {
-                            duongDanHinhAnh = "/img/product/non_fiction.jpg";
-                            break;
-                        }
-                    case "English Learning":
-                        {
-                            duongDanHinhAnh = "/img/product/english.jpg";
-                            break;
-                        }
-                    case "Children Books":
-                        {
-                            duongDanHinhAnh = "/img/product/children_books.jpg";
-                            break;
-                        }
-                    case "Comics & Graphic Novels":
-                    default:
-                        {
-                            duongDanHinhAnh = "/img/product/comic.jpg";
-                            break;
-                        }
-                }
+                    "Văn Học" => "/img/product/van_hoc.jpg",
+                    "Kinh Tế" => "/img/product/kinh_te.jpg",
+                    "Tâm lý - Kĩ Năng Sống" => "/img/product/tam_ly.jpg",
+                    "Sách Thiếu Nhi" => "/img/product/sach-thieu-nhi.jpg",
+                    "Fiction" => "/img/product/fiction.jpg",
+                    "Non-Fiction" => "/img/product/non_fiction.jpg",
+                    "English Learning" => "/img/product/english.jpg",
+                    "Children Books" => "/img/product/children_books.jpg",
+                    _ => "/img/product/comic.jpg"
+                };
 
                 viewModel.DanhSachChuDe.Add(new DanhSachChuDeTrangIndex
                 {
@@ -203,23 +181,27 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                 TempData["ReturnUrl"] = Url.Action("ChiTietSanPham", "Home", new { maSach = maSach });
             }
 
-            var sach = await _unit.Saches.GetAsync(
-                s => s.MaSach == maSach,
-                includeProperties: "ChuDe,NhaXuatBan,TacGia,YeuThichs"
-            );
+            var sach = await _context.Saches
+                .Include(s => s.ChuDe)
+                .Include(s => s.NhaXuatBan)
+                .Include(s => s.TacGia)
+                .Include(s => s.YeuThichs)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.MaSach == maSach);
 
             ViewBag.UserDaThich = false;
 
-            if (sach == null) { return NotFound(); }
+            if (sach == null) return NotFound();
 
             // Code tải đánh giá để tính toán % sao
-            var danhSachDanhGia = (await _unit.DanhGiaSanPhams.GetRangeAsync(
-                            d => d.MaSach == maSach
-                         )).ToList();
-            var chiTietDonHangs = await _unit.ChiTietDonHangs.GetRangeReadOnlyAsync(ct => ct.MaSach == maSach, includeProperties: "DonHang");
-            int soLuongBan = chiTietDonHangs
-                             .Where(ct => ct.DonHang.DaThanhToan == true)
-                             .Sum(ct => ct.SoLuong);
+            var danhSachDanhGia = await _context.DanhGiaSanPhams
+                .Where(d => d.MaSach == maSach)
+                .AsNoTracking()
+                .ToListAsync();
+
+            int soLuongBan = await _context.ChiTietDonHangs
+                .Where(ct => ct.MaSach == maSach && ct.DonHang.DaThanhToan == true)
+                .SumAsync(ct => ct.SoLuong);
 
             var vm = new ChiTietSanPhamVM
             {
@@ -242,7 +224,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             }
             else
             {
-                vm.DiemDanhGiaSanPhamTrungBinh = 5; // Mặc định
+                vm.DiemDanhGiaSanPhamTrungBinh = 5;
             }
 
             if (User.Identity.IsAuthenticated)
@@ -250,11 +232,11 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 if (user != null)
                 {
-                    var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == user.Id);
+                    var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(k => k.MaTaiKhoan == user.Id);
 
                     if (khachHang != null)
                     {
-                        bool daThich = _unit.YeuThichs.Any(x => x.MaSach == maSach && x.MaKhachHang == khachHang.MaKhachHang);
+                        bool daThich = await _context.YeuThichs.AnyAsync(y => y.MaSach == maSach && y.MaKhachHang == khachHang.MaKhachHang);
                         ViewBag.UserDaThich = daThich;
                     }
                 }
@@ -273,33 +255,34 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             if (_signInManager.IsSignedIn(User))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+                KhachHang khachHang = _context.KhachHangs.FirstOrDefault(kh => kh.MaTaiKhoan == userId);
                 if (khachHang != null) maKhachHangHienTai = khachHang.MaKhachHang;
             }
 
             var danhSachDaThich = new HashSet<int>();
             if (maKhachHangHienTai.HasValue)
             {
-                danhSachDaThich = (await _unit.LuotThichDanhGiaSanPhams.GetRangeAsync(
-                    lt => lt.MaKhachHang == maKhachHangHienTai.Value
-                )).Select(lt => lt.MaDanhGia).ToHashSet();
+                danhSachDaThich = _context.LuotThichDanhGiaSanPhams.Where(lt => lt.MaKhachHang == maKhachHangHienTai.Value)
+                                                                   .Select(lt => lt.MaDanhGia).ToHashSet();
             }
 
-            Func<IQueryable<DanhGiaSanPham>, IOrderedQueryable<DanhGiaSanPham>> orderBy;
+
+            var query = _context.DanhGiaSanPhams.AsQueryable();
+            query = query.Where(d => d.MaSach == maSach);
+
             if (kieuSapXep == "YeuThichNhat")
             {
-                orderBy = q => q.OrderByDescending(d => d.LuotThich).ThenByDescending(d => d.NgayDang);
+                query = query.OrderByDescending(d => d.LuotThich).ThenByDescending(d => d.NgayDang);
             }
             else
             {
-                orderBy = q => q.OrderByDescending(d => d.NgayDang);
+                query = query.OrderByDescending(d => d.NgayDang);
             }
 
-            var danhSachDanhGia = await _unit.DanhGiaSanPhams.GetRangeAsync(
-                d => d.MaSach == maSach,
-                orderBy: orderBy,
-                includeProperties: "KhachHang" // Chỉ cần include KhachHang để lấy tên
-            );
+            var danhSachDanhGia = await query
+                                        .Include(d => d.KhachHang)
+                                        .AsNoTracking()
+                                        .ToListAsync();
 
             var danhGiaTheoTrang = danhSachDanhGia
                 .Skip((trang - 1) * KICH_THUOC_TRANG)
@@ -312,45 +295,41 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         }
 
         // 3. [HttpPost] Xử lý Thích/Bỏ Thích
-        // (Action này KHÔNG cần 'includeProperties' cho Sách)
         [HttpPost]
         [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThichDanhGia(int maDanhGia)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
-            if (khachHang == null) { return Unauthorized(); }
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(k => k.MaTaiKhoan == userId);
+            if (khachHang == null) return Unauthorized();
 
-            var maKhachHangHienTai = khachHang.MaKhachHang;
+            var danhGia = await _context.DanhGiaSanPhams.FindAsync(maDanhGia);
+            if (danhGia == null) return NotFound(); 
 
-            var danhGia = await _unit.DanhGiaSanPhams.GetByIdAsync(maDanhGia);
-            if (danhGia == null) { return NotFound(); }
-
-            var luotThichDaTonTai = await _unit.LuotThichDanhGiaSanPhams.GetAsync(
-                lt => lt.MaKhachHang == maKhachHangHienTai && lt.MaDanhGia == maDanhGia
-            );
+            var luotThichDaTonTai = await _context.LuotThichDanhGiaSanPhams
+                .FirstOrDefaultAsync(l => l.MaKhachHang == khachHang.MaKhachHang && l.MaDanhGia == maDanhGia);
 
             bool daThich;
             if (luotThichDaTonTai != null)
             {
-                _unit.LuotThichDanhGiaSanPhams.Remove(luotThichDaTonTai);
+                _context.LuotThichDanhGiaSanPhams.Remove(luotThichDaTonTai);
                 danhGia.LuotThich = Math.Max(0, danhGia.LuotThich - 1);
                 daThich = false;
             }
             else
             {
-                _unit.LuotThichDanhGiaSanPhams.Add(new LuotThichDanhGiaSanPham
+                _context.LuotThichDanhGiaSanPhams.Add(new LuotThichDanhGiaSanPham
                 {
-                    MaKhachHang = maKhachHangHienTai,
+                    MaKhachHang = khachHang.MaKhachHang,
                     MaDanhGia = maDanhGia
                 });
-                danhGia.LuotThich = danhGia.LuotThich + 1;
+                danhGia.LuotThich++;
                 daThich = true;
             }
 
-            _unit.DanhGiaSanPhams.Update(danhGia);
-            await _unit.SaveAsync();
+            _context.DanhGiaSanPhams.Update(danhGia);
+            await _context.SaveChangesAsync();
 
             return Json(new
             {
@@ -364,10 +343,10 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         // (Action này KHÔNG cần 'includeProperties' cho Sách,
         //  vì popup chỉ cần MaSach để submit)
         [HttpGet]
-        public IActionResult VietDanhGiaPartial(int maSach)
+        public async Task<IActionResult> VietDanhGiaPartialAsync(int maSach)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(kh => kh.MaTaiKhoan == userId);
 
             var model = new DanhGiaSanPham
             {
@@ -387,7 +366,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             if (!_signInManager.IsSignedIn(User)) { return Unauthorized(); }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = _context.KhachHangs.FirstOrDefault(kh => kh.MaTaiKhoan == userId);
 
             if (!ModelState.IsValid)
             {
@@ -397,8 +376,8 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             model.MaKhachHang = khachHang.MaKhachHang;
             model.NgayDang = DateTime.UtcNow;
 
-            _unit.DanhGiaSanPhams.Add(model);
-            await _unit.SaveAsync();
+            _context.DanhGiaSanPhams.Add(model);
+            await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Gửi đánh giá thành công!" });
         }
@@ -412,7 +391,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId == null) return Json(new { success = false, message = "Vui lòng đăng nhập!" });
 
-                var khachHang = _unit.KhachHangs.Get(k => k.MaTaiKhoan == userId);
+                var khachHang = _context.KhachHangs.FirstOrDefault(k => k.MaTaiKhoan == userId);
                 if (khachHang == null) return Json(new { success = false, message = "Lỗi tài khoản." });
 
                 maKhachHangClaim = khachHang.MaKhachHang.ToString();
@@ -423,26 +402,24 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
                 return Json(new { success = false, message = "Lỗi dữ liệu khách hàng." });
             }
 
-            var yeuThich = _unit.YeuThichs
-                .Get(x => x.MaKhachHang == maKhachHang && x.MaSach == maSach);
-
+            var yeuThich = _context.YeuThichs.FirstOrDefault(x => x.MaKhachHang == maKhachHang && x.MaSach == maSach);
             bool isLiked = false;
 
             if (yeuThich == null)
             {
                 var newItem = new YeuThich { MaKhachHang = maKhachHang, MaSach = maSach };
-                _unit.YeuThichs.Add(newItem);
+                _context.YeuThichs.Add(newItem);
                 isLiked = true;
             }
             else
             {
-                _unit.YeuThichs.Remove(yeuThich);
+                _context.YeuThichs.Remove(yeuThich);
                 isLiked = false;
             }
 
-            await _unit.SaveAsync();
+            await _context.SaveChangesAsync();
 
-            int totalLikes = _unit.YeuThichs.Count(x => x.MaSach == maSach);
+            int totalLikes = await _context.YeuThichs.CountAsync(x => x.MaSach == maSach);
 
             return Json(new { success = true, isLiked = isLiked, totalLikes = totalLikes });
         }
@@ -450,15 +427,22 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         [HttpGet]
         public IActionResult GetDanhSachNguoiThich(int maSach)
         {
-            var listNguoiThich = _unit.YeuThichs.GetRange(x => x.MaSach == maSach, includeProperties: "KhachHang").Select(x => x.KhachHang).ToList();
+            var listNguoiThich = _context.YeuThichs
+                                    .Where(x => x.MaSach == maSach)
+                                    .Include(x => x.KhachHang).Select(x => x.KhachHang).ToList();
 
             return PartialView("_ListNguoiThichPartial", listNguoiThich);
         }
 
         [HttpGet]
-        public IActionResult KiemTraTonKho(int maSach, int soLuongMuonTang)
+        public async Task<IActionResult> KiemTraTonKho(int maSach, int soLuongMuonTang)
         {
-            var sach = _unit.Saches.Get(s => s.MaSach == maSach, includeProperties: "ChuDe,NhaXuatBan,TacGia");
+            var sach = await _context.Saches
+                            .Include(s => s.ChuDe)
+                            .Include(s => s.NhaXuatBan)
+                            .Include(s => s.TacGia)
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(s => s.MaSach == maSach);
             if (sach == null)
                 return Json(false);
 
@@ -490,7 +474,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
         {
             SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(0, 1, 12, null, new List<int> { id }, null, null, null);
 
-            TacGia selectedTacGia = _unit.TacGias.Get(tg => tg.MaTacGia == id);
+            TacGia? selectedTacGia = await _context.TacGias.FirstOrDefaultAsync(tg => tg.MaTacGia == id);
 
             viewModel.DanhSachTacGia = new List<TacGia> { selectedTacGia };
 
@@ -542,7 +526,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             SachTheoChuDeVM viewModel = await LoadSachTheoChuDeVMAsync(
                 selectedChuDe.MaChuDe, page ?? 1, pageSize ?? 12, priceRanges, tacGiaIds, nhaXuatBanIds, sortBy, keyword);
 
-            viewModel.Breadcrumbs = BuildBreadcrumbs(selectedChuDe);
+            viewModel.Breadcrumbs = await BuildBreadcrumbsAsync(selectedChuDe);
             viewModel.ChuDeSelected = selectedChuDe;
             ViewBag.CurrentPath = path;
             ViewBag.SearchKeyword = keyword;
@@ -560,28 +544,26 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             string? sortBy,
             string? keyword)
         {
-            IQueryable<Sach> query;
 
             SachTheoChuDeVM viewModel = new SachTheoChuDeVM();
+            IQueryable<Sach> query = _context.Saches
+                .Include(s => s.TacGia)
+                .Include(s => s.NhaXuatBan)
+                .Include(s => s.ChuDe)
+                .AsNoTracking();
 
             // ===== LỌC THEO CHỦ ĐỀ =====
             if (chuDeId == 0) // Chủ đề là 0 thì tức là lấy tất cả chủ đề
             {
-                ChuDe allParentChuDe = new ChuDe();
-                allParentChuDe.Children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == null);
-                viewModel.ChuDeCha = allParentChuDe;
+                viewModel.ChuDeCha = new ChuDe { Children = await _context.ChuDes.Where(c => c.ParentId == null).ToListAsync() };
                 viewModel.ChuDeSelected = new ChuDe() { MaChuDe = 0};
-                query = _unit.Saches.GetAll().AsQueryable()
-                    .Include(s => s.TacGia)
-                    .Include(s => s.NhaXuatBan)
-                    .Include(s => s.ChuDe);
             }
             else
             {
-                ChuDe? selectedChuDe = _unit.ChuDes.Get(cd => cd.MaChuDe == chuDeId);
+                ChuDe? selectedChuDe = await _context.ChuDes.FirstOrDefaultAsync(cd => cd.MaChuDe == chuDeId);
                 viewModel.ChuDeCha = await LayChuDeTuongUng(selectedChuDe.MaChuDe);
                 viewModel.ChuDeSelected = selectedChuDe;
-                query = _unit.Saches.LaySachTheoChuDe(chuDeId);
+                query = _sachRepository.LaySachTheoChuDe(chuDeId);
             }
 
             // ===== LỌC THEO TỪ KHÓA =====
@@ -655,8 +637,8 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             }
             else
             {
-                viewModel.DanhSachTacGia = await _unit.TacGias.GetAllReadOnlyAsync();
-                viewModel.DanhSachNhaXuatBan = await _unit.NhaXuatBans.GetAllReadOnlyAsync();
+                viewModel.DanhSachTacGia = _context.TacGias.AsNoTracking();
+                viewModel.DanhSachNhaXuatBan = _context.NhaXuatBans.AsNoTracking();
             }
 
             viewModel.DanhSachSach = sachList.ToPagedList(page, pageSize);
@@ -679,18 +661,18 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
 
         private async Task<ChuDe?> LayChuDeTuongUng(int maChuDeDuocChon)
         {
-            ChuDe currentNode = await _unit.ChuDes.GetAsync(cd => cd.MaChuDe == maChuDeDuocChon);
+            ChuDe? currentNode = await _context.ChuDes.FirstOrDefaultAsync(c => c.MaChuDe == maChuDeDuocChon);
             if (currentNode == null) return null;
 
-            var children = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == currentNode.MaChuDe);
+            var children = _context.ChuDes.AsNoTracking().Where(cd => cd.ParentId == currentNode.MaChuDe);
             currentNode.Children = children.ToList();
 
             while (currentNode.ParentId != null)
             {
-                var parentNode = await _unit.ChuDes.GetAsync(cd => cd.MaChuDe == currentNode.ParentId);
+                var parentNode = await _context.ChuDes.FirstOrDefaultAsync(cd => cd.MaChuDe == currentNode.ParentId);
                 if (parentNode == null) break;
 
-                var siblings = await _unit.ChuDes.GetRangeReadOnlyAsync(cd => cd.ParentId == parentNode.MaChuDe);
+                var siblings =  _context.ChuDes.AsNoTracking().Where(cd => cd.ParentId == parentNode.MaChuDe);
                 parentNode.Children = siblings.ToList();
 
                 var selectedIndex = parentNode.Children.FindIndex(cd => cd.MaChuDe == currentNode.MaChuDe);
@@ -704,7 +686,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             return currentNode;
         }
 
-        private List<BreadcrumbItem> BuildBreadcrumbs(ChuDe chuDe)
+        private async Task<List<BreadcrumbItem>> BuildBreadcrumbsAsync(ChuDe chuDe)
         {
             var breadcrumbs = new List<BreadcrumbItem>
             {
@@ -723,7 +705,7 @@ namespace ProjectCuoiKi.Areas.Customer.Controllers
             while (current != null)
             {
                 pathSegments.Insert(0, current);
-                current = _unit.ChuDes.Get(cd => cd.MaChuDe == current.ParentId);
+                current = await _context.ChuDes.FirstOrDefaultAsync(cd => cd.MaChuDe == current.ParentId);
             }
 
             foreach (var segment in pathSegments)

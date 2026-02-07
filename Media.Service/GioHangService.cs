@@ -1,8 +1,9 @@
-﻿using Media.DataAccess.Repository.IRepository;
-using Media.Models;
+﻿using Media.Models;
 using Media.Models.ViewModels;
 using Media.Utility;
+using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,20 +14,20 @@ namespace Media.Service
 {
     public class GioHangService : IGioHangService
     {
-        private readonly IUnitOfWork _unit;
+        private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private ISession _session => _httpContextAccessor.HttpContext.Session;
 
-        public GioHangService(IUnitOfWork unit, IHttpContextAccessor httpContextAccessor)
+        public GioHangService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
-            _unit = unit;
+            _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
 
         // Hàm hỗ trợ mới: Tải giỏ hàng từ DB
         public List<GioHangVM> TaiGioHangTuDb(string userId)
         {
-            KhachHang khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            KhachHang? khachHang = _context.KhachHangs.FirstOrDefault(kh => kh.MaTaiKhoan == userId);
             if (khachHang == null)
             {
                 return new List<GioHangVM>();
@@ -37,32 +38,21 @@ namespace Media.Service
                 khách hàng và tổng tiền, phiếu giỏ hàng này như phần đầu của tờ hóa đơn gồm các
                 thông tin khách hàng và tổng số tiền.
              */
-            GioHang phieuGioHang = _unit.GioHangs.Get(gh => gh.MaKhachHang == khachHang.MaKhachHang);
-            if (phieuGioHang == null)
+            var phieuGioHang = _context.GioHangs
+                .Include(gh => gh.ChiTietGioHangs)
+                    .ThenInclude(ct => ct.Sach)
+                .FirstOrDefault(gh => gh.MaKhachHang == khachHang.MaKhachHang);
+            if (phieuGioHang == null || phieuGioHang.ChiTietGioHangs == null)
             {
                 return new List<GioHangVM>();
             }
 
-            int maGioHangThucTe = phieuGioHang.MaGioHang;
-
-            // Lấy tất cả chi tiết giỏ hàng và thông tin Sách đi kèm
-            var danhSachSanPhamGioHang = _unit.ChiTietGioHangs.GetRange(
-                ct => ct.MaGioHang == maGioHangThucTe,
-                includeProperties: "Sach" // Eager loading thông tin Sách
-            );
-
-            if (danhSachSanPhamGioHang == null || !danhSachSanPhamGioHang.Any())
-            {
-                return new List<GioHangVM>();
-            }
-
-            // Chuyển đổi từ Model (ChiTietGioHang) sang ViewModel (GioHangVM)
-            return danhSachSanPhamGioHang.Select(ct => new GioHangVM
+            return phieuGioHang.ChiTietGioHangs.Select(ct => new GioHangVM
             {
                 MaSach = ct.MaSach,
                 TenSach = ct.Sach.TenSach,
                 GiaBan = ct.Sach.GiaBan,
-                GiaSauGiam = ct.DonGia, // Lấy đơn giá đã lưu
+                GiaSauGiam = ct.DonGia,
                 AnhBiaChinh = ct.Sach.AnhBiaChinh,
                 SoLuong = ct.SoLuong
             }).ToList();
@@ -70,40 +60,37 @@ namespace Media.Service
 
         public void LuuGioHangVaoDb(string userId, List<GioHangVM> gioHang)
         {
-            KhachHang khachHang = _unit.KhachHangs.Get(kh => kh.MaTaiKhoan == userId);
+            var khachHang = _context.KhachHangs.FirstOrDefault(kh => kh.MaTaiKhoan == userId);
             if (khachHang == null)
             {
                 return;
             }
-            int maKhachHang = khachHang.MaKhachHang;
 
-            GioHang phieuGioHang = _unit.GioHangs.Get(gh => gh.MaKhachHang == maKhachHang);
+            var phieuGioHang = _context.GioHangs
+                .Include(gh => gh.ChiTietGioHangs)
+                .FirstOrDefault(gh => gh.MaKhachHang == khachHang.MaKhachHang);
 
             if (phieuGioHang == null)
             {
                 phieuGioHang = new GioHang
                 {
-                    MaKhachHang = maKhachHang,
+                    MaKhachHang = khachHang.MaKhachHang,
                     TongTien = 0
                 };
-                _unit.GioHangs.Add(phieuGioHang);
-                _unit.Save();
+                _context.GioHangs.Add(phieuGioHang);
+                _context.SaveChanges();
             }
-
-            int maGioHangThucTe = phieuGioHang.MaGioHang;
 
             // 1. Xóa tất cả GioHangItem cũ của user này
-            var gioHangCu = _unit.ChiTietGioHangs.GetRange(ct => ct.MaGioHang == maGioHangThucTe);
-            if (gioHangCu != null && gioHangCu.Any())
+            if (phieuGioHang.ChiTietGioHangs != null && phieuGioHang.ChiTietGioHangs.Any())
             {
-                _unit.ChiTietGioHangs.RemoveRange(gioHangCu);
+                _context.ChiTietGioHangs.RemoveRange(phieuGioHang.ChiTietGioHangs);
             }
-
 
             // 2. Chuyển đổi từ GioHangVM sang model GioHangItem
             var gioHangMoi = gioHang.Select(vm => new ChiTietGioHang
             {
-                MaGioHang = maGioHangThucTe,
+                MaGioHang = phieuGioHang.MaGioHang,
                 MaSach = vm.MaSach,
                 SoLuong = vm.SoLuong,
                 DonGia = vm.GiaSauGiam
@@ -111,11 +98,11 @@ namespace Media.Service
 
             if (gioHangMoi.Any())
             {
-                _unit.ChiTietGioHangs.AddRange(gioHangMoi);
+                _context.ChiTietGioHangs.AddRange(gioHangMoi);
             }
 
             phieuGioHang.TongTien = gioHangMoi.Sum(ct => ct.ThanhTien);
-            _unit.Save(); // Lưu thay đổi
+            _context.SaveChanges();// Lưu thay đổi
         }
 
         // 3. HÀM GỘP (Move từ KhachHangController)

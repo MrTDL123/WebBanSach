@@ -16,7 +16,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         }
 
         // ========== QUẢN LÝ TÁC GIẢ ==========
-        // GET: Danh sách tác giả với tìm kiếm
         public async Task<IActionResult> QuanLyTacGia(string searchString)
         {
             var tacGias = from tg in _db.TacGias
@@ -31,7 +30,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
             tacGias = tacGias.OrderBy(tg => tg.TenTG);
 
-            // ✅ SỬA: Tính tổng số sách chính xác
             var tongSach = await _db.Saches.CountAsync();
             ViewBag.TongSach = tongSach;
             ViewData["CurrentFilter"] = searchString;
@@ -42,12 +40,10 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         // GET: Thêm tác giả
         public IActionResult ThemTacGia()
         {
-            // ✅ THÊM DÒNG NÀY: Khởi tạo model mới
             var model = new TacGia();
             return View(model);
         }
 
-        // ✅ SỬA: Xóa dòng trùng lặp
         // POST: Thêm tác giả
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -57,7 +53,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    // Kiểm tra tên tác giả đã tồn tại chưa
                     var existingTacGia = await _db.TacGias
                         .FirstOrDefaultAsync(tg => tg.TenTG.ToLower() == tacGia.TenTG.ToLower());
 
@@ -68,11 +63,9 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                         return View(tacGia);
                     }
 
-                    // Đảm bảo các trường nullable được xử lý đúng
                     tacGia.TieuSu ??= string.Empty;
                     tacGia.QuocTich ??= string.Empty;
 
-                    // Thêm tác giả mới
                     _db.TacGias.Add(tacGia);
                     await _db.SaveChangesAsync();
 
@@ -80,7 +73,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction(nameof(QuanLyTacGia));
                 }
 
-                // ✅ THÊM: Trả về view với model hiện tại nếu có lỗi validation
                 return View(tacGia);
             }
             catch (Exception ex)
@@ -88,13 +80,10 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 ModelState.AddModelError("", "Lỗi khi thêm tác giả: " + ex.Message);
                 TempData["Error"] = "Lỗi khi thêm tác giả: " + ex.Message;
 
-                // ✅ QUAN TRỌNG: Trả về view với model hiện tại
                 return View(tacGia);
             }
         }
 
-        // GET: Sửa tác giả
-        // GET: Sửa tác giả
         public async Task<IActionResult> SuaTacGia(int id)
         {
             var tacGia = await _db.TacGias.FindAsync(id);
@@ -105,7 +94,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(tacGia);
         }
 
-        // POST: Sửa tác giả
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaTacGia(int id, TacGia tacGia)
@@ -123,7 +111,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
             try
             {
-                // Kiểm tra tên tác giả đã tồn tại chưa (trừ chính nó)
                 var existingTacGia = await _db.TacGias
                     .FirstOrDefaultAsync(tg => tg.TenTG.ToLower() == tacGia.TenTG.ToLower() && tg.MaTacGia != id);
 
@@ -134,14 +121,12 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return View(tacGia);
                 }
 
-                // Lấy tác giả hiện tại từ database
                 var existing = await _db.TacGias.FindAsync(id);
                 if (existing == null)
                 {
                     return NotFound();
                 }
 
-                // Cập nhật thông tin
                 existing.TenTG = tacGia.TenTG.Trim();
                 existing.QuocTich = tacGia.QuocTich?.Trim() ?? string.Empty;
                 existing.TieuSu = tacGia.TieuSu?.Trim() ?? string.Empty;
@@ -159,7 +144,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 return View(tacGia);
             }
         }
-        // GET: Xóa tác giả
         public async Task<IActionResult> XoaTacGia(int? id)
         {
             if (id == null)
@@ -175,14 +159,12 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Kiểm tra xem tác giả có sách nào không
             var coSach = await _db.Saches.AnyAsync(s => s.MaTacGia == id);
             ViewBag.CoSach = coSach;
 
             return View(tacGia);
         }
 
-        // POST: Xóa tác giả
         [HttpPost, ActionName("XoaTacGia")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> XoaTacGiaConfirmed(int id)
@@ -195,7 +177,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return NotFound();
                 }
 
-                // Kiểm tra xem tác giả có sách nào không
                 var coSach = await _db.Saches.AnyAsync(s => s.MaTacGia == id);
                 if (coSach)
                 {
@@ -216,7 +197,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // GET: Chi tiết tác giả
         public async Task<IActionResult> ChiTietTacGia(int? id)
         {
             if (id == null)
@@ -232,7 +212,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            // Lấy danh sách sách của tác giả
             var saches = await _db.Saches
                 .Where(s => s.MaTacGia == id)
                 .Include(s => s.NhaXuatBan)

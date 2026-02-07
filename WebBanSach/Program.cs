@@ -46,7 +46,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LogoutPath = "/Customer/KhachHang/DangXuat";
     options.AccessDeniedPath = "/Customer/KhachHang/AccessDenied";
 
-    // 🔐 Cấu hình ghi nhớ đăng nhập
+    // Cấu hình ghi nhớ đăng nhập
     options.ExpireTimeSpan = TimeSpan.FromDays(1);  // Cookie tồn tại 30 ngày
     options.SlidingExpiration = true;                // Tự động gia hạn nếu người dùng hoạt động
     options.Cookie.HttpOnly = true;                  // Chống truy cập cookie từ JS
@@ -97,14 +97,13 @@ builder.Services.ConfigureApplicationCookie(options =>
         }
     };
 });
-builder.Services.AddScoped<IUnitOfWork, UnitOfwork>();
+builder.Services.AddScoped<ISachRepository, SachRepository>();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<ISlugService, SlugService>();
 builder.Services.AddScoped<IViewRenderService, ViewRenderService>();
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddHttpClient<LocationService>(client =>
 {
     // Base URL cho API

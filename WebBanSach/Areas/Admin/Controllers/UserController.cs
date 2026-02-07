@@ -99,7 +99,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
         #endregion
 
-        // 📚 DANH SÁCH NGƯỜI DÙNG
         public IActionResult QuanLyNguoiDung()
         {
             try
@@ -127,14 +126,12 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // ➕ THÊM NHÂN VIÊN - GET
         [HttpGet]
         public IActionResult ThemNhanVien()
         {
             return View();
         }
 
-        // ➕ THÊM NHÂN VIÊN - POST (DEBUG VERSION)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemNhanVien(ThemNhanVienVM model)
@@ -144,14 +141,12 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 Console.WriteLine("=== DEBUG START ===");
                 Console.WriteLine($"Model received - HoTen: {model.NhanVienMoi.HoTen}, NgayVaoLam: {model.NhanVienMoi.NgayVaoLam}");
 
-                // TẮT VALIDATION CHO TẤT CẢ NAVIGATION PROPERTIES
                 ModelState.Remove("TaiKhoan");
                 ModelState.Remove("DonHangs");
                 ModelState.Remove("PhieuTraHangs");
                 ModelState.Remove("ChamSocKhachHangs");
                 ModelState.Remove("MaTaiKhoan");
 
-                // DEBUG: Log tất cả ModelState errors
                 foreach (var key in ModelState.Keys)
                 {
                     var state = ModelState[key];
@@ -164,7 +159,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 Console.WriteLine($"ModelState IsValid: {ModelState.IsValid}");
                 Console.WriteLine("=== DEBUG END ===");
 
-                // Kiểm tra validation thủ công
                 if (string.IsNullOrEmpty(model.NhanVienMoi.HoTen))
                 {
                     TempData["Error"] = "Họ tên là bắt buộc";
@@ -177,7 +171,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return View(model);
                 }
 
-                // Kiểm tra CCCD đã tồn tại chưa
                 if (!string.IsNullOrEmpty(model.NhanVienMoi.CCCD) && await _db.NhanViens.AnyAsync(n => n.CCCD == model.NhanVienMoi.CCCD))
                 {
                     TempData["Error"] = "CCCD đã tồn tại trong hệ thống";
@@ -199,11 +192,9 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 }
 
 
-                // Tạo username và email tự động
                 var username = model.NhanVienMoi.Email;
                 var email = model.NhanVienMoi.Email;
 
-                // Tạo tài khoản mặc định
                 var taiKhoan = new TaiKhoan
                 {
                     UserName = username,
@@ -252,7 +243,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // ✏ SỬA NHÂN VIÊN - GET
         [HttpGet]
         public IActionResult SuaNhanVien(int id)
         {
@@ -278,7 +268,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // ✏ SỬA NHÂN VIÊN - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SuaNhanVien(NhanVien model)
@@ -308,7 +297,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction(nameof(QuanLyNguoiDung));
                 }
 
-                // Kiểm tra CCCD trùng (trừ chính nó)
                 if (!string.IsNullOrEmpty(model.CCCD) &&
                     _db.NhanViens.Any(n => n.CCCD == model.CCCD && n.MaNhanVien != model.MaNhanVien))
                 {
@@ -316,7 +304,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return View(model);
                 }
 
-                // Cập nhật thông tin
                 nhanVien.HoTen = model.HoTen.Trim();
                 nhanVien.DiaChi = model.DiaChi?.Trim();
                 nhanVien.NgaySinh = model.NgaySinh;
@@ -340,7 +327,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // 👁 CHI TIẾT KHÁCH HÀNG
         public IActionResult ChiTietKhachHang(int id)
         {
             try
@@ -376,7 +362,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // 👁 CHI TIẾT NHÂN VIÊN
         public IActionResult ChiTietNhanVien(int id)
         {
             try
@@ -408,7 +393,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // ❌ XÓA KHÁCH HÀNG
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> XoaKhachHang(int id)
@@ -432,7 +416,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction(nameof(QuanLyNguoiDung));
                 }
 
-                // Kiểm tra ràng buộc
                 if (khachHang.DonHangs?.Any() == true)
                 {
                     TempData["Error"] = $"Không thể xóa khách hàng '{khachHang.HoTen}' vì có {khachHang.DonHangs.Count} đơn hàng liên quan";
@@ -491,7 +474,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // ❌ XÓA NHÂN VIÊN
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> XoaNhanVien(int id)
@@ -511,7 +493,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction(nameof(QuanLyNguoiDung));
                 }
 
-                // Kiểm tra ràng buộc
                 if (nhanVien.DonHangs?.Any() == true || nhanVien.PhieuTraHangs?.Any() == true)
                 {
                     var donHangCount = nhanVien.DonHangs?.Count ?? 0;
@@ -547,7 +528,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // 🔄 CẬP NHẬT TRẠNG THÁI NHÂN VIÊN
         [HttpPost]
         public async Task<IActionResult> CapNhatTrangThaiNhanVien(int id, bool trangThai)
         {

@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace Media.DataAccess.Repository.IRepository
 {
-    public interface ISachRepository : IRepository<Sach>
+    public interface ISachRepository
     {
         IQueryable<Sach> LaySachTheoChuDe(int? id);
-        Task<IEnumerable<Sach>> LaySachBanChay(int? days, int? sachCount);
-        void Update(Sach obj);
+        Task<IEnumerable<Sach>?> LaySachBanChay(int? days, int? sachCount);
     }
 }

@@ -24,7 +24,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             _context = context;
         }
 
-        // GET: DonHang
         public async Task<IActionResult> Index()
         {
             return RedirectToAction(nameof(QuanLyDonHang));
@@ -34,7 +33,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
         {
             try
             {
-                // Base query
                 var query = _context.DonHangs
                     .Include(dh => dh.KhachHang)
                     .Include(dh => dh.NhanVien)
@@ -43,7 +41,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     .ThenInclude(ct => ct.Sach)
                     .AsQueryable();
 
-                // Search filter
                 if (!string.IsNullOrEmpty(search))
                 {
                     query = query.Where(dh =>
@@ -53,7 +50,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                         dh.TenNguoiNhan.Contains(search));
                 }
 
-                // Status filter
                 if (!string.IsNullOrEmpty(status))
                 {
                     switch (status.ToLower())
@@ -67,20 +63,17 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     }
                 }
 
-                // Total counts for stats
                 var totalOrders = await query.CountAsync();
                 var paidOrders = await query.CountAsync(dh => dh.DaThanhToan);
                 var pendingOrders = await query.CountAsync(dh => !dh.DaThanhToan);
                 var totalRevenue = await query.Where(dh => dh.DaThanhToan).SumAsync(dh => dh.Total);
 
-                // Pagination
                 var donHangs = await query
                     .OrderByDescending(dh => dh.NgayTao)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
 
-                // Pass data to view
                 ViewBag.CurrentPage = page;
                 ViewBag.TotalPages = (int)Math.Ceiling(totalOrders / (double)pageSize);
                 ViewBag.TotalOrders = totalOrders;
@@ -99,8 +92,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 return View(new List<DonHang>());
             }
         }
-
-        // GET: DonHang/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -120,8 +111,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(donHang);
         }
 
-
-        // GET: DonHang/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             Console.WriteLine($"=== DEBUG: Edit called with id = {id} ===");
@@ -168,7 +157,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 return RedirectToAction(nameof(QuanLyDonHang));
             }
         }
-        // POST: DonHang/Edit/5
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DonHang donHang)
@@ -193,7 +182,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction(nameof(QuanLyDonHang));
                 }
 
-                // Chỉ cập nhật các thông tin cho phép
                 existingDonHang.MaNhanVien = donHang.MaNhanVien;
                 existingDonHang.TenNguoiNhan = donHang.TenNguoiNhan;
                 existingDonHang.SoDienThoaiNhan = donHang.SoDienThoaiNhan;
@@ -204,9 +192,8 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 existingDonHang.HinhThucThanhToan = donHang.HinhThucThanhToan;
                 existingDonHang.DaThanhToan = donHang.DaThanhToan;
                 existingDonHang.GhiChu = donHang.GhiChu;
-                existingDonHang.NgayCapNhat = DateTime.Now; // CẬP NHẬT NGÀY SỬA
+                existingDonHang.NgayCapNhat = DateTime.Now; 
 
-                // Cập nhật tổng tiền từ chi tiết đơn hàng
                 existingDonHang.Total = existingDonHang.ChiTietDonHangs?.Sum(ct => ct.ThanhTien) ?? 0;
 
                 _context.Update(existingDonHang);
@@ -223,7 +210,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // GET: Lấy thông tin vận chuyển
         [HttpGet]
         public async Task<IActionResult> GetShippingInfo(int id)
         {
@@ -263,13 +249,11 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
                 }
 
-                // Lấy dữ liệu từ body JSON
                 int id = data.id;
-                string trangThaiString = data.trangThai; // NHẬN string từ client
+                string trangThaiString = data.trangThai;
 
                 Console.WriteLine($"Processing - ID: {id}, TrangThaiString: {trangThaiString}");
 
-                // Parse string sang enum
                 if (!Enum.TryParse<TrangThaiGiaoHang>(trangThaiString, out TrangThaiGiaoHang trangThaiEnum))
                 {
                     Console.WriteLine($"Failed to parse TrangThai: {trangThaiString}");
@@ -278,7 +262,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
                 Console.WriteLine($"Parsed enum: {trangThaiEnum}");
 
-                // Tìm đơn hàng
                 var donHang = await _context.DonHangs
                     .Include(dh => dh.VanChuyen)
                     .FirstOrDefaultAsync(dh => dh.MaDonHang == id);
@@ -291,7 +274,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
                 Console.WriteLine($"Found order: #{donHang.MaDonHang}");
 
-                // Nếu chưa có vận chuyển thì tạo mới
                 if (donHang.VanChuyen == null)
                 {
                     Console.WriteLine("Creating new VanChuyen record");
@@ -309,12 +291,10 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 else
                 {
                     Console.WriteLine($"Updating existing VanChuyen from {donHang.VanChuyen.TrangThaiGiaoHang} to {trangThaiEnum}");
-                    // Cập nhật trạng thái
                     donHang.VanChuyen.TrangThaiGiaoHang = trangThaiEnum;
                     _context.VanChuyens.Update(donHang.VanChuyen);
                 }
 
-                // Kiểm tra xem có thay đổi không
                 Console.WriteLine($"Has changes: {_context.ChangeTracker.HasChanges()}");
 
                 var result = await _context.SaveChangesAsync();
@@ -342,9 +322,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-
-
-        // GET: DonHang/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -367,7 +344,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return View(donHang);
         }
 
-        // POST: DonHang/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -385,19 +361,16 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction(nameof(QuanLyDonHang));
                 }
 
-                // Xóa các bản ghi liên quan trước
                 if (donHang.ChiTietDonHangs?.Any() == true)
                 {
                     _context.ChiTietDonHangs.RemoveRange(donHang.ChiTietDonHangs);
                 }
 
-                // Xóa vận chuyển nếu có
                 if (donHang.VanChuyen != null)
                 {
                     _context.VanChuyens.Remove(donHang.VanChuyen);
                 }
 
-                // Xóa đơn hàng
                 _context.DonHangs.Remove(donHang);
                 await _context.SaveChangesAsync();
 
@@ -411,7 +384,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // Cập nhật trạng thái thanh toán
         [HttpPost]
         public async Task<IActionResult> UpdatePaymentStatus(int id, bool daThanhToan)
         {
@@ -437,13 +409,11 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // THÊM MỚI: Action để thêm chi tiết đơn hàng
         [HttpPost]
         public async Task<IActionResult> AddChiTietDonHang(int maDonHang, int maSach, int soLuong, decimal donGia)
         {
             try
             {
-                // Kiểm tra tồn tại
                 var donHang = await _context.DonHangs.FindAsync(maDonHang);
                 var sach = await _context.Saches.FindAsync(maSach);
 
@@ -452,7 +422,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return Json(new { success = false, message = "Không tìm thấy đơn hàng hoặc sách!" });
                 }
 
-                // Kiểm tra số lượng tồn kho
                 if (sach.SoLuong < soLuong)
                 {
                     return Json(new { success = false, message = $"Số lượng tồn kho không đủ. Chỉ còn {sach.SoLuong} sách!" });
@@ -470,7 +439,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 _context.ChiTietDonHangs.Add(chiTiet);
                 await _context.SaveChangesAsync();
 
-                // Cập nhật tổng tiền đơn hàng
                 await UpdateTotalDonHang(maDonHang);
 
                 return Json(new { success = true, message = "Thêm sách thành công!" });
@@ -481,13 +449,11 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // THÊM MỚI: Action để xóa chi tiết đơn hàng
         [HttpPost]
         public async Task<IActionResult> RemoveChiTietDonHang(int maDonHang, int maSach)
         {
             try
             {
-                // Tìm chi tiết bằng cả MaDonHang và MaSach
                 var chiTiet = await _context.ChiTietDonHangs
                     .Include(ct => ct.DonHang)
                     .FirstOrDefaultAsync(ct => ct.MaDonHang == maDonHang && ct.MaSach == maSach);
@@ -497,7 +463,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     _context.ChiTietDonHangs.Remove(chiTiet);
                     await _context.SaveChangesAsync();
 
-                    // Cập nhật tổng tiền đơn hàng
                     await UpdateTotalDonHang(maDonHang);
 
                     return Json(new { success = true, message = "Xóa sách thành công!" });
@@ -510,7 +475,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // THÊM MỚI: Lấy giá sách
         [HttpGet]
         public async Task<decimal> GetBookPrice(int maSach)
         {
@@ -530,10 +494,8 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 ViewBag.KhachHangs = new SelectList(_context.KhachHangs, "MaKhachHang", "HoTen");
                 ViewBag.NhanViens = new SelectList(_context.NhanViens, "MaNhanVien", "HoTen");
 
-                // QUAN TRỌNG: Thêm dòng này để fix lỗi null
                 ViewBag.Saches = new SelectList(_context.Saches, "MaSach", "TenSach");
 
-                // SelectList cho hình thức thanh toán
                 ViewBag.HinhThucThanhToan = new SelectList(
                     Enum.GetValues(typeof(HinhThucThanhToan))
                         .Cast<HinhThucThanhToan>()
@@ -545,7 +507,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     "Text"
                 );
 
-                // SelectList cho trạng thái vận chuyển
                 ViewBag.TrangThaiGiaoHang = new SelectList(
                     Enum.GetValues(typeof(TrangThaiGiaoHang))
                         .Cast<TrangThaiGiaoHang>()

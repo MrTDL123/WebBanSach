@@ -16,7 +16,9 @@
 }
 
 <div id="sachtheochude_container">
-    @await Html.PartialAsync("_BreadcrumbPartial", Model.Breadcrumbs)
+    <div id="breadcrumb_container">
+        @await Html.PartialAsync("_BreadcrumbPartial", Model.Breadcrumbs)
+    </div>
 
     <div id="sachtheochude">
         <section id="sachtheochude_left">

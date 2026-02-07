@@ -1,36 +1,38 @@
 ﻿using Media.DataAccess.Repository.IRepository;
 using Media.Models;
+using Meida.DataAccess.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace WebBanSach.ViewComponents
 {
     public class ChuDeMenuViewComponent : ViewComponent
     {
-        private readonly IUnitOfWork _unit;
+        private readonly ApplicationDbContext _context;
 
-        public ChuDeMenuViewComponent(IUnitOfWork unit)
+        public ChuDeMenuViewComponent(ApplicationDbContext context)
         {
-            _unit = unit;
+            _context = context;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            IEnumerable<ChuDe> listChuDe = await _unit.ChuDes.GetAllReadOnlyAsync();
+            IEnumerable<ChuDe> listChuDe = _context.ChuDes;
 
-            IEnumerable<ChuDe> chudeTree = BuildChuDeTree(listChuDe, null);
+            IEnumerable<ChuDe> chudeTree = await BuildChuDeTree(listChuDe, null);
 
             return View(chudeTree);
         }
 
-        private List<ChuDe> BuildChuDeTree(IEnumerable<ChuDe> list, int? parentID)
+        private async Task<List<ChuDe>> BuildChuDeTree(IEnumerable<ChuDe> list, int? parentID)
         {
             List<ChuDe> children = list
                                     .Where(cd => cd.ParentId == parentID)
                                     .ToList();
 
             foreach (ChuDe child in children)
-            {
-                child.Children = BuildChuDeTree(list, child.MaChuDe);
+            { 
+                child.Children = await BuildChuDeTree(list, child.MaChuDe);
             }
 
             return children;

@@ -38,7 +38,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction("QuanLySach");
                 }
 
-                // Load dropdown data
                 await LoadDropdownData();
                 return View(sach);
             }
@@ -62,7 +61,7 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     return RedirectToAction("QuanLySach");
                 }
 
-                // Tắt validation cho navigation properties
+
                 ModelState.Remove("ChuDe");
                 ModelState.Remove("TacGia");
                 ModelState.Remove("NhaXuatBan");
@@ -78,7 +77,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                         return RedirectToAction("QuanLySach");
                     }
 
-                    // Cập nhật thông tin cơ bản
                     existingSach.TenSach = sach.TenSach;
                     existingSach.GiaBan = sach.GiaBan;
                     existingSach.PhanTramGiamGia = sach.PhanTramGiamGia;
@@ -90,7 +88,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                     existingSach.MaNhaXuatBan = sach.MaNhaXuatBan;
                     existingSach.NgayCapNhat = DateTime.Now;
 
-                    // Xử lý ảnh bìa chính
                     if (fileAnhBiaChinh != null && fileAnhBiaChinh.Length > 0)
                     {
                         var uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "product");
@@ -107,7 +104,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                             await fileAnhBiaChinh.CopyToAsync(stream);
                         }
 
-                        // Xóa ảnh cũ nếu có
                         if (!string.IsNullOrEmpty(existingSach.AnhBiaChinh))
                         {
                             var oldImagePath = Path.Combine(_environment.WebRootPath, existingSach.AnhBiaChinh.TrimStart('/'));
@@ -117,10 +113,9 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                             }
                         }
 
-                        existingSach.AnhBiaChinh = fileName; // Chỉ lưu tên file, không lưu đường dẫn đầy đủ
+                        existingSach.AnhBiaChinh = fileName;
                     }
 
-                    // Xử lý ảnh bìa phụ
                     if (filesAnhBiaPhu != null && filesAnhBiaPhu.Count > 0)
                     {
                         var uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "product");
@@ -128,8 +123,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                         {
                             Directory.CreateDirectory(uploadsFolder);
                         }
-
-                        // Lưu danh sách ảnh cũ để xóa sau
                         var oldImages = new List<string>
                         {
                             existingSach.AnhBiaPhu1,
@@ -138,13 +131,11 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                             existingSach.AnhBiaPhu4
                         };
 
-                        // Reset ảnh bìa phụ
                         existingSach.AnhBiaPhu1 = null;
                         existingSach.AnhBiaPhu2 = null;
                         existingSach.AnhBiaPhu3 = null;
                         existingSach.AnhBiaPhu4 = null;
 
-                        // Upload ảnh mới (tối đa 4 ảnh)
                         for (int i = 0; i < Math.Min(filesAnhBiaPhu.Count, 4); i++)
                         {
                             var file = filesAnhBiaPhu[i];
@@ -158,7 +149,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                                     await file.CopyToAsync(stream);
                                 }
 
-                                // Gán vào các property tương ứng
                                 switch (i)
                                 {
                                     case 0:
@@ -177,7 +167,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                             }
                         }
 
-                        // Xóa ảnh cũ sau khi upload thành công
                         foreach (var oldImage in oldImages)
                         {
                             if (!string.IsNullOrEmpty(oldImage))
@@ -200,7 +189,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 }
                 else
                 {
-                    // Log lỗi validation
                     var errors = ModelState.Values.SelectMany(v => v.Errors);
                     foreach (var error in errors)
                     {
@@ -219,12 +207,10 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 TempData["Error"] = $"Lỗi: {ex.Message}";
             }
 
-            // Load lại dropdown data nếu có lỗi
             await LoadDropdownData();
             return View(sach);
         }
 
-        // Hàm xóa ảnh cũ
         private void DeleteOldImages(Sach sach)
         {
             var imageProperties = new[] { sach.AnhBiaPhu1, sach.AnhBiaPhu2, sach.AnhBiaPhu3, sach.AnhBiaPhu4 };
@@ -242,12 +228,10 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // GET: Thêm sách
         public async Task<IActionResult> ThemSach()
         {
             try
             {
-                // Load dropdown data
                 ViewBag.ChuDes = await _context.ChuDes.ToListAsync();
                 ViewBag.TacGias = await _context.TacGias.ToListAsync();
                 ViewBag.NhaXuatBans = await _context.NhaXuatBans.ToListAsync();
@@ -262,7 +246,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // POST: Thêm sách
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ThemSach(Sach sach, IFormFile fileAnhBiaChinh)
@@ -273,7 +256,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    // Xử lý upload ảnh
                     if (fileAnhBiaChinh != null && fileAnhBiaChinh.Length > 0)
                     {
                         var uploadsFolder = Path.Combine(_environment.WebRootPath, "img", "product");
@@ -290,10 +272,9 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                             await fileAnhBiaChinh.CopyToAsync(stream);
                         }
 
-                        sach.AnhBiaChinh = fileName; // Chỉ lưu tên file
+                        sach.AnhBiaChinh = fileName;
                     }
 
-                    // Đảm bảo các giá trị mặc định
                     sach.NgayCapNhat = DateTime.Now;
                     sach.PhanTramGiamGia /= 100;
 
@@ -305,7 +286,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 }
                 else
                 {
-                    // Log lỗi validation
                     var errors = ModelState.Values.SelectMany(v => v.Errors);
                     foreach (var error in errors)
                     {
@@ -324,7 +304,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 TempData["Error"] = $"Lỗi: {ex.Message}";
             }
 
-            // Load lại dropdown data nếu có lỗi
             LoadViewData();
             return View(sach);
         }
@@ -343,21 +322,18 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             ViewBag.NhaXuatBans = await _context.NhaXuatBans.ToListAsync();
         }
 
-        // GET: Quản lý sách với tìm kiếm và phân trang
         public async Task<IActionResult> QuanLySach(string search = "", int page = 1)
         {
             try
             {
                 var pageSize = 10;
 
-                // Lấy toàn bộ sách để tính thống kê
                 var allBooksQuery = _context.Saches
                     .Include(s => s.TacGia)
                     .Include(s => s.NhaXuatBan)
                     .Include(s => s.ChuDe)
                     .AsQueryable();
 
-                // Áp dụng tìm kiếm nếu có
                 if (!string.IsNullOrEmpty(search))
                 {
                     search = search.ToLower();
@@ -372,19 +348,16 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
 
                 var allBooks = await allBooksQuery.ToListAsync();
 
-                // Tính toán thống kê
                 var totalBooks = allBooks.Count;
                 var availableBooks = allBooks.Count(s => s.SoLuong > 0);
                 var totalQuantity = allBooks.Sum(s => s.SoLuong);
                 var totalValue = allBooks.Sum(s => s.GiaBan * (decimal)s.SoLuong);
 
-                // Phân trang
                 var pagedBooks = allBooks
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToList();
 
-                // Truyền dữ liệu
                 ViewBag.TotalBooks = totalBooks;
                 ViewBag.AvailableBooks = availableBooks;
                 ViewBag.TotalQuantity = totalQuantity;
@@ -402,7 +375,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             }
         }
 
-        // GET: Xóa sách
         [HttpGet]
         public async Task<IActionResult> XoaSach(int id)
         {
@@ -428,7 +400,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
                 // Xóa ảnh bìa phụ
                 DeleteOldImages(sach);
 
-                // Xóa sách khỏi database
                 _context.Saches.Remove(sach);
                 await _context.SaveChangesAsync();
 
@@ -442,7 +413,6 @@ namespace ProjectCuoiKi.Areas.Admin.Controllers
             return RedirectToAction("QuanLySach");
         }
 
-        // GET: Chi tiết sách
         [HttpGet]
         public async Task<IActionResult> ChiTietSach(int id)
         {
