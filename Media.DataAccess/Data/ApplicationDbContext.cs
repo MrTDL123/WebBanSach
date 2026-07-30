@@ -58,7 +58,7 @@ namespace Meida.DataAccess.Data
                 .HasValue<KeToan>("KeToan");
 
             // ========== TÀI KHOẢN – KHÁCH HÀNG / NHÂN VIÊN ==========
-            modelBuilder.Entity<TaiKhoan>()
+            modelBuilder.Entity<TaiKhoan>() 
                 .HasOne(t => t.KhachHang)
                 .WithOne(kh => kh.TaiKhoan)
                 .HasForeignKey<KhachHang>(kh => kh.MaTaiKhoan)

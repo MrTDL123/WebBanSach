@@ -1,0 +1,11 @@
+﻿
+@* 
+    * Component Router chịu trách nhiệm lắng nghe sự thay đổi URL trên trình duyệt
+      - Component sẽ quét toàn bộ Assembly để map các component có khai báo @page tương ứng
+*@
+<Router AppAssembly="typeof(Program).Assembly" AdditionalAssemblies="new[] { typeof(Client._Imports).Assembly }" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

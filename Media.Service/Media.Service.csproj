@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Media.DataAccess\Media.DataAccess.csproj" />
-    <ProjectReference Include="..\Media.Models\Media.Models.csproj" />
+    <ProjectReference Include="..\Media.Models\WebApp.Shared.csproj" />
     <ProjectReference Include="..\Media.Utility\Media.Utility.csproj" />
   </ItemGroup>
 
