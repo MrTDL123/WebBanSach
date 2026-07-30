@@ -1,10 +1,37 @@
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
+using Microsoft.AspNetCore.DataProtection;
 using WebApp.Admin.Components;
+using WebApp.Admin.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<CookieHandler>();
+
+builder.Services.AddHttpClient("ApiClient" , client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7188/");
+})
+.AddHttpMessageHandler<CookieHandler>();
+
+builder.Services.AddScoped(sp =>
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"));
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
+    .SetApplicationName("SharedCookieWebBanSach");
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = ".WebBanSach.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 
 var app = builder.Build();
 
@@ -25,3 +52,4 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+

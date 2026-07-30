@@ -29,8 +29,6 @@
     <Folder Include="Mappings\" />
     <Folder Include="Utilities\" />
     <Folder Include="Validations\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Implementations\" />
   </ItemGroup>
 
 </Project>
