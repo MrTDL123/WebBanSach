@@ -25,15 +25,27 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
-    .SetApplicationName("SharedCookieWebBanSach");
+// TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
+if (OperatingSystem.IsWindows())
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
+        .SetApplicationName("SharedCookieWebBanSach")
+        .ProtectKeysWithDpapi();
+}
+else
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
+        .SetApplicationName("SharedCookieWebBanSach");
+}
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".WebBanSach.Auth";
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
+
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
     // Trả về mã 403/401 thay vì Redirect

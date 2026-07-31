@@ -21,9 +21,20 @@ builder.Services.AddHttpClient("ApiClient" , client =>
 builder.Services.AddScoped(sp =>
     sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"));
 
-builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
-    .SetApplicationName("SharedCookieWebBanSach");
+// TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
+if (OperatingSystem.IsWindows())
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
+        .SetApplicationName("SharedCookieWebBanSach")
+        .ProtectKeysWithDpapi();
+}
+else
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
+        .SetApplicationName("SharedCookieWebBanSach");
+}
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
