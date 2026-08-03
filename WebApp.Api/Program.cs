@@ -2,10 +2,12 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using WebApp.Api.Data;
 using WebApp.Api.Entities;
+using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
 
@@ -20,6 +22,21 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Đăng ký Cors 
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins").Get<string[]>() ??
+    new[] { "https://localhost:7135", "https://localhost:7035" };
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorApps", policy =>
+        {
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+});
 // Đăng ký và sử dụng Cookie
 builder.Services.AddIdentity<User, Role>(options =>
 {
@@ -89,6 +106,9 @@ builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+// Thêm Hub để cập nhập các update từ Admin
+builder.Services.AddSignalR();
+
 
 builder.Services.AddOpenApi();
 
@@ -102,8 +122,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowBlazorApps");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<UpdateBroadcastHub>("/hubs/updates");
 
 app.Run();
