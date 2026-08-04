@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\WebApp.Shared\WebApp.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using System.Reflection;
 using WebApp.Api.Data;
 using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
@@ -97,6 +98,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
+// Đăng ký FluentValidation
+// Tự độc quét cả project API để tìm các class kế thừa AbstractValidator
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 // Đăng ký FluentValidation cho toàn bộ project
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
@@ -108,7 +113,6 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Thêm Hub để cập nhập các update từ Admin
 builder.Services.AddSignalR();
-
 
 builder.Services.AddOpenApi();
 

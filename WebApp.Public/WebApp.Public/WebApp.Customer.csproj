@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Media.Models\WebApp.Shared.csproj" />
+    <ProjectReference Include="..\..\WebApp.Shared\WebApp.Shared.csproj" />
     <ProjectReference Include="..\WebApp.Public.Client\WebApp.Customer.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.10" />
   </ItemGroup>
