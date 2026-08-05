@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Address
+namespace WebApp.Shared.Dtos.CustomerDtos.Address
 {
     // Component dùng: SuaDiaChi.razor (Customer - Sổ địa chỉ)
     // Khách hàng chỉnh sửa một địa chỉ đã lưu

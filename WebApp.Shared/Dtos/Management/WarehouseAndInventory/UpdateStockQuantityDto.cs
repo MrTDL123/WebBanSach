@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.WarehouseAndInventory
+namespace WebApp.Shared.Dtos.AdminClient.WarehouseAndInventory
 {
     // Component dùng: DashboardKho.razor, CapNhatTonKho.razor (Admin - Warehouse)
     public record UpdateStockQuantityDto(

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.WarehouseAndInventory
+namespace WebApp.Shared.Dtos.AdminClient.WarehouseAndInventory
 {
     // ===== BƯỚC 2: ĐÓNG GÓI SÁCH [Role: Warehouse & Inventory] =====
     // Component dùng: DonHangChoDongGoi.razor (Admin - Warehouse)

@@ -1,6 +1,6 @@
-using WebBanSach.Shared.Enums;
+using WebApp.Shared.Enums;
 
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Order
+namespace WebApp.Shared.Dtos.CustomerDtos.Order
 {
     // API trả về thông tin một phiếu trả hàng để hiển thị
     public record ReturnRequestDto(

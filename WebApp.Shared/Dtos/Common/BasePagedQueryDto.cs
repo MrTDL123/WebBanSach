@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.Common
+namespace WebApp.Shared.Dtos.Common
 {
     // DTO cơ sở dùng làm Query Parameter cho tất cả các API lấy danh sách phân trang (Admin & Customer)
     public record BasePagedQueryDto(

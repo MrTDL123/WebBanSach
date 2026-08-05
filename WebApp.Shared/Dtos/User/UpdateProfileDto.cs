@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.User
+namespace WebApp.Shared.Dtos.User
 {
     // Component dùng: SuaThongTinCaNhan.razor (Customer)
     public record UpdateProfileDto(

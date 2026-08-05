@@ -1,6 +1,6 @@
-using WebBanSach.Shared.Dtos.CustomerDtos.Order;
+using WebApp.Shared.Dtos.CustomerDtos.Order;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.SystemAdmin
+namespace WebApp.Shared.Dtos.AdminClient.SystemAdmin
 {
     // Component dùng: Dashboard.razor (Admin)
     public record DashboardStatsDto(

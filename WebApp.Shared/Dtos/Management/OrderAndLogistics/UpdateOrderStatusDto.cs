@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.OrderAndLogistics
+namespace WebApp.Shared.Dtos.AdminClient.OrderAndLogistics
 {
     // Component dùng: QuanLyDonHang.razor (Admin - Order & Logistics)
     public record UpdateOrderStatusDto(

@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.User
+namespace WebApp.Shared.Dtos.User
 {
     // Component dùng: ThongTinCaNhan.razor (Customer)
     public record UserProfileDto(

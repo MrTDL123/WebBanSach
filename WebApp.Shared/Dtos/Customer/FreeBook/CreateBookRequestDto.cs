@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.FreeBook
+namespace WebApp.Shared.Dtos.CustomerDtos.FreeBook
 {
     // Component dùng: ThinSachForm.razor (Customer)
     public record CreateBookRequestDto(

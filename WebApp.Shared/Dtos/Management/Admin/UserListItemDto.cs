@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.AdminClient.SystemAdmin
+namespace WebApp.Shared.Dtos.AdminClient.SystemAdmin
 {
     // Component dùng: QuanLyNguoiDung.razor (Admin)
     public record UserListItemDto(

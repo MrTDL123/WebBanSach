@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing
+namespace WebApp.Shared.Dtos.AdminClient.ContentAndMarketing
 {
     // Component dùng: TrangTacGia.razor (Customer), Dropdown chọn tác giả (Admin)
     public record AuthorDto(

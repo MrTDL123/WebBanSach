@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.OrderAndLogistics
+namespace WebApp.Shared.Dtos.AdminClient.OrderAndLogistics
 {
     // ===== BƯỚC 3: ĐẨY ĐƠN SANG 3PL [Role: Order & Logistics] =====
     // Component dùng: QuanLyDonHang.razor (Admin - Order & Logistics)

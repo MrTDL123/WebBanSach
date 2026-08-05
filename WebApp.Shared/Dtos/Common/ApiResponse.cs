@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.Common
+namespace WebApp.Shared.Dtos.Common
 {
     // Wrapper chuẩn phản hồi từ Web API trả về cho 2 Blazor Client
     public record ApiResponse<T>(

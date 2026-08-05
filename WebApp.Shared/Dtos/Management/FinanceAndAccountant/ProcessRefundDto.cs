@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.FinanceAndAccountant
+namespace WebApp.Shared.Dtos.AdminClient.FinanceAndAccountant
 {
     // ===== BƯỚC 5: XỬ LÝ HOÀN TIỀN [Role: Finance & Accountant] =====
     // Component dùng: QuanLyHoanTien.razor (Admin - Finance)

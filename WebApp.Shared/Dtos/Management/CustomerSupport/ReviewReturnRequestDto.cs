@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.CustomerSupport
+namespace WebApp.Shared.Dtos.AdminClient.CustomerSupport
 {
     // Component dùng: QuanLyTraHang.razor (Admin - CSKH)
     public record ReviewReturnRequestDto(

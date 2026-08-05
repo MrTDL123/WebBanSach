@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Order
+namespace WebApp.Shared.Dtos.CustomerDtos.Order
 {
     // Component dùng: Checkout.razor (Customer)
     public record CreateOrderDto(

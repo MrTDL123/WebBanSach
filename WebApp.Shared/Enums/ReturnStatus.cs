@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Enums
+namespace WebApp.Shared.Enums
 {
     /// <summary>
     /// Trạng thái vòng đời của một Phiếu Trả hàng / Hoàn tiền.

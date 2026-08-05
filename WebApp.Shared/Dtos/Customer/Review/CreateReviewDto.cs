@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Review
+namespace WebApp.Shared.Dtos.CustomerDtos.Review
 {
     // Component dùng: FormDanhGia.razor (Customer - chỉ hiển thị sau khi đơn hàng Completed)
     // Điều kiện: IsVerifiedPurchase - khách phải đã mua và nhận hàng thành công mới được đánh giá

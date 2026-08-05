@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing
+namespace WebApp.Shared.Dtos.AdminClient.ContentAndMarketing
 {
     // Component dùng: ThemTacGia.razor (Admin - Content & Marketing)
     public record CreateAuthorDto(

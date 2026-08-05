@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.Customer.Auth
+namespace WebApp.Shared.Dtos.Customer.Auth
 {
     // Component dùng: Register.razor (Form đăng ký tài khoản khách hàng mới)
     public record RegisterDto(

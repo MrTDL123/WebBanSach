@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.AdminClient.FinanceAndAccountant
+namespace WebApp.Shared.Dtos.AdminClient.FinanceAndAccountant
 {
     // ===== ĐỐI SOÁT DÒNG TIỀN COD (Finance Module - Admin) =====
     // Component dùng: DoiSoatCOD.razor (Admin - Finance & Accountant)

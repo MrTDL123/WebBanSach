@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.Common
+namespace WebApp.Shared.Dtos.Common
 {
     // Component dùng: ApDungMaGiamGia.razor (Customer - Checkout result)
     public record VoucherApplyResultDto(

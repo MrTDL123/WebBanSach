@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.Customer.Order
+namespace WebApp.Shared.Dtos.Customer.Order
 {
     // ===== PHIẾU TRẢ HÀNG (RETURN REQUEST) =====
     // Component dùng: YeuCauTraHang.razor (Customer)

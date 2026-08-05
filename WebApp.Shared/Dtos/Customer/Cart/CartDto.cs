@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Cart
+namespace WebApp.Shared.Dtos.CustomerDtos.Cart
 {
     public record CartDto(
         List<CartItemDto> Items

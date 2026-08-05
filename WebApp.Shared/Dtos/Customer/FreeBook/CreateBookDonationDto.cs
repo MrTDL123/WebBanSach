@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.FreeBook
+namespace WebApp.Shared.Dtos.CustomerDtos.FreeBook
 {
     // Component dùng: TangSachForm.razor (Customer)
     public record CreateBookDonationDto(

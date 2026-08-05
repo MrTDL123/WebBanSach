@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.Common
+namespace WebApp.Shared.Dtos.Common
 {
     // Khách nhập mã voucher ở trang Checkout
     public record ApplyVoucherDto(

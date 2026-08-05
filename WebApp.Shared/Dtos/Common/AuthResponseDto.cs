@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.Common
+namespace WebApp.Shared.Dtos.Common
 {
     // Kết quả trả về sau khi Đăng nhập thành công (cho cả CustomerLogin và AdminLogin)
     public record AuthResponseDto(

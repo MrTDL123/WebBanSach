@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing
+namespace WebApp.Shared.Dtos.AdminClient.ContentAndMarketing
 {
     // Component dùng: Dropdown NXB (filter), TrangNXB.razor (Customer), QuanLyNXB.razor (Admin)
     public record PublisherDto(

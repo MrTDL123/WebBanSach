@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.AdminClient.CustomerSupport
+namespace WebApp.Shared.Dtos.AdminClient.CustomerSupport
 {
     // Component dùng: DuyetThinSach.razor (Admin - CSKH)
     public record ReviewBookRequestDto(

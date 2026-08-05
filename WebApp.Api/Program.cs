@@ -11,6 +11,7 @@ using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
+using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,12 +99,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// Đăng ký FluentValidation
-// Tự độc quét cả project API để tìm các class kế thừa AbstractValidator
-builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-// Đăng ký FluentValidation cho toàn bộ project
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+// Đăng ký FluentValidations
+builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
 
 builder.Services.AddControllers();
 

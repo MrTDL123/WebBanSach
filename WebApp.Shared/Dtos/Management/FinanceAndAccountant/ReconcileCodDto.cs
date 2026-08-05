@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.FinanceAndAccountant
+namespace WebApp.Shared.Dtos.AdminClient.FinanceAndAccountant
 {
     // Nhân viên kế toán xác nhận đã nhận tiền COD từ 3PL chuyển về
     public record ReconcileCodDto(

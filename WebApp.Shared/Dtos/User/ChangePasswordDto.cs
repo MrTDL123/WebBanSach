@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.User
+namespace WebApp.Shared.Dtos.User
 {
     // Component dùng: ChangePassword.razor (Đổi mật khẩu tài khoản cá nhân)
     public record ChangePasswordDto(

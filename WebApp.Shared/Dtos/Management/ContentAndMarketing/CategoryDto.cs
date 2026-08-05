@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing
+namespace WebApp.Shared.Dtos.AdminClient.ContentAndMarketing
 {
     // Component dùng: Menu danh mục, Dropdown filter (Customer), QuanLyDanhMuc.razor (Admin)
     public record CategoryDto(

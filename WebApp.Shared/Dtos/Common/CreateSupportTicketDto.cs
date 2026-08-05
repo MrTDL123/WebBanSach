@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.Common
+namespace WebApp.Shared.Dtos.Common
 {
     // Component dùng: LienHe.razor (Customer - Form tạo ticket hỗ trợ)
     public record CreateSupportTicketDto(

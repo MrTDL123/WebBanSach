@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing
+namespace WebApp.Shared.Dtos.AdminClient.ContentAndMarketing
 {
     // Admin tạo Voucher mới
     public record CreateVoucherDto(

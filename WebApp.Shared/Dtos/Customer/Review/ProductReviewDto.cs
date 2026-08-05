@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Review
+namespace WebApp.Shared.Dtos.CustomerDtos.Review
 {
     // Component dùng: DanhGiaSanPham.razor (Customer - phần hiển thị đánh giá)
     // Đây là dữ liệu READ-ONLY, API trả về để hiển thị trên trang sách

@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Product
+namespace WebApp.Shared.Dtos.CustomerDtos.Product
 {
     // Component dùng: ProductCard.razor, Home.razor (Customer), QuanLySach.razor (Admin)
     public record ProductListItemDto(

@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.CustomerDtos.Address
+namespace WebApp.Shared.Dtos.CustomerDtos.Address
 {
     // Component dùng: SoNguonTinh.razor, Checkout.razor (Customer)
     // Trả về danh sách địa chỉ đã lưu của khách hàng

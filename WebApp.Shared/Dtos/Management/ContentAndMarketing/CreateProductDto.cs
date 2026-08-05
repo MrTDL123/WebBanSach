@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Dtos.Management.ContentAndMarketing
+namespace WebApp.Shared.Dtos.Management.ContentAndMarketing
 {
     // Component dùng: ThemSach.razor (Admin - Content & Marketing)
     public record CreateProductDto(

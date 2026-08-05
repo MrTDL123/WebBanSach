@@ -1,4 +1,4 @@
-namespace WebBanSach.Shared.Enums
+namespace WebApp.Shared.Enums
 {
     /// <summary>
     /// Phương thức thanh toán khi đặt hàng.
