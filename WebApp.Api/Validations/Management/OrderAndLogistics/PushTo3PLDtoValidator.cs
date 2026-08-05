@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.AdminClient.OrderAndLogistics;
+using WebApp.Shared.Dtos.AdminClient.OrderAndLogistics;
 
-namespace WebBanSach.Api.Validations.Admin.OrderAndLogistics
+namespace WebApp.Api.Validations.Admin.OrderAndLogistics
 {
     public class PushTo3PLDtoValidator : AbstractValidator<PushTo3PLDto>
     {

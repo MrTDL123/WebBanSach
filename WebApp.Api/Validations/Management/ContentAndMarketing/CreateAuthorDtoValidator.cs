@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing;
+using WebApp.Shared.Dtos.AdminClient.ContentAndMarketing;
 
-namespace WebBanSach.Api.Validations.Admin.ContentAndMarketing
+namespace WebApp.Api.Validations.Admin.ContentAndMarketing
 {
     // CreateAuthorDtoValidator.cs
     public class CreateAuthorDtoValidator : AbstractValidator<CreateAuthorDto>

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.AdminClient.FinanceAndAccountant;
+using WebApp.Shared.Dtos.AdminClient.FinanceAndAccountant;
 
-namespace WebBanSach.Api.Validations.Admin.FinanceAndAccountant
+namespace WebApp.Api.Validations.Admin.FinanceAndAccountant
 {
     public class ProcessRefundDtoValidator : AbstractValidator<ProcessRefundDto>
     {

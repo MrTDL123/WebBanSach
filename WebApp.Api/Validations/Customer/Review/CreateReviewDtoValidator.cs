@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.CustomerDtos.Review;
+using WebApp.Shared.Dtos.CustomerDtos.Review;
 
-namespace WebBanSach.Api.Validations.Customer.Review
+namespace WebApp.Api.Validations.Customer.Review
 {
     public class CreateReviewDtoValidator : AbstractValidator<CreateReviewDto>
     {

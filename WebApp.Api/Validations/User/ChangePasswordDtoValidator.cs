@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.User;
+using WebApp.Shared.Dtos.User;
 
-namespace WebBanSach.Api.Validations.User
+namespace WebApp.Api.Validations.User
 {
     public class ChangePasswordDtoValidator : AbstractValidator<ChangePasswordDto>
     {

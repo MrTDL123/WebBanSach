@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.CustomerDtos.Cart;
+using WebApp.Shared.Dtos.CustomerDtos.Cart;
 
-namespace WebBanSach.Api.Validations.Customer.Cart
+namespace WebApp.Api.Validations.Customer.Cart
 {
     // AddToCartDtoValidator.cs
     public class AddToCartDtoValidator : AbstractValidator<AddToCartDto>

@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.CustomerDtos.Address;
+using WebApp.Shared.Dtos.CustomerDtos.Address;
 
-namespace WebBanSach.Api.Validations.Customer.Address
+namespace WebApp.Api.Validations.Customer.Address
 {
     public class UpdateAddressDtoValidator : AbstractValidator<UpdateAddressDto>
     {

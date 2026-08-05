@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using System.Reflection;
 using WebApp.Api.Data;
 using WebApp.Api.Entities;
 using WebApp.Api.Hubs;

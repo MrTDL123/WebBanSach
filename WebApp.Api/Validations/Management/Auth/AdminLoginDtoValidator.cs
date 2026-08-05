@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.Management.Auth;
+using WebApp.Shared.Dtos.Management.Auth;
 
-namespace WebBanSach.Api.Validations.Management.Auth
+namespace WebApp.Api.Validations.Management.Auth
 {
     public class AdminLoginDtoValidator : AbstractValidator<AdminLoginDto>
     {

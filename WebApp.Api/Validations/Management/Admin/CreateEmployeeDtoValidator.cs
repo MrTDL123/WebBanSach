@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.AdminClient.SystemAdmin;
+using WebApp.Shared.Dtos.AdminClient.SystemAdmin;
 
-namespace WebBanSach.Api.Validations.Admin.SystemAdmin
+namespace WebApp.Api.Validations.Admin.SystemAdmin
 {
     // CreateEmployeeDtoValidator.cs
     public class CreateEmployeeDtoValidator : AbstractValidator<CreateEmployeeDto>

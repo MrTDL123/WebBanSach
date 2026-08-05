@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.CustomerDtos.Order;
+using WebApp.Shared.Dtos.CustomerDtos.Order;
 
-namespace WebBanSach.Api.Validations.Customer.Order
+namespace WebApp.Api.Validations.Customer.Order
 {
     // CreateOrderDtoValidator.cs
     public class CreateOrderDtoValidator : AbstractValidator<CreateOrderDto>

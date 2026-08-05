@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.AdminClient.WarehouseAndInventory;
+using WebApp.Shared.Dtos.AdminClient.WarehouseAndInventory;
 
-namespace WebBanSach.Api.Validations.Admin.WarehouseAndInventory
+namespace WebApp.Api.Validations.Admin.WarehouseAndInventory
 {
     public class UpdateStockQuantityDtoValidator : AbstractValidator<UpdateStockQuantityDto>
     {

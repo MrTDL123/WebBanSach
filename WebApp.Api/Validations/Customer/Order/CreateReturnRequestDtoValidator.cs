@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.Customer.Order;
+using WebApp.Shared.Dtos.Customer.Order;
 
-namespace WebBanSach.Api.Validations.Customer.Order
+namespace WebApp.Api.Validations.Customer.Order
 {
     public class CreateReturnRequestDtoValidator : AbstractValidator<CreateReturnRequestDto>
     {

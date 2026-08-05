@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.AdminClient.OrderAndLogistics;
+using WebApp.Shared.Dtos.AdminClient.OrderAndLogistics;
 
-namespace WebBanSach.Api.Validations.Admin.OrderAndLogistics
+namespace WebApp.Api.Validations.Admin.OrderAndLogistics
 {
     public class UpdateOrderStatusDtoValidator : AbstractValidator<UpdateOrderStatusDto>
     {

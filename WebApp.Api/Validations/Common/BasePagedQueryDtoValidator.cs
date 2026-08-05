@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.Common;
+using WebApp.Shared.Dtos.Common;
 
-namespace WebBanSach.Api.Validations.Common
+namespace WebApp.Api.Validations.Common
 {
     public class BasePagedQueryDtoValidator : AbstractValidator<BasePagedQueryDto>
     {

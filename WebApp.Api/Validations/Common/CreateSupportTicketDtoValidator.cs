@@ -1,9 +1,9 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.AdminClient.CustomerSupport;
-using WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing;
-using WebBanSach.Shared.Dtos.Common;
+using WebApp.Shared.Dtos.AdminClient.CustomerSupport;
+using WebApp.Shared.Dtos.AdminClient.ContentAndMarketing;
+using WebApp.Shared.Dtos.Common;
 
-namespace WebBanSach.Api.Validations.Common
+namespace WebApp.Api.Validations.Common
 {
     public class CreateSupportTicketDtoValidator : AbstractValidator<CreateSupportTicketDto>
     {

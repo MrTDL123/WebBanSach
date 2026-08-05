@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.CustomerDtos.FreeBook;
+using WebApp.Shared.Dtos.CustomerDtos.FreeBook;
 
-namespace WebBanSach.Api.Validations.Customer.FreeBook
+namespace WebApp.Api.Validations.Customer.FreeBook
 {
 
     // CreateBookDonationDtoValidator.cs

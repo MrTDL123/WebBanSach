@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.AdminClient.ContentAndMarketing;
+using WebApp.Shared.Dtos.AdminClient.ContentAndMarketing;
 
-namespace WebBanSach.Api.Validations.Admin.ContentAndMarketing
+namespace WebApp.Api.Validations.Admin.ContentAndMarketing
 {
     public class CreatePublisherDtoValidator : AbstractValidator<CreatePublisherDto>
     {

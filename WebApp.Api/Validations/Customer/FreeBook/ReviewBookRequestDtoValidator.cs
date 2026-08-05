@@ -1,7 +1,7 @@
 using FluentValidation;
-using WebBanSach.Shared.Dtos.AdminClient.CustomerSupport;
+using WebApp.Shared.Dtos.AdminClient.CustomerSupport;
 
-namespace WebBanSach.Api.Validations.Customer.FreeBook
+namespace WebApp.Api.Validations.Customer.FreeBook
 {
     public class ReviewBookRequestDtoValidator : AbstractValidator<ReviewBookRequestDto>
     {

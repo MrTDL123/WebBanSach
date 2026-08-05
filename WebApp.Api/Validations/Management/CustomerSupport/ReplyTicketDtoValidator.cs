@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebBanSach.Shared.Dtos.AdminClient.CustomerSupport;
+using WebApp.Shared.Dtos.AdminClient.CustomerSupport;
 
-namespace WebBanSach.Api.Validations.Admin.CustomerSupport
+namespace WebApp.Api.Validations.Admin.CustomerSupport
 {
     public class ReplyTicketDtoValidator : AbstractValidator<ReplyTicketDto>
     {
