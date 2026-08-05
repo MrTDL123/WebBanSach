@@ -5,8 +5,6 @@ VisualStudioVersion = 18.8.12021.73
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebBanSach", "WebBanSach\WebBanSach.csproj", "{6776D70F-AB0D-A556-DB38-8CCF35AE27C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.DataAccess", "Media.DataAccess\Media.DataAccess.csproj", "{84407746-93DE-7B75-F709-6951D3AFCD0A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.Utility", "Media.Utility\Media.Utility.csproj", "{51C120CB-F22D-5FB7-F44E-004E16A60475}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.Service", "Media.Service\Media.Service.csproj", "{43527CDA-AFEB-47C9-A718-B772A93671DB}"
@@ -33,10 +31,6 @@ Global
 		{6776D70F-AB0D-A556-DB38-8CCF35AE27C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6776D70F-AB0D-A556-DB38-8CCF35AE27C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6776D70F-AB0D-A556-DB38-8CCF35AE27C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{84407746-93DE-7B75-F709-6951D3AFCD0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{84407746-93DE-7B75-F709-6951D3AFCD0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{84407746-93DE-7B75-F709-6951D3AFCD0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{84407746-93DE-7B75-F709-6951D3AFCD0A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{51C120CB-F22D-5FB7-F44E-004E16A60475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{51C120CB-F22D-5FB7-F44E-004E16A60475}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51C120CB-F22D-5FB7-F44E-004E16A60475}.Release|Any CPU.ActiveCfg = Release|Any CPU

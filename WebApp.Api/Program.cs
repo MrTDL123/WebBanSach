@@ -2,12 +2,12 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using WebApp.Api.Data;
 using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
+using WebApp.Api.Middlewares;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
 using WebApp.Shared;
@@ -15,6 +15,7 @@ using WebApp.Shared;
 var builder = WebApplication.CreateBuilder(args);
 
 // Tránh việc gọi Attribute [Authorize] lên các Controller
+// Lưu ý: cần [AllowAnonymous] cho các endpoint mà không cần đăng nhập
 builder.Services.AddAuthorizationBuilder()
     .SetFallbackPolicy(new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
@@ -61,18 +62,24 @@ builder.Services.AddIdentity<User, Role>(options =>
 
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
+var keysPath = builder.Configuration["DataProtection:KeysPath"]
+    ?? (OperatingSystem.IsWindows() 
+        ? @"C:\SharedKeys\WebBanSach"
+        : "/app/SharedKeys/WebBanSach");
+
+var keysDir = new DirectoryInfo(keysPath);
+if (!keysDir.Exists)
+{
+    keysDir.Create();
+}
+
+var dataProtection = builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(keysDir)
+        .SetApplicationName("SharedCookieWebBanSach");
+        
 if (OperatingSystem.IsWindows())
 {
-    builder.Services.AddDataProtection()
-        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
-        .SetApplicationName("SharedCookieWebBanSach")
-        .ProtectKeysWithDpapi();
-}
-else
-{
-    builder.Services.AddDataProtection()
-        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
-        .SetApplicationName("SharedCookieWebBanSach");
+    dataProtection.ProtectKeysWithDpapi();
 }
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -98,9 +105,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
-// Đăng ký FluentValidations
-builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
-
 builder.Services.AddControllers();
 
 // Thêm Context vào các request để Service có thể đọc thông tin User
@@ -109,6 +113,9 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Thêm Hub để cập nhập các update từ Admin
 builder.Services.AddSignalR();
+
+// Load các Validation được thiết lập ở WebApp.Shared
+builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
 
 builder.Services.AddOpenApi();
 
@@ -122,12 +129,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseCors("AllowBlazorApps");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Xác nhận input trước khi vào controller
+app.UseCustomValidationMiddleware();
 app.MapControllers();
+
 app.MapHub<UpdateBroadcastHub>("/hubs/updates");
 
 app.Run();

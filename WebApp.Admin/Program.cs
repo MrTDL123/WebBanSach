@@ -1,7 +1,9 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.AspNetCore.DataProtection;
 using WebApp.Admin.Components;
 using WebApp.Admin.Utilities;
+using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,18 +24,24 @@ builder.Services.AddScoped(sp =>
     sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"));
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
+var keysPath = builder.Configuration["DataProtection:KeysPath"]
+    ?? (OperatingSystem.IsWindows()
+        ? @"C:\SharedKeys\WebBanSach"
+        : "/app/SharedKeys/WebBanSach");
+
+var keysDir = new DirectoryInfo(keysPath);
+if (!keysDir.Exists)
+{
+    keysDir.Create();
+}
+
+var dataProtection = builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(keysDir)
+        .SetApplicationName("SharedCookieWebBanSach");
+
 if (OperatingSystem.IsWindows())
 {
-    builder.Services.AddDataProtection()
-        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
-        .SetApplicationName("SharedCookieWebBanSach")
-        .ProtectKeysWithDpapi();
-}
-else
-{
-    builder.Services.AddDataProtection()
-        .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\WebBanSach"))
-        .SetApplicationName("SharedCookieWebBanSach");
+    dataProtection.ProtectKeysWithDpapi();
 }
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -43,6 +51,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
+
+builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
 
 var app = builder.Build();
 
