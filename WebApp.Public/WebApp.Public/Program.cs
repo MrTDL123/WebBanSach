@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.AspNetCore.DataProtection;
-using WebApp.Customer.Client.Components.Pages;
+using WebApp.Customer.Client.Pages;
 using WebApp.Customer.Components;
 using WebApp.Customer.Utilities;
 using WebApp.Shared;
@@ -54,7 +54,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
-builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
+builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
 
 var app = builder.Build();
 

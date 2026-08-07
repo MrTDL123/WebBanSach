@@ -1,0 +1,31 @@
+﻿@page "/dang-nhap"
+
+@using WebApp.Shared.Dtos.Customer.Auth
+@using WebApp.Shared.Validations.Customer.Auth
+@using WebApp.Customer.Client.Services
+@rendermode InteractiveAuto
+@inject IAuthClientService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Đăng nhập</PageTitle>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2>Đăng nhập</h2>
+            <p>Chào mừng bạn quay lại!</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert-danger-custom">
+                @errorMessage
+            </div>
+        }
+
+        <EditForm Model="@loginModel" OnValidSubmit="HandleSubmitAsync">
+            <FluentValidator/>
+        </EditForm>
+    </div>
+</div>

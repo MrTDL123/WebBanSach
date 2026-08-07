@@ -11,6 +11,6 @@ builder.Services.AddScoped(_ =>
     return new HttpClient(handler) { BaseAddress = new Uri("https://localhost:7188/") };
 });
 
-builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
+builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
 
 await builder.Build().RunAsync();

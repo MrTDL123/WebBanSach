@@ -7,7 +7,6 @@ using Scalar.AspNetCore;
 using WebApp.Api.Data;
 using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
-using WebApp.Api.Middlewares;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
 using WebApp.Shared;
@@ -129,15 +128,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
 
 app.UseCors("AllowBlazorApps");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Xác nhận input trước khi vào controller
-app.UseCustomValidationMiddleware();
 app.MapControllers();
 
 app.MapHub<UpdateBroadcastHub>("/hubs/updates");

@@ -52,7 +52,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
-builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
+builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
 
 var app = builder.Build();
 
