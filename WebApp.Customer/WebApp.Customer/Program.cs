@@ -1,16 +1,32 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.AspNetCore.DataProtection;
-using WebApp.Admin.Components;
-using WebApp.Admin.Middlewares;
-using WebApp.Admin.Utilities;
+using WebApp.Customer.Client.Auth;
+using WebApp.Customer.Client.Extensions;
+using WebApp.Customer.Client.Pages;
+using WebApp.Customer.Client.Services.Implementations;
+using WebApp.Customer.Client.Services.Interfaces;
+using WebApp.Customer.Components;
+using WebApp.Customer.Utilities;
 using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<ServerCookieHandler>();
+
+var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
+
+builder.Services.AddApiClientServices<ServerCookieHandler>(apiBaseAddress);
+
+builder.Services.AddSharedClientServices();
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
 var keysPath = builder.Configuration["DataProtection:KeysPath"]
@@ -33,7 +49,6 @@ if (OperatingSystem.IsWindows())
     dataProtection.ProtectKeysWithDpapi();
 }
 
-// Đăng ký Authentication Cookie cho Blazor Server
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
@@ -46,32 +61,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = true;
     });
 
-builder.Services.AddAuthorizationCore();
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<UserSessionState>();
-builder.Services.AddTransient<CookieHandler>();
-
-
-var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
-
-// Đăng ký HttpClient
-builder.Services.AddHttpClient("ApiClient", client =>
-{
-    client.BaseAddress = new Uri(apiBaseAddress);
-})
-.AddHttpMessageHandler<CookieHandler>();
-
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"));
-
-builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
@@ -80,14 +80,12 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Custom middleware để mỗi lần gửi, nhận request response thì phải đọc cookie
-app.UseMiddleware<InitialSessionMiddleware>();
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(WebApp.Customer.Client._Imports).Assembly);
 
 app.Run();
-

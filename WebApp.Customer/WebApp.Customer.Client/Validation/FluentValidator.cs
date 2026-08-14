@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace WebApp.Admin.Components.Validation
+namespace WebApp.Customer.Client.Validation
 {
+    // Component kết nối AbsatrctValidator<T> tương ứng với DTO 
     public class FluentValidator : ComponentBase, IDisposable
     {
         private EditContext? _previousEditContext;
@@ -13,6 +14,7 @@ namespace WebApp.Admin.Components.Validation
         private IServiceProvider ServiceProvider { get; set; } = default!;
 
         [CascadingParameter]
+        // Đối tượng quản lý toàn bộ trạng thái dữ liệu, sự kiện của <EditForm>
         private EditContext? CurrentEditContext { get; set; }
 
         protected override void OnParametersSet()
@@ -23,12 +25,12 @@ namespace WebApp.Admin.Components.Validation
                     $"{nameof(FluentValidator)} bắt buộc phải nằm bên trong một <EditForm>.");
             }
 
-            // Tự động gỡ và đăng ký lại sự kiện khi EditContext thay đổi
             if (CurrentEditContext != _previousEditContext)
             {
                 DetachEvents();
 
                 _previousEditContext = CurrentEditContext;
+                // Kho chứa thông báo lỗi 
                 _messageStore = new ValidationMessageStore(CurrentEditContext);
 
                 CurrentEditContext.OnValidationRequested += HandleValidationRequested;
@@ -41,6 +43,8 @@ namespace WebApp.Admin.Components.Validation
         /// </summary>
         private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
         {
+            Console.WriteLine($"[FluentValidator Log] Field Changed: {e.FieldIdentifier.FieldName}");
+            // Xóa thông báo cũ của ô nhập liệu đang xét
             _messageStore?.Clear(e.FieldIdentifier);
             ValidateField(CurrentEditContext!, e.FieldIdentifier);
         }
@@ -50,6 +54,7 @@ namespace WebApp.Admin.Components.Validation
         /// </summary>
         private void HandleValidationRequested(object? sender, ValidationRequestedEventArgs e)
         {
+            Console.WriteLine("[FluentValidator Log] Validation Requested (Form Submitted)");
             _messageStore?.Clear();
             ValidateModel(CurrentEditContext!);
         }
@@ -76,6 +81,7 @@ namespace WebApp.Admin.Components.Validation
             var validator = GetValidatorForModel(fieldIdentifier.Model);
             if (validator == null) return;
 
+            // Lọc các rule của riêng field này
             var context = ValidationContext<object>.CreateWithOptions(
                 fieldIdentifier.Model,
                 options => options.IncludeProperties(fieldIdentifier.FieldName));
@@ -90,10 +96,18 @@ namespace WebApp.Admin.Components.Validation
             editContext.NotifyValidationStateChanged();
         }
 
+        // Lấy IValidator tương ứng trong DI container
         private IValidator? GetValidatorForModel(object model)
         {
             var validatorType = typeof(IValidator<>).MakeGenericType(model.GetType());
-            return ServiceProvider.GetService(validatorType) as IValidator;
+            var validator = ServiceProvider.GetService(validatorType) as IValidator;
+
+            if (validator == null)
+            {
+                Console.WriteLine($"[FluentValidator Warning] KHÔNG TÌM THẤY Validator nào được đăng ký cho Type: {model.GetType().Name}. Hãy kiểm tra lại Program.cs!");
+            }
+
+            return validator;
         }
 
         private void DetachEvents()

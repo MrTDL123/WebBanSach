@@ -22,9 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Admin\" />
-    <Folder Include="Controllers\Customer\" />
     <Folder Include="Mappings\" />
-    <Folder Include="Utilities\" />
   </ItemGroup>
 
   <ItemGroup>

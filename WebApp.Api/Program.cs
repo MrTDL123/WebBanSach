@@ -9,6 +9,7 @@ using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
+using WebApp.Api.Utilities;
 using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,7 @@ builder.Services.AddCors(options =>
                 .AllowCredentials();
         });
 });
+
 // Đăng ký và sử dụng Cookie
 builder.Services.AddIdentity<User, Role>(options =>
 {
@@ -110,6 +112,9 @@ builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+// Auth Services
+builder.Services.AddScoped<ICustomerAuthService, CustomerAuthService>();
+
 // Thêm Hub để cập nhập các update từ Admin
 builder.Services.AddSignalR();
 
@@ -137,5 +142,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<UpdateBroadcastHub>("/hubs/updates");
-
 app.Run();

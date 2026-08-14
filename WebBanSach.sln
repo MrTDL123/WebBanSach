@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.Service", "Media.Serv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Media.ArchitecturePrototype", "Media.ArchitecturePrototype\Media.ArchitecturePrototype.csproj", "{45E0CA3B-4A8F-46CB-B0F3-A2ADAD79B34A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Customer", "WebApp.Public\WebApp.Public\WebApp.Customer.csproj", "{890FF10C-16E1-42C7-9FC5-F32FC83A932F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Customer", "WebApp.Customer\WebApp.Customer\WebApp.Customer.csproj", "{890FF10C-16E1-42C7-9FC5-F32FC83A932F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Customer.Client", "WebApp.Public\WebApp.Public.Client\WebApp.Customer.Client.csproj", "{F85287D6-B20E-44A7-B1E8-6016DB1DCFDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Customer.Client", "WebApp.Customer\WebApp.Customer.Client\WebApp.Customer.Client.csproj", "{F85287D6-B20E-44A7-B1E8-6016DB1DCFDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp.Admin", "WebApp.Admin\WebApp.Admin.csproj", "{A35A8278-E796-416F-8DA5-5CF6F951B1B2}"
 EndProject

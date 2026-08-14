@@ -3,6 +3,9 @@ using WebApp.Api.Services.Interfaces;
 
 namespace WebApp.Api.Services.Implementations
 {
+    /// <summary>
+    /// Service được sử dụng để lấy thông tin user trong session hiện tại
+    /// </summary>
     public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;

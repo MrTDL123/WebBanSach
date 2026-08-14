@@ -1,0 +1,100 @@
+﻿@page "/dang-nhap"
+
+@using Microsoft.AspNetCore.Components.Authorization
+@using WebApp.Customer.Client.Services
+@using WebApp.Customer.Client.Services.Interfaces
+@using WebApp.Shared.Dtos.Customer.Auth
+@using WebApp.Shared.Validations.Customer.Auth
+@rendermode InteractiveAuto
+
+@inject IAuthClientService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Đăng nhập</PageTitle>
+
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h2>Đăng nhập</h2>
+            <p>Chào mừng bạn quay lại!</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert-danger-custom">
+                @errorMessage
+            </div>
+        }
+
+        @if (validationErrors != null && validationErrors.Any())
+        {
+            <div class="alert-danger-custom">
+                <ul>
+                    @foreach (var err in validationErrors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <EditForm Model="@loginModel" OnValidSubmit="HandleSubmitAsync" FormName="CustomerLoginForm">
+            <FluentValidator/>
+            
+            <div class="form-group"> 
+                <label for="Email"> Email hoặc Số điện thoại </label>
+                <InputText id="Email" @bind-Value="loginModel.EmailOrPhone" class="form-control-custom" placeholder="Nhập email hoặc SĐT..." />
+                <ValidationMessage For="@(() => loginModel.EmailOrPhone)"/>
+            </div>
+
+            <div class="form-group">
+                <label for="MatKhau">Mật Khẩu</label>
+                <InputText type="password" id="MatKhau" @bind-Value="loginModel.Password" class="form-control-custom" placeholder="Nhập mật khẩu" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
+            </div>
+
+            <div class="form-remember">
+                <label>
+                    <input type="checkbox" @bind="rememberMe" id="GhiNhoDangNhap" /> Ghi nhớ đăng nhập
+                </label>
+                <a href="/quen-mat-khau" class="forgot">Quên mật khẩu?</a>
+            </div>
+
+            <button type="submit" class="btn-auth" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span>Đang xử lý...</span>
+                }
+                else
+                {
+                    <span>Đăng nhập</span>
+                }
+            </button>
+
+            <div class="separator">HOẶC</div>
+
+            <div class="form-group">
+                <a href="api/auth/google-login" class="google-btn">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" class="google-icon">
+                    Đăng nhập bằng Google
+                </a>
+            </div>
+
+            <div class="form-group">
+                <a href="api/auth/facebook-login" class="facebook-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook Logo" class="facebook-icon">
+                    Đăng nhập bằng Facebook
+                </a>
+            </div>
+        </EditForm>
+
+        <div class="auth-footer">
+            <p>
+                Chưa có tài khoản?
+                <a href="/dang-ky">Đăng ký ngay</a>
+            </p>
+        </div>
+    </div>
+</div>

@@ -1,15 +1,16 @@
 namespace WebApp.Shared.Dtos.Common
 {
-    // Kết quả trả về sau khi Đăng nhập thành công (cho cả CustomerLogin và AdminLogin)
+    /// <summary>
+    /// Kết quả trả về sau khi Đăng nhập thành công (cho cả CustomerLogin và AdminLogin)
+    /// </summary>
     public record AuthResponseDto(
-        bool Success,
-        string Message,
-        string? Token = null,
-        DateTime? Expiration = null,
-        string? UserId = null,
-        string? FullName = null,
-        string? Email = null,
-        string? AvatarUrl = null,
-        List<string>? Roles = null
+        // Xóa Comment 2 thuộc tính nếu sau này có nhu cầu JWT Token
+        //string? Token = null,
+        //DateTime? Expiration = null,
+        string? UserId,
+        string? FullName,
+        string? Email,
+        string? AvatarUrl,
+        List<string> Roles
     );
 }
