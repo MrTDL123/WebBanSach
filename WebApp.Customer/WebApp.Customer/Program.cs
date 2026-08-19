@@ -24,7 +24,7 @@ builder.Services.AddTransient<ServerCookieHandler>();
 
 var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
 
-builder.Services.AddApiClientServices<ServerCookieHandler>(apiBaseAddress);
+builder.Services.AddApiClientServices<ServerCookieHandler>(apiBaseAddress, isAssemblyRenderMode: false);
 
 builder.Services.AddSharedClientServices();
 

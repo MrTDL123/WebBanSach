@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.Cookie.Name = ".WebBanSach.Auth";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SameSite = SameSiteMode.Lax; // Dùng để chống CSRF
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
@@ -83,6 +83,7 @@ app.UseAuthorization();
 // Custom middleware để mỗi lần gửi, nhận request response thì phải đọc cookie
 app.UseMiddleware<InitialSessionMiddleware>();
 
+//  Chống việc người dùng gửi request có đính kèm cookie từ web giả mạo đến API
 app.UseAntiforgery();
 
 app.MapStaticAssets();

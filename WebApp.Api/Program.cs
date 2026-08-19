@@ -83,6 +83,12 @@ if (OperatingSystem.IsWindows())
     dataProtection.ProtectKeysWithDpapi();
 }
 
+// Đăng ký Antiforgery để đọc header
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "RequestVerificationToken";
+});
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".WebBanSach.Auth";
@@ -138,6 +144,7 @@ app.UseCors("AllowBlazorApps");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapControllers();
 
