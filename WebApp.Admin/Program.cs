@@ -33,6 +33,20 @@ if (OperatingSystem.IsWindows())
     dataProtection.ProtectKeysWithDpapi();
 }
 
+// Cấu hình HSTS
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(360);
+});
+builder.Services.AddHttpsRedirection(options =>
+{
+    // Tránh cache các dữ liệu chưa mã hóa trước khi chuyển sang https
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+    options.HttpsPort = 7135; // Port HTTPS của WebApp.Admin
+});
+
 // Đăng ký Authentication Cookie cho Blazor Server
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>

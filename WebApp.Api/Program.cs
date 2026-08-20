@@ -9,7 +9,6 @@ using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
-using WebApp.Api.Utilities;
 using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -127,15 +126,36 @@ builder.Services.AddSignalR();
 // Load các Validation được thiết lập ở WebApp.Shared
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
 
+// Cấu hình HSTS (HTTP Strict Transport Security) cho Production. Cấu hình giúp API chỉ nhận các Https request
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(60);
+});
+// Tự động chuyển hóa toàn bộ Request Http thành Https
+builder.Services.AddHttpsRedirection(options =>
+{
+    // Tránh lưu cache các dữ liệu chưa mã hóa từ Http trước khi được chuyển sang https
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+    options.HttpsPort = 7188; // port https của API (cần phải sửa nếu lên Production)
+});
+
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    // Bật Hsts ở Production
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
