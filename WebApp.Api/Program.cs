@@ -24,18 +24,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Đăng ký Cors 
+const string AllowBlazorClientsPolicy = "AllowBlazorClients";
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins").Get<string[]>() ??
     new[] { "https://localhost:7135", "https://localhost:7035" };
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazorApps", policy =>
+    options.AddPolicy(name: AllowBlazorClientsPolicy, policy =>
         {
             policy.WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowCredentials(); // Cho phép gửi Cookie và SignalR WebSocket từ các Blazor chạy ở InteractiveServer
         });
 });
 
@@ -113,7 +114,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddControllers();
 
-// Thêm Context vào các request để Service có thể đọc thông tin User
+// Thêm Context vào các request để Service có thể đọc Claims User
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
@@ -159,14 +160,19 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
-app.UseCors("AllowBlazorApps");
+app.UseCors(AllowBlazorClientsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
-app.MapControllers();
+// Áp dụng CORS trên các Endpoint cấp độ Controller và SignalR Hub
+app.MapControllers()
+   .RequireCors(AllowBlazorClientsPolicy);
 
-app.MapHub<UpdateBroadcastHub>("/hubs/updates");
+app.MapHub<UpdateBroadcastHub>("/hubs/updates")
+   .RequireCors(AllowBlazorClientsPolicy);
+
 app.Run();

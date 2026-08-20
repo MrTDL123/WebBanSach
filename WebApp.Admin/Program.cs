@@ -90,15 +90,15 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+//  Chống việc người dùng gửi request có đính kèm cookie từ web giả mạo đến API
+app.UseAntiforgery();
 
 // Custom middleware để mỗi lần gửi, nhận request response thì phải đọc cookie
 app.UseMiddleware<InitialSessionMiddleware>();
-
-//  Chống việc người dùng gửi request có đính kèm cookie từ web giả mạo đến API
-app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
