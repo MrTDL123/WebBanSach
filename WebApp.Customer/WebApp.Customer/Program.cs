@@ -1,32 +1,27 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.AspNetCore.DataProtection;
-using WebApp.Customer.Client.Auth;
 using WebApp.Customer.Client.Extensions;
-using WebApp.Customer.Client.Pages;
-using WebApp.Customer.Client.Services.Implementations;
-using WebApp.Customer.Client.Services.Interfaces;
 using WebApp.Customer.Components;
 using WebApp.Customer.Utilities;
-using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveWebAssemblyComponents()
+    // Cấu hình truyền trạng thái xác thực lấy được từ giai đoạn Server xuống WebAssembly
+    .AddAuthenticationStateSerialization(options =>
+    {
+        options.SerializeAllClaims = true;
+    });
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<ServerCookieHandler>();
+builder.Services.AddSharedClientServices();
 
 var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
-
 builder.Services.AddApiClientServices<ServerCookieHandler>(apiBaseAddress, isAssemblyRenderMode: false);
-
-builder.Services.AddSharedClientServices();
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
 var keysPath = builder.Configuration["DataProtection:KeysPath"]

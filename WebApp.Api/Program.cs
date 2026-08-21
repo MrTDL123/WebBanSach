@@ -168,11 +168,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseAntiforgery();
 
-// Áp dụng CORS trên các Endpoint cấp độ Controller và SignalR Hub
-app.MapControllers()
-   .RequireCors(AllowBlazorClientsPolicy);
-
-app.MapHub<UpdateBroadcastHub>("/hubs/updates")
-   .RequireCors(AllowBlazorClientsPolicy);
+app.MapControllers();
+app.MapHub<UpdateBroadcastHub>("/hubs/updates");
 
 app.Run();
