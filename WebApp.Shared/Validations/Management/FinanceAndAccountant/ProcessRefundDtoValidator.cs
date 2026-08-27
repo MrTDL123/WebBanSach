@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApp.Shared.Dtos.AdminClient.FinanceAndAccountant;
+using WebApp.Shared.Dtos.Management.FinanceAndAccountant;
 
 namespace WebApp.Shared.Validations.Admin.FinanceAndAccountant
 {

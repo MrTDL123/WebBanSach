@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -39,8 +39,10 @@ namespace WebApp.Admin.Controllers
                 new Claim(ClaimTypes.NameIdentifier, userDto.UserId ?? ""),
                 new Claim(ClaimTypes.Name, userDto.FullName ?? userDto.Email ?? ""),
                 new Claim(ClaimTypes.Email, userDto.Email ?? ""),
-                new Claim("AvatarUrl", userDto.AvatarUrl ?? "")
+                new Claim("AvatarUrl", userDto.AvatarUrl ?? ""),
+                new Claim("AspNet.Identity.SecurityStamp", userDto.SecurityStamp ?? "")
             };
+
             if (userDto.Roles != null)
             {
                 foreach (var role in userDto.Roles)
@@ -50,32 +52,24 @@ namespace WebApp.Admin.Controllers
             }
             var identity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
             var principal = new ClaimsPrincipal(identity);
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true, // Giữ đăng nhập khi tắt trình duyệt
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
+            };
 
             // 4. Ghi Cookie .WebBanSach.Auth trực tiếp vào Trình duyệt người dùng
-            await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+            await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal, authProperties);
 
-            return Ok(new { success = true });
+            return Ok(new { Success = true });
         }
 
         [HttpGet("logout")]
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            try
-            {
-                // 1. Gọi sang API Backend báo hủy phiên ở Server
-                await _authService.LogoutAsync();
-            }
-            catch
-            {
-                // Bỏ qua nếu API bị sập, vẫn tiếp tục xóa Cookie ở Client
-            }
-
-            // 2. Xóa sạch Cookie .WebBanSach.Auth khỏi Trình duyệt người dùng
             await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-
-            // 3. Chuyển hướng Trình duyệt về trang Đăng nhập
-            return Redirect("/management/login?logout=true");
+            return Ok(new { Success = true });
         }
     }
 }

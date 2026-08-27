@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApp.Shared.Dtos.AdminClient.WarehouseAndInventory;
+using WebApp.Shared.Dtos.Management.WarehouseAndInventory;
 
 namespace WebApp.Api.Validations.Admin.WarehouseAndInventory
 {

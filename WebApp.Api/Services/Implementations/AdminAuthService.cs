@@ -83,16 +83,13 @@ namespace WebApp.Api.Services.Implementations
 
             // Lấy role của user hiện tại và lưu vào cookie
             var roles = (await _userManager.GetRolesAsync(user)).ToList();
-
-            // Đọc các claims và thêm cookie được mã hóa vào Header Set-Cookie
-            await WriteAuthCookieAsync(user, roles);
-
             var authResponse = new AuthResponseDto(
                 UserId: user.Id,
                 FullName: user.UserName,
                 Email: user.Email,
                 AvatarUrl: user.AvatarUrl,
-                Roles: roles
+                Roles: roles,
+                SecurityStamp: user.SecurityStamp
             );
             return ApiResponse<AuthResponseDto>.SuccessResult(authResponse);
         }
@@ -111,7 +108,8 @@ namespace WebApp.Api.Services.Implementations
                 FullName: user.FullName,
                 Email: user.Email,
                 AvatarUrl: user.AvatarUrl,
-                Roles: roles
+                Roles: roles,
+                SecurityStamp: user.SecurityStamp
             );
             return ApiResponse<AuthResponseDto>.SuccessResult(authResponse);
         }

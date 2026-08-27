@@ -2,10 +2,10 @@
 @using WebApp.Admin.Services.Interfaces
 
 @inherits LayoutComponentBase
-@inject AuthenticationStateProvider AuthStateProvider
 @inject IAuthClientService AuthClientService
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IJSRuntime JSRuntime
 
 <AuthorizeView>
     <Authorized>
@@ -153,9 +153,9 @@
                                     <a class="dropdown-item" href="/" @onclick="CloseAllDropdowns"><i class="fa-solid fa-gear me-2"></i> Cài đặt hệ thống</a>
                                     <div class="dropdown-divider"></div>
                                     <!-- Chuyển nút Đăng xuất thành thẻ <a> trỏ về Controller Đăng xuất -->
-                                    <a class="dropdown-item text-danger" href="/api/management/logout">
+                                    <button type="button" class="dropdown-item text-danger" @onclick="HandleLogoutAsync">
                                         <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Đăng xuất
-                                    </a>
+                                    </button>
                                 </div>
                             }
                         </div>

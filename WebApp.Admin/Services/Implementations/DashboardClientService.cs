@@ -13,6 +13,9 @@ namespace WebApp.Admin.Services.Implementations
             _httpClient = httpClient;
         }   
 
+        // <summary>
+        // Lấy dữ liệu và đưa thông tin lên trang Dashboard
+        // </summary>
         public Task<ApiResponse<DashboardStatsDto>> GetDashboardStatsAsync()
         {
             return ExecuteApiAsync<DashboardStatsDto>(() => _httpClient.GetAsync("api/management/dashboard/stats"));

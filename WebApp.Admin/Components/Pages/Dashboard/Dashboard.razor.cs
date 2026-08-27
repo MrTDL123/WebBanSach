@@ -59,6 +59,7 @@ namespace WebApp.Admin.Components.Pages.Dashboard
             await Task.Delay(50); // Chờ DOM render canvas mới
             await RenderCurrentTabChartAsync();
         }
+
         private async Task RenderCurrentTabChartAsync()
         {
             if (_jsModule == null || dashBoardStateModel == null) return;

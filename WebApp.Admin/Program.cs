@@ -55,7 +55,7 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
         options.LoginPath = "/management/login";
         options.AccessDeniedPath = "/management/login";
     });
-
+builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddHttpContextAccessor();
@@ -76,6 +76,7 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 builder.Services.AddScoped<IAuthClientService, AuthClientService>();
 builder.Services.AddScoped<IUserClientService, UserClientService>();
 builder.Services.AddScoped<IDashboardClientService, DashboardClientService>();
+builder.Services.AddScoped<IContentClientService, ContentClientService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);

@@ -12,6 +12,9 @@ namespace WebApp.Admin.Services.Implementations
         {
             _httpClient = httpClient;
         }
+        // <summary>
+        // Xử lý lấy, sửa thông tin người dùng và mật khẩu trang thông tin cá nhân
+        // </summary>
         public Task<ApiResponse<UserProfileDto>> GetUserProfileAsync()
         {
             return ExecuteApiAsync<UserProfileDto>(() => _httpClient.GetAsync("api/user/profile"));

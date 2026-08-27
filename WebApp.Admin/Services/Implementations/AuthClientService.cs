@@ -26,10 +26,10 @@ namespace WebApp.Admin.Services.Implementations
             return ExecuteApiAsync<AuthResponseDto>(() => _httpClient.GetAsync("api/auth/admin-me"));
         }
 
-        public Task<ApiResponse<bool>> LogoutAsync() 
-        { 
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsync("api/auth/admin-logout", null));
-        }
+        //public Task<ApiResponse<bool>> LogoutAsync() 
+        //{ 
+        //    return ExecuteApiAsync<bool>(() => _httpClient.PostAsync("api/auth/admin-logout", null));
+        //}
 
 
         // <summary>

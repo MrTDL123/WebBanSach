@@ -91,7 +91,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
-    options.SlidingExpiration = true; 
+    options.SlidingExpiration = true;
 
     // Trả về mã 403/401 thay vì Redirect
     options.Events.OnRedirectToLogin = context =>
@@ -119,6 +119,7 @@ builder.Services.AddScoped<ICustomerAuthService, CustomerAuthService>();
 builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IContentService, ContentService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Thêm Hub để cập nhập các update từ Admin

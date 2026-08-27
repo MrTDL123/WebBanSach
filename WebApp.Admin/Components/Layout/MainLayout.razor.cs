@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
+using Microsoft.JSInterop;
 using System.Security.Claims;
 using WebApp.Admin.Auth;
 using WebApp.Admin.Services.Implementations;
@@ -10,13 +12,14 @@ namespace WebApp.Admin.Components.Layout
         private bool isProfileDropdownOpen = false;
         private bool isNotiOpen = false;
         private bool isMobileMenuOpen = false;
-        private string userName = "Quản Trị Viên";
+        private string userName = "N/A";
         private string userRole = "N/A";
         private string avatarUrl = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
-            // Lắng nghe sự kiện khi thông tin User thay đổi (ví dụ: vừa lưu Avatar mới)
+            // Đăng ký lắng nghe sự kiện khi thông tin User thay đổi (ví dụ: Profile.razor vừa lưu Avatar/Tên mới).
+            // Phải tuân theo cú pháp tham số (Task<AuthenticationState> task) do Microsoft C# định nghĩa sẵn.
             AuthStateProvider.AuthenticationStateChanged += OnAuthStateChanged;
             await LoadUserInfoFromClaimsAsync();
         }
@@ -24,6 +27,11 @@ namespace WebApp.Admin.Components.Layout
         private async void OnAuthStateChanged(Task<AuthenticationState> task)
         {
             await LoadUserInfoFromClaimsAsync();
+            /*
+             * Vì Profile và MainLayout là 2 giao diện độc lập, sự kiện bắn sang là sự kiện ngầm (Background/Async),
+                nên bắt buộc phải dùng 'InvokeAsync' để chuyển lệnh 'StateHasChanged' về luồng giao diện chính an toàn,
+                yêu cầu Blazor vẽ lại Avatar và Tên ở góc phải màn hình ngay lập tức. 
+            */
             await InvokeAsync(StateHasChanged);
         }
 
@@ -49,6 +57,19 @@ namespace WebApp.Admin.Components.Layout
                     avatarUrl = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(userName)}&background=E31837&color=fff";
                 }
             }
+        }
+
+        private async Task HandleLogoutAsync()
+        {
+            CloseAllDropdowns();
+
+            try
+            {
+                // 1. Dùng JS fetch gọi tới AccountController để xóa Cookie ở Trình duyệt
+                await JSRuntime.InvokeVoidAsync("fetch", "/api/management/logout", new { method = "POST" });
+            }
+            catch { }
+            Navigation.NavigateTo("/management/login?logout=true", forceLoad: true);
         }
 
         public void Dispose()

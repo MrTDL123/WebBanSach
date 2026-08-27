@@ -27,7 +27,6 @@ namespace WebApp.Admin.Components.Pages.User
         private bool ShowNewPwd { get; set; } = false;
         private bool ShowConfirmPwd { get; set; } = false;
         private IBrowserFile? selectedAvatarFile;
-        private string? avatarBase64Data; // Lưu tạm chuỗi Base64
         private string? avatarPreviewUrl;
 
         private void ChangeTab(string tabName) => ActiveTab = tabName;
@@ -95,15 +94,18 @@ namespace WebApp.Admin.Components.Pages.User
                 selectedAvatarFile = file;
 
                 // Đọc file thành base64 để hiển thị Preview ngay lên giao diện
+                // 1. Khởi tạo MemoryStream để hứng dữ liệu trong RAM
                 using var ms = new MemoryStream();
+                // 2. Mở luồng đọc file từ trình duyệt/client (giới hạn tối đa 5MB)
                 using (var stream = file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024))
                 {
                     await stream.CopyToAsync(ms);
                 }
 
+                // ms.ToArray() sẽ lấy toàn bộ mảng byte đang lưu trong RAM
                 var buffer = ms.ToArray();
-                avatarBase64Data = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
-                avatarPreviewUrl = avatarBase64Data;
+                // 4. Tạo chuỗi Data URL hoàn chỉnh để gán vào thẻ <img src="..."> trên giao diện
+                avatarPreviewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
                 errorMessage = string.Empty;
             }
         }
@@ -127,7 +129,6 @@ namespace WebApp.Admin.Components.Pages.User
             if (result.Success)
             {
                 successMessage = "Cập nhật thông tin hồ sơ thành công!";
-                avatarBase64Data = null;
                 await LoadUserProfileAsync();
                 avatarPreviewUrl = null;
                 selectedAvatarFile = null;

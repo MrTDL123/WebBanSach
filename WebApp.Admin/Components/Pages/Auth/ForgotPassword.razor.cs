@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
-using WebApp.Shared.Dtos.Customer.Auth;
 using WebApp.Shared.Dtos.Management.Auth;
 
 namespace WebApp.Admin.Components.Pages.Auth
@@ -33,12 +32,6 @@ namespace WebApp.Admin.Components.Pages.Auth
                                        && forgotPasswordModel.NewPassword == forgotPasswordModel.ConfirmNewPassword
                                        && forgotPasswordModel.NewPassword.Length >= 6;
 
-        //private bool CanSendOtp => !string.IsNullOrWhiteSpace(forgotPasswordModel.Email) && !isTimerRunning && !isSubmitting;
-        //private bool CanVerifyOtp => isOtpSent && !isSubmitting;
-        //private bool CanResetPassword => !string.IsNullOrWhiteSpace(forgotPasswordModel.NewPassword)
-        //                       && !string.IsNullOrWhiteSpace(forgotPasswordModel.ConfirmNewPassword)
-        //                       && !isSubmitting;
-
         private void ToggleShowNewPassword() => showNewPassword = !showNewPassword;
         private void ToggleShowConfirmPassword() => showConfirmPassword = !showConfirmPassword;
 
@@ -59,10 +52,13 @@ namespace WebApp.Admin.Components.Pages.Auth
 
             try
             {
+                // Đóng gói DTO (AdminForgotPasswordDto tự có Constructor ngầm từ C# record, không cần viết tay như Model form)
                 var result = await AuthClientService.ForgotPasswordAsync(new AdminForgotPasswordDto(forgotPasswordModel.Email));
                 if (result.Success)
                 {
                     isOtpSent = true;
+                    // Chạy đếm ngược ngầm (Fire-and-forget), không dùng await để tránh treo UI suốt 60s
+                    // Dấu gạch "_" gọi là Discard là cách bạn nói với c# "Tôi cố tình cho nó chạy ngầm dưới nền, tôi biết mình đang làm gì, đừng hiện cảnh báo vàng nữa!".
                     _ = StartTimer();
                 }
                 else
@@ -82,9 +78,11 @@ namespace WebApp.Admin.Components.Pages.Auth
 
         private async Task HandleVerifyOtp()
         {
+            // 1. Tạo định danh cho riêng ô Email
             var fieldIdentifier = new FieldIdentifier(forgotPasswordModel, nameof(forgotPasswordModel.OtpCode));
+            // 2. Ép EditContext/FluentValidator chạy validate ĐÚNG ô Email này
             editContext?.NotifyFieldChanged(fieldIdentifier);
-
+            // 3. Kiểm tra xem ô Email có bị dính lỗi nào không
             if (editContext?.GetValidationMessages(fieldIdentifier).Any() == true)
             {
                 errorMessage = "Vui lòng nhập mã OTP 6 số hợp lệ.";

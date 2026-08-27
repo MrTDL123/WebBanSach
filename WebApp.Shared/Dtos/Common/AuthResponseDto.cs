@@ -11,6 +11,7 @@ namespace WebApp.Shared.Dtos.Common
         string? FullName,
         string? Email,
         string? AvatarUrl,
-        List<string> Roles
+        List<string> Roles,
+        string? SecurityStamp = null
     );
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebApp.Shared.Dtos.AdminClient.OrderAndLogistics
+namespace WebApp.Shared.Dtos.Management.OrderAndLogistics
 {
     // Kết quả trả về sau khi đẩy 3PL thành công để in phiếu gửi (Shipping Label)
     public record ShipmentLabelDto(

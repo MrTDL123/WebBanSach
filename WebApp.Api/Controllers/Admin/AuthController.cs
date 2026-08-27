@@ -75,14 +75,6 @@ namespace WebApp.Api.Controllers.Admin
             return Ok(response);
         }
 
-        [HttpPost("admin-logout")]
-        [Authorize]
-        public async Task<ActionResult<ApiResponse<bool>>> Logout()
-        {
-            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-            return Ok(ApiResponse<bool>.SuccessResult(true,"Đăng xuất thành công."));
-        }
-
         [HttpPost("admin-forgot-password")]
         [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<bool>>> ForgotPassword([FromBody] AdminForgotPasswordDto dto)
