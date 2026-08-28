@@ -1,0 +1,196 @@
+﻿@page "/management/content/products"
+@using WebApp.Admin.Services.Interfaces
+@inject IContentClientService ContentClientService
+@attribute [Authorize(Roles = "Admin,ContentManager")]
+
+<div class="page-container">
+    <!-- Header trang -->
+    <header class="page-header">
+        <div class="header-title">
+            <h1>Quản lý sản phẩm</h1>
+            <p class="subtitle">Quản lý danh sách sách, giá bán và trạng thái hiển thị trên hệ thống</p>
+        </div>
+        <div class="header-actions">
+            <a href="/management/content/products/create" class="btn btn-primary">
+                <span class="icon">+</span> Thêm sách mới
+            </a>
+        </div>
+    </header>
+
+    <!-- Thanh lọc và tìm kiếm -->
+    <section class="filter-card">
+        <div class="filter-grid">
+            <div class="filter-item search-box">
+                <label for="searchInput">Tìm kiếm</label>
+                <input type="text" id="searchInput" class="form-input"
+                       placeholder="Nhập tên sách, tác giả..."
+                       @bind="Filter.SearchTerm" @bind:event="oninput" @onkeyup="HandleSearchKeyUp" />
+            </div>
+
+            <div class="filter-item">
+                <label for="categorySelect">Danh mục</label>
+                <select id="categorySelect" class="form-select" @onchange="OnCategoryChanged">
+                    <option value="">-- Tất cả danh mục --</option>
+                    @foreach (var cat in Categories)
+                    {
+                        <option value="@cat.CategoryId">@cat.CategoryName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="statusSelect">Trạng thái</label>
+                <select id="statusSelect" class="form-select" @onchange="OnStatusChanged">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="true">Đang kinh doanh</option>
+                    <option value="false">Đã ẩn / Ngừng bán</option>
+                </select>
+            </div>
+
+            <div class="filter-item checkbox-item">
+                <label class="checkbox-label">
+                    <input type="checkbox" @bind="Filter.IsLowStockOnly" @bind:after="ApplyFilterAsync" />
+                    <span>Cảnh báo sắp hết hàng (&lt; 10)</span>
+                </label>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bảng danh sách sản phẩm -->
+    <section class="table-card">
+        @if (IsLoading)
+        {
+            <div class="state-container">
+                <div class="spinner"></div>
+                <p>Đang tải danh sách sản phẩm...</p>
+            </div>
+        }
+        else if (ProductList == null || !ProductList.Any())
+        {
+            <div class="state-container empty-state">
+                <p class="empty-title">Không tìm thấy sản phẩm nào</p>
+                <p class="empty-desc">Thử thay đổi bộ lọc hoặc thêm sản phẩm mới vào hệ thống.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="col-checkbox">
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@IsAllSelected" />
+                            </th>
+                            <th class="col-image">Hình ảnh</th>
+                            <th class="col-main">Thông tin sách</th>
+                            <th class="col-meta">Tác giả / Danh mục</th>
+                            <th class="col-price">Giá bán</th>
+                            <th class="col-stock">Tồn kho</th>
+                            <th class="col-status">Trạng thái</th>
+                            <th class="col-actions">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in ProductList)
+                        {
+                            <tr class="@(SelectedProductIds.Contains(p.ProductId) ? "row-selected" : "")">
+                                <td class="col-checkbox">
+                                    <input type="checkbox"
+                                           checked="@SelectedProductIds.Contains(p.ProductId)"
+                                           @onchange="() => ToggleSelectProduct(p.ProductId)" />
+                                </td>
+                                <td class="col-image">
+                                    <img src="@GetImageUrl(p.MainImageUrl)" alt="@p.Title" class="product-thumb" />
+                                </td>
+                                <td class="col-main">
+                                    <span class="product-title">@p.Title</span>
+                                    <span class="product-id">Mã SP: #@p.ProductId</span>
+                                </td>
+                                <td class="col-meta">
+                                    <span class="meta-author">@p.AuthorName</span>
+                                    <span class="meta-category">@p.CategoryName</span>
+                                </td>
+                                <td class="col-price">
+                                    @if (p.DiscountPercent > 0)
+                                    {
+                                        <span class="final-price">@p.FinalPrice.ToString("N0") đ</span>
+                                        <div class="discount-badge-wrap">
+                                            <span class="original-price">@p.Price.ToString("N0") đ</span>
+                                            <span class="discount-percent">-@p.DiscountPercent%</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="final-price">@p.Price.ToString("N0") đ</span>
+                                    }
+                                </td>
+                                <td class="col-stock">
+                                    <span class="stock-count @(p.StockQuantity < 10 ? "stock-warning" : "")">
+                                        @p.StockQuantity
+                                    </span>
+                                </td>
+                                <td class="col-status">
+                                    @if (p.IsActive)
+                                    {
+                                        <span class="badge badge-success">Đang bán</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">Đã ẩn</span>
+                                    }
+                                </td>
+                                <td class="col-actions">
+                                    <div class="action-buttons">
+                                        <a href="/management/content/products/edit/@p.ProductId" class="btn-icon btn-edit" title="Chỉnh sửa">
+                                            Sửa
+                                        </a>
+                                        <button class="btn-icon btn-delete" title="Xóa" @onclick="() => ConfirmDelete(p)">
+                                            Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Thanh phân trang -->
+            <footer class="pagination-wrapper">
+                <div class="pagination-info">
+                    Hiển thị <strong>@GetDisplayStart()</strong> - <strong>@GetDisplayEnd()</strong> trên tổng số <strong>@TotalItems</strong> sản phẩm
+                </div>
+
+                <div class="pagination-controls">
+                    <div class="page-size-selector">
+                        <label for="pageSize">Hiển thị:</label>
+                        <select id="pageSize" class="form-select-sm" @onchange="OnPageSizeChanged">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+
+                    <div class="page-buttons">
+                        <button class="btn-page" disabled="@(Filter.PageIndex <= 1)" @onclick="() => ChangePageAsync(Filter.PageIndex - 1)">
+                            &laquo;
+                        </button>
+
+                        @for (int i = 1; i <= TotalPages; i++)
+                        {
+                            var pageNum = i;
+                            <button class="btn-page @(pageNum == Filter.PageIndex ? "active" : "")"
+                                    @onclick="() => ChangePageAsync(pageNum)">
+                                @pageNum
+                            </button>
+                        }
+
+                        <button class="btn-page" disabled="@(Filter.PageIndex >= TotalPages)" @onclick="() => ChangePageAsync(Filter.PageIndex + 1)">
+                            &raquo;
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        }
+    </section>
+</div>

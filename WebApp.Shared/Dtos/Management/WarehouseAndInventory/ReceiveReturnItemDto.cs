@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebApp.Shared.Dtos.AdminClient.WarehouseAndInventory
+namespace WebApp.Shared.Dtos.Management.WarehouseAndInventory
 {
     // ===== BƯỚC 4: XỬ LÝ NHẬP KHO HÀNG HOÀN TRẢ [Role: Warehouse] =====
     // Component dùng: XacNhanHangHoan.razor (Admin - Warehouse)

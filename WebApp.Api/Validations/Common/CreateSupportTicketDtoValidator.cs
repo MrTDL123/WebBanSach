@@ -1,6 +1,6 @@
 using FluentValidation;
-using WebApp.Shared.Dtos.AdminClient.CustomerSupport;
-using WebApp.Shared.Dtos.AdminClient.ContentAndMarketing;
+using WebApp.Shared.Dtos.Management.CustomerSupport;
+using WebApp.Shared.Dtos.Management.ContentAndMarketing;
 using WebApp.Shared.Dtos.Common;
 
 namespace WebApp.Api.Validations.Common

@@ -1,5 +1,5 @@
 using FluentValidation;
-using WebApp.Shared.Dtos.AdminClient.ContentAndMarketing;
+using WebApp.Shared.Dtos.Management.ContentAndMarketing;
 
 namespace WebApp.Api.Validations.Admin.ContentAndMarketing
 {

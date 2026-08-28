@@ -1,8 +1,13 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using WebApp.Admin.Auth;
 using WebApp.Admin.Components;
 using WebApp.Admin.Middlewares;
+using WebApp.Admin.Services.Implementations;
+using WebApp.Admin.Services.Interfaces;
 using WebApp.Admin.Utilities;
 using WebApp.Shared;
 
@@ -11,6 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddControllers();
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
 var keysPath = builder.Configuration["DataProtection:KeysPath"]
@@ -48,8 +55,8 @@ builder.Services.AddHttpsRedirection(options =>
 });
 
 // Đăng ký Authentication Cookie cho Blazor Server
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
+    .AddCookie(IdentityConstants.ApplicationScheme, options =>
     {
         options.Cookie.Name = ".WebBanSach.Auth";
         options.Cookie.HttpOnly = true;
@@ -58,8 +65,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
-    });
 
+        options.LoginPath = "/management/login";
+        options.AccessDeniedPath = "/management/login";
+    });
+builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddHttpContextAccessor();
@@ -77,6 +87,11 @@ builder.Services.AddHttpClient("ApiClient", client =>
 .AddHttpMessageHandler<CookieHandler>();
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"));
+builder.Services.AddScoped<IAuthClientService, AuthClientService>();
+builder.Services.AddScoped<IUserClientService, UserClientService>();
+builder.Services.AddScoped<IDashboardClientService, DashboardClientService>();
+builder.Services.AddScoped<IContentClientService, ContentClientService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
 
@@ -88,7 +103,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+
 app.UseHttpsRedirection();
 app.UseRouting();
 
@@ -103,6 +118,6 @@ app.UseMiddleware<InitialSessionMiddleware>();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
+app.MapControllers();
 app.Run();
 

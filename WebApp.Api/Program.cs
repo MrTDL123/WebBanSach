@@ -97,7 +97,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
-    options.SlidingExpiration = true; 
+    options.SlidingExpiration = true;
 
     // Trả về mã 403/401 thay vì Redirect
     options.Events.OnRedirectToLogin = context =>
@@ -112,6 +112,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     };
 });
 
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
 builder.Services.AddControllers();
 
 // Thêm Context vào các request để Service có thể đọc Claims User
@@ -120,6 +122,11 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Auth Services
 builder.Services.AddScoped<ICustomerAuthService, CustomerAuthService>();
+builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IContentService, ContentService>();
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // Thêm Hub để cập nhập các update từ Admin
 builder.Services.AddSignalR();

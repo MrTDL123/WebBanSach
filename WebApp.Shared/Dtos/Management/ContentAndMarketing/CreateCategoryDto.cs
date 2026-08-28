@@ -1,4 +1,4 @@
-namespace WebApp.Shared.Dtos.AdminClient.ContentAndMarketing
+namespace WebApp.Shared.Dtos.Management.ContentAndMarketing
 {
     // Component dùng: ThemDanhMuc.razor (Admin - Content & Marketing)
     public record CreateCategoryDto(
