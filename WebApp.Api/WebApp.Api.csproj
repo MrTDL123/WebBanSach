@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Admin\" />
-    <Folder Include="Mappings\" />
   </ItemGroup>
 
   <ItemGroup>

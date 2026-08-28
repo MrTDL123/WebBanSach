@@ -1,8 +1,10 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using WebApp.Admin.Components;
 using WebApp.Admin.Middlewares;
+using WebApp.Admin.Services;
 using WebApp.Admin.Utilities;
 using WebApp.Shared;
 
@@ -59,12 +61,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
     });
-
+// Cho phép truyền AuthenticationState cho các component UI như <AuthorizedView>
+builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddHttpContextAccessor();
+// UserSessionState dùng để thay thế HttpContext lưu trữ cookie sau khi đã thiết lập kết nối SignalR WebSocket
 builder.Services.AddScoped<UserSessionState>();
-builder.Services.AddTransient<CookieHandler>();
 
 
 var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
@@ -73,12 +76,14 @@ var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localho
 builder.Services.AddHttpClient("ApiClient", client =>
 {
     client.BaseAddress = new Uri(apiBaseAddress);
-})
-.AddHttpMessageHandler<CookieHandler>();
-
+});
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"));
 
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
+
+// AUTHENTICATIONSTATEPROVIDER CUSTOM (Cần phải sửa lại dựa vào custom của thằng Tiến)
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingAuthenticationStateProvider>();
+
 
 var app = builder.Build();
 

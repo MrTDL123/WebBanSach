@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using WebApp.Api.Data;
+using WebApp.Api.Endpoints;
 using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
@@ -60,6 +61,12 @@ builder.Services.AddIdentity<User, Role>(options =>
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
+
+// Cấu hình thời gian kiểm tra định kỳ Security Stamp cho mỗi Circut
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromMinutes(5);
+});
 
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
@@ -170,5 +177,6 @@ app.UseAntiforgery();
 
 app.MapControllers();
 app.MapHub<UpdateBroadcastHub>("/hubs/updates");
+app.MapRevalidateStateEndpoints();// Thêm định tuyến cho việc kiểm tra trạng thái xác thực theo chu kỳ
 
 app.Run();
