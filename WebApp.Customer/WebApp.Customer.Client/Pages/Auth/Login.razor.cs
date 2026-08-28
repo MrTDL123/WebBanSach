@@ -1,7 +1,6 @@
 using Microsoft.JSInterop;
 using Microsoft.VisualBasic;
 using System.Runtime.InteropServices.JavaScript;
-using WebApp.Customer.Client.Auth;
 using WebApp.Shared.Dtos.Customer.Auth;
 using JSException = Microsoft.JSInterop.JSException;
 
@@ -62,12 +61,6 @@ namespace WebApp.Customer.Client.Pages.Auth
 
                 if (result.Success && result.Data != null)
                 {
-                    // Cập nhập UI
-                    if (AuthStateProvider is CustomAuthStateProvider customAuthStateProvider)
-                    {
-                        customAuthStateProvider.NotifyUserAuthentication(result.Data);
-                    }
-
                     // Nếu đăng nhập thành công thì force load tải lại trang để các request lần sau có đính kèm Cookie
                     Navigation.NavigateTo("/", forceLoad: true);
                 }

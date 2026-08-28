@@ -40,13 +40,27 @@ if (OperatingSystem.IsWindows())
     dataProtection.ProtectKeysWithDpapi();
 }
 
+// Cấu hình HSTS
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(360);
+});
+builder.Services.AddHttpsRedirection(options =>
+{
+    // Tránh cache các dữ liệu chưa mã hóa trước khi chuyển sang https
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+    options.HttpsPort = 7135; // Port HTTPS của WebApp.Admin
+});
+
 // Đăng ký Authentication Cookie cho Blazor Server
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
     .AddCookie(IdentityConstants.ApplicationScheme, options =>
     {
         options.Cookie.Name = ".WebBanSach.Auth";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SameSite = SameSiteMode.Lax; // Dùng để chống CSRF
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
@@ -91,17 +105,15 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-// Dù NotFound.razor đã xóa, dòng này vẫn có tác dụng
-// vì Blazor Router sẽ bắt /not-found bằng thẻ <NotFound> trong Routes.razor
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+//  Chống việc người dùng gửi request có đính kèm cookie từ web giả mạo đến API
+app.UseAntiforgery();
 
 // Custom middleware để mỗi lần gửi, nhận request response thì phải đọc cookie
 app.UseMiddleware<InitialSessionMiddleware>();
-
-app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

@@ -9,7 +9,6 @@ using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
-using WebApp.Api.Utilities;
 using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,18 +24,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Đăng ký Cors 
+const string AllowBlazorClientsPolicy = "AllowBlazorClients";
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins").Get<string[]>() ??
     new[] { "https://localhost:7135", "https://localhost:7035" };
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazorApps", policy =>
+    options.AddPolicy(name: AllowBlazorClientsPolicy, policy =>
         {
             policy.WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowCredentials(); // Cho phép gửi Cookie và SignalR WebSocket từ các Blazor chạy ở InteractiveServer
         });
 });
 
@@ -83,6 +83,12 @@ if (OperatingSystem.IsWindows())
     dataProtection.ProtectKeysWithDpapi();
 }
 
+// Đăng ký Antiforgery để đọc header
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "RequestVerificationToken";
+});
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".WebBanSach.Auth";
@@ -110,7 +116,7 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 
 builder.Services.AddControllers();
 
-// Thêm Context vào các request để Service có thể đọc thông tin User
+// Thêm Context vào các request để Service có thể đọc Claims User
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
@@ -128,25 +134,48 @@ builder.Services.AddSignalR();
 // Load các Validation được thiết lập ở WebApp.Shared
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>();
 
+// Cấu hình HSTS (HTTP Strict Transport Security) cho Production. Cấu hình giúp API chỉ nhận các Https request
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(60);
+});
+// Tự động chuyển hóa toàn bộ Request Http thành Https
+builder.Services.AddHttpsRedirection(options =>
+{
+    // Tránh lưu cache các dữ liệu chưa mã hóa từ Http trước khi được chuyển sang https
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+    options.HttpsPort = 7188; // port https của API (cần phải sửa nếu lên Production)
+});
+
+
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    // Bật Hsts ở Production
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
-app.UseCors("AllowBlazorApps");
-app.UseStaticFiles();
+app.UseCors(AllowBlazorClientsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapControllers();
 app.MapHub<UpdateBroadcastHub>("/hubs/updates");
+
 app.Run();
