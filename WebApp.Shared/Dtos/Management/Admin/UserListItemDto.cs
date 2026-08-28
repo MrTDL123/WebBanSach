@@ -1,4 +1,4 @@
-namespace WebApp.Shared.Dtos.AdminClient.SystemAdmin
+namespace WebApp.Shared.Dtos.Management.Admin
 {
     // Component dùng: QuanLyNguoiDung.razor (Admin)
     public record UserListItemDto(

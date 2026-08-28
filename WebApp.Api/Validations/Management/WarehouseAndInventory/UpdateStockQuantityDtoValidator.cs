@@ -1,5 +1,5 @@
 using FluentValidation;
-using WebApp.Shared.Dtos.AdminClient.WarehouseAndInventory;
+using WebApp.Shared.Dtos.Management.WarehouseAndInventory;
 
 namespace WebApp.Api.Validations.Admin.WarehouseAndInventory
 {

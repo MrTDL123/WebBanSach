@@ -1,4 +1,4 @@
-namespace WebApp.Shared.Dtos.AdminClient.CustomerSupport
+namespace WebApp.Shared.Dtos.Management.CustomerSupport
 {
     // Component dùng: DuyetThinSach.razor (Admin - CSKH)
     public record ReviewBookRequestDto(

@@ -1,5 +1,5 @@
 using FluentValidation;
-using WebApp.Shared.Dtos.AdminClient.OrderAndLogistics;
+using WebApp.Shared.Dtos.Management.OrderAndLogistics;
 
 namespace WebApp.Api.Validations.Admin.OrderAndLogistics
 {

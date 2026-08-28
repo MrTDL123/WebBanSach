@@ -1,5 +1,5 @@
 using FluentValidation;
-using WebApp.Shared.Dtos.AdminClient.CustomerSupport;
+using WebApp.Shared.Dtos.Management.CustomerSupport;
 
 namespace WebApp.Api.Validations.Customer.FreeBook
 {

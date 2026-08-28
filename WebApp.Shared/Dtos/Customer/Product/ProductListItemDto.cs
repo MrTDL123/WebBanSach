@@ -1,6 +1,6 @@
 namespace WebApp.Shared.Dtos.CustomerDtos.Product
 {
-    // Component dùng: ProductCard.razor, Home.razor (Customer), QuanLySach.razor (Admin)
+    // Component dùng: ProductCard.razor, Home.razor (Customer)
     public record ProductListItemDto(
         int ProductId,
         string Title,

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WebApp.Shared.Dtos.AdminClient.SystemAdmin;
+using WebApp.Shared.Dtos.Management.Admin;
 
-namespace WebApp.Shared.Validations.Admin.SystemAdmin
+namespace WebApp.Shared.Validations.Management.Admin
 {
     // CreateEmployeeDtoValidator.cs
     public class CreateEmployeeDtoValidator : AbstractValidator<CreateEmployeeDto>
