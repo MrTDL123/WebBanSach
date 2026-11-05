@@ -1,5 +1,6 @@
-﻿using WebApp.Admin.Services.Base;
+using WebApp.Admin.Services.Base;
 using WebApp.Admin.Services.Interfaces;
+using WebApp.Admin.Utilities;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.Management.Auth;
 using WebApp.Shared.Dtos.User;
@@ -8,9 +9,12 @@ namespace WebApp.Admin.Services.Implementations
 {
     public class AuthClientService : BaseApiClient, IAuthClientService
     {
-        private readonly HttpClient _httpClient;
-        public AuthClientService(HttpClient httpClient) {
-            _httpClient = httpClient;
+        public AuthClientService(
+            HttpClient httpClient, 
+            UserSessionState userSessionState,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpClient, userSessionState, httpContextAccessor)
+        {
         }
 
         // <summary>
@@ -18,36 +22,30 @@ namespace WebApp.Admin.Services.Implementations
         // </summary>
         public Task<ApiResponse<AuthResponseDto>> LoginAsync(AdminLoginDto loginDto)
         { 
-            return ExecuteApiAsync<AuthResponseDto>(() => _httpClient.PostAsJsonAsync("api/auth/admin-login", loginDto)); 
+            return PostAsJsonAsync<AdminLoginDto, AuthResponseDto>("api/auth/admin-login", loginDto); 
         }
 
         public Task<ApiResponse<AuthResponseDto>> GetCurrentUserAsync()
         { 
-            return ExecuteApiAsync<AuthResponseDto>(() => _httpClient.GetAsync("api/auth/admin-me"));
+            return GetAsync<AuthResponseDto>("api/auth/admin-me");
         }
-
-        //public Task<ApiResponse<bool>> LogoutAsync() 
-        //{ 
-        //    return ExecuteApiAsync<bool>(() => _httpClient.PostAsync("api/auth/admin-logout", null));
-        //}
-
 
         // <summary>
         // Xử lý Forgot Password, Verify OTP và Reset Password cho management
         // </summary>
         public Task<ApiResponse<bool>> ForgotPasswordAsync(AdminForgotPasswordDto dto) 
         { 
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("api/auth/admin-forgot-password", dto));
+            return PostAsJsonAsync<AdminForgotPasswordDto, bool>("api/auth/admin-forgot-password", dto);
         }
 
         public Task<ApiResponse<bool>> VerifyOtpAsync(AdminVerifyOtpDto dto) 
         { 
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("api/auth/admin-verify-otp", dto));
+            return PostAsJsonAsync<AdminVerifyOtpDto, bool>("api/auth/admin-verify-otp", dto);
         }
 
         public Task<ApiResponse<bool>> ResetPasswordAsync(AdminResetPasswordDto dto) 
         { 
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("api/auth/admin-reset-password", dto));
+            return PostAsJsonAsync<AdminResetPasswordDto, bool>("api/auth/admin-reset-password", dto);
         }
 
         // <summary>
@@ -56,17 +54,22 @@ namespace WebApp.Admin.Services.Implementations
 
         public Task<ApiResponse<UserProfileDto>> GetUserProfileAsync()
         {
-            return ExecuteApiAsync<UserProfileDto>(() => _httpClient.GetAsync("api/user/profile"));
+            return GetAsync<UserProfileDto>("api/user/profile");
         }
 
         public Task<ApiResponse<bool>> UpdateUserProfileAsync(UpdateProfileDto dto)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PutAsJsonAsync("api/user/profile", dto));
+            return PutAsJsonAsync<UpdateProfileDto, bool>("api/user/profile", dto);
         }
 
         public Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordDto dto)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("api/user/change-password", dto));
+            return PostAsJsonAsync<ChangePasswordDto, bool>("api/user/change-password", dto);
+        }
+
+        public Task<ApiResponse<ValidateStampDto>> ValidateSecurityStampAsync()
+        {
+            return GetAsync<ValidateStampDto>("api/auth/validate-stamps");
         }
     }
 }

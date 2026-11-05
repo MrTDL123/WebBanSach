@@ -1,17 +1,21 @@
 namespace WebApp.Shared.Dtos.Common
 {
     /// <summary>
-    /// Kết quả trả về sau khi Đăng nhập thành công (cho cả CustomerLogin và AdminLogin)
+    /// Kết quả trả về sau khi Đăng nhập / Lấy thông tin cá nhân (hỗ trợ cả Cookie và JWT Bearer cho Web & Mobile)
     /// </summary>
     public record AuthResponseDto(
-        // Xóa Comment 2 thuộc tính nếu sau này có nhu cầu JWT Token
-        //string? Token = null,
-        //DateTime? Expiration = null,
         string? UserId,
         string? FullName,
         string? Email,
         string? AvatarUrl,
         List<string> Roles,
-        string? SecurityStamp = null
+        string? SecurityStamp = null,
+        string? AccessToken = null,
+        string? RefreshToken = null,
+        DateTime? AccessTokenExpiration = null,
+        string? PhoneNumber = null,
+        DateTime? DateOfBirth = null,
+        string? Address = null,
+        string? Gender = null
     );
 }

@@ -6,7 +6,7 @@
 
 @inject IDashboardClientService DashboardClientService
 @inject IJSRuntime JSRuntime
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin,ContentManager,OrderManager,CustomerSupport,WarehouseManager,Accountant")]
 
 <main class="dashboard-container">
     <!-- Header -->

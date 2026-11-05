@@ -11,9 +11,15 @@ namespace WebApp.Customer.Client.Pages.Auth
         private CustomerLoginDto loginModel = new("", "");
         private bool rememberMe = false;
         private bool isSubmitting = false;
+        private bool showPassword = false;
         private string? errorMessage;
         // Các thông báo lỗi trả về từ API
         private List<string>? validationErrors;
+
+        private void TogglePasswordVisibility()
+        {
+            showPassword = !showPassword;
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {

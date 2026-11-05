@@ -1,5 +1,6 @@
-﻿using WebApp.Admin.Services.Base;
+using WebApp.Admin.Services.Base;
 using WebApp.Admin.Services.Interfaces;
+using WebApp.Admin.Utilities;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.User;
 
@@ -7,25 +8,29 @@ namespace WebApp.Admin.Services.Implementations
 {
     public class UserClientService : BaseApiClient, IUserClientService
     {
-        private readonly HttpClient _httpClient;
-        public UserClientService(HttpClient httpClient)
+        public UserClientService(
+            HttpClient httpClient,
+            UserSessionState userSessionState,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpClient, userSessionState, httpContextAccessor)
         {
-            _httpClient = httpClient;
         }
         // <summary>
         // Xử lý lấy, sửa thông tin người dùng và mật khẩu trang thông tin cá nhân
         // </summary>
         public Task<ApiResponse<UserProfileDto>> GetUserProfileAsync()
         {
-            return ExecuteApiAsync<UserProfileDto>(() => _httpClient.GetAsync("api/user/profile"));
+            return GetAsync<UserProfileDto>("api/user/profile");
         }
+
         public Task<ApiResponse<bool>> UpdateUserProfileAsync(UpdateProfileDto dto)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PutAsJsonAsync("api/user/profile", dto));
+            return PutAsJsonAsync<UpdateProfileDto, bool>("api/user/profile", dto);
         }
+
         public Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordDto dto)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("api/user/change-password", dto));
+            return PostAsJsonAsync<ChangePasswordDto, bool>("api/user/change-password", dto);
         }
     }
 }

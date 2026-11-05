@@ -1,0 +1,55 @@
+@using WebApp.Customer.Client.Services.Interfaces
+@inject IFeatureToggleService FeatureToggleService
+@implements IDisposable
+
+@if (IsEnabled)
+{
+    @Enabled
+}
+else if (Disabled != null)
+{
+    @Disabled
+}
+
+@code {
+    /// <summary>
+    /// Tên cờ tính năng (dùng hằng số từ WebApp.Shared.Constants.FeatureFlags)
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Nội dung UI hiển thị khi cờ được BẬT
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Enabled { get; set; }
+
+    /// <summary>
+    /// Nội dung UI hiển thị khi cờ bị TẮT (tùy chọn)
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Disabled { get; set; }
+
+    /// <summary>
+    /// Giá trị mặc định nếu cờ chưa được tải hoặc không tồn tại
+    /// </summary>
+    [Parameter]
+    public bool DefaultValue { get; set; } = false;
+
+    private bool IsEnabled => FeatureToggleService.IsEnabled(Name, DefaultValue);
+
+    protected override void OnInitialized()
+    {
+        FeatureToggleService.OnFeatureTogglesChanged += HandleFlagsChanged;
+    }
+
+    private void HandleFlagsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        FeatureToggleService.OnFeatureTogglesChanged -= HandleFlagsChanged;
+    }
+}

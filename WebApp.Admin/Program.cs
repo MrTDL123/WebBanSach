@@ -1,7 +1,9 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using WebApp.Admin.Auth;
 using WebApp.Admin.Components;
@@ -69,14 +71,15 @@ builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
         options.LoginPath = "/management/login";
         options.AccessDeniedPath = "/management/login";
     });
-// Cho phép truyền AuthenticationState cho các component UI như <AuthorizedView>
+
+builder.Services.AddAuthorization();
+// Tự động cung cấp Task<AuthenticationState> cho các Component con
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 builder.Services.AddHttpContextAccessor();
 // UserSessionState dùng để thay thế HttpContext lưu trữ cookie sau khi đã thiết lập kết nối SignalR WebSocket
 builder.Services.AddScoped<UserSessionState>();
-
 
 var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
 
@@ -85,18 +88,15 @@ builder.Services.AddHttpClient("ApiClient", client =>
 {
     client.BaseAddress = new Uri(apiBaseAddress);
 });
+
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ApiClient"));
+
 builder.Services.AddScoped<IAuthClientService, AuthClientService>();
 builder.Services.AddScoped<IUserClientService, UserClientService>();
 builder.Services.AddScoped<IDashboardClientService, DashboardClientService>();
 builder.Services.AddScoped<IContentClientService, ContentClientService>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
-
-// AUTHENTICATIONSTATEPROVIDER CUSTOM (Cần phải sửa lại dựa vào custom của thằng Tiến)
-builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingAuthenticationStateProvider>();
-
 
 var app = builder.Build();
 
@@ -110,13 +110,14 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+// Custom middleware để mỗi lần gửi, nhận request response thì phải đọc cookie
+app.UseMiddleware<InitialSessionMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 //  Chống việc người dùng gửi request có đính kèm cookie từ web giả mạo đến API
 app.UseAntiforgery();
 
-// Custom middleware để mỗi lần gửi, nhận request response thì phải đọc cookie
-app.UseMiddleware<InitialSessionMiddleware>();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

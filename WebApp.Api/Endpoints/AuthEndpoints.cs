@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WebApp.Api.Entities;
 using WebApp.Api.Services.Interfaces;
+using WebApp.Shared.Dtos.Common;
+using WebApp.Shared.Dtos.Management.Auth;
 
 namespace WebApp.Api.Endpoints
 {
@@ -26,8 +28,12 @@ namespace WebApp.Api.Endpoints
                     return Results.Unauthorized();
                 }
 
+                // Trả về cho Blazor để đối chiếu Security Stamp
                 string currentStamp = await userManager.GetSecurityStampAsync(dbUser);
-                return Results.Ok(new { SecurityStamp = currentStamp });
+                var currentRoles = (await userManager.GetRolesAsync(dbUser)).ToList();
+                
+                var responseData = new ValidateStampDto(currentStamp, currentRoles);
+                return Results.Ok(ApiResponse<ValidateStampDto>.SuccessResult(responseData));
             })
             .RequireAuthorization(); // Việc kiểm tra theo định kỳ chỉ diễn ra nếu người dùng đã được xác thực, phân quyền hợp lệ
         }

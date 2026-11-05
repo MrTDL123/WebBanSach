@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -67,6 +67,8 @@ public partial class AppDbContext : IdentityDbContext<User, Role, string>
     public DbSet<SupportTicket> SupportTickets { get; set; }
 
     public DbSet<Wishlist> Wishlists { get; set; }
+
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

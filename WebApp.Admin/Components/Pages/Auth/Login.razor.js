@@ -13,7 +13,8 @@ export async function submitLoginForm(formElementId) {
 
         const response = await fetch('/api/management/login', {
             method: 'POST',
-            body: new FormData(form)
+            body: new FormData(form),
+            credentials: 'include'
             });
 
         if (response.ok) {

@@ -1,243 +1,288 @@
-/* Cấu trúc Auth Container Responsive */
-.auth-container {
+/* ==========================================================================
+   AUTH PAGE (LOGIN) - Pure HTML & CSS (Zero Bootstrap)
+   ========================================================================== */
+
+.auth-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 120px);
-    padding: 20px 15px;
-    background-color: #f8f9fa;
+    min-height: calc(100vh - 180px);
+    padding: 36px 16px;
 }
 
-.auth-box {
+.auth-card {
     width: 100%;
-    max-width: 450px;
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    padding: 30px;
+    max-width: 440px;
+    background: var(--bg-surface);
+    border: var(--border-classic);
+    border-radius: var(--radius-classic);
+    box-shadow: var(--shadow-classic);
+    padding: 36px 32px;
+    position: relative;
     box-sizing: border-box;
 }
 
+/* Khung viền chỉ nét đứt hoa văn cổ điển */
+.auth-card::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px dashed var(--color-bronze-light);
+    border-radius: calc(var(--radius-classic) - 4px);
+    pointer-events: none;
+}
+
+/* Tiêu đề Form */
 .auth-header {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
 }
 
-    .auth-header h2 {
-        font-size: 24px;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 8px;
-    }
-
-    .auth-header p {
-        color: #666;
-        font-size: 14px;
-    }
-
-.form-group {
-    margin-bottom: 20px;
+.auth-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--color-terracotta);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0 0 6px 0;
 }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        font-size: 14px;
-        color: #444;
-    }
-
-.form-control-custom {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease-in-out;
+.auth-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-style: italic;
+    line-height: 1.4;
 }
 
-    .form-control-custom:focus {
-        outline: none;
-        border-color: #3091F8;
-        box-shadow: 0 0 0 2px rgba(48, 145, 248, 0.2);
-    }
+/* Thông báo lỗi */
+.alert-danger {
+    padding: 10px 14px;
+    background-color: #FDF0ED;
+    border: 1.5px solid #E8A89B;
+    border-radius: 6px;
+    color: #8B2E1E;
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+}
 
-.form-remember {
+.alert-danger ul {
+    margin: 4px 0 0 16px;
+    padding: 0;
+}
+
+
+/* Password wrapper và nút ẩn/hiện */
+.password-wrapper {
+    position: relative;
     display: flex;
-    justify-content: space-between;
-    font-size: 14px;
     align-items: center;
-    margin-bottom: 25px;
-    font-weight: 600;
 }
 
-    .form-remember label {
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-        .form-remember label input[type=checkbox] {
-            cursor: pointer;
-            accent-color: #3091F8;
-            width: 16px;
-            height: 16px;
-        }
-
-.forgot {
-    color: #F0717F;
-    text-decoration: none;
+::deep .input-password {
+    padding-right: 42px !important;
 }
 
-    .forgot:hover {
-        color: #d70018;
-        text-decoration: underline;
-    }
-
-.btn-auth {
-    width: 100%;
-    padding: 12px;
-    background-color: #3091F8;
-    color: white;
+.btn-toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
     border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 1.15rem;
     cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-    .btn-auth:hover:not(:disabled) {
-        background-color: #1a7ae8;
-    }
-
-    .btn-auth:disabled {
-        background-color: #a0c7f5;
-        cursor: not-allowed;
-    }
-
-/* Nút Social */
-.google-btn, .facebook-btn {
+    padding: 4px 6px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 12px;
-    border-radius: 4px;
-    font-size: 15px;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
+    transition: color 0.2s;
 }
 
-.google-btn {
-    border: 1px solid #ccc;
-    background-color: #ffffff;
-    color: #555;
+.btn-toggle-password:hover {
+    color: var(--color-terracotta);
 }
 
-    .google-btn:hover {
-        background-color: #f7f7f7;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-.facebook-btn {
-    border: 1px solid #1877f2;
-    background-color: #1877f2;
-    color: #ffffff;
-    margin-top: 10px;
-}
-
-    .facebook-btn:hover {
-        background-color: #166fe5;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-    }
-
-.google-icon, .facebook-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-}
-
-.facebook-icon {
-    background-color: white;
-    border-radius: 50%;
-    padding: 1px;
-}
-
-.separator {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: #999;
-    margin: 1.25rem 0;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-    .separator::before, .separator::after {
-        content: '';
-        flex: 1;
-        border-bottom: 1px solid #ddd;
-    }
-
-    .separator:not(:empty)::before {
-        margin-right: .5em;
-    }
-
-    .separator:not(:empty)::after {
-        margin-left: .5em;
-    }
-
-.auth-footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-}
-
-    .auth-footer a {
-        color: #3091F8;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-        .auth-footer a:hover {
-            text-decoration: underline;
-        }
-
-/* Validation Style */
-.validation-message, .error {
-    color: #dc3545;
-    font-size: 12px;
+/* Thông báo lỗi FluentValidation */
+::deep .validation-message {
+    color: var(--color-terracotta);
+    font-size: 0.82rem;
     margin-top: 5px;
+    font-style: italic;
     display: block;
 }
 
-.alert-danger-custom {
-    padding: 10px 15px;
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    margin-bottom: 15px;
-    font-size: 14px;
+/* Tùy chọn Ghi nhớ & Quên mật khẩu */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    font-size: 0.88rem;
 }
 
-/* Mobile Responsiveness */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.checkbox-input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-terracotta);
+    cursor: pointer;
+}
+
+.link-forgot {
+    color: var(--color-terracotta);
+    text-decoration: none;
+    font-weight: 600;
+    transition: text-decoration 0.2s;
+}
+
+.link-forgot:hover {
+    text-decoration: underline;
+}
+
+/* Nút Submit chính */
+.btn-primary {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--color-terracotta);
+    color: var(--text-white);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(184, 95, 61, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--color-terracotta-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(184, 95, 61, 0.35);
+}
+
+.btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Phân cách */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0 16px 0;
+}
+
+.divider-line {
+    flex: 1;
+    border-bottom: 1px solid var(--color-bronze-light);
+}
+
+.divider-text {
+    padding: 0 12px;
+    color: var(--color-bronze-border);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* Nút phụ (Đăng ký) */
+.btn-secondary {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 20px;
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1.5px solid var(--color-bronze-border);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-bottom: 16px;
+}
+
+.btn-secondary:hover {
+    background-color: #F2ECE0;
+    border-color: var(--color-terracotta);
+    color: var(--color-terracotta);
+}
+
+/* Đăng nhập mạng xã hội */
+.social-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 14px;
+    border: 1px solid var(--color-bronze-light);
+    border-radius: 6px;
+    background-color: #FFFDF8;
+    color: var(--text-main);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-social:hover {
+    background-color: #F5EEE2;
+    border-color: var(--color-bronze-border);
+}
+
+.social-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.fb-icon {
+    font-size: 1.15rem;
+    color: #1877F2;
+}
+
+.btn-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid #FFFFFF;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: vintage-spin 0.6s linear infinite;
+}
+
 @media (max-width: 480px) {
-    .auth-box {
-        padding: 20px 15px;
+    .auth-card {
+        padding: 28px 20px;
     }
-
-    .auth-header h2 {
-        font-size: 20px;
-    }
-
-    .form-remember {
+    
+    .form-options {
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;

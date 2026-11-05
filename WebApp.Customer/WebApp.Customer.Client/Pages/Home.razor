@@ -1,0 +1,177 @@
+@page "/"
+@rendermode InteractiveAuto
+@implements IDisposable
+@using WebApp.Customer.Client.Components.Common
+@using WebApp.Customer.Client.Services.Interfaces
+@using WebApp.Shared.Constants
+@using WebApp.Shared.Dtos.CustomerDtos.Product
+@inject IProductClientService ProductService
+@inject IFeatureToggleService FeatureToggleService
+@inject PersistentComponentState ApplicationState
+
+<PageTitle>Nhà Sách Văn Hóa - Không Gian Tri Thức & Văn Hóa Đọc</PageTitle>
+
+<div class="home-page-container">
+    @* KHỐI 1: HERO BANNER TRUYỀN THỐNG (Bọc cờ tính năng) *@
+    <FeatureFlag Name="@FeatureFlags.HeroBannerSlider">
+        <Enabled>
+            <section class="slider-container">
+                <button class="slider-arrow left" @onclick="PrevSlide" aria-label="Slide trước">‹</button>
+                <div class="slider-banner">
+                    <h1 class="slider-title">MỪNG LONG ĐẸP TRAI <br /> ĐƯỢC SINH RA ĐỜI</h1>
+                    <p class="slider-desc">Giảm 10% các đầu sách cổ bán đến hết tháng.</p>
+                    <a href="/catalog?discount=true" class="btn-slider-action">XEM CHI TIẾT</a>
+
+                    <div class="slider-dots">
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+                <button class="slider-arrow right" @onclick="NextSlide" aria-label="Slide kế tiếp">›</button>
+            </section>
+        </Enabled>
+    </FeatureFlag>
+
+    @* KHỐI 2: FLASH SALE ĐẾM NGƯỢC (Bọc cờ tính năng) *@
+    <FeatureFlag Name="@FeatureFlags.FlashSaleSection">
+        <Enabled>
+            <section class="flash-sale-section">
+                <div class="flash-sale-header">
+                    <div class="flash-sale-title">
+                        <AppIcon Name="lightning" Size="20" Class="flash-icon" />
+                        <h3>ĐỢT KHUYẾN ĐÃI ĐẶC BIỆT</h3>
+                    </div>
+                    <div class="countdown-clock">
+                        <span class="clock-label">Kết thúc trong:</span>
+                        <span class="clock-badge">02</span> :
+                        <span class="clock-badge">14</span> :
+                        <span class="clock-badge">59</span>
+                    </div>
+                </div>
+            </section>
+        </Enabled>
+    </FeatureFlag>
+
+    @* KHỐI 3: SÁCH MỚI PHÁT HÀNH (Chính diện) *@
+    <section class="catalog-section">
+        <SectionCartouche Title="SÁCH MỚI PHÁT HÀNH" />
+
+        @if (IsLoading)
+        {
+            <div class="loading-grid">
+                @for (int i = 0; i < 4; i++)
+                {
+                    <div class="skeleton-book-card">
+                        <div class="skeleton-thumb"></div>
+                        <div class="skeleton-line-long"></div>
+                        <div class="skeleton-line-short"></div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="books-grid">
+                @for (int i = 0; i < books.Count; i++)
+                {
+                    var book = books[i];
+                    <BookCard Product="@book" IsAboveTheFold="@(i < 4)" />
+                }
+            </div>
+        }
+    </section>
+
+    @* KHỐI 4: TỦ SÁCH 0Đ - CHIA SẺ TRI THỨC (Bọc cờ tính năng) *@
+    <FeatureFlag Name="@FeatureFlags.FreeBooksPromotion">
+        <Enabled>
+            <section class="free-books-section">
+                <div class="free-books-box">
+                    <div class="free-books-text">
+                        <div class="cartouche-ornament">❦</div>
+                        <h3>DỰ ÁN TỦ SÁCH 0 ĐỒNG</h3>
+                        <p>
+                            Chương trình trao đổi và trao tặng sách cộng đồng. Mỗi cuốn sách được trao đi là một hạt mầm tri thức được gieo rắc.
+                        </p>
+                        <a href="/tu-sach-0-dong" class="btn-free-books">Tham Gia Trao Đổi</a>
+                    </div>
+                </div>
+            </section>
+        </Enabled>
+    </FeatureFlag>
+</div>
+
+@code {
+    private List<ProductListItemDto> books = new();
+    private bool IsLoading = true;
+    private PersistingComponentStateSubscription _persistingSubscription;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // McMaster-Carr Kỹ thuật 1: Đăng ký gom state khi SSR Pre-rendering
+        _persistingSubscription = ApplicationState.RegisterOnPersisting(PersistFeaturedBooks);
+
+        // Khử duplicate fetch: Nếu WASM nhận được state từ Server SSR HTML Island thì dùng luôn, 0 gọi lại API
+        if (!ApplicationState.TryTakeFromJson<List<ProductListItemDto>>("featured_books_state", out var restoredBooks) || restoredBooks == null)
+        {
+            await LoadBooksAsync();
+        }
+        else
+        {
+            books = restoredBooks;
+            IsLoading = false;
+        }
+    }
+
+    private Task PersistFeaturedBooks()
+    {
+        ApplicationState.PersistAsJson("featured_books_state", books);
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadBooksAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var response = await ProductService.GetFeaturedProductsAsync(8);
+            if (response.Success && response.Data != null && response.Data.Any())
+            {
+                books = response.Data;
+            }
+            else
+            {
+                // Dữ liệu mẫu phong cách Nhà Sách Cổ Điển
+                books = new List<ProductListItemDto>
+                {
+                    new ProductListItemDto(1, "Truyện Kiều (Bản Duy Minh Thị 1872)", "Nguyễn Du", "Văn Học", 185000, 15, "", 50, true, 4.9),
+                    new ProductListItemDto(2, "Việt Nam Sử Lược", "Trần Trọng Kim", "Lịch Sử", 220000, 10, "", 35, true, 4.8),
+                    new ProductListItemDto(3, "Số Đỏ (Bản Bìa Cứng)", "Vũ Trọng Phụng", "Văn Học Hiện Thực", 160000, 20, "", 40, true, 4.7),
+                    new ProductListItemDto(4, "Đại Việt Sử Ký Toàn Thư", "Ngô Sĩ Liên", "Lịch Sử", 350000, 0, "", 20, true, 5.0),
+                };
+            }
+        }
+        catch
+        {
+            books = new List<ProductListItemDto>
+            {
+                new ProductListItemDto(1, "Truyện Kiều (Bản Duy Minh Thị 1872)", "Nguyễn Du", "Văn Học", 185000, 15, "", 50, true, 4.9),
+                new ProductListItemDto(2, "Việt Nam Sử Lược", "Trần Trọng Kim", "Lịch Sử", 220000, 10, "", 35, true, 4.8),
+                new ProductListItemDto(3, "Số Đỏ (Bản Bìa Cứng)", "Vũ Trọng Phụng", "Văn Học Hiện Thực", 160000, 20, "", 40, true, 4.7),
+                new ProductListItemDto(4, "Đại Việt Sử Ký Toàn Thư", "Ngô Sĩ Liên", "Lịch Sử", 350000, 0, "", 20, true, 5.0),
+            };
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void PrevSlide() {}
+    private void NextSlide() {}
+
+    public void Dispose()
+    {
+        _persistingSubscription.Dispose();
+    }
+}

@@ -1,0 +1,38 @@
+﻿@page "/thong-tin-tai-khoan"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
+
+<div class="profile-page-wrapper">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="avatar-large">👤</div>
+            <h2 class="profile-name">HỒ SƠ ĐỘC GIẢ</h2>
+            <p class="profile-badge">Thành viên thân thiết</p>
+        </div>
+
+        <div class="profile-details">
+            <div class="detail-row">
+                <span class="detail-label">Họ và tên:</span>
+                <span class="detail-value">Nguyễn Nam</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">nam.nguyen@email.vn</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Số điện thoại:</span>
+                <span class="detail-value">0901 234 567</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Địa chỉ nhận sách:</span>
+                <span class="detail-value">Quận 1, TP. Hồ Chí Minh</span>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="/orders" class="btn-profile-primary">LỊCH SỬ ĐƠN HÀNG</a>
+            <a href="/" class="btn-profile-outline">TRỞ VỀ TRANG CHỦ</a>
+        </div>
+    </div>
+</div>

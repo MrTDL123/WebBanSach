@@ -12,5 +12,7 @@ namespace WebApp.Admin.Services.Interfaces
         Task<ApiResponse<bool>> ForgotPasswordAsync(AdminForgotPasswordDto dto);
         Task<ApiResponse<bool>> VerifyOtpAsync(AdminVerifyOtpDto dto);
         Task<ApiResponse<bool>> ResetPasswordAsync(AdminResetPasswordDto dto);
+        // Kiểm tra Security Stamp để xác thực người dùng có còn trong trạng thái đăng nhập hay không
+        Task<ApiResponse<ValidateStampDto>> ValidateSecurityStampAsync();
     }
 }

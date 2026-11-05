@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using WebApp.Admin.Services.Interfaces;
+using WebApp.Admin.Utilities;
 using WebApp.Shared.Dtos.Management.Auth;
 
 namespace WebApp.Admin.Controllers
@@ -14,9 +15,11 @@ namespace WebApp.Admin.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthClientService _authService;
-        public AccountController(IAuthClientService authService)
+        private readonly UserSessionState _userSessionState;
+        public AccountController(IAuthClientService authService, UserSessionState userSessionState)
         {
             _authService = authService;
+            _userSessionState = userSessionState;
         }
 
         [HttpPost("login")]
@@ -66,9 +69,16 @@ namespace WebApp.Admin.Controllers
 
         [HttpGet("logout")]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout([FromQuery] string? redirect = null)
         {
             await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+            _userSessionState.AuthCookieValue = null;
+
+            if (!string.IsNullOrEmpty(redirect))
+            {
+                return LocalRedirect(redirect);
+            }
+
             return Ok(new { Success = true });
         }
     }

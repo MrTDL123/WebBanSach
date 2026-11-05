@@ -1,5 +1,148 @@
-﻿<h3>Register</h3>
+@page "/dang-ky"
 
-@code {
+@using Microsoft.AspNetCore.Components.Authorization
+@using WebApp.Customer.Client.Services.Interfaces
+@using WebApp.Customer.Client.Validation
+@using WebApp.Shared.Dtos.Customer.Auth
+@rendermode InteractiveAuto
 
-}
+@inject IAuthClientService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Đăng ký tài khoản | Nhà Sách Văn Hóa</PageTitle>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2 class="auth-title">ĐĂNG KÝ TÀI KHOẢN</h2>
+            <p class="auth-subtitle">Gia nhập cộng đồng độc giả để lưu giữ tri thức và nhận ưu đãi</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert-danger">
+                <span>@errorMessage</span>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert-success">
+                <span>@successMessage</span>
+            </div>
+        }
+
+        @if (validationErrors != null && validationErrors.Any())
+        {
+            <div class="alert-danger">
+                <ul>
+                    @foreach (var err in validationErrors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <EditForm Model="@registerModel" OnValidSubmit="HandleSubmitAsync" FormName="CustomerRegisterForm">
+            <FluentValidator />
+
+            <div class="form-group">
+                <label for="FullName" class="form-label">Họ và tên độc giả</label>
+                <InputText id="FullName" 
+                           @bind-Value="registerModel.FullName" 
+                           class="form-control" 
+                           placeholder="Ví dụ: Nguyễn Văn An" />
+                <ValidationMessage For="@(() => registerModel.FullName)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Email" class="form-label">Địa chỉ Email</label>
+                <InputText id="Email" 
+                           @bind-Value="registerModel.Email" 
+                           class="form-control" 
+                           placeholder="docgia@gmail.com" />
+                <ValidationMessage For="@(() => registerModel.Email)" />
+            </div>
+
+            <div class="form-group">
+                <label for="PhoneNumber" class="form-label">Số điện thoại liên hệ</label>
+                <InputText id="PhoneNumber" 
+                           @bind-Value="registerModel.PhoneNumber" 
+                           class="form-control" 
+                           placeholder="0912345678" />
+                <ValidationMessage For="@(() => registerModel.PhoneNumber)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Password" class="form-label">Mật khẩu</label>
+                <div class="password-wrapper">
+                    <InputText type="@(showPassword ? "text" : "password")" 
+                               id="Password" 
+                               @bind-Value="registerModel.Password" 
+                               class="form-control input-password" 
+                               placeholder="Tối thiểu 6 ký tự..." />
+                    <button type="button" class="btn-toggle-password" @onclick="TogglePasswordVisibility" tabindex="-1">
+                        <AppIcon Name="@(showPassword ? "eye-slash" : "eye")" Size="18" />
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => registerModel.Password)" />
+            </div>
+
+            <div class="form-group">
+                <label for="ConfirmPassword" class="form-label">Xác nhận lại mật khẩu</label>
+                <div class="password-wrapper">
+                    <InputText type="@(showConfirmPassword ? "text" : "password")" 
+                               id="ConfirmPassword" 
+                               @bind-Value="registerModel.ConfirmPassword" 
+                               class="form-control input-password" 
+                               placeholder="Nhập lại mật khẩu..." />
+                    <button type="button" class="btn-toggle-password" @onclick="ToggleConfirmPasswordVisibility" tabindex="-1">
+                        <AppIcon Name="@(showConfirmPassword ? "eye-slash" : "eye")" Size="18" />
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+            </div>
+
+            <div class="form-group">
+                <label for="OtpCode" class="form-label">Mã xác thực OTP</label>
+                <div class="otp-group">
+                    <InputText id="OtpCode" 
+                               @bind-Value="registerModel.OtpCode" 
+                               class="form-control input-otp" 
+                               placeholder="Nhập mã 6 chữ số..." />
+                    <button type="button" class="btn-otp" @onclick="HandleSendOtp" disabled="@isSendingOtp">
+                        @(isSendingOtp ? "Đang gửi..." : "Lấy mã OTP")
+                    </button>
+                </div>
+                <ValidationMessage For="@(() => registerModel.OtpCode)" />
+                @if (!string.IsNullOrEmpty(otpNotice))
+                {
+                    <span class="otp-notice">@otpNotice</span>
+                }
+            </div>
+
+            <button type="submit" class="btn-primary" disabled="@isSubmitting">
+                @if (isSubmitting)
+                {
+                    <span class="btn-spinner"></span>
+                    <span>Đang đăng ký...</span>
+                }
+                else
+                {
+                    <span>TẠO TÀI KHOẢN MỚI</span>
+                }
+            </button>
+
+            <div class="auth-divider">
+                <span class="divider-line"></span>
+                <span class="divider-text">HOẶC</span>
+                <span class="divider-line"></span>
+            </div>
+
+            <a href="/dang-nhap" class="btn-secondary">
+                ĐÃ CÓ TÀI KHOẢN? ĐĂNG NHẬP NGAY
+            </a>
+        </EditForm>
+    </div>
+</div>

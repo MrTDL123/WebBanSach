@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 
@@ -50,6 +50,8 @@ public partial class User : IdentityUser
     public virtual ICollection<SupportTicket> SupportTicketCustomers { get; set; } = new List<SupportTicket>();
 
     public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
+
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public static User CreateCustomer(string email, string fullName, string? phoneNumber = null)
     {

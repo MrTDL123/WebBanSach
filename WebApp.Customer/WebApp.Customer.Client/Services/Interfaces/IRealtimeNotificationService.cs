@@ -1,4 +1,4 @@
-﻿namespace WebApp.Customer.Client.Services.Interfaces
+namespace WebApp.Customer.Client.Services.Interfaces
 {
     public interface IRealtimeNotificationService : IAsyncDisposable
     {
@@ -16,5 +16,10 @@
         /// Sự kiện khi Admin thay đổi trạng thái đơn hàng (OrderId, NewStatus)
         /// </summary>
         event Action<int, string>? OnOrderStatusChanged;
+
+        /// <summary>
+        /// Sự kiện khi Admin cập nhật cờ tính năng Feature Flag (FlagKey, IsEnabled, Variant)
+        /// </summary>
+        event Action<string, bool, string?>? OnFeatureToggleChanged;
     }
 }

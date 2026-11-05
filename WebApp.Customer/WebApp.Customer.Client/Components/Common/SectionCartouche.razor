@@ -1,0 +1,14 @@
+@namespace WebApp.Customer.Client.Components.Common
+
+<div class="cartouche-wrapper">
+    <div class="cartouche-frame">
+
+        <h2 class="cartouche-title">@Title</h2>
+    </div>
+    
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+}

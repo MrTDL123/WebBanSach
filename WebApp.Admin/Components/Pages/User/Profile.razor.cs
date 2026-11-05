@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel;
+using System.Security.Claims;
 using WebApp.Admin.Auth;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.User;
@@ -8,6 +11,8 @@ namespace WebApp.Admin.Components.Pages.User
 {
     public partial class Profile
     {
+        [CascadingParameter]
+        private Task<AuthenticationState>? AuthStateTask { get; set; }
         // DTO chứa toàn bộ thông tin Read-only từ DB để hiển thị UI
         private UserProfileDto? userProfileModel;
         // Model cho tab Thông tin cá nhân
@@ -136,12 +141,21 @@ namespace WebApp.Admin.Components.Pages.User
                 // 🔥 THÔNG BÁO CHO TOPHEADER CẬP NHẬT LẠI AVATAR MỚI TỨC THÌ
                 if (userProfileModel != null && AuthStateProvider is CustomAuthStateProvider customAuth)
                 {
+                    var currentRoles = new List<string>();
+                    if (AuthStateTask != null)
+                    {
+                        var authState = await AuthStateTask;
+                        currentRoles = authState.User.FindAll(ClaimTypes.Role)
+                                                    .Select(r => r.Value)
+                                                    .ToList();
+                    }
+
                     customAuth.NotifyUserAuthentication(new AuthResponseDto(
                         UserId: userProfileModel.UserId,
                         FullName: userProfileModel.FullName,
                         Email: userProfileModel.Email,
                         AvatarUrl: userProfileModel.AvatarUrl,
-                        Roles: new List<string>()
+                        Roles: currentRoles
                     ));
                 }
             }

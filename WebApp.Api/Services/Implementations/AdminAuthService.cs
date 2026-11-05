@@ -34,7 +34,7 @@ namespace WebApp.Api.Services.Implementations
         {
             // Kiểm tra tồn tại người dùng theo email hoặc tên đăng nhập
             var user = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.Email == dto.UsernameOrEmail);
+                .FirstOrDefaultAsync(u => u.Email == dto.UsernameOrEmail || u.UserName == dto.UsernameOrEmail);
             if (user == null)
             {
                 return ApiResponse<AuthResponseDto>.FailureResult("Tài khoản hoặc mật khẩu không chính xác.");
@@ -83,6 +83,7 @@ namespace WebApp.Api.Services.Implementations
 
             // Lấy role của user hiện tại và lưu vào cookie
             var roles = (await _userManager.GetRolesAsync(user)).ToList();
+
             var authResponse = new AuthResponseDto(
                 UserId: user.Id,
                 FullName: user.UserName,
@@ -114,37 +115,6 @@ namespace WebApp.Api.Services.Implementations
             return ApiResponse<AuthResponseDto>.SuccessResult(authResponse);
         }
 
-        private async Task WriteAuthCookieAsync(User user, List<string> roles)
-        {
-            var httpContext = _httpContextAccessor.HttpContext;
-            if (httpContext == null) return;
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim(ClaimTypes.Name, user.FullName ?? user.UserName ?? ""),
-                new Claim(ClaimTypes.Email, user.Email ?? "")
-            };
-
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var claimsIdentity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(7)
-            };
-
-            await httpContext.SignInAsync(
-                IdentityConstants.ApplicationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties
-            );
-        }
-
         public async Task<ApiResponse<bool>> ForgotPasswordAsync(AdminForgotPasswordDto dto)
         {
             // Kiểm tra tồn tại người dùng theo email hoặc tên đăng nhập
@@ -157,16 +127,14 @@ namespace WebApp.Api.Services.Implementations
 
             // Sinh mã OTP 6 số sử dụng Email Token Provider mặc định của Identity
             var otpCode = await _userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
-
-
             var htmlMessage = EmailTemplates.GetOtpTemplate(otpCode);
 
             // Gửi email chứa mã OTP
             try
             {
-                await _emailSender.SendEmailAsync(user.Email, "Mã OTP đặt lại mật khẩu", htmlMessage);
+                await _emailSender.SendEmailAsync(user.Email!, "Mã OTP đặt lại mật khẩu", htmlMessage);
             }
-            catch (Exception)
+            catch
             {
                 return ApiResponse<bool>.FailureResult("Không thể gửi email xác thực. Vui lòng kiểm tra lại hệ thống SMTP hoặc thử lại sau.");
             }
