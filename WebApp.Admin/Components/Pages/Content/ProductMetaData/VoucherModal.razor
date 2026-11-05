@@ -1,0 +1,118 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IContentClientService ContentClientService
+@inject ToastHelper Toast
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3>@(_isEdit ? "Cập nhật" : "Thêm mới") Mã giảm giá</h3>
+                <button type="button" class="btn-close" @onclick="Close">&times;</button>
+            </header>
+            @if (_isEdit)
+            {
+                <EditForm Model="_updateVoucherModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="code">Mã Voucher <span class="text-danger">*</span></label>
+                            <InputText id="code" class="form-control" @bind-Value="_updateVoucherModel.Code" placeholder="VD: GIAM20K" />
+                            <ValidationMessage For="() => _updateVoucherModel.Code" class="text-error" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="discountAmount">Mức giảm (VNĐ)</label>
+                                <InputNumber id="discountAmount" class="form-control" @bind-Value="_updateVoucherModel.DiscountAmount" />
+                                <ValidationMessage For="() => _updateVoucherModel.DiscountAmount" class="text-error" />
+                            </div>
+                            <div class="form-group">
+                                <label for="discountPercent">Giảm (%)</label>
+                                <InputNumber id="discountPercent" class="form-control" @bind-Value="_updateVoucherModel.DiscountPercent" />
+                                <ValidationMessage For="() => _updateVoucherModel.DiscountPercent" class="text-error" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="totalUsage">Tổng lượt sử dụng</label>
+                                <InputNumber id="totalUsage" class="form-control" @bind-Value="_updateVoucherModel.TotalUsageLimit" />
+                                <ValidationMessage For="() => _updateVoucherModel.TotalUsageLimit" class="text-error" />
+                            </div>
+                            <div class="form-group">
+                                <label for="expiredAt">Ngày hết hạn</label>
+                                <InputDate id="expiredAt" class="form-control" @bind-Value="_updateVoucherModel.ExpiredAt" />
+                                <ValidationMessage For="() => _updateVoucherModel.ExpiredAt" class="text-error" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isSubmitting">Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                            @(_isSubmitting ? "Đang lưu..." : "Lưu thay đổi")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="_createVoucherModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="code">Mã Voucher <span class="text-danger">*</span></label>
+                            <InputText id="code" class="form-control" @bind-Value="_createVoucherModel.Code" placeholder="VD: GIAM20K" />
+                            <ValidationMessage For="() => _createVoucherModel.Code" class="text-error" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="discountAmount">Mức giảm (VNĐ)</label>
+                                <InputNumber id="discountAmount" class="form-control" @bind-Value="_createVoucherModel.DiscountAmount" />
+                                <ValidationMessage For="() => _createVoucherModel.DiscountAmount" class="text-error" />
+                            </div>
+                            <div class="form-group">
+                                <label for="discountPercent">Giảm (%)</label>
+                                <InputNumber id="discountPercent" class="form-control" @bind-Value="_createVoucherModel.DiscountPercent" />
+                                <ValidationMessage For="() => _createVoucherModel.DiscountPercent" class="text-error" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="totalUsage">Tổng lượt sử dụng</label>
+                                <InputNumber id="totalUsage" class="form-control" @bind-Value="_createVoucherModel.TotalUsageLimit" />
+                                <ValidationMessage For="() => _createVoucherModel.TotalUsageLimit" class="text-error" />
+                            </div>
+                            <div class="form-group">
+                                <label for="expiredAt">Ngày hết hạn</label>
+                                <InputDate id="expiredAt" class="form-control" @bind-Value="_createVoucherModel.ExpiredAt" />
+                                <ValidationMessage For="() => _createVoucherModel.ExpiredAt" class="text-error" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isSubmitting">Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                            @(_isSubmitting ? "Đang lưu..." : "Tạo mới")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+        </div>
+    </div>
+}

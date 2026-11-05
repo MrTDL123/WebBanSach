@@ -1,0 +1,71 @@
+/* CSS for CustomerDetailModal component */
+
+.profile-header-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1.25rem;
+}
+
+.avatar-large {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e9ecef;
+}
+
+.profile-info h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.15rem;
+}
+
+.profile-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.detail-item {
+    background-color: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+}
+
+.detail-item label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.detail-item span {
+    font-weight: 500;
+    color: #212529;
+}
+
+.badge-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.badge-danger {
+    background-color: #f8d7da;
+    color: #842029;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}

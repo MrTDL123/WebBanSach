@@ -13,28 +13,22 @@ namespace WebApp.Admin.Services.Implementations
             _httpClient = httpClient;
         }
 
-        // <summary>
-        // Xử lý đăng nhập, đăng xuất cho management và lấy thông tin người dùng hiện tại
-        // </summary>
+        /// <summary>
+        /// Xử lý đăng nhập, đăng xuất cho management và lấy thông tin người dùng hiện tại
+        /// </summary>
         public Task<ApiResponse<AuthResponseDto>> LoginAsync(AdminLoginDto loginDto)
         { 
             return ExecuteApiAsync<AuthResponseDto>(() => _httpClient.PostAsJsonAsync("api/auth/admin-login", loginDto)); 
         }
 
         public Task<ApiResponse<AuthResponseDto>> GetCurrentUserAsync()
-        { 
+        {
             return ExecuteApiAsync<AuthResponseDto>(() => _httpClient.GetAsync("api/auth/admin-me"));
         }
 
-        //public Task<ApiResponse<bool>> LogoutAsync() 
-        //{ 
-        //    return ExecuteApiAsync<bool>(() => _httpClient.PostAsync("api/auth/admin-logout", null));
-        //}
-
-
-        // <summary>
-        // Xử lý Forgot Password, Verify OTP và Reset Password cho management
-        // </summary>
+        /// <summary>
+        /// Xử lý Forgot Password, Verify OTP và Reset Password cho management
+        /// </summary>
         public Task<ApiResponse<bool>> ForgotPasswordAsync(AdminForgotPasswordDto dto) 
         { 
             return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("api/auth/admin-forgot-password", dto));
@@ -50,9 +44,9 @@ namespace WebApp.Admin.Services.Implementations
             return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("api/auth/admin-reset-password", dto));
         }
 
-        // <summary>
-        // Xử lý lấy thông tin hồ sơ người dùng, cập nhật hồ sơ và đổi mật khẩu cho management
-        // </summary>
+        /// <summary>
+        /// Xử lý lấy thông tin hồ sơ người dùng, cập nhật hồ sơ và đổi mật khẩu cho management
+        /// </summary>
 
         public Task<ApiResponse<UserProfileDto>> GetUserProfileAsync()
         {

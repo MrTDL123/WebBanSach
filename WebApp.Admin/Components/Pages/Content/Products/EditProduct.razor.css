@@ -1,0 +1,382 @@
+/* CSS for EditProduct component */
+
+/* ==========================================================================
+   1. BỐ CỤC TRANG & THẺ KHUNG FORM (PAGE & CARD LAYOUT)
+   ========================================================================== */
+.page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    background-color: #f8fafc;
+    min-height: 100vh;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 4px 0;
+}
+
+.subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.form-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+}
+
+.form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ==========================================================================
+   2. HÀNG & Ô NHẬP DỮ LIỆU (FORM CONTROLS & ROWS)
+   ========================================================================== */
+.form-row {
+    display: grid;
+    gap: 16px;
+}
+
+.form-row-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.form-row-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+}
+
+.required {
+    color: #dc2626;
+}
+
+.form-control {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 0.875rem;
+    color: #334155;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.text-area {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+/* Kiểu hiển thị lỗi của FluentValidator */
+::deep .validation-message {
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin-top: 2px;
+}
+
+/* ==========================================================================
+   3. REGION UPLOAD HÌNH ẢNH (IMAGE UPLOAD SECTION)
+   ========================================================================== */
+.image-upload-box {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    background-color: #f9fafb;
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: #4b5563;
+    font-size: 0.875rem;
+}
+
+.upload-icon {
+    font-size: 2rem;
+}
+
+::deep .file-input-hidden {
+    display: none;
+}
+
+.image-preview {
+    position: relative;
+    max-width: 150px;
+}
+
+.image-preview img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-remove-img {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   4. NÚT THAO TÁC, TRẠNG THÁI LOADING & ALERTS
+   ========================================================================== */
+.state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: #6b7280;
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.alert-error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #991b1b;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.btn {
+    padding: 9px 18px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+    background-color: #f3f4f6;
+}
+
+/* ==========================================================================
+   5. KHU VỰC ẢNH PHỤ (GALLERY IMAGES)
+   ========================================================================== */
+.gallery-section {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+}
+
+.gallery-section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 0.25rem 0;
+}
+
+.gallery-section-subtitle {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0 0 1rem 0;
+}
+
+/* Lưới ảnh phụ + ô thêm mới */
+.gallery-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-start;
+}
+
+/* Mỗi ô ảnh phụ */
+.gallery-item {
+    position: relative;
+    width: 100px;
+    height: 130px;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    overflow: visible;
+    background-color: #f8fafc;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.375rem;
+    display: block;
+}
+
+/* Nút X xóa từng ảnh phụ */
+.btn-remove-gallery {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.btn-remove-gallery:hover {
+    background-color: #b91c1c;
+}
+
+/* Ô thêm ảnh phụ mới */
+.gallery-add-btn {
+    width: 100px;
+    height: 130px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 0.375rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    background-color: #f8fafc;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.gallery-add-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.gallery-add-icon {
+    font-size: 1.5rem;
+}
+
+/* ==========================================================================
+   6. CO GIÃN THEO MÀN HÌNH (RESPONSIVE)
+   ========================================================================== */
+@media (max-width: 992px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-row-2,
+    .form-row-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        gap: 12px;
+    }
+}

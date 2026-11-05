@@ -12,9 +12,10 @@ namespace WebApp.Shared.Validations.Management.Admin
     public class CreateEmployeeDtoValidator : AbstractValidator<CreateEmployeeDto>
     {
         private static readonly string[] ValidRoles = {
-        "ContentAndMarketingManager", "OrderAndLogisticsManager", "CustomerSupport",
-        "WarehouseAndInventoryManager", "FinanceAndAccountant"
-    };
+            "ContentManager", "OrderManager", "CustomerSupport",
+            "WarehouseManager", "Accountant"
+        };
+
         public CreateEmployeeDtoValidator()
         {
             RuleFor(x => x.FullName).NotEmpty().MaximumLength(150);

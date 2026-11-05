@@ -1,0 +1,83 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IContentClientService ContentClientService
+@inject ToastHelper Toast
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3>@(_isEdit ? "Cập nhật" : "Thêm mới") Danh mục</h3>
+                <button type="button" class="btn-close" @onclick="Close">&times;</button>
+            </header>
+            @if(_isEdit)
+            {
+                <EditForm Model="_updateCategoryModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @_errorMessage
+                        </div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="categoryName">Tên danh mục <span class="text-danger">*</span></label>
+                            <InputText id="categoryName" class="form-control" @bind-Value="_updateCategoryModel.CategoryName" placeholder="Nhập tên danh mục..." />
+                            <ValidationMessage For="() => _updateCategoryModel.CategoryName" class="text-error" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoryDesc">Mô tả danh mục</label>
+                            <InputTextArea id="categoryDesc" class="form-control" rows="3" @bind-Value="_updateCategoryModel.Description" placeholder="Mô tả ngắn về danh mục..." />
+                            <ValidationMessage For="() => _updateCategoryModel.Description" class="text-error" />
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isSubmitting">Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                            @(_isSubmitting ? "Đang lưu..." : "Lưu thay đổi")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="_createCategoryModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @_errorMessage
+                        </div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="categoryName">Tên danh mục <span class="text-danger">*</span></label>
+                            <InputText id="categoryName" class="form-control" @bind-Value="_createCategoryModel.CategoryName" placeholder="Nhập tên danh mục..." />
+                            <ValidationMessage For="() => _createCategoryModel.CategoryName" class="text-error" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoryDesc">Mô tả danh mục</label>
+                            <InputTextArea id="categoryDesc" class="form-control" rows="3" @bind-Value="_createCategoryModel.Description" placeholder="Mô tả ngắn về danh mục..." />
+                            <ValidationMessage For="() => _createCategoryModel.Description" class="text-error" />
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isSubmitting">Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                            @(_isSubmitting ? "Đang lưu..." : "Tạo mới")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+
+        </div>
+    </div>
+}

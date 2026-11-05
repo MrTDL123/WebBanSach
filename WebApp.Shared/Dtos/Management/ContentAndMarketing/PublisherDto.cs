@@ -6,8 +6,7 @@ namespace WebApp.Shared.Dtos.Management.ContentAndMarketing
         string PublisherName,
         string? Address,
         string? PhoneNumber,
-        string? Email,
-        string? Website,
-        int TotalBooks
+        int TotalBooks,
+        bool IsActive
     );
 }

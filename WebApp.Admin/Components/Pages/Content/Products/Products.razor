@@ -24,23 +24,27 @@
                 <label for="searchInput">Tìm kiếm</label>
                 <input type="text" id="searchInput" class="form-input"
                        placeholder="Nhập tên sách, tác giả..."
-                       @bind="Filter.SearchTerm" @bind:event="oninput" @onkeyup="HandleSearchKeyUp" />
+                       @bind="_filter.SearchTerm" @bind:event="oninput" @onkeyup="HandleSearchKeyUp" />
             </div>
 
             <div class="filter-item">
                 <label for="categorySelect">Danh mục</label>
-                <select id="categorySelect" class="form-select" @onchange="OnCategoryChanged">
+                <select id="categorySelect" class="form-select" value="@_filter.CategoryId" @onchange="OnCategoryChanged">
                     <option value="">-- Tất cả danh mục --</option>
-                    @foreach (var cat in Categories)
+                    @foreach (var cat in _categories)
                     {
                         <option value="@cat.CategoryId">@cat.CategoryName</option>
                     }
                 </select>
             </div>
 
+            <!-- NOTE: Ep ToLower() vi C# .ToString() ra "True"/"False" (hoa),
+         can ha xuong chữ thuong "true"/"false" de khop value cua option HTML -->
             <div class="filter-item">
                 <label for="statusSelect">Trạng thái</label>
-                <select id="statusSelect" class="form-select" @onchange="OnStatusChanged">
+                <select id="statusSelect" class="form-select" 
+                        value="@(_filter.IsActive.HasValue ? _filter.IsActive.HasValue.ToString().ToLower() : "")" 
+                        @onchange="OnStatusChanged">
                     <option value="">-- Tất cả trạng thái --</option>
                     <option value="true">Đang kinh doanh</option>
                     <option value="false">Đã ẩn / Ngừng bán</option>
@@ -49,7 +53,7 @@
 
             <div class="filter-item checkbox-item">
                 <label class="checkbox-label">
-                    <input type="checkbox" @bind="Filter.IsLowStockOnly" @bind:after="ApplyFilterAsync" />
+                    <input type="checkbox" @bind="_filter.IsLowStockOnly" @bind:after="ApplyFilterAsync" />
                     <span>Cảnh báo sắp hết hàng (&lt; 10)</span>
                 </label>
             </div>
@@ -58,14 +62,14 @@
 
     <!-- Bảng danh sách sản phẩm -->
     <section class="table-card">
-        @if (IsLoading)
+        @if (_isLoading)
         {
             <div class="state-container">
                 <div class="spinner"></div>
                 <p>Đang tải danh sách sản phẩm...</p>
             </div>
         }
-        else if (ProductList == null || !ProductList.Any())
+        else if (_productList == null || !_productList.Any())
         {
             <div class="state-container empty-state">
                 <p class="empty-title">Không tìm thấy sản phẩm nào</p>
@@ -79,7 +83,7 @@
                     <thead>
                         <tr>
                             <th class="col-checkbox">
-                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@IsAllSelected" />
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@_isAllSelected" />
                             </th>
                             <th class="col-image">Hình ảnh</th>
                             <th class="col-main">Thông tin sách</th>
@@ -91,12 +95,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var p in ProductList)
+                        @foreach (var p in _productList)
                         {
-                            <tr class="@(SelectedProductIds.Contains(p.ProductId) ? "row-selected" : "")">
+                            <tr class="@(_selectedProductIds.Contains(p.ProductId) ? "row-selected" : "")">
                                 <td class="col-checkbox">
                                     <input type="checkbox"
-                                           checked="@SelectedProductIds.Contains(p.ProductId)"
+                                           checked="@_selectedProductIds.Contains(p.ProductId)"
                                            @onchange="() => ToggleSelectProduct(p.ProductId)" />
                                 </td>
                                 <td class="col-image">
@@ -158,13 +162,13 @@
             <!-- Thanh phân trang -->
             <footer class="pagination-wrapper">
                 <div class="pagination-info">
-                    Hiển thị <strong>@GetDisplayStart()</strong> - <strong>@GetDisplayEnd()</strong> trên tổng số <strong>@TotalItems</strong> sản phẩm
+                    Hiển thị <strong>@GetDisplayStart()</strong> - <strong>@GetDisplayEnd()</strong> trên tổng số <strong>@_totalItems</strong> sản phẩm
                 </div>
 
                 <div class="pagination-controls">
                     <div class="page-size-selector">
                         <label for="pageSize">Hiển thị:</label>
-                        <select id="pageSize" class="form-select-sm" @onchange="OnPageSizeChanged">
+                        <select id="pageSize" class="form-select-sm" value="@_filter.PageSize" @onchange="OnPageSizeChanged">
                             <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
@@ -172,20 +176,20 @@
                     </div>
 
                     <div class="page-buttons">
-                        <button class="btn-page" disabled="@(Filter.PageIndex <= 1)" @onclick="() => ChangePageAsync(Filter.PageIndex - 1)">
+                        <button class="btn-page" disabled="@(_filter.PageIndex <= 1)" @onclick="() => ChangePageAsync(_filter.PageIndex - 1)">
                             &laquo;
                         </button>
 
-                        @for (int i = 1; i <= TotalPages; i++)
+                        @for (int i = 1; i <= _totalPages; i++)
                         {
                             var pageNum = i;
-                            <button class="btn-page @(pageNum == Filter.PageIndex ? "active" : "")"
+                            <button class="btn-page @(pageNum == _filter.PageIndex ? "active" : "")"
                                     @onclick="() => ChangePageAsync(pageNum)">
                                 @pageNum
                             </button>
                         }
 
-                        <button class="btn-page" disabled="@(Filter.PageIndex >= TotalPages)" @onclick="() => ChangePageAsync(Filter.PageIndex + 1)">
+                        <button class="btn-page" disabled="@(_filter.PageIndex >= _totalPages)" @onclick="() => ChangePageAsync(_filter.PageIndex + 1)">
                             &raquo;
                         </button>
                     </div>
@@ -194,3 +198,27 @@
         }
     </section>
 </div>
+
+@if (_productToDelete != null)
+{
+    <div class="modal-backdrop">
+        <div class="modal-box">
+            <header class="modal-header">
+                <h3>Xác nhận xóa sản phẩm</h3>
+                <button type="button" class="btn-close" @onclick="CancelDelete">✕</button>
+            </header>
+
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa sản phẩm <strong>#@_productToDelete.ProductId - @_productToDelete.Title</strong> khỏi hệ thống?</p>
+                <p class="text-danger-warning">Lưu ý: Thao tác này không thể hoàn tác!</p>
+            </div>
+
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Hủy bỏ</button>
+                <button type="button" class="btn btn-danger" disabled="@_isDeleting" @onclick="ExecuteDeleteAsync">
+                    @(_isDeleting ? "Đang xóa..." : "Đồng ý Xóa")
+                </button>
+            </footer>
+        </div>
+    </div>
+}

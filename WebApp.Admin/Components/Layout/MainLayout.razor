@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime JSRuntime
+@inject UserSessionState UserSessionState
 
 <AuthorizeView>
     <Authorized>
@@ -179,3 +180,4 @@
         @Body
     </NotAuthorized>
 </AuthorizeView>
+<ToastContainer />

@@ -39,8 +39,9 @@
                 <i class="fa-solid fa-chevron-down ms-auto toggle-icon"></i>
             </div>
             <div class="nav-submenu @(expandedMenu == "products" ? "show" : "")">
-                <NavLink class="submenu-link" href="management/content/products">Danh sách Sách</NavLink>
-                <NavLink class="submenu-link" href="management/content/categories">Danh mục Sách</NavLink>
+                <NavLink class="submenu-link" href="management/content/products">Quản lý danh sách Sách</NavLink>
+                <NavLink class="submenu-link" href="management/content/freebooks">Quản lý tủ sách 0 đồng</NavLink>
+                <NavLink class="submenu-link" href="management/content/productmetadata">Quản lý danh mục và ưu đãi</NavLink>
             </div>
         </div>
 
@@ -82,7 +83,7 @@
 
         <div class="nav-section-title">Hệ thống</div>
 
-        <NavLink class="nav-item-link" href="management/users">
+        <NavLink class="nav-item-link" href="management/admin/user-management">
             <i class="fa-solid fa-users-gear icon-fixed"></i>
             <span>Tài khoản & Phân quyền</span>
         </NavLink>

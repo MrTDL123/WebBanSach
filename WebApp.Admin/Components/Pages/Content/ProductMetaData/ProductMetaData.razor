@@ -1,0 +1,325 @@
+﻿@page "/management/content/productmetadata"
+@using WebApp.Admin.Services.Interfaces
+@inject IContentClientService ContentClientService
+@inject ToastHelper Toast
+@attribute [Authorize(Roles = "Admin,ContentManager")]
+
+<main class="metadata-container">
+    <!-- Header trang -->
+    <header class="page-header">
+        <div class="header-title">
+            <h1>Quản lý Danh mục & Ưu đãi</h1>
+            <p>Quản lý danh sách tác giả, nhà xuất bản, danh mục sản phẩm và mã giảm giá trên hệ thống</p>
+        </div>
+        <button class="btn btn-primary" @onclick="OpenCreateModal">
+            <i class="fa-solid fa-plus"></i> Thêm @GetActiveTabName() mới
+        </button>
+    </header>
+
+    <!-- Thanh chuyển Tab -->
+    <nav class="tab-navigation">
+        <button class="tab-item @(_activeTab == "authors" ? "active" : "")" @onclick='() => SwitchTab("authors")'>
+            Tác giả
+        </button>
+        <button class="tab-item @(_activeTab == "publishers" ? "active" : "")" @onclick='() => SwitchTab("publishers")'>
+            Nhà xuất bản
+        </button>
+        <button class="tab-item @(_activeTab == "categories" ? "active" : "")" @onclick='() => SwitchTab("categories")'>
+            Danh mục
+        </button>
+        <button class="tab-item @(_activeTab == "vouchers" ? "active" : "")" @onclick='() => SwitchTab("vouchers")'>
+            Mã giảm giá (Voucher)
+        </button>
+    </nav>
+
+    <!-- Khung Bộ Lọc & Tìm Kiếm -->
+    <section class="filter-card">
+        <div class="filter-group">
+            <label for="searchInput">TÌM KIẾM</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="@GetSearchPlaceholder()"
+                   value="@_searchTerm" @oninput="OnSearchInput" />
+        </div>
+        <div class="filter-group">
+            <label for="statusSelect">TRẠNG THÁI</label>
+            <select id="statusSelect" class="form-control" value="@_statusFilter" @onchange="OnStatusFilterChanged">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="true">Đang hoạt động</option>
+                <option value="false">Ngưng hoạt động</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Bảng Dữ Liệu -->
+    <section class="table-card">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    @if (_activeTab == "authors")
+                    {
+                        <tr>
+                            <th class="col-checkbox">
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@_isAllSelected" />
+                            </th>
+                            <th>Tên tác giả</th>
+                            <th>Tiểu sử</th>
+                            <th class="text-center">Số lượng sách</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="col-actions text-center">Thao tác</th>
+                        </tr>
+                    }
+                    else if (_activeTab == "publishers")
+                    {
+                        <tr>
+                            <th class="col-checkbox">
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@_isAllSelected" />
+                            </th>
+                            <th>Tên NXB</th>
+                            <th>Địa chỉ</th>
+                            <th class="text-center">Số điện thoại</th>
+                            <th class="text-center">Số lượng sách</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="col-actions text-center">Thao tác</th>
+                        </tr>
+                    }
+                    else if (_activeTab == "categories")
+                    {
+                        <tr>
+                            <th class="col-checkbox">
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@_isAllSelected" />
+                            </th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th class="text-center">Số lượng sách</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="col-actions text-center">Thao tác</th>
+                        </tr>
+                    }
+                    else if (_activeTab == "vouchers")
+                    {
+                        <tr>
+                            <th class="col-checkbox">
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@_isAllSelected" />
+                            </th>
+                            <th class="text-center">Mã Voucher</th>
+                            <th class="text-center">Mức giảm</th>
+                            <th class="text-center">Đơn tối thiểu</th>
+                            <th class="text-center">Lượt dùng còn lại</th>
+                            <th class="text-center">Hạn sử dụng</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="col-actions text-center">Thao tác</th>
+                        </tr>
+                    }
+                </thead>
+                <tbody>
+                    @if (_isLoading)
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-4">Đang tải dữ liệu...</td>
+                        </tr>
+                    }
+                    else if (_activeTab == "authors")
+                    {
+                        @if (_pageAuthors.Any())
+                        {
+                            @foreach (var author in _pageAuthors)
+                            {
+                                <tr>
+                                    <td class="col-checkbox">
+                                        <input type="checkbox"
+                                               checked="@_selectedItemIds.Contains(author.AuthorId)"
+                                               @onchange="() => ToggleSelectItem(author.AuthorId)" />
+                                    </td>
+                                    <td class="font-semibold">@author.AuthorName</td>
+                                    <td class="text-truncate">@(author.Biography ?? "—")</td>
+                                    <td class="text-center font-medium">@author.TotalBooks</td>
+                                    <td class="text-center">
+                                        @if (author.IsActive)
+                                        {
+                                            <span class="badge badge-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Ngưng hoạt động</span>
+                                        }
+                                    </td>
+                                    <td class="col-actions text-center">
+                                        <div class="action-buttons">
+                                            <button class="btn-action btn-edit" @onclick="() => OpenEditAuthorModal(author)">Sửa</button>
+                                            <button class="btn-action btn-delete" @onclick="() => DeleteAuthorAsync(author.AuthorId)">Xóa</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="6" class="text-center py-4">Không có dữ liệu tác giả.</td></tr>
+                        }
+                    }
+                    else if (_activeTab == "publishers")
+                    {
+                        @if (_pagePublishers.Any())
+                        {
+                            @foreach (var publisher in _pagePublishers)
+                            {
+                                <tr>
+                                    <td class="col-checkbox">
+                                        <input type="checkbox"
+                                               checked="@_selectedItemIds.Contains(publisher.PublisherId)"
+                                               @onchange="() => ToggleSelectItem(publisher.PublisherId)" />
+                                    </td>
+                                    <td class="font-semibold">@publisher.PublisherName</td>
+                                    <td class="text-truncate">@(publisher.Address ?? "—")</td>
+                                    <td class="text-center">@(publisher.PhoneNumber ?? "—")</td>
+                                    <td class="text-center font-medium">@publisher.TotalBooks</td>
+                                    <td class="text-center">
+                                        @if (publisher.IsActive)
+                                        {
+                                            <span class="badge badge-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Ngưng hoạt động</span>
+                                        }
+                                    </td>
+                                    <td class="col-actions text-center">
+                                        <div class="action-buttons">
+                                            <button class="btn-action btn-edit" @onclick="() => OpenEditPublisherModal(publisher)">Sửa</button>
+                                            <button class="btn-action btn-delete" @onclick="() => DeletePublisherAsync(publisher.PublisherId)">Xóa</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="8" class="text-center py-4">Không có dữ liệu nhà xuất bản.</td></tr>
+                        }
+                    }
+                    else if (_activeTab == "categories")
+                    {
+                        @if (_pageCategories.Any())
+                        {
+                            @foreach (var category in _pageCategories)
+                            {
+                                <tr>
+                                    <td class="col-checkbox">
+                                        <input type="checkbox"
+                                               checked="@_selectedItemIds.Contains(category.CategoryId)"
+                                               @onchange="() => ToggleSelectItem(category.CategoryId)" />
+                                    </td>
+                                    <td class="font-semibold">@category.CategoryName</td>
+                                    <td class="text-truncate">@(category.Description ?? "—")</td>
+                                    <td class="text-center font-medium">@category.TotalProducts</td>
+                                    <td class="text-center">
+                                        @if (category.IsActive)
+                                        {
+                                            <span class="badge badge-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Ngưng hoạt động</span>
+                                        }
+                                    </td>
+                                    <td class="col-actions text-center">
+                                        <div class="action-buttons">
+                                            <button class="btn-action btn-edit" @onclick="() => OpenEditCategoryModal(category)">Sửa</button>
+                                            <button class="btn-action btn-delete" @onclick="() => DeleteCategoryAsync(category.CategoryId)">Xóa</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="6" class="text-center py-4">Không có dữ liệu danh mục.</td></tr>
+                        }
+                    }
+                    else if (_activeTab == "vouchers")
+                    {
+                        @if (_pageVouchers.Any())
+                        {
+                            @foreach (var voucher in _pageVouchers)
+                            {
+                                <tr>
+                                    <td class="col-checkbox">
+                                        <input type="checkbox"
+                                               checked="@_selectedItemIds.Contains(voucher.VoucherId)"
+                                               @onchange="() => ToggleSelectItem(voucher.VoucherId)" />
+                                    </td>
+                                    <td class="text-center"><strong class="code-badge">@voucher.Code</strong></td>
+                                    <td class="text-center font-medium">
+                                        @if (voucher.DiscountAmount > 0)
+                                        {
+                                            <span class="text-center">@voucher.DiscountAmount.ToString("N0") đ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-center">@voucher.DiscountPercent%</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">@voucher.MinOrderAmount.ToString("N0") đ</td>
+                                    <td class="text-center font-medium">@voucher.RemainingUsage</td>
+                                    <td class="text-center">@voucher.ExpiredAt.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-center">
+                                        @if (voucher.IsActive && voucher.ExpiredAt >= DateTime.Now)
+                                        {
+                                            <span class="badge badge-success">Đang áp dụng</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Hết hạn / Khóa</span>
+                                        }
+                                    </td>
+                                    <td class="col-actions text-center">
+                                        <div class="action-buttons">
+                                            <button class="btn-action btn-edit" @onclick="() => OpenEditVoucherModal(voucher)">Sửa</button>
+                                            <button class="btn-action btn-delete" @onclick="() => DeleteVoucherAsync(voucher.VoucherId)">Xóa</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="8" class="text-center py-4">Không có dữ liệu voucher.</td></tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phân trang -->
+        <footer class="table-footer">
+            <span class="pagination-info">
+                Hiển thị <strong>@GetDisplayStart() - @GetDisplayEnd()</strong> trên tổng số <strong>@GetTotalItems()</strong> sản phẩm
+            </span>
+            <div class="pagination-controls">
+                <div class="page-size-selector">
+                    <label class="pageSize">Hiển thị:</label>
+                    <select id="pageSize" class="form-select-sm" value="@_pageSize" @onchange="OnPageSizeChanged">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+                <div class="pagination-buttons">
+                    <button class="btn-page" disabled="@(_pageIndex <= 1)" @onclick="() => ChangePage(_pageIndex - 1)">&laquo;</button>
+                    @for (int i = 1; i <= TotalPages; i++)
+                    {
+                        var pageNum = i;
+                        <button class="btn-page @(_pageIndex == pageNum ? "active" : "")" @onclick="() => ChangePage(pageNum)">
+                            @pageNum
+                        </button>
+                    }
+                    <button class="btn-page" disabled="@(_pageIndex >= TotalPages || TotalPages == 0)" @onclick="() => ChangePage(_pageIndex + 1)">&raquo;</button>
+                </div>
+            </div>
+        </footer>
+    </section>
+</main>
+
+<AuthorModal @ref="_authorModal" OnSuccess="LoadDataAsync" />
+<CategoryModal @ref="_categoryModal" OnSuccess="LoadDataAsync" />
+<PublisherModal @ref="_publisherModal" OnSuccess="LoadDataAsync" />
+<VoucherModal @ref="_voucherModal" OnSuccess="LoadDataAsync" />

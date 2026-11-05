@@ -35,20 +35,27 @@ namespace WebApp.Api.Controllers.Admin
         [AllowAnonymous]
         public async Task<ActionResult<ApiResponse<AuthResponseDto>>> LoginAdmin([FromBody] AdminLoginDto dto)
         {
-            var validationResult = await _loginValidator.ValidateAsync(dto);
-            if (!validationResult.IsValid)
+            try
             {
-                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-                return BadRequest(ApiResponse<AuthResponseDto>.FailureResult("Dữ liệu không hợp lệ", errors));
-            }
+                var validationResult = await _loginValidator.ValidateAsync(dto);
+                if (!validationResult.IsValid)
+                {
+                    var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                    return BadRequest(ApiResponse<AuthResponseDto>.FailureResult("Dữ liệu không hợp lệ", errors));
+                }
 
-            var response = await _adminAuthService.LoginAdminAsync(dto);
-            if (!response.Success)
+                var response = await _adminAuthService.LoginAdminAsync(dto);
+                if (!response.Success)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex)
             {
-                return BadRequest(response);
+                return BadRequest(ApiResponse<AuthResponseDto>.FailureResult($"Lỗi Backend (500): {ex.Message} -> {ex.InnerException?.Message}"));
             }
-
-            return Ok(response);
         }
 
         [HttpGet("admin-me")]

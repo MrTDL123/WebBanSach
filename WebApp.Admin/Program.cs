@@ -60,6 +60,7 @@ builder.Services.AddAuthorizationCore();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserSessionState>();
+builder.Services.AddScoped<ToastHelper>();
 builder.Services.AddTransient<CookieHandler>();
 
 
@@ -77,6 +78,7 @@ builder.Services.AddScoped<IAuthClientService, AuthClientService>();
 builder.Services.AddScoped<IUserClientService, UserClientService>();
 builder.Services.AddScoped<IDashboardClientService, DashboardClientService>();
 builder.Services.AddScoped<IContentClientService, ContentClientService>();
+builder.Services.AddScoped<IAdminClientService, AdminClientService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);

@@ -1,0 +1,94 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IContentClientService ContentClientService
+@inject ToastHelper Toast
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3>@(_isEdit ? "Cập nhật" : "Thêm mới") Nhà xuất bản</h3>
+                <button type="button" class="btn-close" @onclick="Close">&times;</button>
+            </header>
+            @if(_isEdit)
+            {
+                <EditForm Model="_updatePublisherModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="pubName">Tên NXB <span class="text-danger">*</span></label>
+                            <InputText id="pubName" class="form-control" @bind-Value="_updatePublisherModel.PublisherName" placeholder="Nhập tên nhà xuất bản..." />
+                            <ValidationMessage For="() => _updatePublisherModel.PublisherName" class="text-error" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Địa chỉ</label>
+                            <InputText id="address" class="form-control" @bind-Value="_updatePublisherModel.Address" placeholder="Nhập địa chỉ..." />
+                            <ValidationMessage For="() => _updatePublisherModel.Address" class="text-error" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại</label>
+                                <InputText id="phone" class="form-control" @bind-Value="_updatePublisherModel.PhoneNumber" placeholder="0901234567" />
+                                <ValidationMessage For="() => _updatePublisherModel.PhoneNumber" class="text-error" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled=@_isSubmitting>Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled=@_isSubmitting>
+                            @(_isSubmitting ? "Đang lưu..." : "Lưu thay đổi")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="_createPublisherModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="pubName">Tên NXB <span class="text-danger">*</span></label>
+                            <InputText id="pubName" class="form-control" @bind-Value="_createPublisherModel.PublisherName" placeholder="Nhập tên nhà xuất bản..." />
+                            <ValidationMessage For="() => _createPublisherModel.PublisherName" class="text-error" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Địa chỉ</label>
+                            <InputText id="address" class="form-control" @bind-Value="_createPublisherModel.Address" placeholder="Nhập địa chỉ..." />
+                            <ValidationMessage For="() => _createPublisherModel.Address" class="text-error" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại</label>
+                                <InputText id="phone" class="form-control" @bind-Value="_createPublisherModel.PhoneNumber" placeholder="0901234567" />
+                                <ValidationMessage For="() => _createPublisherModel.PhoneNumber" class="text-error" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled=@_isSubmitting>Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled=@_isSubmitting>
+                            @(_isSubmitting ? "Đang lưu..." : "Tạo mới")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+        </div>
+    </div>
+}

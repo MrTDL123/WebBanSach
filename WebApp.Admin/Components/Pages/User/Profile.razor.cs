@@ -3,36 +3,37 @@ using System.ComponentModel;
 using WebApp.Admin.Auth;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.User;
+using WebApp.Admin.Utilities;
 
 namespace WebApp.Admin.Components.Pages.User
 {
     public partial class Profile
     {
         // DTO chứa toàn bộ thông tin Read-only từ DB để hiển thị UI
-        private UserProfileDto? userProfileModel;
+        private UserProfileDto? _userProfileModel;
         // Model cho tab Thông tin cá nhân
-        private UpdateProfileDto updateProfileModel = new();
+        private UpdateProfileDto _updateProfileModel = new();
 
         // Model cho tab Đổi mật khẩu
-        private ChangePasswordDto passwordModel = new();
+        private ChangePasswordDto _passwordModel = new();
 
         // Trạng thái UI
-        private bool isLoading = true;
-        private bool isSubmittingProfile = false;
-        private bool isSubmittingPassword = false;
-        private string? errorMessage;
-        private string? successMessage;
-        private string ActiveTab { get; set; } = "info";
-        private bool ShowCurrentPwd { get; set; } = false;
-        private bool ShowNewPwd { get; set; } = false;
-        private bool ShowConfirmPwd { get; set; } = false;
-        private IBrowserFile? selectedAvatarFile;
-        private string? avatarPreviewUrl;
+        private bool _isLoading = true;
+        private bool _isSubmittingProfile = false;
+        private bool _isSubmittingPassword = false;
+        private string? _errorMessage;
+        private string? _successMessage;
+        private string _activeTab { get; set; } = "info";
+        private bool _showCurrentPwd { get; set; } = false;
+        private bool _showNewPwd { get; set; } = false;
+        private bool _showConfirmPwd { get; set; } = false;
+        private IBrowserFile? _selectedAvatarFile;
+        private string? _avatarPreviewUrl;
 
-        private void ChangeTab(string tabName) => ActiveTab = tabName;
-        private void ToggleCurrentPwd() => ShowCurrentPwd = !ShowCurrentPwd;
-        private void ToggleNewPwd() => ShowNewPwd = !ShowNewPwd;
-        private void ToggleConfirmPwd() => ShowConfirmPwd = !ShowConfirmPwd;
+        private void ChangeTab(string tabName) => _activeTab = tabName;
+        private void ToggleCurrentPwd() => _showCurrentPwd = !_showCurrentPwd;
+        private void ToggleNewPwd() => _showNewPwd = !_showNewPwd;
+        private void ToggleConfirmPwd() => _showConfirmPwd = !_showConfirmPwd;
 
         protected override async Task OnInitializedAsync()
         {
@@ -41,8 +42,8 @@ namespace WebApp.Admin.Components.Pages.User
 
         private async Task LoadUserProfileAsync()
         {
-            isLoading = true;
-            errorMessage = null;
+            _isLoading = true;
+            _errorMessage = null;
 
             try
             {
@@ -54,141 +55,120 @@ namespace WebApp.Admin.Components.Pages.User
                     var userProfile = response.Data;
 
                     // Map dữ liệu từ API vào Model hiển thị trên form
-                    updateProfileModel = new UpdateProfileDto
+                    _updateProfileModel = new UpdateProfileDto
                     {
                         FullName = userProfile.FullName,
                         DateOfBirth = userProfile.DateOfBirth,
                         Address = userProfile.Address
                     };
 
-                    userProfileModel = userProfile;
+                    _userProfileModel = userProfile;
                 }
                 else
                 {
-                    errorMessage = response?.Message ?? "Không thể tải thông tin hồ sơ.";
+                    _errorMessage = response?.Message ?? "Không thể tải thông tin hồ sơ.";
                 }
             }
             catch (Exception ex)
             {
-                errorMessage = $"Đã xảy ra lỗi khi tải dữ liệu: {ex.Message}";
+                _errorMessage = $"Đã xảy ra lỗi khi tải dữ liệu: {ex.Message}";
             }
             finally
             {
-                isLoading = false;
+                _isLoading = false;
             }
         }
 
         // 1. Hàm chạy khi người dùng chọn file ảnh từ máy tính
         private async Task HandleAvatarSelected(InputFileChangeEventArgs e)
         {
-            var file = e.File;
-            if (file != null)
+            if (e.File != null)
             {
-                // Kiểm tra kích thước (ví dụ tối đa 5MB)
-                if (file.Size > 5 * 1024 * 1024)
+                try
                 {
-                    errorMessage = "Kích thước ảnh không được vượt quá 5MB!";
-                    return;
+                    _selectedAvatarFile = e.File;
+                    _avatarPreviewUrl = await ImageHelper.ConvertToBase64Async(e.File);
                 }
-
-                selectedAvatarFile = file;
-
-                // Đọc file thành base64 để hiển thị Preview ngay lên giao diện
-                // 1. Khởi tạo MemoryStream để hứng dữ liệu trong RAM
-                using var ms = new MemoryStream();
-                // 2. Mở luồng đọc file từ trình duyệt/client (giới hạn tối đa 5MB)
-                using (var stream = file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024))
+                catch (Exception ex)
                 {
-                    await stream.CopyToAsync(ms);
+                    _errorMessage = "Lỗi xử lý ảnh: " + ex.Message;
                 }
-
-                // ms.ToArray() sẽ lấy toàn bộ mảng byte đang lưu trong RAM
-                var buffer = ms.ToArray();
-                // 4. Tạo chuỗi Data URL hoàn chỉnh để gán vào thẻ <img src="..."> trên giao diện
-                avatarPreviewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}";
-                errorMessage = string.Empty;
             }
         }
 
         // Xử lý Cập nhật Hồ sơ Cá nhân
         private async Task HandleUpdateProfileAsync()
         {
-            isSubmittingProfile = true;
-            errorMessage = null;
-            successMessage = null;
+            _isSubmittingProfile = true;
+            _errorMessage = null;
+            _successMessage = null;
 
             // 🔥 ĐÓNG GÓI CHUỖI BASE64 VÀO MODEL ĐỂ GỬI SANG API
-            if (!string.IsNullOrEmpty(avatarPreviewUrl) && selectedAvatarFile != null)
+            if (!string.IsNullOrEmpty(_avatarPreviewUrl) && _selectedAvatarFile != null)
             {
-                updateProfileModel.AvatarBase64 = avatarPreviewUrl;
-                updateProfileModel.AvatarFileName = selectedAvatarFile.Name;
+                _updateProfileModel.AvatarBase64 = _avatarPreviewUrl;
+                _updateProfileModel.AvatarFileName = _selectedAvatarFile.Name;
             }
 
-            var result = await UserClientService.UpdateUserProfileAsync(updateProfileModel);
+            var result = await UserClientService.UpdateUserProfileAsync(_updateProfileModel);
 
             if (result.Success)
             {
-                successMessage = "Cập nhật thông tin hồ sơ thành công!";
+                _successMessage = "Cập nhật thông tin hồ sơ thành công!";
                 await LoadUserProfileAsync();
-                avatarPreviewUrl = null;
-                selectedAvatarFile = null;
+                _avatarPreviewUrl = null;
+                _selectedAvatarFile = null;
 
                 // 🔥 THÔNG BÁO CHO TOPHEADER CẬP NHẬT LẠI AVATAR MỚI TỨC THÌ
-                if (userProfileModel != null && AuthStateProvider is CustomAuthStateProvider customAuth)
+                if (AuthStateProvider is CustomAuthStateProvider customAuth)
                 {
-                    customAuth.NotifyUserAuthentication(new AuthResponseDto(
-                        UserId: userProfileModel.UserId,
-                        FullName: userProfileModel.FullName,
-                        Email: userProfileModel.Email,
-                        AvatarUrl: userProfileModel.AvatarUrl,
-                        Roles: new List<string>()
-                    ));
+                    await customAuth.RefreshAuthenticationStateAsync();
                 }
             }
             else
             {
-                errorMessage = result?.Message ?? "Cập nhật hồ sơ thất bại.";
+                _errorMessage = result?.Message ?? "Cập nhật hồ sơ thất bại.";
             }
 
-            isSubmittingProfile = false;
+            _isSubmittingProfile = false;
         }
 
         // 3. Hàm tính toán đường dẫn hiển thị ảnh Avatar chuẩn xác
         private string GetAvatarDisplayUrl()
         {
-            if (!string.IsNullOrEmpty(avatarPreviewUrl))
+            if (!string.IsNullOrEmpty(_avatarPreviewUrl))
             {
-                return avatarPreviewUrl;
+                return _avatarPreviewUrl;
             }
-            if (!string.IsNullOrEmpty(userProfileModel?.AvatarUrl))
+            if (!string.IsNullOrEmpty(_userProfileModel?.AvatarUrl))
             {
-                return userProfileModel.AvatarUrl.StartsWith("http")
-                    ? userProfileModel.AvatarUrl
-                    : $"https://localhost:7188{userProfileModel.AvatarUrl}";
+                return _userProfileModel.AvatarUrl.StartsWith("http")
+                    ? _userProfileModel.AvatarUrl
+                    : $"https://localhost:7188{_userProfileModel.AvatarUrl}";
             }
-            return $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(userProfileModel?.FullName ?? "Admin")}&background=E31837&color=fff&size=128";
+            return $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(_userProfileModel?.FullName ?? "Admin")}&background=E31837&color=fff&size=128";
         }
 
         // Xử lý Đổi Mật Khẩu
         private async Task HandleChangePasswordAsync()
         {
-            isSubmittingPassword = true;
-            errorMessage = null;
-            successMessage = null;
+            _isSubmittingPassword = true;
+            _errorMessage = null;
+            _successMessage = null;
 
-            var result = await UserClientService.ChangePasswordAsync(passwordModel);
+            var result = await UserClientService.ChangePasswordAsync(_passwordModel);
 
             if (result.Success)
             {
-                successMessage = "Đổi mật khẩu thành công!";
-                passwordModel = new ChangePasswordDto(); // Reset form mật khẩu
+                _successMessage = "Đổi mật khẩu thành công!";
+                _passwordModel = new ChangePasswordDto(); // Reset form mật khẩu
             }
             else
             {
-                errorMessage = result?.Message ?? "Đổi mật khẩu thất bại.";
+                _errorMessage = result?.Message ?? "Đổi mật khẩu thất bại.";
             }
 
-            isSubmittingPassword = false;
+            _isSubmittingPassword = false;
         }
 
         private void OpenChangeEmailModal()

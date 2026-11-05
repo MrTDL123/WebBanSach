@@ -21,8 +21,7 @@ namespace WebApp.Admin.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> Login([FromForm] AdminLoginDto dto)
+        public async Task<IActionResult> Login([FromBody] AdminLoginDto dto)
         {
             var result = await _authService.LoginAsync(dto);
 

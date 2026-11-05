@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.JSInterop;
 using System.Security.Claims;
 using WebApp.Admin.Auth;
 using WebApp.Admin.Services.Implementations;
+using WebApp.Admin.Utilities;
 
 namespace WebApp.Admin.Components.Layout
 {
@@ -62,7 +64,7 @@ namespace WebApp.Admin.Components.Layout
         private async Task HandleLogoutAsync()
         {
             CloseAllDropdowns();
-
+            UserSessionState.Clear(); // Xóa Auth Cookie khỏi bộ nhớ tạm thời trước khi gọi API Logout
             try
             {
                 // 1. Dùng JS fetch gọi tới AccountController để xóa Cookie ở Trình duyệt

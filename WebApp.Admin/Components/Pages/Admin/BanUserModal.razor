@@ -1,0 +1,48 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IAdminClientService AdminClientService
+@inject ToastHelper Toast
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content modal-sm">
+            <header class="modal-header">
+                <h3>Xác nhận khóa tài khoản</h3>
+                <button type="button" class="btn-close" @onclick="Close">&times;</button>
+            </header>
+
+            <EditForm Model="_banModel" OnValidSubmit="HandleSubmitAsync">
+                <FluentValidator />
+                <ValidationSummary />
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="alert alert-error">@_errorMessage</div>
+                }
+
+                <div class="modal-body">
+                    <p class="mb-2">Bạn có chắc chắn muốn khóa tài khoản của <strong>@_userName</strong>?</p>
+                    <div class="warning-box">
+                        <small>Hành động này sẽ ngăn người dùng truy cập và đăng nhập vào hệ thống.</small>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label for="banReason">Lý do khóa tài khoản <span class="text-danger">*</span></label>
+                        <InputTextArea id="banReason" class="form-control" rows="3"
+                                       @bind-Value="_banModel.Reason"
+                                       placeholder="Nhập lý do vi phạm..." />
+                        <ValidationMessage For="() => _banModel.Reason" class="text-error" />
+                    </div>
+                </div>
+
+                <footer class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isSubmitting">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-danger" disabled="@_isSubmitting">
+                        @(_isSubmitting ? "Đang xử lý..." : "Khóa tài khoản")
+                    </button>
+                </footer>
+            </EditForm>
+        </div>
+    </div>
+}

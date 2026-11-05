@@ -5,7 +5,7 @@ namespace WebApp.Shared.Dtos.Management.ContentAndMarketing
         int AuthorId,
         string AuthorName,
         string? Biography,
-        string? AvatarUrl,
-        int TotalBooks
+        int TotalBooks,
+        bool IsActive
     );
 }

@@ -1,0 +1,269 @@
+﻿@page "/management/admin/user-management"
+@using WebApp.Admin.Services.Interfaces
+@inject ToastHelper Toast
+@inject IAdminClientService AdminClientService
+@attribute [Authorize(Roles = "Admin")]
+
+<main class="accounts-container">
+    <!-- Header trang -->
+    <header class="page-header">
+        <div class="header-title">
+            <h1>Quản lý Tài khoản & Phân quyền</h1>
+            <p>Quản lý danh sách khách hàng, tài khoản nhân viên và cấp quyền hệ thống</p>
+        </div>
+        @if (_activeTab == "staff")
+        {
+            <button class="btn btn-primary" @onclick="OpenCreateStaffModal">
+                <i class="fa-solid fa-user-plus"></i> Thêm nhân viên mới
+            </button>
+        }
+    </header>
+
+    <!-- Thanh chuyển Tab -->
+    <nav class="tab-navigation">
+        <button class="tab-item @(_activeTab == "customers" ? "active" : "")" @onclick='() => SwitchTab("customers")'>
+            Khách hàng
+        </button>
+        <button class="tab-item @(_activeTab == "staff" ? "active" : "")" @onclick='() => SwitchTab("staff")'>
+            Nhân viên & Phân quyền
+        </button>
+    </nav>
+
+    <!-- Khung Bộ Lọc & Tìm Kiếm -->
+    <section class="filter-card">
+        <div class="filter-group">
+            <label for="searchInput">TÌM KIẾM</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="@GetSearchPlaceholder()"
+                   value="@_searchTerm" @oninput="OnSearchInput" />
+        </div>
+        <div class="filter-group">
+            <label for="statusSelect">TRẠNG THÁI</label>
+            <select id="statusSelect" class="form-control" value="@_statusFilter" @onchange="OnStatusFilterChanged">
+                <option value="">-- Tất cả trạng thái --</option>
+                <option value="true">Đang hoạt động</option>
+                <option value="false">Đã bị khóa (Ban)</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Bảng Dữ Liệu -->
+    <section class="table-card">
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    @if (_activeTab == "customers")
+                    {
+                        <tr>
+                            <th class="col-checkbox">
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@_isAllSelected" />
+                            </th>
+                            <th>Thông tin khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th class="text-center">Số đơn hàng</th>
+                            <th class="text-center">Ngày đăng ký</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="col-actions text-center">Thao tác</th>
+                        </tr>
+                    }
+                    else if (_activeTab == "staff")
+                    {
+                        <tr>
+                            <th class="col-checkbox">
+                                <input type="checkbox" @onchange="ToggleSelectAll" checked="@_isAllSelected" />
+                            </th>
+                            <th>Thông tin nhân viên</th>
+                            <th>Số điện thoại</th>
+                            <th class="text-center">Vai trò</th>
+                            <th class="text-center">Ngày khởi tạo</th>
+                            <th class="text-center">Trạng thái</th>
+                            <th class="col-actions text-center">Thao tác</th>
+                        </tr>
+                    }
+                </thead>
+                <tbody>
+                    @if (_isLoading)
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <span class="ms-2">Đang tải dữ liệu...</span>
+                            </td>
+                        </tr>
+                    }
+                    else if (_activeTab == "customers")
+                    {
+                        @if (_customers.Any())
+                        {
+                            @foreach (var customer in _customers)
+                            {
+                                <tr>
+                                    <td class="col-checkbox">
+                                        <input type="checkbox"
+                                               checked="@_selectedItemIds.Contains(customer.UserId)"
+                                               @onchange="() => ToggleSelectItem(customer.UserId)" />
+                                    </td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <img src="@GetAvatarUrl(customer)" class="user-avatar" alt="Avatar" />
+                                            <div class="user-meta">
+                                                <span class="user-name">@customer.FullName</span>
+                                                <span class="user-email">@customer.Email</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="font-medium">@(customer.PhoneNumber ?? "—")</td>
+                                    <td class="text-center font-semibold">@customer.TotalOrders</td>
+                                    <td class="text-center">@customer.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-center">
+                                        @if (customer.IsActive)
+                                        {
+                                            <span class="badge badge-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Bị khóa</span>
+                                        }
+                                    </td>
+                                    <td class="col-actions text-center">
+                                        <div class="action-buttons">
+                                            <button class="btn-action btn-detail" @onclick="() => OpenCustomerDetailModal(customer)">Chi tiết</button>
+                                            @if (customer.IsActive)
+                                            {
+                                                <button class="btn-action btn-ban" @onclick="() => OpenBanModal(customer.UserId, customer.FullName, false)">Khóa</button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn-action btn-unban" @onclick="() => UnbanUserAsync(customer.UserId)">Mở khóa</button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center py-4">Không có dữ liệu khách hàng.</td></tr>
+                        }
+                    }
+                    else if (_activeTab == "staff")
+                    {
+                        @if (_displayedStaff.Any())
+                        {
+                            @foreach (var staff in _displayedStaff)
+                            {
+                                <tr>
+                                    <td class="col-checkbox">
+                                        <input type="checkbox"
+                                               checked="@_selectedItemIds.Contains(staff.UserId)"
+                                               @onchange="() => ToggleSelectItem(staff.UserId)" />
+                                    </td>
+                                    <td>
+                                        <div class="user-profile">
+                                            <img src="@GetAvatarUrl(staff)" class="user-avatar" alt="Avatar" />
+                                            <div class="user-meta">
+                                                <span class="user-name">@staff.FullName</span>
+                                                <span class="user-email">@staff.Email</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="font-medium">@(staff.PhoneNumber ?? "—")</td>
+                                    <td class="text-center">
+                                        <span class="role-badge">@GetRoleDisplayName(staff.Roles)</span>
+                                    </td>
+                                    <td class="text-center">@staff.CreatedAt.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-center">
+                                        @if (staff.IsActive)
+                                        {
+                                            <span class="badge badge-success">Đang hoạt động</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Đã khóa</span>
+                                        }
+                                    </td>
+                                    <td class="col-actions text-center">
+                                        <div class="action-buttons">
+                                            <button class="btn-action btn-edit" @onclick="() => OpenEditRoleModal(staff)">Sửa quyền</button>
+                                            @if (staff.IsActive)
+                                            {
+                                                <button class="btn-action btn-ban" @onclick="() => OpenBanModal(staff.UserId, staff.FullName, true)">Khóa</button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn-action btn-unban" @onclick="() => UnbanUserAsync(staff.UserId)">Mở khóa</button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="7" class="text-center py-4">Không tìm thấy nhân viên phù hợp.</td></tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Thanh Footer Phân Trang Linh Hoạt -->
+        <footer class="table-footer">
+            <span class="pagination-info">
+                @if (_activeTab == "customers")
+                {
+                    @:Hiển thị <strong>@GetDisplayStart() - @GetDisplayEnd()</strong> trên tổng số <strong>@_totalCustomers</strong> khách hàng
+                }
+                else
+                {
+                    @:Tổng số: <strong>@_displayedStaff.Count</strong> / <strong>@_allStaff.Count</strong> nhân viên
+                }
+            </span>
+
+            @if (_activeTab == "customers")
+            {
+                <div class="pagination-controls">
+                    <div class="page-size-selector">
+                        <label for="pageSize">Hiển thị:</label>
+                        <select id="pageSize" class="form-select-sm" value="@_pageSize" @onchange="OnPageSizeChanged">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+                    <div class="pagination-buttons">
+                        <button class="btn-page" disabled="@(_pageIndex <= 1)" @onclick="() => ChangePage(_pageIndex - 1)">&laquo;</button>
+                        @for (int i = 1; i <= _totalPages; i++)
+                        {
+                            var pageNum = i;
+                            <button class="btn-page @(_pageIndex == pageNum ? "active" : "")" @onclick="() => ChangePage(pageNum)">
+                                @pageNum
+                            </button>
+                        }
+                        <button class="btn-page" disabled="@(_pageIndex >= _totalPages || _totalPages == 0)" @onclick="() => ChangePage(_pageIndex + 1)">&raquo;</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="pagination-controls">
+                    <div class="pagination-buttons">
+                        <button class="btn-page" disabled="@(_pageIndex <= 1)" @onclick="() => ChangePage(_pageIndex - 1)">&laquo;</button>
+                        @for (int i = 1; i <= _totalPages; i++)
+                        {
+                            var pageNum = i;
+                            <button class="btn-page @(_pageIndex == pageNum ? "active" : "")" @onclick="() => ChangePage(pageNum)">
+                                @pageNum
+                            </button>
+                        }
+                        <button class="btn-page" disabled="@(_pageIndex >= _totalPages || _totalPages == 0)" @onclick="() => ChangePage(_pageIndex + 1)">&raquo;</button>
+                    </div>
+                </div>
+            }
+        </footer>
+    </section>
+</main>
+
+<!-- Modals -->
+<StaffModal @ref="_staffModal" OnSuccess="RefreshDataAsync" />
+<BanUserModal @ref="_banUserModal" OnSuccess="RefreshDataAsync" />
+<CustomerDetailModal @ref="_customerDetailModal" />

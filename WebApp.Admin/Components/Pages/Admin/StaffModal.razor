@@ -1,0 +1,115 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IAdminClientService AdminClientService
+@inject ToastHelper Toast
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3>@(_isEdit ? "Cập nhật Phân quyền" : "Thêm mới") Nhân viên</h3>
+                <button type="button" class="btn-close" @onclick="Close">&times;</button>
+            </header>
+
+            @if (_isEdit)
+            {
+                <EditForm Model="_updateRoleModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Họ và Tên</label>
+                            <input type="text" class="form-control" value="@_staffName" disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editRole">Vai trò / Phân quyền <span class="text-danger">*</span></label>
+                            <InputSelect id="editRole" class="form-select" @bind-Value="_updateRoleModel.Role">
+                                <option value="">-- Chọn vai trò --</option>
+                                <option value="ContentManager">Quản lý Nội dung</option>
+                                <option value="OrderManager">Quản lý Đơn hàng</option>
+                                <option value="CustomerSupport">Chăm sóc Khách hàng</option>
+                                <option value="WarehouseManager">Quản lý Kho</option>
+                                <option value="Accountant">Kế toán</option>
+                            </InputSelect>
+                            <ValidationMessage For="() => _updateRoleModel.Role" class="text-error" />
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isSubmitting">Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                            @(_isSubmitting ? "Đang lưu..." : "Lưu thay đổi")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="_createStaffModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="fullName">Họ và Tên <span class="text-danger">*</span></label>
+                            <InputText id="fullName" class="form-control" @bind-Value="_createStaffModel.FullName" placeholder="VD: Nguyễn Văn A" />
+                            <ValidationMessage For="() => _createStaffModel.FullName" class="text-error" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Địa chỉ Email <span class="text-danger">*</span></label>
+                                <InputText id="email" class="form-control" @bind-Value="_createStaffModel.Email" placeholder="nhanvien@domain.com" />
+                                <ValidationMessage For="() => _createStaffModel.Email" class="text-error" />
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Số điện thoại</label>
+                                <InputText id="phone" class="form-control" @bind-Value="_createStaffModel.PhoneNumber" placeholder="0901234567" />
+                                <ValidationMessage For="() => _createStaffModel.PhoneNumber" class="text-error" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role">Vai trò / Phân quyền <span class="text-danger">*</span></label>
+                            <InputSelect id="role" class="form-select" @bind-Value="_createStaffModel.Role">
+                                <option value="">-- Chọn vai trò --</option>
+                                <option value="ContentManager">Quản lý Nội dung</option>
+                                <option value="OrderManager">Quản lý Đơn hàng</option>
+                                <option value="CustomerSupport">Chăm sóc Khách hàng</option>
+                                <option value="WarehouseManager">Quản lý Kho</option>
+                                <option value="Accountant">Kế toán</option>
+                            </InputSelect>
+                            <ValidationMessage For="() => _createStaffModel.Role" class="text-error" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Mật khẩu khởi tạo <span class="text-danger">*</span></label>
+                            <InputText id="password" type="password" class="form-control" @bind-Value="_createStaffModel.Password" placeholder="******" />
+                            <ValidationMessage For="() => _createStaffModel.Password" class="text-error" />
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isSubmitting">Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                            @(_isSubmitting ? "Đang tạo..." : "Tạo mới")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+        </div>
+    </div>
+}

@@ -8,6 +8,7 @@
 @inject IAuthClientService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime JSRuntime
+@inject UserSessionState UserSessionState
 
 <div class="login-wrapper">
     <div class="login-card">
@@ -16,18 +17,18 @@
             <p class="subtitle">Hệ thống quản trị nhà sách Văn Hóa Truyền Thống</p>
         </div>
 
-        @if (!string.IsNullOrEmpty(errorMessage))
+        @if (!string.IsNullOrEmpty(_errorMessage))
         {
             <div class="alert alert-danger">
-                @errorMessage
+                @_errorMessage
             </div>
         }
 
-        @if (validationErrors != null && validationErrors.Any())
+        @if (_validationErrors != null && _validationErrors.Any())
         {
             <div class="alert alert-danger">
                 <ul>
-                    @foreach (var err in validationErrors)
+                    @foreach (var err in _validationErrors)
                     {
                         <li>@err</li>
                     }
@@ -35,35 +36,35 @@
             </div>
         }
 
-        <EditForm Model="@loginModel" OnValidSubmit="HandleSubmitAsync" FormName="AdminLoginForm">
+        <EditForm Model="@_loginModel" OnValidSubmit="HandleSubmitAsync" FormName="AdminLoginForm">
             <FluentValidator/>
 
             <div class="form-group">
                 <label for="email">Tài khoản / Email</label>
-                <InputText id="email" class="form-control" @bind-Value="loginModel.UsernameOrEmail" placeholder="admin@webbansach.com" />
-                <ValidationMessage For="@(() => loginModel.UsernameOrEmail)" class="validation-message" />
+                <InputText id="email" class="form-control" @bind-Value="_loginModel.UsernameOrEmail" placeholder="admin@webbansach.com" />
+                <ValidationMessage For="@(() => _loginModel.UsernameOrEmail)" class="validation-message" />
             </div>
 
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
                 <div class="input-password-group">
-                    <InputText id="password" type="@(showPwd ? "text" : "password")" class="form-control input-control" @bind-Value="loginModel.Password" placeholder="••••••••" />
+                    <InputText id="password" type="@(_showPwd ? "text" : "password")" class="form-control input-control" @bind-Value="_loginModel.Password" placeholder="••••••••" />
                     <button type="button" class="toggle-pwd-btn" @onclick="TogglePwd">
-                        <i class="fa-solid @(showPwd ? "fa-eye" : "fa-eye-slash")"></i>
+                        <i class="fa-solid @(_showPwd ? "fa-eye" : "fa-eye-slash")"></i>
                     </button>
                 </div>
-                <ValidationMessage For="@(() => loginModel.Password)" class="validation-message" />
+                <ValidationMessage For="@(() => _loginModel.Password)" class="validation-message" />
             </div>
 
             <div class="form-remember">
                 <label>
-                    <InputCheckbox @bind-Value="rememberMe" id="GhiNhoDangNhap" /> Ghi nhớ đăng nhập
+                    <InputCheckbox @bind-Value="_rememberMe" id="GhiNhoDangNhap" /> Ghi nhớ đăng nhập
                 </label>
                 <a href="/management/forgot-password" class="forgot">Quên mật khẩu?</a>
             </div>
 
-            <button type="submit" class="btn-login" disabled="@isSubmitting">
-                @if (isSubmitting)
+            <button type="submit" class="btn-login" disabled="@_isSubmitting">
+                @if (_isSubmitting)
                 {
                     <span class="spinner"></span>
                     <span>Đang xử lý...</span>
@@ -74,10 +75,5 @@
                 }
             </button>
         </EditForm>
-
-        <form id="nativeLoginForm" style="display:none;">
-            <input type="hidden" name="UsernameOrEmail" value="@loginModel.UsernameOrEmail" />
-            <input type="hidden" name="Password" value="@loginModel.Password" />
-        </form>
     </div>
 </div>
