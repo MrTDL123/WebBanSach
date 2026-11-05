@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/.agents/skills
+/.gemini
+/WebApp.Api/ANDROID_AUTH_INTEGRATION.md
+/GEMINI.md
