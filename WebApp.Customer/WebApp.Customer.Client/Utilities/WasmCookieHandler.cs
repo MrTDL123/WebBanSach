@@ -8,6 +8,7 @@ namespace WebApp.Customer.Client.Utilities
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            // Yêu cầu trình duyệt gắn cookie vào header mỗi request
             request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
             return base.SendAsync(request, cancellationToken);
         }

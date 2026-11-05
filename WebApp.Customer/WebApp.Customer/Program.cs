@@ -1,32 +1,27 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using Microsoft.AspNetCore.DataProtection;
-using WebApp.Customer.Client.Auth;
 using WebApp.Customer.Client.Extensions;
-using WebApp.Customer.Client.Pages;
-using WebApp.Customer.Client.Services.Implementations;
-using WebApp.Customer.Client.Services.Interfaces;
 using WebApp.Customer.Components;
 using WebApp.Customer.Utilities;
-using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveWebAssemblyComponents()
+    // Cấu hình truyền trạng thái xác thực lấy được từ giai đoạn Server xuống WebAssembly
+    .AddAuthenticationStateSerialization(options =>
+    {
+        options.SerializeAllClaims = true;
+    });
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<ServerCookieHandler>();
+builder.Services.AddSharedClientServices();
 
 var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
-
-builder.Services.AddApiClientServices<ServerCookieHandler>(apiBaseAddress);
-
-builder.Services.AddSharedClientServices();
+builder.Services.AddApiClientServices<ServerCookieHandler>(apiBaseAddress, isAssemblyRenderMode: false);
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
 var keysPath = builder.Configuration["DataProtection:KeysPath"]
@@ -49,6 +44,19 @@ if (OperatingSystem.IsWindows())
     dataProtection.ProtectKeysWithDpapi();
 }
 
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(360);
+});
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+    options.HttpsPort = 7035;
+});
+
+// Cấu hình cơ chế (authentication scheme) để AuthenticationHandler ưu tiên cookie khi xác thực
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
@@ -71,15 +79,14 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseAntiforgery();
 
 app.MapStaticAssets();

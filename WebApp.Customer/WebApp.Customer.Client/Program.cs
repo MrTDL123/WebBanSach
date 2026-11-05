@@ -1,18 +1,18 @@
-using FluentValidation;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using WebApp.Customer.Client.Auth;
 using WebApp.Customer.Client.Extensions;
-using WebApp.Customer.Client.Services.Implementations;
-using WebApp.Customer.Client.Services.Interfaces;
 using WebApp.Customer.Client.Utilities;
-using WebApp.Shared;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.Services.AddSharedClientServices();
+builder.Services.AddCascadingAuthenticationState();
+// Đăng ký giải mã trạng thái xác thực từ Html persistent states
+builder.Services.AddAuthenticationStateDeserialization();
 
 builder.Services.AddTransient<WasmCookieHandler>();
+builder.Services.AddTransient<AntiforgeryHandler>();
 
-builder.Services.AddApiClientServices<WasmCookieHandler>("https://localhost:7188/");
-builder.Services.AddSharedClientServices();
+var apiBaseAddress = "https://localhost:7188/";
+
+builder.Services.AddApiClientServices<WasmCookieHandler>(apiBaseAddress, isAssemblyRenderMode: true);
 
 await builder.Build().RunAsync();

@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Components.Authorization
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -18,7 +19,11 @@
 </head>
 
 <body>
-    <Routes />
+    @* Bọc CascadingAuthenticationState để thông tin xác thực tự động chạy đến tất cả Component con *@
+    <CascadingAuthenticationState>
+        <Routes />
+    </CascadingAuthenticationState>
+
     <ReconnectModal />
     <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
