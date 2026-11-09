@@ -27,7 +27,7 @@ namespace WebApp.Admin.Services.Implementations
 
         public Task<ApiResponse<AuthResponseDto>> GetCurrentUserAsync()
         {
-            return ExecuteApiAsync<AuthResponseDto>(() => _httpClient.GetAsync("api/auth/admin-me"));
+            return GetAsync<AuthResponseDto>("api/auth/admin-me");
         }
 
         /// <summary>

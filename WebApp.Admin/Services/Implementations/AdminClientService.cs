@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using WebApp.Admin.Services.Base;
 using WebApp.Admin.Services.Interfaces;
+using WebApp.Admin.Utilities;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.Management.Admin;
 using WebApp.Shared.Dtos.Management.ContentAndMarketing;
@@ -11,29 +12,32 @@ namespace WebApp.Admin.Services.Implementations
     {
         private readonly HttpClient _httpClient;
 
-        public AdminClientService(HttpClient httpClient)
+        public AdminClientService(
+            HttpClient httpClient,
+            UserSessionState userSessionState,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpClient, userSessionState, httpContextAccessor)
         {
-            _httpClient = httpClient;
         }
 
         public Task<ApiResponse<bool>> BanUserAsync(BanUserDto dto)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("/api/admin/users/ban", dto));
+            return PostAsJsonAsync<BanUserDto, bool>("api/admin/users/ban", dto);
         }
 
         public Task<ApiResponse<bool>> CreateStaffAsync(CreateEmployeeDto dto)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsJsonAsync("/api/admin/staffs", dto));
+            return PostAsJsonAsync<CreateEmployeeDto, bool>("api/admin/staffs", dto);
         }
 
         public Task<ApiResponse<List<UserListItemDto>>> GetAllStaffAsync()
         {
-            return ExecuteApiAsync<List<UserListItemDto>>(() => _httpClient.GetAsync("/api/admin/staffs"));
+            return GetAsync<List<UserListItemDto>>("api/admin/staffs");
         }
 
         public Task<ApiResponse<UserListItemDto>> GetCustomerDetailAsync(string userId)
         {
-            return ExecuteApiAsync<UserListItemDto>(() => _httpClient.GetAsync($"/api/admin/customers/{userId}"));
+            return GetAsync<UserListItemDto>($"api/admin/customers/{userId}");
         }
 
         public Task<ApiResponse<PagedResultDto<UserListItemDto>>> GetCustomersPagedAsync(UserFilterDto filter)
@@ -46,17 +50,17 @@ namespace WebApp.Admin.Services.Implementations
                 ["pageSize"] = filter.PageSize.ToString()
             };
             string url = QueryHelpers.AddQueryString("/api/admin/customers", queryParams);
-            return ExecuteApiAsync<PagedResultDto<UserListItemDto>>(() => _httpClient.GetAsync(url));
+            return GetAsync<PagedResultDto<UserListItemDto>>(url);
         }
 
         public Task<ApiResponse<bool>> UnbanUserAsync(string userId)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PostAsync($"/api/admin/users/unban/{userId}", null));
+            return PostAsync<bool>($"api/admin/users/unban/{userId}");
         }
 
         public Task<ApiResponse<bool>> UpdateStaffRoleAsync(UpdateEmployeeDto dto)
         {
-            return ExecuteApiAsync<bool>(() => _httpClient.PutAsJsonAsync("/api/admin/staffs/roles", dto));
+            return PutAsJsonAsync<UpdateEmployeeDto, bool>("/api/admin/staffs/roles", dto);
         }
     }
 }

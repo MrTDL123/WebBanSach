@@ -1,9 +1,7 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
 using WebApp.Api.Services.Interfaces;
-using WebApp.Api.Validations.Management.ContentAndMarketing;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.Management.ContentAndMarketing;
 

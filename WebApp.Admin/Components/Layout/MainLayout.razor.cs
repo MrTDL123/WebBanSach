@@ -52,19 +52,6 @@ namespace WebApp.Admin.Components.Layout
             }
         }
 
-        private async Task HandleLogoutAsync()
-        {
-            CloseAllDropdowns();
-            UserSessionState.Clear(); // Xóa Auth Cookie khỏi bộ nhớ tạm thời trước khi gọi API Logout
-            try
-            else
-            {
-                userName = "N/A";
-                userRole = "N/A";
-                avatarUrl = string.Empty;
-            }
-        }
-
         private void ToggleProfileDropdown()
         {
             isProfileDropdownOpen = !isProfileDropdownOpen;

@@ -11,6 +11,8 @@ namespace WebApp.Admin.Components.Pages.Auth
     [AllowAnonymous]
     public partial class Login
     {
+        [CascadingParameter]
+        private Task<AuthenticationState>? AuthStateTask { get; set; }
         //: IAsyncDisposable
         private AdminLoginDto _loginModel = new();
         private bool _isSubmitting = false;

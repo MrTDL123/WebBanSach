@@ -81,7 +81,6 @@ builder.Services.AddHttpContextAccessor();
 // UserSessionState dùng để thay thế HttpContext lưu trữ cookie sau khi đã thiết lập kết nối SignalR WebSocket
 builder.Services.AddScoped<UserSessionState>();
 builder.Services.AddScoped<ToastHelper>();
-builder.Services.AddTransient<CookieHandler>();
 
 var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
 
@@ -98,7 +97,6 @@ builder.Services.AddScoped<IUserClientService, UserClientService>();
 builder.Services.AddScoped<IDashboardClientService, DashboardClientService>();
 builder.Services.AddScoped<IContentClientService, ContentClientService>();
 builder.Services.AddScoped<IAdminClientService, AdminClientService>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
 
@@ -113,6 +111,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseStaticFiles();
 
 // Custom middleware để mỗi lần gửi, nhận request response thì phải đọc cookie
 app.UseMiddleware<InitialSessionMiddleware>();
