@@ -10,6 +10,7 @@ using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
 using WebApp.Api.Services.Interfaces;
+using WebApp.Api.Utilities;
 using WebApp.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -192,6 +193,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors(AllowBlazorClientsPolicy);
