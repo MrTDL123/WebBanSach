@@ -1,33 +1,30 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.RenderTree;
+using Microsoft.Extensions.DependencyInjection;
 using WebApp.Customer.Client.Services.Implementations;
 using WebApp.Customer.Client.Services.Interfaces;
-using WebApp.Customer.Client.Utilities;
 
 namespace WebApp.Customer.Client.Extensions
 {
     public static class HttpClientExtensions
     {
-        public static IServiceCollection AddApiClientServices<THandler>(
+        /// <summary>
+        /// Đăng ký các Typed HttpClient cho WebApp.Customer (cả SSR Pre-rendering và WebAssembly Runtime)
+        /// Không dùng DelegatingHandler trung gian để triệt tiêu lỗi DI Scope Mismatch.
+        /// </summary>
+        public static IServiceCollection AddApiClientServices(
             this IServiceCollection services,
-            string apiBaseAddress,
-            bool isAssemblyRenderMode) where THandler : DelegatingHandler
+            string apiBaseAddress)
         {
-            // Cấu hình chung cho mọi HttpClient
             void ConfigureDefaultClient(HttpClient client)
             {
                 client.BaseAddress = new Uri(apiBaseAddress);
-                //client.Timeout = TimeSpan.FromSeconds(60);
+                //client.Timeout = TimeSpan.FromSeconds(30);
             }
 
-            // Đăng ký các Service tại đây
-            var httpClient = services.AddHttpClient<IAuthClientService, AuthClientService>(ConfigureDefaultClient)
-                            .AddHttpMessageHandler<THandler>();
-            // Chỉ thêm vào render mode Wasm để tránh cấu hình CORS sai
-            if (isAssemblyRenderMode)
-            {
-                httpClient.AddHttpMessageHandler<AntiforgeryHandler>();
-            }
+            // Đăng ký Typed HttpClients cho các dịch vụ
+            services.AddHttpClient<IAuthClientService, AuthClientService>(ConfigureDefaultClient);
+            services.AddHttpClient<IProductClientService, ProductClientService>(ConfigureDefaultClient);
+            services.AddHttpClient<ICartClientService, CartClientService>(ConfigureDefaultClient);
+            services.AddHttpClient<IFeatureToggleService, FeatureToggleService>(ConfigureDefaultClient);
 
             return services;
         }

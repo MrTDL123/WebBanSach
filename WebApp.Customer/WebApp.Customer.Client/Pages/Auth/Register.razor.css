@@ -1,0 +1,302 @@
+/* ==========================================================================
+   REGISTER PAGE - Pure HTML & CSS (Zero Bootstrap)
+   ========================================================================== */
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 180px);
+    padding: 36px 16px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-surface);
+    border: var(--border-classic);
+    border-radius: var(--radius-classic);
+    box-shadow: var(--shadow-classic);
+    padding: 36px 32px;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Khung viền chỉ nét đứt hoa văn cổ điển */
+.auth-card::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px dashed var(--color-bronze-light);
+    border-radius: calc(var(--radius-classic) - 4px);
+    pointer-events: none;
+}
+
+/* Tiêu đề Form */
+.auth-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.auth-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--color-terracotta);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0 0 6px 0;
+}
+
+.auth-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Thông báo lỗi & thành công */
+.alert-danger {
+    padding: 10px 14px;
+    background-color: #FDF0ED;
+    border: 1.5px solid #E8A89B;
+    border-radius: 6px;
+    color: #8B2E1E;
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+}
+
+.alert-danger ul {
+    margin: 4px 0 0 16px;
+    padding: 0;
+}
+
+.alert-success {
+    padding: 10px 14px;
+    background-color: #F0F7EE;
+    border: 1.5px solid #A8D19F;
+    border-radius: 6px;
+    color: #2D6324;
+    font-size: 0.88rem;
+    margin-bottom: 18px;
+}
+
+/* Trường nhập liệu */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 6px;
+}
+
+/* BẮT BUỘC DÙNG ::deep ĐỂ STYLE ĐƯỢC INPUT DO COMPONENT <InputText> RENDER */
+::deep .form-control,
+::deep input.form-control {
+    width: 100%;
+    padding: 11px 14px;
+    background-color: #FAF4E8;
+    border: 1.5px solid var(--color-bronze-border);
+    border-radius: 6px;
+    font-size: 0.92rem;
+    color: var(--text-main);
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    font-family: inherit;
+}
+
+::deep .form-control:focus,
+::deep input.form-control:focus {
+    outline: none;
+    border-color: var(--color-terracotta);
+    background-color: #FFFDF9;
+    box-shadow: 0 0 0 3px rgba(184, 95, 61, 0.15);
+}
+
+::deep .form-control.invalid,
+::deep input.form-control.invalid {
+    border-color: var(--color-terracotta);
+    background-color: #FFF6F4;
+}
+
+/* Password wrapper và nút ẩn/hiện */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+::deep .input-password {
+    padding-right: 42px !important;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    cursor: pointer;
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.btn-toggle-password:hover {
+    color: var(--color-terracotta);
+}
+
+/* Khung OTP */
+.otp-group {
+    display: flex;
+    gap: 8px;
+}
+
+::deep .input-otp {
+    flex: 1;
+}
+
+.btn-otp {
+    background-color: #FAF4E8;
+    color: var(--color-terracotta);
+    border: 1.5px solid var(--color-bronze-border);
+    border-radius: 6px;
+    padding: 0 16px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.btn-otp:hover:not(:disabled) {
+    background-color: var(--color-terracotta);
+    color: #FFFFFF;
+    border-color: var(--color-terracotta);
+}
+
+.btn-otp:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.otp-notice {
+    display: block;
+    font-size: 0.8rem;
+    color: #4A6E3B;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Thông báo lỗi FluentValidation */
+::deep .validation-message {
+    color: var(--color-terracotta);
+    font-size: 0.82rem;
+    margin-top: 5px;
+    font-style: italic;
+    display: block;
+}
+
+/* Nút Submit chính */
+.btn-primary {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--color-terracotta);
+    color: var(--text-white);
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(184, 95, 61, 0.25);
+    margin-top: 6px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--color-terracotta-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(184, 95, 61, 0.35);
+}
+
+.btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Phân cách */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0 16px 0;
+}
+
+.divider-line {
+    flex: 1;
+    border-bottom: 1px solid var(--color-bronze-light);
+}
+
+.divider-text {
+    padding: 0 12px;
+    color: var(--color-bronze-border);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* Nút phụ (Chuyển sang Đăng nhập) */
+.btn-secondary {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px 20px;
+    background-color: transparent;
+    color: var(--text-main);
+    border: 1.5px solid var(--color-bronze-border);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #F2ECE0;
+    border-color: var(--color-terracotta);
+    color: var(--color-terracotta);
+}
+
+.btn-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid #FFFFFF;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: vintage-spin 0.6s linear infinite;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 28px 20px;
+    }
+}

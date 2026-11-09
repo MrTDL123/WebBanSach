@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <rect width="300" height="400" fill="#FAF4E8"/>
+  <rect x="8" y="8" width="284" height="384" fill="none" stroke="#D4A373" stroke-width="1.5" stroke-dasharray="4,4"/>
+  <g transform="translate(150, 180)" stroke="#B85F3D" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-30 20v-40a5 5 0 0 1 5-5H0v50h-25a5 5 0 0 1-5-5Z"/>
+    <path d="M30 20v-40a5 5 0 0 0-5-5H0v50h25a5 5 0 0 0 5-5Z"/>
+    <line x1="-20" y1="-10" x2="-5" y2="-10"/>
+    <line x1="-20" y1="0" x2="-5" y2="0"/>
+    <line x1="5" y1="-10" x2="20" y2="-10"/>
+    <line x1="5" y1="0" x2="20" y2="0"/>
+  </g>
+  <text x="150" y="240" font-family="'Playfair Display', Georgia, serif" font-size="14" font-weight="700" fill="#B85F3D" text-anchor="middle" letter-spacing="1">NHÀ SÁCH VĂN HÓA</text>
+  <text x="150" y="260" font-family="sans-serif" font-size="11" fill="#7A695B" text-anchor="middle" font-style="italic">Đang cập nhật ảnh bìa</text>
+</svg>

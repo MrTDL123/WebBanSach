@@ -5,10 +5,10 @@ namespace WebApp.Shared.Dtos.CustomerDtos.Address
     public record CreateAddressDto(
         string ReceiverName,
         string ReceiverPhone,
-        string Province,
-        string District,
-        string Ward,
-        string DetailAddress,
+        string Province = "",
+        string District = "",
+        string Ward = "",
+        string DetailAddress = "",
         bool SetAsDefault = false
     );
 }

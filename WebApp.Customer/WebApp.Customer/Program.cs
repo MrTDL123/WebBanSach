@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using WebApp.Customer.Client.Auth;
 using WebApp.Customer.Client.Extensions;
+using WebApp.Customer.Client.Services.Base;
 using WebApp.Customer.Components;
-using WebApp.Customer.Utilities;
+using WebApp.Customer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
+    .AddInteractiveServerComponents(options => options.DetailedErrors = true) // Can xoa khi len production
     .AddInteractiveWebAssemblyComponents()
     // Cấu hình truyền trạng thái xác thực lấy được từ giai đoạn Server xuống WebAssembly
     .AddAuthenticationStateSerialization(options =>
@@ -16,12 +19,16 @@ builder.Services.AddRazorComponents()
         options.SerializeAllClaims = true;
     });
 
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<ServerCookieHandler>();
 builder.Services.AddSharedClientServices();
+builder.Services.AddAuthorization();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddHttpContextAccessor();
+
+// Đăng ký ServerCookieProvider cho Server SSR Pre-rendering
+builder.Services.AddScoped<ICookieProvider, ServerCookieProvider>();
 
 var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "https://localhost:7188/";
-builder.Services.AddApiClientServices<ServerCookieHandler>(apiBaseAddress, isAssemblyRenderMode: false);
+builder.Services.AddApiClientServices(apiBaseAddress);
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
 var keysPath = builder.Configuration["DataProtection:KeysPath"]
@@ -52,7 +59,7 @@ builder.Services.AddHsts(options =>
 });
 builder.Services.AddHttpsRedirection(options =>
 {
-    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
     options.HttpsPort = 7035;
 });
 

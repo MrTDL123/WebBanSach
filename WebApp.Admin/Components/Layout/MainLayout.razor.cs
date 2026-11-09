@@ -1,16 +1,19 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.JSInterop;
 using System.Security.Claims;
-using WebApp.Admin.Auth;
-using WebApp.Admin.Services.Implementations;
-using WebApp.Admin.Utilities;
 
 namespace WebApp.Admin.Components.Layout
 {
-    public partial class MainLayout : IDisposable
+    public partial class MainLayout
     {
+        // Nhận AuthState được truyền tự động từ <CascadingAuthenticationState> ở App.razor
+        [CascadingParameter]
+        private Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+        [Inject]
+        private NavigationManager Navigation { get; set; } = default!;
+
         private bool isProfileDropdownOpen = false;
         private bool isNotiOpen = false;
         private bool isMobileMenuOpen = false;
@@ -18,30 +21,19 @@ namespace WebApp.Admin.Components.Layout
         private string userRole = "N/A";
         private string avatarUrl = string.Empty;
 
-        protected override async Task OnInitializedAsync()
+        // Lifecycle chuẩn Blazor: Tự động chạy mỗi khi AuthState thay đổi
+        protected override async Task OnParametersSetAsync()
         {
-            // Đăng ký lắng nghe sự kiện khi thông tin User thay đổi (ví dụ: Profile.razor vừa lưu Avatar/Tên mới).
-            // Phải tuân theo cú pháp tham số (Task<AuthenticationState> task) do Microsoft C# định nghĩa sẵn.
-            AuthStateProvider.AuthenticationStateChanged += OnAuthStateChanged;
-            await LoadUserInfoFromClaimsAsync();
+            if (AuthStateTask != null)
+            {
+                var authState = await AuthStateTask;
+                ExtractUserInfoFromClaims(authState.User);
+            }
         }
 
-        private async void OnAuthStateChanged(Task<AuthenticationState> task)
+        // Trích xuất trực tiếp thông tin từ ClaimsPrincipal đã có sẵn trong RAM
+        private void ExtractUserInfoFromClaims(ClaimsPrincipal user)
         {
-            await LoadUserInfoFromClaimsAsync();
-            /*
-             * Vì Profile và MainLayout là 2 giao diện độc lập, sự kiện bắn sang là sự kiện ngầm (Background/Async),
-                nên bắt buộc phải dùng 'InvokeAsync' để chuyển lệnh 'StateHasChanged' về luồng giao diện chính an toàn,
-                yêu cầu Blazor vẽ lại Avatar và Tên ở góc phải màn hình ngay lập tức. 
-            */
-            await InvokeAsync(StateHasChanged);
-        }
-
-        private async Task LoadUserInfoFromClaimsAsync()
-        {
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-
             if (user.Identity != null && user.Identity.IsAuthenticated)
             {
                 userName = user.FindFirst(ClaimTypes.Name)?.Value ?? "Người dùng";
@@ -51,7 +43,6 @@ namespace WebApp.Admin.Components.Layout
 
                 if (!string.IsNullOrEmpty(avatarClaim))
                 {
-                    // Nối Domain API nếu là đường dẫn tương đối /images/avatars/...
                     avatarUrl = avatarClaim.StartsWith("http") ? avatarClaim : $"https://localhost:7188{avatarClaim}";
                 }
                 else
@@ -66,39 +57,45 @@ namespace WebApp.Admin.Components.Layout
             CloseAllDropdowns();
             UserSessionState.Clear(); // Xóa Auth Cookie khỏi bộ nhớ tạm thời trước khi gọi API Logout
             try
+            else
             {
-                // 1. Dùng JS fetch gọi tới AccountController để xóa Cookie ở Trình duyệt
-                await JSRuntime.InvokeVoidAsync("fetch", "/api/management/logout", new { method = "POST" });
+                userName = "N/A";
+                userRole = "N/A";
+                avatarUrl = string.Empty;
             }
-            catch { }
-            Navigation.NavigateTo("/management/login?logout=true", forceLoad: true);
         }
 
-        public void Dispose()
+        private void ToggleProfileDropdown()
         {
-            // Hủy đăng ký sự kiện khi Component bị hủy để tránh rò rỉ bộ nhớ
-            AuthStateProvider.AuthenticationStateChanged -= OnAuthStateChanged;
+            isProfileDropdownOpen = !isProfileDropdownOpen;
+            isNotiOpen = false;
         }
 
-        private void ToggleProfileDropdown() 
-        { 
-            isProfileDropdownOpen = !isProfileDropdownOpen; 
-            isNotiOpen = false; 
-        }
-
-        private void ToggleNotifications() 
-        { 
-            isNotiOpen = !isNotiOpen; 
-            isProfileDropdownOpen = false; 
+        private void ToggleNotifications()
+        {
+            isNotiOpen = !isNotiOpen;
+            isProfileDropdownOpen = false;
         }
 
         private void ToggleMobileMenu() => isMobileMenuOpen = !isMobileMenuOpen;
 
-        // Hàm dùng để đóng tất cả các dropdown khi bấm ra ngoài hoặc click chọn menu item
         private void CloseAllDropdowns()
         {
             isProfileDropdownOpen = false;
             isNotiOpen = false;
+        }
+
+        private async Task HandleLogoutAsync()
+        {
+            CloseAllDropdowns();
+
+            try
+            {
+                // Dùng JS fetch gọi tới AccountController để xóa Cookie ở Trình duyệt
+                await JSRuntime.InvokeVoidAsync("fetch", "/api/management/logout", new { method = "POST" });
+            }
+            catch { }
+            Navigation.NavigateTo("/management/login?logout=true", forceLoad: true);
         }
     }
 }

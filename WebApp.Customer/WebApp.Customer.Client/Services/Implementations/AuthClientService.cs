@@ -1,63 +1,39 @@
-﻿using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Forms;
+using WebApp.Customer.Client.Services.Base;
 using WebApp.Customer.Client.Services.Interfaces;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.Customer.Auth;
 
 namespace WebApp.Customer.Client.Services.Implementations
 {
-    public class AuthClientService : IAuthClientService
+    public class AuthClientService : BaseApiClient, IAuthClientService
     {
-        private readonly HttpClient _httpClient;
-
-        public AuthClientService(HttpClient httpClient)
+        public AuthClientService(
+            HttpClient httpClient,
+            ICookieProvider? cookieProvider = null,
+            AntiforgeryStateProvider? antiforgeryStateProvider = null)
+            : base(httpClient, cookieProvider, antiforgeryStateProvider)
         {
-            _httpClient = httpClient;
         }
 
         public async Task<ApiResponse<AuthResponseDto>> GetCurrentUserAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync("api/auth/me");
-                if (!response.IsSuccessStatusCode)
-                {
-                    return ApiResponse<AuthResponseDto>.FailureResult("Chưa đăng nhập.");
-                }
-                var result = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponseDto>>();
-                return result ?? ApiResponse<AuthResponseDto>.FailureResult("Lỗi đọc dữ liệu người dùng.");
-            }
-            catch
-            {
-                return ApiResponse<AuthResponseDto>.FailureResult("Không thể xác thực phiên làm việc.");
-            }
+            return await GetAsync<AuthResponseDto>("api/auth/me");
         }
 
         public async Task<ApiResponse<AuthResponseDto>> LoginAsync(CustomerLoginDto dto)
         {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("api/auth/customer-login", dto);
-                var result = await response.Content.ReadFromJsonAsync<ApiResponse<AuthResponseDto>>();
-                return result ?? ApiResponse<AuthResponseDto>.FailureResult("Lỗi khi đọc phản hồi từ Server.");
-            }
-            catch (Exception ex) 
-            {
-                return ApiResponse<AuthResponseDto>.FailureResult($"Lỗi kết nối máy chủ: {ex.Message}");
-            }
+            return await PostAsJsonAsync<CustomerLoginDto, AuthResponseDto>("api/auth/customer-login", dto);
+        }
+
+        public async Task<ApiResponse<AuthResponseDto>> RegisterAsync(RegisterDto dto)
+        {
+            return await PostAsJsonAsync<RegisterDto, AuthResponseDto>("api/auth/register", dto);
         }
 
         public async Task<ApiResponse<bool>> LogoutAsync()
         {
-            try
-            {
-                var response = await _httpClient.PostAsync("api/auth/logout", null);
-                var result = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
-                return result ?? ApiResponse<bool>.SuccessResult(true);
-            }
-            catch
-            {
-                return ApiResponse<bool>.FailureResult("Đã có lỗi xảy ra khi đăng xuất.");
-            }
+            return await PostAsync<bool>("api/auth/logout");
         }
     }
 }

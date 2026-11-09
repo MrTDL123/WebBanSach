@@ -1,11 +1,17 @@
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using System.Security.Claims;
 using WebApp.Api.Data;
+using WebApp.Api.Endpoints;
 using WebApp.Api.Entities;
 using WebApp.Api.Hubs;
 using WebApp.Api.Services.Implementations;
@@ -62,6 +68,12 @@ builder.Services.AddIdentity<User, Role>(options =>
 })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
+
+// Cấu hình thời gian kiểm tra định kỳ Security Stamp cho mỗi Circut
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromMinutes(10);
+});
 
 
 // TODO: CẦN CHUYỂN SANG X509Certificate ĐỂ MÃ HÓA COOKIE PHÙ HỢP TẤT CẢ HỆ ĐIỀU HÀNH
@@ -133,6 +145,71 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+// Cấu hình Authentication kết hợp Cookie và JwtBearer thông qua PolicyScheme
+const string SmartAuthScheme = "SmartAuthScheme";
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>() ?? new JwtSettings();
+var jwtKeyBytes = Encoding.UTF8.GetBytes(jwtSettings.SecretKey);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = SmartAuthScheme;
+    options.DefaultAuthenticateScheme = SmartAuthScheme;
+    options.DefaultChallengeScheme = SmartAuthScheme;
+})
+.AddPolicyScheme(SmartAuthScheme, "Bearer or Cookie", options =>
+{
+    options.ForwardDefaultSelector = context =>
+    {
+        // 1. Kiểm tra Authorization Header có tiền tố Bearer
+        var authHeader = context.Request.Headers.Authorization.FirstOrDefault();
+        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            return JwtBearerDefaults.AuthenticationScheme;
+        }
+
+        // 2. Kiểm tra query param access_token cho SignalR WebSocket
+        if (context.Request.Path.StartsWithSegments("/hubs") &&
+            context.Request.Query.ContainsKey("access_token"))
+        {
+            return JwtBearerDefaults.AuthenticationScheme;
+        }
+
+        // 3. Mặc định dùng Cookie Authentication cho Blazor
+        return IdentityConstants.ApplicationScheme;
+    };
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings.Issuer,
+        ValidateAudience = true,
+        ValidAudience = jwtSettings.Audience,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(jwtKeyBytes),
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        NameClaimType = ClaimTypes.Name,
+        RoleClaimType = ClaimTypes.Role
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
 
 builder.Services.AddControllers();
 
@@ -141,11 +218,17 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Auth Services
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<ICustomerAuthService, CustomerAuthService>();
 builder.Services.AddScoped<IAdminAuthService, AdminAuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IContentService, ContentService>();
+builder.Services.AddScoped<ICustomerProductService, CustomerProductService>();
+builder.Services.AddScoped<ICustomerCartService, CustomerCartService>();
+builder.Services.AddScoped<ICustomerReturnService, CustomerReturnService>();
+builder.Services.AddScoped<ICustomerAddressService, CustomerAddressService>();
+builder.Services.AddScoped<ICustomerOrderService, CustomerOrderService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 
 //Trong cùng 1 HTTP Request (ví dụ: khi người dùng bấm Lưu sách gồm 1 ảnh bìa + 5 ảnh phụ),
@@ -175,6 +258,13 @@ builder.Services.AddHttpsRedirection(options =>
     options.HttpsPort = 7188; // port https của API (cần phải sửa nếu lên Production)
 });
 
+builder.Services.AddHttpLogging(logging =>
+{
+    logging.LoggingFields = HttpLoggingFields.All;
+    logging.RequestHeaders.Add("Cookie");
+    logging.ResponseHeaders.Add("Set-Cookie");
+});
+
 
 builder.Services.AddOpenApi();
 
@@ -182,9 +272,13 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseHttpLogging();
     app.MapOpenApi();
     app.MapScalarApiReference();
     app.UseDeveloperExceptionPage();
+
+    // Tự động Seed dữ liệu mẫu khi chạy môi trường Development
+    await DbInitializer.SeedAsync(app.Services);
 }
 else
 {
@@ -204,5 +298,6 @@ app.UseAntiforgery();
 
 app.MapControllers();
 app.MapHub<UpdateBroadcastHub>("/hubs/updates");
+app.MapRevalidateStateEndpoints();// Thêm định tuyến cho việc kiểm tra trạng thái xác thực theo chu kỳ
 
 app.Run();

@@ -862,7 +862,17 @@ namespace WebApp.Api.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("IX_Products_CategoryId_Active")
+                        .HasFilter("[IsActive] = 1");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_Products_CreatedAt_Active")
+                        .HasFilter("[IsActive] = 1");
+
+                    b.HasIndex("Price")
+                        .HasDatabaseName("IX_Products_Price_Active")
+                        .HasFilter("[IsActive] = 1");
 
                     b.HasIndex("PublisherId");
 
@@ -1045,6 +1055,57 @@ namespace WebApp.Api.Migrations
                     b.HasIndex("PurchaseOrderId");
 
                     b.ToTable("PurchaseOrderItems");
+                });
+
+            modelBuilder.Entity("WebApp.Api.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(getutcdate())");
+
+                    b.Property<string>("DeviceInfo")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("JwtId")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<string>("ReplacedByToken")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("WebApp.Api.Entities.ReturnRequest", b =>
@@ -1780,6 +1841,17 @@ namespace WebApp.Api.Migrations
                     b.Navigation("PurchaseOrder");
                 });
 
+            modelBuilder.Entity("WebApp.Api.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("WebApp.Api.Entities.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WebApp.Api.Entities.ReturnRequest", b =>
                 {
                     b.HasOne("WebApp.Api.Entities.User", "Customer")
@@ -1992,6 +2064,8 @@ namespace WebApp.Api.Migrations
                     b.Navigation("ProductReviewRepliedByEmployees");
 
                     b.Navigation("PurchaseOrders");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("ReturnRequestCustomers");
 

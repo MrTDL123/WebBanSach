@@ -1,0 +1,74 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using WebApp.Customer.Client.Components
+@using WebApp.Customer.Client.Layout
+
+<Router AppAssembly="@typeof(Routes).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                @if (context.User.Identity?.IsAuthenticated == false)
+                {
+                    <RedirectToLogin />
+                }
+                else
+                {
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <div class="system-page-wrapper">
+                            <div class="system-card">
+                                <div class="system-icon">
+                                    <i class="bi bi-shield-lock"></i>
+                                </div>
+                                <h3 class="system-title">Truy cập bị hạn chế</h3>
+                                <p class="system-desc">Tài khoản của bạn không có quyền truy cập vào khu vực hoặc chức năng này.</p>
+                                <div class="system-actions">
+                                    <a href="/" class="btn-system-primary">
+                                        <i class="bi bi-house-door"></i> Quay về Trang chủ
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </LayoutView>
+                }
+            </NotAuthorized>
+
+            <Authorizing>
+                @* Màn hình chờ mịn (Loading UI) thuần CSS không dùng Bootstrap *@
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <div class="system-page-wrapper">
+                        <div class="system-card">
+                            <div class="spinner-vintage"></div>
+                            <p class="system-desc" style="margin-bottom: 0;">Đang kiểm tra quyền truy cập...</p>
+                        </div>
+                    </div>
+                </LayoutView>
+            </Authorizing>
+
+        </AuthorizeRouteView>
+        
+        @* Cuộn màn hình lên đầu trang và Focus vào h1 khi chuyển trang *@
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+
+    <NotFound>
+        <PageTitle>404 - Không tìm thấy trang | Nhà Sách Văn Hóa</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <div class="system-page-wrapper">
+                <div class="system-card">
+                    <h1 class="system-code">404</h1>
+                    <h3 class="system-title">Rất tiếc, trang bạn tìm kiếm không tồn tại!</h3>
+                    <p class="system-desc">
+                        Đường dẫn bạn đang truy cập có thể đã bị đổi tên, xóa bỏ hoặc tạm thời không khả dụng.
+                    </p>
+                    <div class="system-actions">
+                        <a href="/" class="btn-system-primary">
+                            <i class="bi bi-house-door"></i> Khám phá Trang chủ
+                        </a>
+                        <a href="/catalog" class="btn-system-outline">
+                            <i class="bi bi-book"></i> Xem Danh mục Sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

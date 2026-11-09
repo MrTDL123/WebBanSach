@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.WebUtilities;
 using WebApp.Admin.Services.Base;
 using WebApp.Admin.Services.Interfaces;
+using WebApp.Admin.Utilities;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.Management.ContentAndMarketing;
 
@@ -8,11 +9,12 @@ namespace WebApp.Admin.Services.Implementations
 {
     public class ContentClientService : BaseApiClient, IContentClientService
     {
-        private readonly HttpClient _httpClient;
-
-        public ContentClientService(HttpClient httpClient)
+        public ContentClientService(
+            HttpClient httpClient,
+            UserSessionState userSessionState,
+            IHttpContextAccessor httpContextAccessor)
+            : base(httpClient, userSessionState, httpContextAccessor)
         {
-            _httpClient = httpClient;
         }
 
         /// <summary>
@@ -176,7 +178,7 @@ namespace WebApp.Admin.Services.Implementations
         /// </summary>
         public Task<ApiResponse<List<CategoryDto>>> GetCategoriesAsync()
         {
-            return ExecuteApiAsync<List<CategoryDto>>(() => _httpClient.GetAsync("api/management/content/categories"));
+            return GetAsync<List<CategoryDto>>("api/management/content/categories");
         }
 
         public Task<ApiResponse<List<AuthorDto>>> GetAuthorsAsync()

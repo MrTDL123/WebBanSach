@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace WebApp.Shared.Dtos.CustomerDtos.Address
 {
     // Component dùng: SoNguonTinh.razor, Checkout.razor (Customer)
@@ -11,5 +13,8 @@ namespace WebApp.Shared.Dtos.CustomerDtos.Address
         string Ward,
         string DetailAddress,
         bool IsDefault
-    );
+    )
+    {
+        public string FullAddress => string.Join(", ", new[] { DetailAddress, Ward, District, Province }.Where(s => !string.IsNullOrWhiteSpace(s)));
+    }
 }

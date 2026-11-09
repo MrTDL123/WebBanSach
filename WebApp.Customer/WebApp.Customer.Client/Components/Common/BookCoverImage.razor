@@ -1,0 +1,60 @@
+@namespace WebApp.Customer.Client.Components.Common
+
+<div class="book-cover-frame @Class" style="aspect-ratio: 3/4;">
+    <img src="@ImageSource"
+         alt="@Alt"
+         width="@Width"
+         height="@Height"
+         loading="@(IsAboveTheFold ? "eager" : "lazy")"
+         decoding="async"
+         fetchpriority="@(IsAboveTheFold ? "high" : "auto")"
+         class="book-cover-media @(IsLoaded ? "loaded" : "")"
+         @onload="HandleImageLoaded"
+         @onerror="HandleImageError" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string? Src { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Alt { get; set; } = string.Empty;
+
+    [Parameter]
+    public int Width { get; set; } = 300;
+
+    [Parameter]
+    public int Height { get; set; } = 400;
+
+    /// <summary>
+    /// Đặt true nếu ảnh nằm trong vùng nhìn thấy đầu tiên (Above-The-Fold / Hero)
+    /// Khi true: loading="eager", fetchpriority="high" để tăng tốc LCP
+    /// Khi false: loading="lazy", decoding="async" để tiết kiệm băng thông
+    /// </summary>
+    [Parameter]
+    public bool IsAboveTheFold { get; set; } = false;
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    private const string FallbackPlaceholder = "/images/book-placeholder.svg";
+    private string ImageSource => string.IsNullOrWhiteSpace(Src) || hasError ? FallbackPlaceholder : Src;
+    private bool IsLoaded;
+    private bool hasError;
+
+    protected override void OnParametersSet()
+    {
+        // Reset trạng thái lỗi nếu Src thay đổi
+        hasError = false;
+    }
+
+    private void HandleImageLoaded()
+    {
+        IsLoaded = true;
+    }
+
+    private void HandleImageError()
+    {
+        hasError = true;
+    }
+}

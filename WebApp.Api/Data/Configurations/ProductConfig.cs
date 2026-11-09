@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using WebApp.Api.Entities;
 
@@ -18,6 +18,18 @@ namespace WebApp.Api.Data.Configurations
             builder.Property(e => e.SupplierName).HasMaxLength(150);
             builder.Property(e => e.Title).HasMaxLength(255);
             builder.Property(e => e.UpdatedAt).HasDefaultValueSql("(getutcdate())");
+
+            builder.HasIndex(e => e.CategoryId)
+                .HasDatabaseName("IX_Products_CategoryId_Active")
+                .HasFilter("[IsActive] = 1");
+
+            builder.HasIndex(e => e.Price)
+                .HasDatabaseName("IX_Products_Price_Active")
+                .HasFilter("[IsActive] = 1");
+
+            builder.HasIndex(e => e.CreatedAt)
+                .HasDatabaseName("IX_Products_CreatedAt_Active")
+                .HasFilter("[IsActive] = 1");
 
             builder.HasOne(d => d.Author).WithMany(p => p.Products)
                 .HasForeignKey(d => d.AuthorId)

@@ -1,0 +1,465 @@
+@page "/catalog"
+@rendermode InteractiveAuto
+@implements IDisposable
+@using WebApp.Customer.Client.Components.Common
+@using WebApp.Customer.Client.Services.Interfaces
+@using WebApp.Shared.Dtos.Common
+@using WebApp.Shared.Dtos.CustomerDtos.Product
+@using WebApp.Shared.Dtos.Management.ContentAndMarketing
+@inject IProductClientService ProductService
+@inject NavigationManager NavigationManager
+@inject PersistentComponentState ApplicationState
+
+<PageTitle>Danh Mục Sách Văn Hóa & Tác Phẩm Cổ Điển</PageTitle>
+
+<div class="catalog-page-container">
+    <SectionCartouche Title="KHO TÀNG THƯ TỊCH CỔ ĐIỂN" />
+
+    <div class="catalog-layout">
+        @* CỘT TRÁI: BỘ LỌC ĐA CHIỀU (SIDEBAR FILTER) *@
+        <aside class="sidebar-filter">
+            <div class="sidebar-header">
+                <div class="sidebar-title-wrap">
+                    <AppIcon Name="filter" Size="18" Class="filter-icon" />
+                    <h3 class="sidebar-title">BỘ LỌC TÌM KIẾM</h3>
+                </div>
+                @if (HasActiveFilters)
+                {
+                    <button class="btn-clear-filters" @onclick="ClearAllFilters" title="Xóa toàn bộ bộ lọc">
+                        Làm mới
+                    </button>
+                }
+            </div>
+
+            @* 1. Lọc theo thể loại *@
+            <div class="filter-group">
+                <h4 class="group-title">Chủ Đề & Thể Loại</h4>
+                <div class="filter-options">
+                    <label class="filter-radio-item @(SelectedCategoryId == null ? "active" : "")">
+                        <input type="radio" 
+                               name="category-filter" 
+                               checked="@(SelectedCategoryId == null)" 
+                               @onchange="() => SelectCategory(null)" />
+                        <span class="option-label">Tất cả chủ đề</span>
+                    </label>
+
+                    @foreach (var cat in categories)
+                    {
+                        var isChecked = SelectedCategoryId == cat.CategoryId;
+                        <label class="filter-radio-item @(isChecked ? "active" : "")">
+                            <input type="radio" 
+                                   name="category-filter" 
+                                   checked="@isChecked" 
+                                   @onchange="() => SelectCategory(cat.CategoryId)" />
+                            <span class="option-label">@cat.CategoryName</span>
+                            @if (cat.TotalProducts > 0)
+                            {
+                                <span class="badge-count">@cat.TotalProducts</span>
+                            }
+                        </label>
+                    }
+                </div>
+            </div>
+
+            @* 2. Lọc theo mức giá *@
+            <div class="filter-group">
+                <h4 class="group-title">Mức Giá Tuyển Chọn</h4>
+                <div class="filter-options">
+                    @foreach (var range in PriceRanges)
+                    {
+                        var isSelected = SelectedPriceRangeKey == range.Key;
+                        <label class="filter-radio-item @(isSelected ? "active" : "")">
+                            <input type="radio" 
+                                   name="price-filter" 
+                                   checked="@isSelected" 
+                                   @onchange="() => SelectPriceRange(range.Key)" />
+                            <span class="option-label">@range.Label</span>
+                        </label>
+                    }
+                </div>
+            </div>
+        </aside>
+
+        @* CỘT PHẢI: THANH ĐIỀU HƯỚNG & LƯỚI SÁCH *@
+        <main class="catalog-main">
+            @* THANH ĐIỀU KHIỂN TRÊN (TOOLBAR) *@
+            <div class="catalog-toolbar">
+                <div class="results-count">
+                    @if (IsLoading)
+                    {
+                        <span>Đang tra cứu thư tịch...</span>
+                    }
+                    else
+                    {
+                        <span>Tìm thấy <strong>@TotalCount</strong> tác phẩm phù hợp</span>
+                    }
+                </div>
+
+                <div class="sort-selector">
+                    <AppIcon Name="sort" Size="16" Class="sort-icon" />
+                    <label for="catalog-sort" class="sort-label">Sắp xếp:</label>
+                    <select id="catalog-sort" class="sort-select" value="@CurrentSort" @onchange="HandleSortChanged">
+                        <option value="newest">Mới phát hành</option>
+                        <option value="price-asc">Giá: Thấp đến Cao</option>
+                        <option value="price-desc">Giá: Cao đến Thấp</option>
+                        <option value="rating">Đánh giá cao nhất</option>
+                        <option value="discount">Ưu đãi nhiều nhất</option>
+                    </select>
+                </div>
+            </div>
+
+            @* THANH ACTIVE FILTER BADGES (CHIPS) *@
+            @if (HasActiveFilters)
+            {
+                <div class="active-chips-bar">
+                    <span class="chips-label">Đang lọc:</span>
+                    @if (SelectedCategoryId.HasValue)
+                    {
+                        var catName = categories.FirstOrDefault(c => c.CategoryId == SelectedCategoryId.Value)?.CategoryName ?? "Chủ đề";
+                        <span class="filter-chip">
+                            @catName
+                            <button type="button" class="btn-chip-remove" @onclick="() => SelectCategory(null)" aria-label="Bỏ chọn thể loại">
+                                <AppIcon Name="x" Size="12" />
+                            </button>
+                        </span>
+                    }
+                    @if (!string.IsNullOrEmpty(SelectedPriceRangeKey) && SelectedPriceRangeKey != "all")
+                    {
+                        var rangeLabel = PriceRanges.FirstOrDefault(r => r.Key == SelectedPriceRangeKey)?.Label ?? "Giá";
+                        <span class="filter-chip">
+                            @rangeLabel
+                            <button type="button" class="btn-chip-remove" @onclick='() => SelectPriceRange("all")' aria-label="Bỏ chọn khoảng giá">
+                                <AppIcon Name="x" Size="12" />
+                            </button>
+                        </span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Keyword))
+                    {
+                        <span class="filter-chip">
+                            Từ khóa: "@Keyword"
+                            <button type="button" class="btn-chip-remove" @onclick="ClearKeyword" aria-label="Bỏ chọn từ khóa">
+                                <AppIcon Name="x" Size="12" />
+                            </button>
+                        </span>
+                    }
+                </div>
+            }
+
+            @* LƯỚI SÁCH (BOOK GRID) *@
+            @if (IsLoading)
+            {
+                <div class="loading-grid">
+                    @for (int i = 0; i < 8; i++)
+                    {
+                        <div class="skeleton-book-card">
+                            <div class="skeleton-thumb"></div>
+                            <div class="skeleton-line-long"></div>
+                            <div class="skeleton-line-short"></div>
+                        </div>
+                    }
+                </div>
+            }
+            else if (!products.Any())
+            {
+                <div class="catalog-empty-state">
+                    <div class="empty-icon-wrap">
+                        <AppIcon Name="book" Size="48" Class="empty-icon" />
+                    </div>
+                    <h3 class="empty-title">Không tìm thấy tác phẩm phù hợp</h3>
+                    <p class="empty-desc">
+                        Không có cuốn sách nào khớp với tiêu chí bạn đã lọc. Mời bạn điều chỉnh lại khoảng giá hoặc thể loại.
+                    </p>
+                    <button class="btn-reset-catalog" @onclick="ClearAllFilters">
+                        Xem Tất Cả Sách
+                    </button>
+                </div>
+            }
+            else
+            {
+                <section class="catalog-grid" aria-label="Danh sách sách">
+                    @for (int i = 0; i < products.Count; i++)
+                    {
+                        var product = products[i];
+                        <BookCard Product="@product" IsAboveTheFold="@(CurrentPage == 1 && i < 4)" />
+                    }
+                </section>
+
+                @* PHÂN TRANG HIỆU NĂNG CAO *@
+                @if (TotalPages > 1)
+                {
+                    <nav class="catalog-pagination" aria-label="Phân trang danh mục">
+                        <button class="btn-page-nav" 
+                                disabled="@(CurrentPage <= 1)" 
+                                @onclick="() => ChangePage(CurrentPage - 1)" 
+                                aria-label="Trang trước">
+                            <AppIcon Name="chevron-left" Size="14" />
+                            <span>Trước</span>
+                        </button>
+
+                        <div class="page-numbers">
+                            @for (int p = 1; p <= TotalPages; p++)
+                            {
+                                var pageNumber = p;
+                                <button class="btn-page-num @(pageNumber == CurrentPage ? "active" : "")" 
+                                        @onclick="() => ChangePage(pageNumber)">
+                                    @pageNumber
+                                </button>
+                            }
+                        </div>
+
+                        <button class="btn-page-nav" 
+                                disabled="@(CurrentPage >= TotalPages)" 
+                                @onclick="() => ChangePage(CurrentPage + 1)" 
+                                aria-label="Trang kế tiếp">
+                            <span>Sau</span>
+                            <AppIcon Name="chevron-right" Size="14" />
+                        </button>
+                    </nav>
+                }
+            }
+        </main>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "categoryId")]
+    public int? CategoryIdQuery { get; set; }
+
+    [SupplyParameterFromQuery(Name = "price")]
+    public string? PriceQuery { get; set; }
+
+    [SupplyParameterFromQuery(Name = "sort")]
+    public string? SortQuery { get; set; }
+
+    [SupplyParameterFromQuery(Name = "keyword")]
+    public string? Keyword { get; set; }
+
+    [SupplyParameterFromQuery(Name = "page")]
+    public int? PageQuery { get; set; }
+
+    private List<CategoryDto> categories = new();
+    private List<ProductListItemDto> products = new();
+    private int TotalCount;
+    private int TotalPages;
+    private int CurrentPage = 1;
+    private const int PageSize = 8;
+    private bool IsLoading = true;
+
+    private int? SelectedCategoryId;
+    private string SelectedPriceRangeKey = "all";
+    private string CurrentSort = "newest";
+
+    private PersistingComponentStateSubscription _persistingSubscription;
+
+    private record PriceRangeItem(string Key, string Label, decimal? Min, decimal? Max);
+
+    private static readonly List<PriceRangeItem> PriceRanges = new()
+    {
+        new("all", "Tất cả mức giá", null, null),
+        new("under-150k", "Dưới 150.000 đ", null, 150000),
+        new("150k-250k", "150.000 đ - 250.000 đ", 150000, 250000),
+        new("250k-400k", "250.000 đ - 400.000 đ", 250000, 400000),
+        new("over-400k", "Trên 400.000 đ", 400000, null)
+    };
+
+    private bool HasActiveFilters =>
+        SelectedCategoryId.HasValue ||
+        (SelectedPriceRangeKey != "all" && !string.IsNullOrEmpty(SelectedPriceRangeKey)) ||
+        !string.IsNullOrWhiteSpace(Keyword);
+
+    protected override async Task OnInitializedAsync()
+    {
+        // McMaster-Carr Kỹ thuật 1: Gom state SSR và restore trên WASM (Zero duplicate fetch)
+        _persistingSubscription = ApplicationState.RegisterOnPersisting(PersistCatalogState);
+
+        var restored = ApplicationState.TryTakeFromJson<CatalogStatePayload>("catalog_page_state", out var state);
+        if (restored && state != null)
+        {
+            categories = state.Categories;
+            products = state.Products;
+            TotalCount = state.TotalCount;
+            TotalPages = state.TotalPages;
+            CurrentPage = state.CurrentPage;
+            SelectedCategoryId = state.SelectedCategoryId;
+            SelectedPriceRangeKey = state.SelectedPriceRangeKey;
+            CurrentSort = state.CurrentSort;
+            IsLoading = false;
+        }
+        else
+        {
+            ApplyQueryParameters();
+            await LoadDataAsync();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Đồng bộ khi URL Query thay đổi (Back / Forward / Link navigation)
+        var oldCat = SelectedCategoryId;
+        var oldPrice = SelectedPriceRangeKey;
+        var oldSort = CurrentSort;
+        var oldPage = CurrentPage;
+
+        ApplyQueryParameters();
+
+        if (oldCat != SelectedCategoryId || oldPrice != SelectedPriceRangeKey || oldSort != CurrentSort || oldPage != CurrentPage)
+        {
+            await LoadProductsAsync();
+        }
+    }
+
+    private void ApplyQueryParameters()
+    {
+        SelectedCategoryId = CategoryIdQuery;
+        SelectedPriceRangeKey = !string.IsNullOrEmpty(PriceQuery) ? PriceQuery : "all";
+        CurrentSort = !string.IsNullOrEmpty(SortQuery) ? SortQuery : "newest";
+        CurrentPage = PageQuery.HasValue && PageQuery.Value > 0 ? PageQuery.Value : 1;
+    }
+
+    private Task PersistCatalogState()
+    {
+        var payload = new CatalogStatePayload(
+            categories,
+            products,
+            TotalCount,
+            TotalPages,
+            CurrentPage,
+            SelectedCategoryId,
+            SelectedPriceRangeKey,
+            CurrentSort
+        );
+        ApplicationState.PersistAsJson("catalog_page_state", payload);
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            // Tải danh mục một lần
+            var catResponse = await ProductService.GetCategoriesAsync();
+            if (catResponse.Success && catResponse.Data != null)
+            {
+                categories = catResponse.Data;
+            }
+
+            await LoadProductsAsync();
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task LoadProductsAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var range = PriceRanges.FirstOrDefault(r => r.Key == SelectedPriceRangeKey);
+            var filter = new Shared.Dtos.CustomerDtos.Product.ProductFilterDto(
+                Keyword: Keyword,
+                CategoryId: SelectedCategoryId,
+                MinPrice: range?.Min,
+                MaxPrice: range?.Max,
+                SortBy: CurrentSort,
+                Page: CurrentPage,
+                PageSize: PageSize
+            );
+
+            var response = await ProductService.GetPagedProductsAsync(filter);
+            if (response.Success && response.Data != null)
+            {
+                products = response.Data.Items;
+                TotalCount = response.Data.TotalCount;
+                TotalPages = response.Data.TotalPages;
+            }
+            else
+            {
+                products = new();
+                TotalCount = 0;
+                TotalPages = 0;
+            }
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void SelectCategory(int? catId)
+    {
+        SelectedCategoryId = catId;
+        CurrentPage = 1;
+        UpdateUrl();
+    }
+
+    private void SelectPriceRange(string rangeKey)
+    {
+        SelectedPriceRangeKey = rangeKey;
+        CurrentPage = 1;
+        UpdateUrl();
+    }
+
+    private void HandleSortChanged(ChangeEventArgs e)
+    {
+        CurrentSort = e.Value?.ToString() ?? "newest";
+        CurrentPage = 1;
+        UpdateUrl();
+    }
+
+    private void ClearKeyword()
+    {
+        Keyword = null;
+        CurrentPage = 1;
+        UpdateUrl();
+    }
+
+    private void ClearAllFilters()
+    {
+        SelectedCategoryId = null;
+        SelectedPriceRangeKey = "all";
+        Keyword = null;
+        CurrentPage = 1;
+        UpdateUrl();
+    }
+
+    private void ChangePage(int newPage)
+    {
+        if (newPage < 1 || newPage > TotalPages || newPage == CurrentPage) return;
+        CurrentPage = newPage;
+        UpdateUrl();
+    }
+
+    private void UpdateUrl()
+    {
+        var parameters = new Dictionary<string, object?>
+        {
+            ["categoryId"] = SelectedCategoryId,
+            ["price"] = SelectedPriceRangeKey != "all" ? SelectedPriceRangeKey : null,
+            ["sort"] = CurrentSort != "newest" ? CurrentSort : null,
+            ["keyword"] = !string.IsNullOrWhiteSpace(Keyword) ? Keyword : null,
+            ["page"] = CurrentPage > 1 ? CurrentPage : null
+        };
+
+        var uri = NavigationManager.GetUriWithQueryParameters(parameters);
+        NavigationManager.NavigateTo(uri, replace: false);
+    }
+
+    public void Dispose()
+    {
+        _persistingSubscription.Dispose();
+    }
+
+    private record CatalogStatePayload(
+        List<CategoryDto> Categories,
+        List<ProductListItemDto> Products,
+        int TotalCount,
+        int TotalPages,
+        int CurrentPage,
+        int? SelectedCategoryId,
+        string SelectedPriceRangeKey,
+        string CurrentSort
+    );
+}

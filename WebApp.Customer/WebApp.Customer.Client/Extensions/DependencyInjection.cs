@@ -1,6 +1,8 @@
-﻿using FluentValidation;
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using WebApp.Customer.Client.Services.Implementations;
 using WebApp.Customer.Client.Services.Interfaces;
+using WebApp.Customer.Client.States;
 using WebApp.Shared;
 
 namespace WebApp.Customer.Client.Extensions
@@ -12,14 +14,17 @@ namespace WebApp.Customer.Client.Extensions
         /// </summary>
         public static IServiceCollection AddSharedClientServices(this IServiceCollection services)
         {
-            // Phân quyền Blazor
-            services.AddAuthorizationCore();
-
             // FluentValidation
             services.AddValidatorsFromAssemblyContaining<AssemblyMarker>(lifetime: ServiceLifetime.Singleton);
 
-            // Real time update UI cho các thay đổi từ bên Admin
+            // Real-time SignalR service nhận thông báo cập nhật từ WebApp.Api
             services.AddScoped<IRealtimeNotificationService, RealtimeNotificationService>();
+
+            // Quản lý trạng thái giỏ hàng C# Client
+            services.AddScoped<CartState>();
+
+            // Load dữ liệu ngầm khi khách hàng hover
+            services.AddSingleton<IProductPrefetchService, ProductPrefetchService>();
 
             return services;
         }

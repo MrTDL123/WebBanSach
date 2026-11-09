@@ -1,0 +1,82 @@
+@namespace WebApp.Customer.Client.Components.Common
+@using WebApp.Customer.Client.Services.Interfaces
+@using WebApp.Customer.Client.States
+@using WebApp.Shared.Dtos.CustomerDtos.Product
+@inject CartState CartState
+@inject IProductPrefetchService PrefetchService
+
+<div class="book-card" @onmouseenter="HandleMouseEnter">
+    <div class="book-cover-wrap">
+        @if (Product.DiscountPercent > 0)
+        {
+            <span class="discount-badge">-@Product.DiscountPercent%</span>
+        }
+        <a href="/sach/@Product.ProductId">
+            <BookCoverImage Src="@Product.MainImageUrl" 
+                            Alt="@Product.Title" 
+                            IsAboveTheFold="@IsAboveTheFold" />
+        </a>
+    </div>
+
+    <div class="book-meta">
+        <div class="title-author">
+            <h4 class="book-title" title="@Product.Title">
+                <a href="/sach/@Product.ProductId">@Product.Title</a>
+            </h4>
+            @if (!string.IsNullOrEmpty(Product.AuthorName))
+            {
+                <p class="book-author">@Product.AuthorName</p>
+            }
+        </div>
+
+        <div class="book-pricing">
+            <span class="price-current">@Product.FinalPrice.ToString("N0") đ</span>
+            @if (Product.DiscountPercent > 0)
+            {
+                <span class="price-original">@Product.Price.ToString("N0") đ</span>
+            }
+        </div>
+
+        <button class="btn-book-add" @onclick="HandleAddToCart" disabled="@IsAdding">
+            @if (IsAdding)
+            {
+                <span class="btn-spinner"></span>
+            }
+            else
+            {
+                <AppIcon Name="cart-plus" Size="15" />
+                <span>Thêm vào giỏ</span>
+            }
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ProductListItemDto Product { get; set; } = default!;
+
+    [Parameter]
+    public bool IsAboveTheFold { get; set; } = false;
+
+    private bool IsAdding;
+
+    private void HandleMouseEnter()
+    {
+        // Hover chuột qua sản phẩm sẽ truy vấn ngầm thay vì đợi người dùng click
+        PrefetchService.Prefetch(Product.ProductId);
+    }
+
+    private async Task HandleAddToCart()
+    {
+        if (IsAdding) return;
+        IsAdding = true;
+        try
+        {
+            await CartState.AddToCartAsync(Product.ProductId, 1);
+        }
+        finally
+        {
+            IsAdding = false;
+        }
+    }
+}

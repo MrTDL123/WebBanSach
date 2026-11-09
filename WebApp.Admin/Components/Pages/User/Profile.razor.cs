@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using System.ComponentModel;
+using System.Security.Claims;
 using WebApp.Admin.Auth;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.User;
@@ -9,6 +12,8 @@ namespace WebApp.Admin.Components.Pages.User
 {
     public partial class Profile
     {
+        [CascadingParameter]
+        private Task<AuthenticationState>? AuthStateTask { get; set; }
         // DTO chứa toàn bộ thông tin Read-only từ DB để hiển thị UI
         private UserProfileDto? _userProfileModel;
         // Model cho tab Thông tin cá nhân

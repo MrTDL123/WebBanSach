@@ -1,11 +1,10 @@
-﻿@page "/management/login"
+@page "/management/login"
 @layout Layout.AuthLayout
 @using Microsoft.AspNetCore.Components.Authorization
 @using WebApp.Admin.Services.Interfaces
 @using WebApp.Admin.Validation
 
 @inject NavigationManager Navigation
-@inject IAuthClientService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
 @inject IJSRuntime JSRuntime
 @inject UserSessionState UserSessionState

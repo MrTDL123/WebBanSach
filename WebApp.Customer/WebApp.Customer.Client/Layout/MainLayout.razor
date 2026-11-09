@@ -1,0 +1,99 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+@using Microsoft.AspNetCore.Components.Authorization
+@using WebApp.Customer.Client.Components.Common
+@using WebApp.Customer.Client.Services.Interfaces
+@using WebApp.Customer.Client.States
+@using WebApp.Shared.Constants
+
+@inject NavigationManager NavigationManager
+@inject CartState CartState
+@inject IFeatureToggleService FeatureToggleService
+@inject IAuthClientService AuthService
+
+<div class="storefront-container">
+    <header class="navbar-wrapper">
+        <div class="navbar-frame">
+            @* Logo *@
+            <a href="/" class="brand-box">
+                <img src="/images/book-store-logo.svg" width="70" height="70" loading="eager" decoding="async" fetchpriority="high"/>
+
+                <div class="brand-text">
+                    <span class="brand-title">NHÀ SÁCH</span>
+                    <span class="brand-subtitle">VĂN HÓA</span>
+                </div>
+            </a>
+
+            <nav class="nav-links">
+                <NavLink href="/" class="nav-item" Match="NavLinkMatch.All">Trang Chủ</NavLink>
+                <NavLink href="/catalog?sort=newest" class="nav-item">Sách Mới</NavLink>
+                <NavLink href="/catalog?category=van-hoc" class="nav-item">Văn Học</NavLink>
+                <NavLink href="/catalog?category=lich-su" class="nav-item">Lịch Sử</NavLink>
+                <NavLink href="/catalog?category=triet-hoc" class="nav-item">Triết Học</NavLink>
+                <NavLink href="/catalog?category=tho-ca" class="nav-item">Thơ Ca</NavLink>
+            </nav>
+
+            @* User Profile *@
+            <div class="user-profile-box">
+                <AuthorizeView>
+                    <Authorized>
+                        <div class="user-avatar-circle">
+                            <AppIcon Name="user" Size="18" />
+                        </div>
+                        <div class="user-meta">
+                            <span class="greeting-text">Chào bạn, <strong>@(context.User.Identity?.Name ?? "Khách quý")</strong></span>
+                            <div class="user-quick-links">
+                                <a href="/thong-tin-tai-khoan" class="meta-link">Thông tin tài khoản</a>
+                                <span class="divider">|</span>
+                                <a href="/cart" class="meta-link">
+                                    <AppIcon Name="cart" Size="14" /> Giỏ hàng (@CartState.TotalItems)
+                                </a>
+                            </div>
+                        </div>
+                        <button class="btn-logout" @onclick="HandleLogoutAsync">
+                            <AppIcon Name="logout" Size="13" /> Đăng xuất
+                        </button>
+                    </Authorized>
+
+                    <NotAuthorized>
+                        <a href="/dang-nhap" class="btn-classic-outline">Đăng nhập</a>
+                        <a href="/dang-ky" class="btn-classic-solid">Đăng ký</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+
+            </div>
+        </div>
+    </header>
+
+    <main class="content-body">
+        @Body
+    </main>
+
+
+    <footer class="footer-vintage">
+        <div class="footer-cartouche">
+            <span class="cartouche-text">CỬA HÀNG SÁCH ONLINE TRUYỀN THỐNG</span>
+        </div>
+        <p class="footer-copyright">© 2026 Nhà Sách Văn Hóa - Giữ gìn và phát huy văn hóa đọc Việt Nam</p>
+    </footer>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        CartState.OnChange += StateHasChanged;
+        FeatureToggleService.OnFeatureTogglesChanged += StateHasChanged;
+    }
+
+    private async Task HandleLogoutAsync()
+    {
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        CartState.OnChange -= StateHasChanged;
+        FeatureToggleService.OnFeatureTogglesChanged -= StateHasChanged;
+    }
+}

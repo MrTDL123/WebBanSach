@@ -15,7 +15,9 @@ namespace WebApp.Api.Services.Implementations
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string? UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-        public string? UserName => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Name);
+        public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
+        public string? UserId => User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        public string? UserName => User?.FindFirstValue(ClaimTypes.Name);
+        public bool IsAuthenticated => User?.Identity?.IsAuthenticated ?? false;
     } 
 }

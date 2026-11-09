@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 using WebApp.Customer.Client.Services.Interfaces;
 
 namespace WebApp.Customer.Client.Services.Implementations
@@ -10,6 +10,7 @@ namespace WebApp.Customer.Client.Services.Implementations
 
         public event Action<int, int>? OnProductStockUpdated;
         public event Action<int, string>? OnOrderStatusChanged;
+        public event Action<string, bool, string?>? OnFeatureToggleChanged;
 
         public async Task StartAsync()
         {
@@ -18,19 +19,8 @@ namespace WebApp.Customer.Client.Services.Implementations
 
             // Khởi tạo kết nối trỏ tới UpdateBroadcastHub của WebApp.Api
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7188/hubs/updates", options =>
-                {
-                    // Cho phép truyền Cookie xác thực qua kết nối WebSockets Cross-Origin
-                    options.HttpMessageHandlerFactory = (handler) =>
-                    {
-                        if (handler is HttpClientHandler clientHandler)
-                        {
-                            clientHandler.UseDefaultCredentials = true;
-                        }
-                        return handler;
-                    };
-                })
-                .WithAutomaticReconnect() // Tự động kết nối lại khi mất mạng
+                .WithUrl("https://localhost:7188/hubs/updates")
+                .WithAutomaticReconnect()
                 .Build();
 
             // 1. Đăng ký lắng nghe sự kiện "ReceiveStockUpdate" từ API Hub
@@ -43,6 +33,12 @@ namespace WebApp.Customer.Client.Services.Implementations
             _hubConnection.On<int, string>("ReceiveOrderStatusUpdate", (orderId, newStatus) =>
             {
                 OnOrderStatusChanged?.Invoke(orderId, newStatus);
+            });
+
+            // 3. Đăng ký lắng nghe sự kiện "ReceiveFeatureToggleUpdate" từ API Hub (Feature Toggles)
+            _hubConnection.On<string, bool, string?>("ReceiveFeatureToggleUpdate", (key, isEnabled, variant) =>
+            {
+                OnFeatureToggleChanged?.Invoke(key, isEnabled, variant);
             });
 
             try
