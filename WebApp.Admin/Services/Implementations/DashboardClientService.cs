@@ -16,9 +16,9 @@ namespace WebApp.Admin.Services.Implementations
         {
         }   
 
-        // <summary>
-        // Lấy dữ liệu và đưa thông tin lên trang Dashboard
-        // </summary>
+        /// <summary>
+        /// Lấy dữ liệu và đưa thông tin lên trang Dashboard
+        /// </summary>
         public Task<ApiResponse<DashboardStatsDto>> GetDashboardStatsAsync()
         {
             return GetAsync<DashboardStatsDto>("api/management/dashboard/stats");

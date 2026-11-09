@@ -54,6 +54,12 @@ namespace WebApp.Admin.Services.Base
             return SendRequestAsync<T>(request);
         }
 
+        protected Task<ApiResponse<T>> PostAsync<T>(string uri, HttpContent? content = null)
+        {
+            var request = CreateRequest(HttpMethod.Post, uri, content);
+            return SendRequestAsync<T>(request);
+        }
+
         protected Task<ApiResponse<TResponse>> PostAsJsonAsync<TRequest, TResponse>(string uri, TRequest data)
         {
             var content = JsonContent.Create(data);

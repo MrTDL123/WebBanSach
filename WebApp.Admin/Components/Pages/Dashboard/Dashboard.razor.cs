@@ -6,12 +6,12 @@ namespace WebApp.Admin.Components.Pages.Dashboard
 {
     public partial class Dashboard : IAsyncDisposable
     {
-        private DashboardStatsDto? dashBoardStateModel;
-        private bool isLoading = true;
+        private DashboardStatsDto? _dashBoardStateModel;
+        private bool _isLoading = true;
         private IJSObjectReference? _jsModule;
 
         // Tab hiện tại đang chọn: 'revenue' | 'orders' | 'warehouse' | 'customers'
-        private string activeTab = "revenue";
+        private string _activeTab = "revenue";
 
         protected override async Task OnInitializedAsync()
         {
@@ -23,7 +23,7 @@ namespace WebApp.Admin.Components.Pages.Dashboard
                 // Giả định response của bạn có bọc trạng thái Success/Data
                 if (response.Success && response.Data != null)
                 {
-                    dashBoardStateModel = response.Data;
+                    _dashBoardStateModel = response.Data;
                 }
             }
             catch (Exception ex)
@@ -32,13 +32,13 @@ namespace WebApp.Admin.Components.Pages.Dashboard
             }
             finally
             {
-                isLoading = false;
+                _isLoading = false;
             }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (dashBoardStateModel != null && _jsModule == null)
+            if (_dashBoardStateModel != null && _jsModule == null)
             {
                 try
                 {
@@ -53,8 +53,8 @@ namespace WebApp.Admin.Components.Pages.Dashboard
         // Chuyển Tab khi người dùng bấm vào từng thẻ KPI
         private async Task SelectTabAsync(string tabName)
         {
-            if (activeTab == tabName) return;
-            activeTab = tabName;
+            if (_activeTab == tabName) return;
+            _activeTab = tabName;
             StateHasChanged();
             await Task.Delay(50); // Chờ DOM render canvas mới
             await RenderCurrentTabChartAsync();
@@ -62,32 +62,32 @@ namespace WebApp.Admin.Components.Pages.Dashboard
 
         private async Task RenderCurrentTabChartAsync()
         {
-            if (_jsModule == null || dashBoardStateModel == null) return;
+            if (_jsModule == null || _dashBoardStateModel == null) return;
             try
             {
-                switch (activeTab)
+                switch (_activeTab)
                 {
                     case "revenue":
-                        var labels = dashBoardStateModel.MonthlyRevenues.Select(x => x.MonthLabel).ToArray();
-                        var values = dashBoardStateModel.MonthlyRevenues.Select(x => x.Revenue).ToArray();
+                        var labels = _dashBoardStateModel.MonthlyRevenues.Select(x => x.MonthLabel).ToArray();
+                        var values = _dashBoardStateModel.MonthlyRevenues.Select(x => x.Revenue).ToArray();
                         await _jsModule.InvokeVoidAsync("renderRevenueChart", labels, values);
                         break;
                     case "orders":
                         await _jsModule.InvokeVoidAsync("renderOrderStatusChart",
-                            dashBoardStateModel.CompletedOrders,
-                            dashBoardStateModel.PendingOrders + dashBoardStateModel.ProcessingOrders,
-                            dashBoardStateModel.ShippingOrders,
-                            dashBoardStateModel.CancelledOrders + dashBoardStateModel.ReturnedOrders);
+                            _dashBoardStateModel.CompletedOrders,
+                            _dashBoardStateModel.PendingOrders + _dashBoardStateModel.ProcessingOrders,
+                            _dashBoardStateModel.ShippingOrders,
+                            _dashBoardStateModel.CancelledOrders + _dashBoardStateModel.ReturnedOrders);
                         break;
                     case "warehouse":
-                        var catLabels = dashBoardStateModel.CategoryRevenues.Select(x => x.CategoryName).ToArray();
-                        var catValues = dashBoardStateModel.CategoryRevenues.Select(x => x.TotalRevenue).ToArray();
+                        var catLabels = _dashBoardStateModel.CategoryRevenues.Select(x => x.CategoryName).ToArray();
+                        var catValues = _dashBoardStateModel.CategoryRevenues.Select(x => x.TotalRevenue).ToArray();
                         await _jsModule.InvokeVoidAsync("renderCategoryChart", catLabels, catValues);
                         break;
                     case "customers":
                         await _jsModule.InvokeVoidAsync("renderCustomerChart",
-                            dashBoardStateModel.CustomersWithOrders,
-                            dashBoardStateModel.CustomersWithoutOrders);
+                            _dashBoardStateModel.CustomersWithOrders,
+                            _dashBoardStateModel.CustomersWithoutOrders);
                         break;
                 }
             }

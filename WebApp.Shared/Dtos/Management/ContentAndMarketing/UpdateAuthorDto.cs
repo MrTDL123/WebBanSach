@@ -1,12 +1,13 @@
 namespace WebApp.Shared.Dtos.Management.ContentAndMarketing
 {
     // Component dùng: SuaTacGia.razor (Admin - Content & Marketing)
-    public record UpdateAuthorDto(
-        int AuthorId,
-        string AuthorName,
-        string? Biography,
-        // Nếu null thì giữ ảnh cũ, nếu có giá trị thì thay ảnh mới
-        string? AvatarBase64,
-        string? AvatarFileName
-    );
+    public record UpdateAuthorDto
+    {
+        public int AuthorId { get; set; }
+        public string? AuthorName { get; set; }
+        public string? Biography { get; set; }
+        public bool IsActive { get; set; }
+
+        public UpdateAuthorDto() { }
+    }  
 }

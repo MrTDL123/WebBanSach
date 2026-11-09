@@ -14,70 +14,70 @@
         <h1 class="dashboard-title">Bảng Thống Kê & Phân Tích Hoạt Động (BI)</h1>
         <p class="dashboard-subtitle">Bấm vào từng thẻ chỉ số bên dưới để xem báo cáo chi tiết</p>
     </header>
-    @if (isLoading)
+    @if (_isLoading)
     {
         <div class="loading-state">
             <div class="spinner"></div>
             <p>Đang tổng hợp dữ liệu báo cáo...</p>
         </div>
     }
-    else if (dashBoardStateModel != null)
+    else if (_dashBoardStateModel != null)
     {
         <!-- ================= KHU VỰC 1: 4 THẺ KPI ĐÓNG VAI TRÒ LÀ NÚT CHỌN TAB ================= -->
         <section class="kpi-grid">
             <!-- 1. Tab Tài chính -->
-            <article class="kpi-card theme-revenue @(activeTab == "revenue" ? "active" : "")" @onclick='() => SelectTabAsync("revenue")'>
+            <article class="kpi-card theme-revenue @(_activeTab == "revenue" ? "active" : "")" @onclick='() => SelectTabAsync("revenue")'>
                 <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
                 <div class="kpi-info">
                     <span class="kpi-label">Tổng Doanh Thu</span>
-                    <strong class="kpi-value">@dashBoardStateModel.TotalRevenue.ToString("N0") ₫</strong>
+                    <strong class="kpi-value">@_dashBoardStateModel.TotalRevenue.ToString("N0") ₫</strong>
                     <div class="kpi-sub">
-                        <span>AOV: <strong>@dashBoardStateModel.AverageOrderValue.ToString("N0") ₫</strong></span>
-                        <span class="badge @(dashBoardStateModel.RevenueGrowthPercent >= 0 ? "badge-success" : "badge-danger")">
-                            @(dashBoardStateModel.RevenueGrowthPercent >= 0 ? "+" : "")@dashBoardStateModel.RevenueGrowthPercent% MoM
+                        <span>AOV: <strong>@_dashBoardStateModel.AverageOrderValue.ToString("N0") ₫</strong></span>
+                        <span class="badge @(_dashBoardStateModel.RevenueGrowthPercent >= 0 ? "badge-success" : "badge-danger")">
+                            @(_dashBoardStateModel.RevenueGrowthPercent >= 0 ? "+" : "")@_dashBoardStateModel.RevenueGrowthPercent% MoM
                         </span>
                     </div>
                 </div>
             </article>
             <!-- 2. Tab Vận hành & Đơn hàng -->
-            <article class="kpi-card theme-order @(activeTab == "orders" ? "active" : "")" @onclick='() => SelectTabAsync("orders")'>
+            <article class="kpi-card theme-order @(_activeTab == "orders" ? "active" : "")" @onclick='() => SelectTabAsync("orders")'>
                 <div class="kpi-icon"><i class="fa-solid fa-truck-fast"></i></div>
                 <div class="kpi-info">
                     <span class="kpi-label">Tổng Đơn Hàng</span>
-                    <strong class="kpi-value">@dashBoardStateModel.TotalOrders đơn</strong>
+                    <strong class="kpi-value">@_dashBoardStateModel.TotalOrders đơn</strong>
                     <div class="kpi-sub">
-                        <span class="text-success">Giao đạt: <strong>@dashBoardStateModel.OrderSuccessRate%</strong></span>
-                        <span class="text-warning">Chờ duyệt: <strong>@dashBoardStateModel.PendingOrders</strong></span>
+                        <span class="text-success">Giao đạt: <strong>@_dashBoardStateModel.OrderSuccessRate%</strong></span>
+                        <span class="text-warning">Chờ duyệt: <strong>@_dashBoardStateModel.PendingOrders</strong></span>
                     </div>
                 </div>
             </article>
             <!-- 3. Tab Kho bãi & Sản phẩm -->
-            <article class="kpi-card theme-warehouse @(activeTab == "warehouse" ? "active" : "")" @onclick='() => SelectTabAsync("warehouse")'>
+            <article class="kpi-card theme-warehouse @(_activeTab == "warehouse" ? "active" : "")" @onclick='() => SelectTabAsync("warehouse")'>
                 <div class="kpi-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
                 <div class="kpi-info">
                     <span class="kpi-label">Tồn Kho & Vốn</span>
-                    <strong class="kpi-value">@dashBoardStateModel.TotalStockQuantity cuốn</strong>
+                    <strong class="kpi-value">@_dashBoardStateModel.TotalStockQuantity cuốn</strong>
                     <div class="kpi-sub">
-                        <span>Đầu sách: <strong>@dashBoardStateModel.TotalProducts</strong> SKU</span>
-                        <span>Vốn: <strong>@dashBoardStateModel.TotalInventoryValue.ToString("N0") ₫</strong></span>
+                        <span>Đầu sách: <strong>@_dashBoardStateModel.TotalProducts</strong> SKU</span>
+                        <span>Vốn: <strong>@_dashBoardStateModel.TotalInventoryValue.ToString("N0") ₫</strong></span>
                     </div>
                 </div>
             </article>
             <!-- 4. Tab Khách hàng -->
-            <article class="kpi-card theme-customer @(activeTab == "customers" ? "active" : "")" @onclick='() => SelectTabAsync("customers")'>
+            <article class="kpi-card theme-customer @(_activeTab == "customers" ? "active" : "")" @onclick='() => SelectTabAsync("customers")'>
                 <div class="kpi-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
                 <div class="kpi-info">
                     <span class="kpi-label">Khách Hàng</span>
-                    <strong class="kpi-value">@dashBoardStateModel.TotalCustomers</strong>
+                    <strong class="kpi-value">@_dashBoardStateModel.TotalCustomers</strong>
                     <div class="kpi-sub">
-                        <span class="text-primary">Mới: <strong>+@dashBoardStateModel.NewCustomersThisMonth</strong></span>
-                        <span>Mua lại: <strong>@dashBoardStateModel.RepeatCustomerRate%</strong></span>
+                        <span class="text-primary">Mới: <strong>+@_dashBoardStateModel.NewCustomersThisMonth</strong></span>
+                        <span>Mua lại: <strong>@_dashBoardStateModel.RepeatCustomerRate%</strong></span>
                     </div>
                 </div>
             </article>
         </section>
         <!-- ================= KHU VỰC CHI TIẾT THAY ĐỔI THEO TAB ĐANG CHỌN ================= -->
-        @if (activeTab == "revenue")
+        @if (_activeTab == "revenue")
         {
             <!-- TAB 1: PHÂN TÍCH DOANH THU & TÀI CHÍNH -->
             <section class="detail-layout">
@@ -96,23 +96,23 @@
                     <div class="stat-summary-list">
                         <div class="stat-summary-item">
                             <span>Doanh thu tháng này</span>
-                            <strong class="text-primary">@dashBoardStateModel.RevenueThisMonth.ToString("N0") ₫</strong>
+                            <strong class="text-primary">@_dashBoardStateModel.RevenueThisMonth.ToString("N0") ₫</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Giá trị trung bình đơn (AOV)</span>
-                            <strong>@dashBoardStateModel.AverageOrderValue.ToString("N0") ₫</strong>
+                            <strong>@_dashBoardStateModel.AverageOrderValue.ToString("N0") ₫</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Tăng trưởng so tháng trước</span>
-                            <strong class="@(dashBoardStateModel.RevenueGrowthPercent >= 0 ? "text-success" : "text-danger")">
-                                @(dashBoardStateModel.RevenueGrowthPercent >= 0 ? "+" : "")@dashBoardStateModel.RevenueGrowthPercent%
+                            <strong class="@(_dashBoardStateModel.RevenueGrowthPercent >= 0 ? "text-success" : "text-danger")">
+                                @(_dashBoardStateModel.RevenueGrowthPercent >= 0 ? "+" : "")@_dashBoardStateModel.RevenueGrowthPercent%
                             </strong>
                         </div>
                     </div>
                 </article>
             </section>
         }
-        else if (activeTab == "orders")
+        else if (_activeTab == "orders")
         {
             <!-- TAB 2: VẬN HÀNH & ĐƠN HÀNG -->
             <section class="detail-layout">
@@ -131,25 +131,25 @@
                     <div class="stat-summary-list">
                         <div class="stat-summary-item">
                             <span>Giao thành công</span>
-                            <strong class="text-success">@dashBoardStateModel.CompletedOrders đơn (@dashBoardStateModel.OrderSuccessRate%)</strong>
+                            <strong class="text-success">@_dashBoardStateModel.CompletedOrders đơn (@_dashBoardStateModel.OrderSuccessRate%)</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Chờ duyệt / Đóng gói</span>
-                            <strong class="text-warning">@(dashBoardStateModel.PendingOrders + dashBoardStateModel.ProcessingOrders) đơn</strong>
+                            <strong class="text-warning">@(_dashBoardStateModel.PendingOrders + _dashBoardStateModel.ProcessingOrders) đơn</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Đang vận chuyển</span>
-                            <strong class="text-info">@dashBoardStateModel.ShippingOrders đơn</strong>
+                            <strong class="text-info">@_dashBoardStateModel.ShippingOrders đơn</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Hủy / Trả hàng</span>
-                            <strong class="text-danger">@(dashBoardStateModel.CancelledOrders + dashBoardStateModel.ReturnedOrders) đơn</strong>
+                            <strong class="text-danger">@(_dashBoardStateModel.CancelledOrders + _dashBoardStateModel.ReturnedOrders) đơn</strong>
                         </div>
                     </div>
                 </article>
             </section>
         }
-        else if (activeTab == "warehouse")
+        else if (_activeTab == "warehouse")
         {
             <!-- TAB 3: KHO BÃI & THỂ LOẠI SÁCH -->
             <section class="detail-layout">
@@ -169,49 +169,49 @@
                         <div class="stock-item theme-success">
                             <div class="stock-label">
                                 <span>Tồn kho an toàn (>5 cuốn)</span>
-                                <strong>@dashBoardStateModel.HealthyStockCount SKU</strong>
+                                <strong>@_dashBoardStateModel.HealthyStockCount SKU</strong>
                             </div>
                             <div class="progress-track">
-                                <div class="progress-fill" style="width: @(dashBoardStateModel.TotalProducts > 0 ? (dashBoardStateModel.HealthyStockCount * 100 / dashBoardStateModel.TotalProducts) : 0)%"></div>
+                                <div class="progress-fill" style="width: @(_dashBoardStateModel.TotalProducts > 0 ? (_dashBoardStateModel.HealthyStockCount * 100 / _dashBoardStateModel.TotalProducts) : 0)%"></div>
                             </div>
                         </div>
                         <div class="stock-item theme-warning">
                             <div class="stock-label">
                                 <span>Sắp hết hàng (1 - 5 cuốn)</span>
-                                <strong>@dashBoardStateModel.LowStockCount SKU</strong>
+                                <strong>@_dashBoardStateModel.LowStockCount SKU</strong>
                             </div>
                             <div class="progress-track">
-                                <div class="progress-fill" style="width: @(dashBoardStateModel.TotalProducts > 0 ? (dashBoardStateModel.LowStockCount * 100 / dashBoardStateModel.TotalProducts) : 0)%"></div>
+                                <div class="progress-fill" style="width: @(_dashBoardStateModel.TotalProducts > 0 ? (_dashBoardStateModel.LowStockCount * 100 / _dashBoardStateModel.TotalProducts) : 0)%"></div>
                             </div>
                         </div>
                         <div class="stock-item theme-danger">
                             <div class="stock-label">
                                 <span>Đã hết hàng (0 cuốn)</span>
-                                <strong>@dashBoardStateModel.OutOfStockCount SKU</strong>
+                                <strong>@_dashBoardStateModel.OutOfStockCount SKU</strong>
                             </div>
                             <div class="progress-track">
-                                <div class="progress-fill" style="width: @(dashBoardStateModel.TotalProducts > 0 ? (dashBoardStateModel.OutOfStockCount * 100 / dashBoardStateModel.TotalProducts) : 0)%"></div>
+                                <div class="progress-fill" style="width: @(_dashBoardStateModel.TotalProducts > 0 ? (_dashBoardStateModel.OutOfStockCount * 100 / _dashBoardStateModel.TotalProducts) : 0)%"></div>
                             </div>
                         </div>
                     </div>
                     <div class="distribution-grid mt-3">
                         <div class="stat-mini">
                             <span class="stat-mini-label">Sách thương mại</span>
-                            <strong class="stat-mini-value">@dashBoardStateModel.BookDistribution.CommercialBookCount</strong>
+                            <strong class="stat-mini-value">@_dashBoardStateModel.BookDistribution.CommercialBookCount</strong>
                         </div>
                         <div class="stat-mini">
                             <span class="stat-mini-label">Sách 0 đồng</span>
-                            <strong class="stat-mini-value">@dashBoardStateModel.BookDistribution.FreeBookCount</strong>
+                            <strong class="stat-mini-value">@_dashBoardStateModel.BookDistribution.FreeBookCount</strong>
                         </div>
                         <div class="stat-mini">
                             <span class="stat-mini-label">Sách ủng hộ</span>
-                            <strong class="stat-mini-value">@dashBoardStateModel.BookDistribution.DonationBookCount</strong>
+                            <strong class="stat-mini-value">@_dashBoardStateModel.BookDistribution.DonationBookCount</strong>
                         </div>
                     </div>
                 </article>
             </section>
         }
-        else if (activeTab == "customers")
+        else if (_activeTab == "customers")
         {
             <!-- TAB 4: PHÂN KHÚC KHÁCH HÀNG -->
             <section class="detail-layout">
@@ -230,19 +230,19 @@
                     <div class="stat-summary-list">
                         <div class="stat-summary-item">
                             <span>Khách mới trong tháng</span>
-                            <strong class="text-primary">+@dashBoardStateModel.NewCustomersThisMonth khách</strong>
+                            <strong class="text-primary">+@_dashBoardStateModel.NewCustomersThisMonth khách</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Tỷ lệ khách mua lại (>= 2 đơn)</span>
-                            <strong class="text-success">@dashBoardStateModel.RepeatCustomerRate%</strong>
+                            <strong class="text-success">@_dashBoardStateModel.RepeatCustomerRate%</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Đã từng mua hàng</span>
-                            <strong>@dashBoardStateModel.CustomersWithOrders khách</strong>
+                            <strong>@_dashBoardStateModel.CustomersWithOrders khách</strong>
                         </div>
                         <div class="stat-summary-item">
                             <span>Chưa phát sinh đơn</span>
-                            <strong class="text-muted">@dashBoardStateModel.CustomersWithoutOrders khách</strong>
+                            <strong class="text-muted">@_dashBoardStateModel.CustomersWithoutOrders khách</strong>
                         </div>
                     </div>
                 </article>

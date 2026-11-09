@@ -1,0 +1,78 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IContentClientService ContentClientService
+@inject ToastHelper Toast
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3>@(_isEdit ? "Cập nhật" : "Thêm mới") Tác giả</h3>
+                <button type="button" class="btn-close" @onclick="Close">&times;</button>
+            </header>
+            @if (_isEdit)
+            {
+                <EditForm Model="_updateAuthorModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="authorName">Tên tác giả <span class="text-danger">*</span></label>
+                            <InputText id="authorName" class="form-control" @bind-Value="_updateAuthorModel.AuthorName" placeholder="Nhập tên tác giả..." />
+                            <ValidationMessage For="() => _updateAuthorModel.AuthorName" class="text-error" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="biography">Tiểu sử</label>
+                            <InputTextArea id="biography" class="form-control" rows="4" @bind-Value="_updateAuthorModel.Biography" placeholder="Nhập tiểu sử tác giả..." />
+                            <ValidationMessage For="() => _updateAuthorModel.Biography" class="text-error" />
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled=@_isSubmitting>Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled=@_isSubmitting>
+                            @(_isSubmitting ? "Đang lưu..." : "Lưu thay đổi")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+            else
+            {
+                <EditForm Model="_createAuthorModel" OnValidSubmit="HandleSubmitAsync">
+                    <FluentValidator />
+                    <ValidationSummary />
+                    @if (!string.IsNullOrEmpty(_errorMessage))
+                    {
+                        <div class="alert alert-error">@_errorMessage</div>
+                    }
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="authorName">Tên tác giả <span class="text-danger">*</span></label>
+                            <InputText id="authorName" class="form-control" @bind-Value="_createAuthorModel.AuthorName" placeholder="Nhập tên tác giả..." />
+                            <ValidationMessage For="() => _createAuthorModel.AuthorName" class="text-error" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="biography">Tiểu sử</label>
+                            <InputTextArea id="biography" class="form-control" rows="4" @bind-Value="_createAuthorModel.Biography" placeholder="Nhập tiểu sử tác giả..." />
+                            <ValidationMessage For="() => _createAuthorModel.Biography" class="text-error" />
+                        </div>
+                    </div>
+
+                    <footer class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="Close" disabled=@_isSubmitting>Hủy bỏ</button>
+                        <button type="submit" class="btn btn-primary" disabled=@_isSubmitting>
+                            @(_isSubmitting ? "Đang lưu..." : "Tạo mới")
+                        </button>
+                    </footer>
+                </EditForm>
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,37 @@
+﻿@using WebApp.Shared.Enums
+@inject ToastHelper Toast
+@implements IDisposable
+
+<div class="toast-container-wrapper">
+    @foreach (var toast in _toasts)
+    {
+        <div class="toast-card toast-@toast.Level.ToString().ToLower() animate-slide-in"
+             @onclick="() => RemoveToast(toast.Id)">
+            <div class="toast-icon">
+                @switch (toast.Level)
+                {
+                    case ToastLevel.Success:
+                        <i class="fa-solid fa-circle-check"></i>
+                        break;
+                    case ToastLevel.Error:
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        break;
+                    case ToastLevel.Warning:
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        break;
+                    case ToastLevel.Info:
+                        <i class="fa-solid fa-circle-info"></i>
+                        break;
+                }
+            </div>
+            <div class="toast-body">
+                <div class="toast-title">@toast.Title</div>
+                <div class="toast-message">@toast.Message</div>
+            </div>
+            <button type="button" class="toast-close" @onclick:stopPropagation="true" @onclick="() => RemoveToast(toast.Id)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="toast-progress"></div>
+        </div>
+    }
+</div>

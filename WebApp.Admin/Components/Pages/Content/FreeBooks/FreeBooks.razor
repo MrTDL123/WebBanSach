@@ -1,0 +1,197 @@
+﻿@page "/management/content/freebooks"
+@using WebApp.Admin.Services.Interfaces
+@inject IContentClientService ContentClientService
+@attribute [Authorize(Roles = "Admin,ContentManager")]
+
+<div class="page-container">
+    <!-- Header trang -->
+    <header class="page-header">
+        <div class="header-title">
+            <h1>Tủ sách 0 đồng</h1>
+            <p class="subtitle">Quản lý danh sách sách quyên góp và trạng thái phân phát đến độc giả</p>
+        </div>
+        <div class="header-actions">
+            <a href="/management/content/freebooks/create" class="btn btn-primary">
+                <span class="icon">+</span> Thêm sách mới
+            </a>
+        </div>
+    </header>
+
+    <!-- Thanh lọc và tìm kiếm -->
+    <section class="filter-card">
+        <div class="filter-grid">
+            <div class="filter-item search-box">
+                <label for="searchInput">Tìm kiếm</label>
+                <input type="text" id="searchInput" class="form-input"
+                       placeholder="Nhập tên sách, tác giả..."
+                       @bind="_filter.SearchTerm" @bind:event="oninput" @onkeyup="HandleSearchKeyUp" />
+            </div>
+
+            <div class="filter-item">
+                <label for="statusSelect">Trạng thái</label>
+                <select id="statusSelect" class="form-select"
+                        value="@(_filter.IsActive.HasValue ? _filter.IsActive.Value.ToString().ToLower() : "")"
+                        @onchange="OnStatusChanged">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="true">Đang phân phát</option>
+                    <option value="false">Đã ẩn / Tạm dừng</option>
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="stockSelect">Tình trạng kho</label>
+                <select id="stockSelect" class="form-select"
+                        value="@(_filter.StockStatus ?? "")"
+                        @onchange="OnStockStatusChanged">
+                    <option value="">-- Tất cả --</option>
+                    <option value="available">Còn sách</option>
+                    <option value="empty">Đã hết sách</option>
+                </select>
+            </div>
+
+            <div class="filter-item">
+                <label for="sortSelect">Sắp xếp</label>
+                <select id="sortSelect" class="form-select"
+                        value="@(_filter.SortBy ?? "newest")"
+                        @onchange="OnSortByChanged">
+                    <option value="newest">Mới nhất</option>
+                    <option value="most_requested">Thỉnh nhiều nhất</option>
+                    <option value="most_donated">Được ủng hộ nhiều nhất</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bảng danh sách sách 0 đồng -->
+    <section class="table-card">
+        @if (_isLoading)
+        {
+            <div class="state-container">
+                <div class="spinner"></div>
+                <p>Đang tải danh sách sách 0 đồng...</p>
+            </div>
+        }
+        else if (_freeBookList == null || !_freeBookList.Any())
+        {
+            <div class="state-container empty-state">
+                <p class="empty-title">Không tìm thấy cuốn sách nào</p>
+                <p class="empty-desc">Thử thay đổi bộ lọc hoặc thêm sách mới vào tủ sách 0 đồng.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="col-image">Ảnh bìa</th>
+                            <th class="col-main">Thông tin sách</th>
+                            <th class="col-meta text-center">Tác giả</th>
+                            <th class="col-condition text-center">Tình trạng</th>
+                            <th class="col-qty text-center">Hiện có</th>
+                            <th class="col-qty text-center">Đã nhận</th>
+                            <th class="col-qty text-center">Đã thỉnh</th>
+                            <th class="col-status text-center">Trạng thái</th>
+                            <th class="col-actions text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var book in _freeBookList)
+                        {
+                            <tr>
+                                <td class="col-image">
+                                    <img src="@GetImageUrl(book.CoverImageUrl)" alt="@book.Title" class="book-thumb" />
+                                </td>
+                                <td class="col-main">
+                                    <span class="book-title">@book.Title</span>
+                                    <span class="book-id">Mã: #@book.FreeBookId</span>
+                                </td>
+                                <td class="col-meta">
+                                    <span class="book-author">@book.AuthorName</span>
+                                </td>
+                                <td class="col-condition">
+                                    <span class="condition-text">@book.Condition</span>
+                                </td>
+                                <td class="col-qty">
+                                    <span class="qty-count @(book.AvailableQty == 0 ? "qty-empty" : "")">
+                                        @book.AvailableQty
+                                    </span>
+                                </td>
+                                <td class="col-qty">
+                                    <span class="qty-count">@book.TotalDonatedQty</span>
+                                </td>
+                                <td class="col-qty">
+                                    <span class="qty-count">@book.TotalRequestedQty</span>
+                                </td>
+                                <td class="col-status">
+                                    @if (book.IsActive)
+                                    {
+                                        <span class="badge badge-success">Đang phân phát</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-secondary">Đã ẩn</span>
+                                    }
+                                </td>
+                                <td class="col-actions">
+                                    <div class="action-buttons">
+                                        <button class="btn-icon btn-view" title="Xem chi tiết" @onclick="() => OpenDetailModal(book.FreeBookId)">
+                                            Xem
+                                        </button>
+                                        <a href="/management/content/freebooks/edit/@book.FreeBookId" class="btn-icon btn-edit" title="Chỉnh sửa">
+                                            Sửa
+                                        </a>
+                                        <button class="btn-icon btn-delete" title="Xóa" @onclick="() => OpenDeleteModal(book)">
+                                            Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Thanh phân trang -->
+            <footer class="pagination-wrapper">
+                <div class="pagination-info">
+                    Hiển thị <strong>@GetDisplayStart()</strong> - <strong>@GetDisplayEnd()</strong> trên tổng số <strong>@_totalItems</strong> cuốn sách
+                </div>
+
+                <div class="pagination-controls">
+                    <div class="page-size-selector">
+                        <label for="pageSize">Hiển thị:</label>
+                        <select id="pageSize" class="form-select-sm" value="@_filter.PageSize" @onchange="OnPageSizeChanged">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                    </div>
+
+                    <div class="page-buttons">
+                        <button class="btn-page" disabled="@(_filter.PageIndex <= 1)" @onclick="() => ChangePageAsync(_filter.PageIndex - 1)">
+                            &laquo;
+                        </button>
+
+                        @for (int i = 1; i <= _totalPages; i++)
+                        {
+                            var pageNum = i;
+                            <button class="btn-page @(pageNum == _filter.PageIndex ? "active" : "")"
+                                    @onclick="() => ChangePageAsync(pageNum)">
+                                @pageNum
+                            </button>
+                        }
+
+                        <button class="btn-page" disabled="@(_filter.PageIndex >= _totalPages)" @onclick="() => ChangePageAsync(_filter.PageIndex + 1)">
+                            &raquo;
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        }
+    </section>
+</div>
+
+<!-- Modal xem chi tiết và Modal xóa được nhúng độc lập -->
+<FreeBookDetailModal @ref="_detailModal" />
+<DeleteFreeBookModal @ref="_deleteModal" OnDeleted="LoadFreeBooksAsync" />

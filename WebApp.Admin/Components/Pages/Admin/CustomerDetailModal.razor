@@ -1,0 +1,64 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@inject IAdminClientService AdminClientService
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content modal-lg">
+            <header class="modal-header">
+                <h3>Chi tiết tài khoản Khách hàng</h3>
+                <button type="button" class="btn-close" @onclick="Close">&times;</button>
+            </header>
+
+            <div class="modal-body">
+                @if (_isLoading)
+                {
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="mt-2 text-muted">Đang tải thông tin khách hàng...</p>
+                    </div>
+                }
+                else if (_customer != null)
+                {
+                    <div class="profile-header-card">
+                        <img src="/images/default-avatar.png" class="avatar-large" alt="Avatar" />
+                        <div class="profile-info">
+                            <h4>@_customer.FullName</h4>
+                            <p>@_customer.Email</p>
+                            <span class="badge @(_customer.IsActive ? "badge-success" : "badge-danger") mt-1">
+                                @(_customer.IsActive ? "Đang hoạt động" : "Tài khoản bị khóa")
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Số điện thoại</label>
+                            <span>@(_customer.PhoneNumber ?? "Chưa cập nhật")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Ngày đăng ký</label>
+                            <span>@_customer.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Tổng số đơn hàng</label>
+                            <span class="font-semibold text-primary">@_customer.TotalOrders đơn hàng</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Mã tài khoản (User ID)</label>
+                            <span class="text-muted" style="font-size: 0.85rem;">@_customer.UserId</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-error">@(_errorMessage ?? "Không tìm thấy thông tin khách hàng.")</div>
+                }
+            </div>
+
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Close">Đóng</button>
+            </footer>
+        </div>
+    </div>
+}

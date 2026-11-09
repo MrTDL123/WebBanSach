@@ -1,0 +1,110 @@
+﻿@page "/management/content/freebooks/create"
+@using WebApp.Shared.Dtos.Management.ContentAndMarketing
+@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IContentClientService ContentClientService
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin,ContentManager")]
+
+<div class="page-container">
+    <header class="page-header">
+        <div class="header-title">
+            <h1>Thêm sách vào tủ sách 0 đồng</h1>
+            <p class="subtitle">Nhập thông tin để đăng ký cuốn sách mới vào chương trình quyên góp</p>
+        </div>
+        <div class="header-actions">
+            <a href="/management/content/freebooks" class="btn btn-secondary">Quay lại danh sách</a>
+        </div>
+    </header>
+
+    <section class="form-card">
+        <EditForm Model="@_createModel" OnValidSubmit="HandleSubmitAsync" class="freebook-form">
+            <FluentValidator />
+            <ValidationSummary />
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="alert alert-error">@_errorMessage</div>
+            }
+
+            <div class="form-grid">
+                <!-- Cột trái: Thông tin chính -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="title">Tên sách <span class="required">*</span></label>
+                        <InputText id="title" @bind-Value="_createModel.Title" class="form-control" placeholder="Nhập tên sách..." />
+                        <ValidationMessage For="@(() => _createModel.Title)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="authorName">Tên tác giả <span class="required">*</span></label>
+                        <InputText id="authorName" @bind-Value="_createModel.AuthorName" class="form-control" placeholder="Nhập tên tác giả..." />
+                        <ValidationMessage For="@(() => _createModel.AuthorName)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="condition">Tình trạng sách <span class="required">*</span></label>
+                        <InputText id="condition" @bind-Value="_createModel.Condition" class="form-control" placeholder="VD: Còn mới 90%, chỉ bị bong gáy..." />
+                        <ValidationMessage For="@(() => _createModel.Condition)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="source">Nguồn gốc sách</label>
+                        <InputText id="source" @bind-Value="_createModel.Source" class="form-control" placeholder="VD: Nhà hảo tâm quyên góp, Quỹ tài trợ ABC..." />
+                        <ValidationMessage For="@(() => _createModel.Source)" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Mô tả nội dung sách</label>
+                        <InputTextArea id="description" @bind-Value="_createModel.Description" class="form-control text-area" rows="5" placeholder="Giới thiệu tóm tắt nội dung sách..." />
+                        <ValidationMessage For="@(() => _createModel.Description)" />
+                    </div>
+                </div>
+
+                <!-- Cột phải: Trạng thái và ảnh bìa -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="isActive">Trạng thái</label>
+                        <InputSelect id="isActive" @bind-Value="_createModel.IsActive" class="form-control">
+                            <option value="true">Đang phân phát (Hiển thị trên Website)</option>
+                            <option value="false">Ẩn tạm thời</option>
+                        </InputSelect>
+                    </div>
+
+                    <div class="info-note">
+                        <p>📦 Số lượng sách sẵn có ban đầu sẽ là <strong>0</strong>. Kho sẽ cập nhật khi có quyên góp được nhận vào.</p>
+                    </div>
+
+                    <!-- Upload ảnh bìa -->
+                    <div class="form-group">
+                        <label>Hình ảnh bìa sách</label>
+                        <div class="image-upload-box">
+                            @if (!string.IsNullOrEmpty(_previewCoverImage))
+                            {
+                                <div class="image-preview">
+                                    <img src="@_previewCoverImage" alt="Preview" />
+                                    <button type="button" class="btn-remove-img" @onclick="RemoveCoverImage">✕</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <label for="coverImageInput" class="upload-label">
+                                    <span class="upload-icon">📷</span>
+                                    <span>Tải ảnh bìa sách lên</span>
+                                    <small>PNG, JPG, WEBP tối đa 5MB</small>
+                                </label>
+                            }
+                            <InputFile id="coverImageInput" OnChange="HandleCoverImageSelected" accept="image/*" class="file-input-hidden" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="form-actions">
+                <a href="/management/content/freebooks" class="btn btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                    @(_isSubmitting ? "Đang lưu..." : "Lưu & Thêm vào tủ sách")
+                </button>
+            </footer>
+        </EditForm>
+    </section>
+</div>

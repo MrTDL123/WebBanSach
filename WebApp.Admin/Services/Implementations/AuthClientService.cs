@@ -17,22 +17,22 @@ namespace WebApp.Admin.Services.Implementations
         {
         }
 
-        // <summary>
-        // Xử lý đăng nhập, đăng xuất cho management và lấy thông tin người dùng hiện tại
-        // </summary>
+        /// <summary>
+        /// Xử lý đăng nhập, đăng xuất cho management và lấy thông tin người dùng hiện tại
+        /// </summary>
         public Task<ApiResponse<AuthResponseDto>> LoginAsync(AdminLoginDto loginDto)
         { 
             return PostAsJsonAsync<AdminLoginDto, AuthResponseDto>("api/auth/admin-login", loginDto); 
         }
 
         public Task<ApiResponse<AuthResponseDto>> GetCurrentUserAsync()
-        { 
+        {
             return GetAsync<AuthResponseDto>("api/auth/admin-me");
         }
 
-        // <summary>
-        // Xử lý Forgot Password, Verify OTP và Reset Password cho management
-        // </summary>
+        /// <summary>
+        /// Xử lý Forgot Password, Verify OTP và Reset Password cho management
+        /// </summary>
         public Task<ApiResponse<bool>> ForgotPasswordAsync(AdminForgotPasswordDto dto) 
         { 
             return PostAsJsonAsync<AdminForgotPasswordDto, bool>("api/auth/admin-forgot-password", dto);
@@ -48,9 +48,9 @@ namespace WebApp.Admin.Services.Implementations
             return PostAsJsonAsync<AdminResetPasswordDto, bool>("api/auth/admin-reset-password", dto);
         }
 
-        // <summary>
-        // Xử lý lấy thông tin hồ sơ người dùng, cập nhật hồ sơ và đổi mật khẩu cho management
-        // </summary>
+        /// <summary>
+        /// Xử lý lấy thông tin hồ sơ người dùng, cập nhật hồ sơ và đổi mật khẩu cho management
+        /// </summary>
 
         public Task<ApiResponse<UserProfileDto>> GetUserProfileAsync()
         {

@@ -1,0 +1,169 @@
+﻿@page "/management/content/products/create"
+@using WebApp.Shared.Dtos.Management.ContentAndMarketing
+@using WebApp.Admin.Services.Interfaces
+@using WebApp.Admin.Validation
+@inject IContentClientService ContentClientService
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin,ContentManager")]
+
+<div class="page-container">
+    <header class="page-header">
+        <div class="header-title">
+            <h1>Thêm sách mới</h1>
+            <p class="subtitle">Nhập thông tin chi tiết để xuất bản sản phẩm lên hệ thống</p>
+        </div>
+        <div class="header-actions">
+            <a href="/management/content/products" class="btn btn-secondary">Quay lại danh sách</a>
+        </div>
+    </header>
+
+    <section class="form-card">
+        <EditForm Model="@_createProductModel" OnValidSubmit="HandleSubmitAsync" class="product-form">
+            <FluentValidator />
+            <ValidationSummary/>
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <div class="alert alert-error">@_errorMessage</div>
+            }
+
+            <div class="form-grid">
+                <!-- Cột trái: Thông tin chính -->
+                <div class="form-column">
+                    <div class="form-group">
+                        <label for="title">Tên sách <span class="required">*</span></label>
+                        <InputText id="title" @bind-Value="_createProductModel.Title" class="form-control" placeholder="Nhập tên sách..." />
+                        <ValidationMessage For="@(() => _createProductModel.Title)" />
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label for="categoryId">Danh mục <span class="required">*</span></label>
+                            <InputSelect id="categoryId" @bind-Value="_createProductModel.CategoryId" class="form-control">
+                                <option value="0">-- Chọn danh mục --</option>
+                                @foreach (var cat in _categories)
+                                {
+                                    <option value="@cat.CategoryId">@cat.CategoryName</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => _createProductModel.CategoryId)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="authorId">Tác giả <span class="required">*</span></label>
+                            <InputSelect id="authorId" @bind-Value="_createProductModel.AuthorId" class="form-control">
+                                <option value="0">-- Chọn tác giả --</option>
+                                @foreach (var aut in _authors)
+                                {
+                                    <option value="@aut.AuthorId">@aut.AuthorName</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => _createProductModel.AuthorId)" />
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label for="publisherId">Nhà xuất bản <span class="required">*</span></label>
+                            <InputSelect id="publisherId" @bind-Value="_createProductModel.PublisherId" class="form-control">
+                                <option value="0">-- Chọn NXB --</option>
+                                @foreach (var pub in _publishers)
+                                {
+                                    <option value="@pub.PublisherId">@pub.PublisherName</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => _createProductModel.PublisherId)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="supplier">Nhà cung cấp / Đối tác</label>
+                            <InputText id="supplier" @bind-Value="_createProductModel.SupplierName" class="form-control" placeholder="Tên nhà cung cấp..." />
+                            <ValidationMessage For="@(() => _createProductModel.SupplierName)" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Mô tả nội dung sách</label>
+                        <InputTextArea id="description" @bind-Value="_createProductModel.Description" class="form-control text-area" rows="6" placeholder="Giới thiệu tóm tắt nội dung sách..." />
+                        <ValidationMessage For="@(() => _createProductModel.Description)" />
+                    </div>
+                </div>
+
+                <!-- Cột phải: Giá, kho và hình ảnh -->
+                <div class="form-column">
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label for="price">Giá gốc (đ) <span class="required">*</span></label>
+                            <InputNumber id="price" @bind-Value="_createProductModel.Price" class="form-control" />
+                            <ValidationMessage For="@(() => _createProductModel.Price)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="discount">Giảm giá (%)</label>
+                            <InputNumber id="discount" @bind-Value="_createProductModel.DiscountPercent" class="form-control" />
+                            <ValidationMessage For="@(() => _createProductModel.DiscountPercent)" />
+                        </div>
+
+                        @* <div class="form-group">
+                            <label for="stock">Số lượng tồn kho <span class="required">*</span></label>
+                            <InputNumber id="stock" @bind-Value="_createProductModel.StockQuantity" class="form-control" />
+                            <ValidationMessage For="@(() => _createProductModel.StockQuantity)" />
+                        </div> *@
+                    </div>
+
+                    <!-- Upload ảnh bìa chính -->
+                    <div class="form-group">
+                        <label>Hình ảnh bìa chính</label>
+                        <div class="image-upload-box">
+                            @if (!string.IsNullOrEmpty(_previewMainImage))
+                            {
+                                <div class="image-preview">
+                                    <img src="@_previewMainImage" alt="Preview" />
+                                    <button type="button" class="btn-remove-img" @onclick="RemoveMainImage">✕</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <label for="mainImageInput" class="upload-label">
+                                    <span class="upload-icon">📷</span>
+                                    <span>Tải ảnh bìa sách up lên</span>
+                                    <small>PNG, JPG, WEBP tối đa 5MB</small>
+                                </label>
+                            }
+                            <InputFile id="mainImageInput" OnChange="HandleMainImageSelected" accept="image/*" class="file-input-hidden" />
+                        </div>
+                    </div>
+
+                    <!-- Khu vực ảnh phụ không giới hạn -->
+                    <div class="gallery-section">
+                        <p class="gallery-section-title">Ảnh phụ (Album sản phẩm)</p>
+                        <p class="gallery-section-subtitle">Thêm nhiều ảnh để khách hàng xem chi tiết sách. Có thể thêm không giới hạn số lượng.</p>
+                        <div class="gallery-grid">
+                            @for (int i = 0; i < _galleryImages.Count; i++)
+                            {
+                                var index = i;
+                                <div class="gallery-item">
+                                    <img src="@_galleryImages[index].Base64Data" alt="Ảnh phụ @(index + 1)" />
+                                    <button type="button" class="btn-remove-gallery" @onclick="() => RemoveGalleryImage(index)">✕</button>
+                                </div>
+                            }
+                            <!-- Ô thêm ảnh mới -->
+                            <label for="galleryInput" class="gallery-add-btn">
+                                <span class="gallery-add-icon">+</span>
+                                <span>Thêm ảnh</span>
+                            </label>
+                            <InputFile id="galleryInput" OnChange="HandleGalleryImagesSelected"
+                                       accept="image/*" multiple class="file-input-hidden" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="form-actions">
+                <a href="/management/content/products" class="btn btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                    @(_isSubmitting ? "Đang lưu..." : "Lưu & Xuất bản")
+                </button>
+            </footer>
+        </EditForm>
+    </section>
+</div>

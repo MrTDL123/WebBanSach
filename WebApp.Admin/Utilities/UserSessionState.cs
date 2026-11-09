@@ -6,5 +6,10 @@
     public class UserSessionState
     {
         public string? AuthCookieValue { get; set; }
+
+        public void Clear()
+        {
+            AuthCookieValue = null;
+        }
     }
 }

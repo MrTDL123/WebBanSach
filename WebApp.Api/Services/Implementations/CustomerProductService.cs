@@ -334,8 +334,8 @@ namespace WebApp.Api.Services.Implementations
                     a.AuthorId,
                     a.AuthorName,
                     a.Biography,
-                    null,
-                    a.Products.Count(p => p.IsActive)
+                    a.Products.Count(p => p.IsActive),
+                    a.IsActive
                 ))
                 .ToListAsync();
 
@@ -493,10 +493,10 @@ namespace WebApp.Api.Services.Implementations
 
         private static List<AuthorDto> GetFallbackAuthors() => new()
         {
-            new AuthorDto(1, "Nguyễn Du", "Đại thi hào dân tộc Việt Nam, Danh nhân văn hóa thế giới", "/images/authors/nguyen-du.jpg", 5),
-            new AuthorDto(2, "Ngô Sĩ Liên", "Nhà sử học lỗi lạc thời Lê sơ, tác giả Đại Việt Sử Ký Toàn Thư", "/images/authors/ngo-si-lien.jpg", 3),
-            new AuthorDto(3, "Vũ Trọng Phụng", "Cây bút trào phúng bậc thầy của văn học hiện thực Việt Nam", "/images/authors/vu-trong-phung.jpg", 4),
-            new AuthorDto(4, "Nam Cao", "Nhà văn hiện thực xuất sắc với ngòi bút sắc lạnh giàu nhân đạo", "/images/authors/nam-cao.jpg", 6)
+            new AuthorDto(1, "Nguyễn Du", "Đại thi hào dân tộc Việt Nam, Danh nhân văn hóa thế giới", 5, true),
+            new AuthorDto(2, "Ngô Sĩ Liên", "Nhà sử học lỗi lạc thời Lê sơ, tác giả Đại Việt Sử Ký Toàn Thư", 3, true),
+            new AuthorDto(3, "Vũ Trọng Phụng", "Cây bút trào phúng bậc thầy của văn học hiện thực Việt Nam",4, true),
+            new AuthorDto(4, "Nam Cao", "Nhà văn hiện thực xuất sắc với ngòi bút sắc lạnh giàu nhân đạo", 6, true)
         };
 
         private static List<CategoryDto> GetFallbackCategories() => new()

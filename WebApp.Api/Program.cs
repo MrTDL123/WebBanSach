@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using System.Security.Claims;
 using WebApp.Api.Data;
 using WebApp.Api.Endpoints;
 using WebApp.Api.Entities;
@@ -123,6 +124,24 @@ builder.Services.ConfigureApplicationCookie(options =>
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
         return Task.CompletedTask;
     };
+
+    options.Events.OnValidatePrincipal = async context =>
+    {
+        var user = context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!string.IsNullOrEmpty(user))
+        {
+            var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<User>>();
+            var dbUser = await userManager.FindByIdAsync(user);
+
+            // ✅ Kiểm tra SecurityStamp - nếu không khớp = cookie bị thay đổi/hết hạn
+            var securityStamp = context.Principal?.FindFirst("AspNet.Identity.SecurityStamp")?.Value;
+            if (dbUser == null || dbUser.SecurityStamp != securityStamp)
+            {
+                context.RejectPrincipal(); // ← Xóa cache, reject cookie cũ
+            }
+        }
+    };
 });
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
@@ -210,7 +229,13 @@ builder.Services.AddScoped<ICustomerCartService, CustomerCartService>();
 builder.Services.AddScoped<ICustomerReturnService, CustomerReturnService>();
 builder.Services.AddScoped<ICustomerAddressService, CustomerAddressService>();
 builder.Services.AddScoped<ICustomerOrderService, CustomerOrderService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+
+//Trong cùng 1 HTTP Request (ví dụ: khi người dùng bấm Lưu sách gồm 1 ảnh bìa + 5 ảnh phụ),
+//chỉ có duy nhất 1 đối tượng FileStorageService được tạo ra và dùng chung cho toàn bộ request đó.
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 
 // Thêm Hub để cập nhập các update từ Admin
 builder.Services.AddSignalR();
@@ -262,6 +287,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors(AllowBlazorClientsPolicy);

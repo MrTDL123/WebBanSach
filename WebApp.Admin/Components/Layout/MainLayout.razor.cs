@@ -50,12 +50,6 @@ namespace WebApp.Admin.Components.Layout
                     avatarUrl = $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(userName)}&background=E31837&color=fff";
                 }
             }
-            else
-            {
-                userName = "N/A";
-                userRole = "N/A";
-                avatarUrl = string.Empty;
-            }
         }
 
         private void ToggleProfileDropdown()

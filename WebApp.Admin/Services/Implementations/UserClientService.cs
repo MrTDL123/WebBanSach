@@ -15,9 +15,9 @@ namespace WebApp.Admin.Services.Implementations
             : base(httpClient, userSessionState, httpContextAccessor)
         {
         }
-        // <summary>
-        // Xử lý lấy, sửa thông tin người dùng và mật khẩu trang thông tin cá nhân
-        // </summary>
+        /// <summary>
+        /// Xử lý lấy, sửa thông tin người dùng và mật khẩu trang thông tin cá nhân
+        /// </summary>
         public Task<ApiResponse<UserProfileDto>> GetUserProfileAsync()
         {
             return GetAsync<UserProfileDto>("api/user/profile");

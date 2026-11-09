@@ -1,0 +1,27 @@
+/* CSS for BanUserModal component */
+
+.warning-box {
+    background-color: #fff3cd;
+    color: #664d03;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border-left: 3px solid #ffc107;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background-color: #bb2d3b;
+}
+
+.btn-danger:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}

@@ -9,21 +9,21 @@ using JSException = Microsoft.JSInterop.JSException;
 namespace WebApp.Admin.Components.Pages.Auth
 {
     [AllowAnonymous]
-    public partial class Login : IAsyncDisposable
+    public partial class Login
     {
         [CascadingParameter]
         private Task<AuthenticationState>? AuthStateTask { get; set; }
-
-        private AdminLoginDto loginModel = new();
-        private bool isSubmitting = false;
-        private bool rememberMe = false;
-        private bool showPwd { get; set; }
-        [SupplyParameterFromQuery]
-        public string? error { get; set; }
-        private string? errorMessage;
-        private List<string>? validationErrors;
-        private IJSObjectReference? _jsModule;
-        private void TogglePwd() => showPwd = !showPwd;
+        //: IAsyncDisposable
+        private AdminLoginDto _loginModel = new();
+        private bool _isSubmitting = false;
+        private bool _rememberMe = false;
+        private bool _showPwd { get; set; }
+        [SupplyParameterFromQuery(Name = "_error")]
+        public string Error { get; set; } = string.Empty;
+        private string _errorMessage;
+        private List<string> _validationErrors;
+        private IJSObjectReference _jsModule;
+        private void TogglePwd() => _showPwd = !_showPwd;
 
         // Cấu trúc hứng dữ liệu từ JS
         public class JsLoginResult
@@ -44,11 +44,11 @@ namespace WebApp.Admin.Components.Pages.Auth
                         await JSRuntime.InvokeVoidAsync("history.replaceState", null, "", "/management/login");
                     }
 
-                    var saveEmail = await JSRuntime.InvokeAsync<string?>("localStorage.getItem", "savedEmail");
+                    var saveEmail = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "savedEmail");
                     if (!string.IsNullOrWhiteSpace(saveEmail))
                     {
-                        loginModel = loginModel with { UsernameOrEmail = saveEmail };
-                        rememberMe = true;
+                        _loginModel.UsernameOrEmail = saveEmail;
+                        _rememberMe = true;
                         StateHasChanged();
                     }
                 }
@@ -61,9 +61,9 @@ namespace WebApp.Admin.Components.Pages.Auth
 
         protected override async Task OnInitializedAsync()
         {
-            if (!string.IsNullOrEmpty(error))
+            if (!string.IsNullOrEmpty(Error))
             {
-                errorMessage = Uri.UnescapeDataString(error);
+                _errorMessage = Uri.UnescapeDataString(Error);
             }
 
             var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
@@ -92,18 +92,18 @@ namespace WebApp.Admin.Components.Pages.Auth
 
         private async Task HandleSubmitAsync()
         {
-            isSubmitting = true;
-            errorMessage = null;
-            validationErrors = null;
+            _isSubmitting = true;
+            _errorMessage = null;
+            _validationErrors = null;
 
             try
             {
                 try
                 {
-                    if (rememberMe)
+                    if (_rememberMe)
                     {
                         // Lưu email vào localStorage
-                        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "savedEmail", loginModel.UsernameOrEmail);
+                        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "savedEmail", _loginModel.UsernameOrEmail);
                     }
                     else
                     {
@@ -111,31 +111,40 @@ namespace WebApp.Admin.Components.Pages.Auth
                         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "savedEmail");
                     }
                 }
-                catch(JSException) { }
+                catch (JSException) { }
 
                 // 1. Nạp module JS (Đường dẫn tương đối tính từ thư mục wwwroot/app root)
                 _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
                     "import", "./Components/Pages/Auth/Login.razor.js"); // Điều chỉnh đường dẫn đúng file của bạn
 
                 // 2. Gọi hàm 'submitLoginForm' được export từ module
-                var result = await _jsModule.InvokeAsync<JsLoginResult>("submitLoginForm", "nativeLoginForm");
+                var result = await _jsModule.InvokeAsync<JsLoginResult>("submitLoginForm", _loginModel);
 
                 if (result.Success)
                 {
+                    // Sau khi login thành công
+                    //if (AuthStateProvider is CustomAuthStateProvider customAuth)
+                    //{
+                    //    // Refresh lại auth state từ API
+                    //    await customAuth.RefreshAuthenticationStateAsync();
+                    //}
+                    UserSessionState.Clear();
+                    Console.WriteLine($"[LOGIN SUBMIT] Sổ ID: {UserSessionState.GetHashCode()} | Cookie hiện tại trong sổ: {UserSessionState.AuthCookieValue?.Substring(0, 15)}...");
+
                     Navigation.NavigateTo("/management/dashboard", forceLoad: true);
                 }
                 else
                 {
-                    errorMessage = result.Message;
+                    _errorMessage = result.Message;
                 }
             }
             catch (Exception ex)
             {
-                errorMessage = $"Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại. [{ex.Message}]";
+                _errorMessage = "Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại.";
             }
             finally
             {
-                isSubmitting = false;
+                _isSubmitting = false;
             }
         }
 

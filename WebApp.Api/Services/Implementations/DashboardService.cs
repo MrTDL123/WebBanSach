@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebApp.Api.Data;
+using WebApp.Api.Entities;
 using WebApp.Api.Services.Interfaces;
 using WebApp.Shared.Dtos.Common;
 using WebApp.Shared.Dtos.CustomerDtos.Order;
@@ -11,9 +13,17 @@ namespace WebApp.Api.Services.Implementations
     public class DashboardService : IDashboardService
     {
         private readonly AppDbContext _context;
-        public DashboardService(AppDbContext context)
+        private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
+        public DashboardService(
+            AppDbContext context, 
+            UserManager<User> userManager,
+            RoleManager<Role> roleManager
+        )
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<ApiResponse<DashboardStatsDto>> GetDashboardStatsAsync()
@@ -68,11 +78,21 @@ namespace WebApp.Api.Services.Implementations
                 var outOfStockCount = await _context.Products.CountAsync(p => p.StockQuantity == 0);
 
                 // 4. KHÁCH HÀNG & PHÂN KHÚC
-                var totalCustomers = await _context.Users.CountAsync();
-                var newCustomersThisMonth = await _context.Users.CountAsync(u => u.CreatedAt >= firstDayThisMonth);
+                var customerUserIds = from ur in _context.UserRoles
+                                      join r in _roleManager.Roles on ur.RoleId equals r.Id
+                                      where r.Name == "Customer"
+                                      select ur.UserId;
+
+                var customersQuery = _userManager.Users
+                    .AsNoTracking()
+                    .Where(u => customerUserIds.Contains(u.Id));
+                var totalCustomers = await customersQuery.CountAsync();
+
+                var newCustomersThisMonth = await customersQuery.CountAsync(u => u.CreatedAt >= firstDayThisMonth);
 
                 // Thống kê khách đã mua hàng vs chưa mua hàng
                 var customerOrderCounts = await _context.Orders
+                    .Where(c => customerUserIds.Contains(c.UserId))
                     .GroupBy(o => o.UserId)
                     .Select(g => new { UserId = g.Key, Count = g.Count() })
                     .ToListAsync();

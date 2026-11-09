@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject IJSRuntime JSRuntime
+@inject UserSessionState UserSessionState
 
 <AuthorizeView>
     <Authorized>
@@ -174,3 +175,4 @@
         @Body
     </NotAuthorized>
 </AuthorizeView>
+<ToastContainer />

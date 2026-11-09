@@ -60,6 +60,15 @@ namespace WebApp.Admin.Auth
         }
 
         /// <summary>
+        /// Làm mới lại toàn bộ thông tin đăng nhập và quyền hạn từ API
+        /// </summary>
+        public async Task RefreshAuthenticationStateAsync()
+        {
+            var authState = await GetAuthenticationStateAsync();
+            NotifyAuthenticationStateChanged(Task.FromResult(authState));
+        }
+
+        /// <summary>
         /// Thông báo Blazor UI cập nhập lại dựa trạng thái Đăng nhập/Đăng xuất
         /// </summary>
         public void NotifyUserAuthentication(AuthResponseDto userDto)

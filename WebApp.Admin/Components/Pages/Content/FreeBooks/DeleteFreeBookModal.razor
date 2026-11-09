@@ -1,0 +1,30 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@inject IContentClientService ContentClientService
+
+@if (_isOpen && _book != null)
+{
+    <div class="modal-backdrop">
+        <div class="modal-box">
+            <header class="modal-header">
+                <h3>Xác nhận xóa sách</h3>
+                <button type="button" class="btn-close" @onclick="Close">✕</button>
+            </header>
+
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa cuốn sách <strong>#@_book.FreeBookId - @_book.Title</strong> khỏi tủ sách 0 đồng?</p>
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="alert alert-error">@_errorMessage</div>
+                }
+                <p class="text-danger-warning">Lưu ý: Thao tác này không thể hoàn tác!</p>
+            </div>
+
+            <footer class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Close" disabled="@_isDeleting">Hủy bỏ</button>
+                <button type="button" class="btn btn-danger" disabled="@_isDeleting" @onclick="ExecuteDeleteAsync">
+                    @(_isDeleting ? "Đang xóa..." : "Đồng ý Xóa")
+                </button>
+            </footer>
+        </div>
+    </div>
+}

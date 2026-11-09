@@ -9,6 +9,7 @@ namespace WebApp.Shared.Dtos.Common
         decimal DiscountPercent,
         decimal MinOrderAmount,
         decimal MaxDiscountAmount,
+        int TotalUsageLimit,
         int RemainingUsage,
         DateTime ExpiredAt,
         bool IsActive

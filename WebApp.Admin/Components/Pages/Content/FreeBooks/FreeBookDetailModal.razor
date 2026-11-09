@@ -1,0 +1,157 @@
+﻿@using WebApp.Admin.Services.Interfaces
+@inject IContentClientService ContentClientService
+
+@if (_isOpen)
+{
+    <div class="modal-backdrop" @onclick="Close">
+        <div class="modal-box modal-box-lg" @onclick:stopPropagation="true">
+            <header class="modal-header">
+                <h3>Chi tiết sách 0 đồng</h3>
+                <button type="button" class="btn-close" @onclick="Close">✕</button>
+            </header>
+
+            <div class="modal-body detail-body">
+                @if (_isLoading)
+                {
+                    <div class="state-container">
+                        <div class="spinner"></div>
+                        <p>Đang tải thông tin chi tiết...</p>
+                    </div>
+                }
+                else if (_detailBook != null)
+                {
+                    <!-- Thông tin tổng quan -->
+                    <section class="detail-overview">
+                        <img src="@GetImageUrl(_detailBook.CoverImageUrl)" alt="@_detailBook.Title" class="detail-cover" />
+                        <div class="detail-info">
+                            <h4 class="book-title-heading">@_detailBook.Title</h4>
+                            <p class="detail-field"><strong>Tác giả:</strong> @_detailBook.AuthorName</p>
+                            <p class="detail-field"><strong>Tình trạng sách:</strong> @_detailBook.Condition</p>
+                            <p class="detail-field"><strong>Nguồn gốc:</strong> @(_detailBook.Source ?? "Không rõ")</p>
+                            <p class="detail-field">
+                                <strong>Trạng thái:</strong>
+                                @if (_detailBook.IsActive)
+                                {
+                                    <span class="badge badge-success">Đang phân phát</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Đã ẩn</span>
+                                }
+                            </p>
+                            <div class="detail-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value @(_detailBook.AvailableQty == 0 ? "stat-empty" : "stat-ok")">@_detailBook.AvailableQty</span>
+                                    <span class="stat-label">Sẵn có</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">@_detailBook.TotalDonatedQty</span>
+                                    <span class="stat-label">Đã nhận quyên góp</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">@_detailBook.TotalRequestedQty</span>
+                                    <span class="stat-label">Đã tặng</span>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(_detailBook.Description))
+                            {
+                                <p class="detail-desc">@_detailBook.Description</p>
+                            }
+                            <p class="detail-meta">Ngày thêm: @_detailBook.CreatedAt.ToString("dd/MM/yyyy") | Cập nhật: @_detailBook.UpdatedAt.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </section>
+
+                    <!-- Lịch sử quyên góp -->
+                    <section class="detail-history">
+                        <h4>Lịch sử nhận quyên góp (@_detailBook.DonationHistories.Count đợt)</h4>
+                        @if (!_detailBook.DonationHistories.Any())
+                        {
+                            <p class="history-empty">Chưa có lịch sử quyên góp nào.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đợt</th>
+                                            <th>Người quyên góp</th>
+                                            <th>Số điện thoại</th>
+                                            <th>Số lượng nhận</th>
+                                            <th>Ngày nhận</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var d in _detailBook.DonationHistories)
+                                        {
+                                            <tr>
+                                                <td>@d.DonationCode</td>
+                                                <td>@d.DonorName</td>
+                                                <td>@d.DonorPhone</td>
+                                                <td>@d.QuantityReceived</td>
+                                                <td>@d.ReceivedAt.ToString("dd/MM/yyyy")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </section>
+
+                    <!-- Lịch sử xin sách -->
+                    <section class="detail-history">
+                        <h4>Lịch sử đăng ký xin sách (@_detailBook.RequestHistories.Count đơn)</h4>
+                        @if (!_detailBook.RequestHistories.Any())
+                        {
+                            <p class="history-empty">Chưa có độc giả nào xin cuốn sách này.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Mã đơn</th>
+                                            <th>Độc giả</th>
+                                            <th>Số điện thoại</th>
+                                            <th>Số lượng</th>
+                                            <th>Lý do</th>
+                                            <th>Trạng thái</th>
+                                            <th>Ngày xin</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var r in _detailBook.RequestHistories)
+                                        {
+                                            <tr>
+                                                <td>@r.RequestCode</td>
+                                                <td>@r.CustomerName</td>
+                                                <td>@r.CustomerPhone</td>
+                                                <td>@r.QuantityRequested</td>
+                                                <td>@r.Reason</td>
+                                                <td>@GetRequestStatusLabel(r.Status)</td>
+                                                <td>@r.RequestedAt.ToString("dd/MM/yyyy")</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </section>
+                }
+                else
+                {
+                    <div class="alert alert-error">@(_errorMessage ?? "Không tìm thấy thông tin cuốn sách.")</div>
+                }
+            </div>
+
+            <footer class="modal-footer">
+                @if (_detailBook != null)
+                {
+                    <a href="/management/content/freebooks/edit/@_detailBook.FreeBookId" class="btn btn-secondary">Chỉnh sửa sách này</a>
+                }
+                <button type="button" class="btn btn-primary" @onclick="Close">Đóng</button>
+            </footer>
+        </div>
+    </div>
+}

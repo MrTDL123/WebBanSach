@@ -1,0 +1,122 @@
+﻿@page "/management/content/freebooks/edit/{Id:int}"
+@using WebApp.Admin.Services.Interfaces
+@using WebApp.Shared.Dtos.Management.ContentAndMarketing
+@using WebApp.Admin.Validation
+@inject IContentClientService ContentClientService
+@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin,ContentManager")]
+
+<div class="page-container">
+    <header class="page-header">
+        <div class="header-title">
+            <h1>Chỉnh sửa sách</h1>
+            <p class="subtitle">Cập nhật thông tin mô tả, tình trạng và trạng thái phân phát</p>
+        </div>
+        <div class="header-actions">
+            <a href="/management/content/freebooks" class="btn btn-secondary">Quay lại danh sách</a>
+        </div>
+    </header>
+
+    @if (_isLoading)
+    {
+        <div class="state-container">
+            <div class="spinner"></div>
+            <p>Đang tải dữ liệu sách...</p>
+        </div>
+    }
+    else
+    {
+        <section class="form-card">
+            <EditForm Model="@_updateModel" OnValidSubmit="HandleSubmitAsync" class="freebook-form">
+                <FluentValidator />
+
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <div class="alert alert-error">@_errorMessage</div>
+                }
+
+                <div class="form-grid">
+                    <!-- Cột trái: Thông tin chính -->
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="title">Tên sách <span class="required">*</span></label>
+                            <InputText id="title" @bind-Value="_updateModel.Title" class="form-control" placeholder="Nhập tên sách..." />
+                            <ValidationMessage For="@(() => _updateModel.Title)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="authorName">Tên tác giả <span class="required">*</span></label>
+                            <InputText id="authorName" @bind-Value="_updateModel.AuthorName" class="form-control" placeholder="Nhập tên tác giả..." />
+                            <ValidationMessage For="@(() => _updateModel.AuthorName)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="condition">Tình trạng sách <span class="required">*</span></label>
+                            <InputText id="condition" @bind-Value="_updateModel.Condition" class="form-control" placeholder="VD: Còn mới 90%, chỉ bị bong gáy..." />
+                            <ValidationMessage For="@(() => _updateModel.Condition)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="source">Nguồn gốc sách</label>
+                            <InputText id="source" @bind-Value="_updateModel.Source" class="form-control" placeholder="VD: Nhà hảo tâm quyên góp, Quỹ tài trợ ABC..." />
+                            <ValidationMessage For="@(() => _updateModel.Source)" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Mô tả nội dung sách</label>
+                            <InputTextArea id="description" @bind-Value="_updateModel.Description" class="form-control text-area" rows="5" />
+                            <ValidationMessage For="@(() => _updateModel.Description)" />
+                        </div>
+                    </div>
+
+                    <!-- Cột phải: Trạng thái, số lượng và ảnh bìa -->
+                    <div class="form-column">
+                        <div class="form-group">
+                            <label for="isActive">Trạng thái phân phát</label>
+                            <InputSelect id="isActive" @bind-Value="_updateModel.IsActive" class="form-control">
+                                <option value="true">Đang phân phát (Hiển thị trên Website)</option>
+                                <option value="false">Ẩn tạm thời / Tạm dừng</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="availableQty">Số lượng sẵn có trong kho</label>
+                            <!-- disabled: chỉ kho mới được cập nhật số lượng thực tế -->
+                            <InputNumber id="availableQty" @bind-Value="_updateModel.AvailableQty" class="form-control" disabled />
+                            <small class="field-hint">Số lượng này do bộ phận kho quản lý, nhân viên nội dung không thể thay đổi.</small>
+                        </div>
+
+                        <!-- Thay đổi ảnh bìa -->
+                        <div class="form-group">
+                            <label>Hình ảnh bìa sách</label>
+                            <div class="image-upload-box">
+                                @if (!string.IsNullOrEmpty(_previewCoverImage))
+                                {
+                                    <div class="image-preview">
+                                        <img src="@_previewCoverImage" alt="Preview" />
+                                        <button type="button" class="btn-remove-img" @onclick="RemoveCoverImage">✕</button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <label for="coverImageInputEdit" class="upload-label">
+                                        <span class="upload-icon">📷</span>
+                                        <span>Chọn ảnh mới để thay thế</span>
+                                    </label>
+                                }
+                                <InputFile id="coverImageInputEdit" OnChange="HandleCoverImageSelected" accept="image/*" class="file-input-hidden" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <footer class="form-actions">
+                    <a href="/management/content/freebooks" class="btn btn-secondary">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+                        @(_isSubmitting ? "Đang lưu..." : "Cập nhật thay đổi")
+                    </button>
+                </footer>
+            </EditForm>
+        </section>
+    }
+</div>
